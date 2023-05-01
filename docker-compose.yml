@@ -3,20 +3,18 @@ services:
   frontend:
     container_name: frontend
     build:
-      context: ./docker/frontend/
+      context: ./docker/frontend
       dockerfile: Dockerfile
-    image: react
     ports:
       - "3000:3000"
     volumes:
-      - ./docker/frontend:/app
+      - ./data/frontend:/app:cached
   backend:
     container_name: backend
     build:
-      context: ./docker/backend/
+      context: ./docker/backend
       dockerfile: Dockerfile
-    image: server
     ports:
       - "5000:5000"
     volumes:
-      - ./docker/frontend:/app
+      - ./data/backend:/app:cached

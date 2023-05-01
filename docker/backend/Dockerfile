@@ -2,12 +2,12 @@ FROM node:latest
 
 WORKDIR /app
 
-COPY package.json ./
+# COPY ./project-name/package.json ./
 
-RUN npm install
+COPY entrypoint.sh ../
 
-COPY . .
+RUN chmod +x ../entrypoint.sh
 
 EXPOSE 5000
 
-CMD [ "npm", "run", "start:dev" ]
+ENTRYPOINT [ "sh", "../entrypoint.sh" ]
