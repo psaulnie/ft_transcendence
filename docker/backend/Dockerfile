@@ -2,8 +2,8 @@ FROM node:latest
 
 WORKDIR /app
 
-# COPY ./project-name/package.json ./
-
+#check if needed
+RUN npm install @nestjs/typeorm typeorm 
 COPY entrypoint.sh ../
 
 RUN chmod +x ../entrypoint.sh

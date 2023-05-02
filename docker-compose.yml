@@ -1,20 +1,45 @@
 version: '3.8'
 services:
+  database:
+    env_file:
+      - .env
+    container_name: database
+    user: ${POSTGRES_USER} # TO EDIT!!!!!!!!!!!1 
+    build:
+      context: ./docker/database
+      dockerfile: Dockerfile
+    volumes:
+      - ./data/database:/var/lib/postgresql/data:cached
+    networks:
+      - ft_transcendance
+    restart: on-failure
   frontend:
     container_name: frontend
     build:
       context: ./docker/frontend
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - "80:3000"
     volumes:
       - ./data/frontend:/app:cached
+    networks:
+      - ft_transcendance
+    restart: on-failure
   backend:
     container_name: backend
     build:
       context: ./docker/backend
       dockerfile: Dockerfile
+    env_file:
+      - .env
     ports:
       - "5000:5000"
     volumes:
       - ./data/backend:/app:cached
+    networks:
+      - ft_transcendance
+    restart: on-failure
+
+networks:
+  ft_transcendance:
+    driver: bridge
