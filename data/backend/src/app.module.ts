@@ -4,6 +4,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
+import { User } from './entities/user.entity'
+
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -14,8 +16,9 @@ import { AppService } from './app.service';
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DB,
-      entities: [],
+      logging: true,
       synchronize: true,
+      entities: [User],
     }),
   ],
   controllers: [AppController],

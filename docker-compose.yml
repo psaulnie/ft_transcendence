@@ -9,7 +9,7 @@ services:
       - ./data/database:/data
       - ./docker/database/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
-      - ft_transcendance
+      - ft_transcendence
     restart: on-failure
   frontend:
     container_name: frontend
@@ -21,7 +21,7 @@ services:
     volumes:
       - ./data/frontend:/app
     networks:
-      - ft_transcendance
+      - ft_transcendence
     restart: on-failure
   backend:
     container_name: backend
@@ -35,9 +35,9 @@ services:
     volumes:
       - ./data/backend:/app
     networks:
-      - ft_transcendance
+      - ft_transcendence
     restart: on-failure
 
 networks:
-  ft_transcendance:
+  ft_transcendence:
     driver: bridge

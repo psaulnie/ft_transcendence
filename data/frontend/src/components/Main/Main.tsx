@@ -6,7 +6,7 @@ function Main() {
 	const [users, setUsers] = useState('')
 
 	const fetchUserData = () => {
-	  fetch("http://10.19.248.89:5000/users?name=pierrotswag")
+	  fetch("http://localhost:5000/users?name=piertswag")
 		.then(response => {
 		  return response.text()
 		})
