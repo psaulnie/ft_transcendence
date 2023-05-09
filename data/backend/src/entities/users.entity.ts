@@ -1,8 +1,8 @@
 import internal from 'stream';
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity({ name: 'User' })
-export class User {
+@Entity({ name: 'Users' })
+export class Users {
 	@PrimaryGeneratedColumn()
 	id: number
 
@@ -18,7 +18,7 @@ export class User {
 	@Column()
 	status: number
 
+	// Check path to file
 	@Column()
 	avatar: string
-
 }

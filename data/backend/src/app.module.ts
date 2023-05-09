@@ -4,7 +4,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
-import { User } from './entities/user.entity'
+import { Users } from './entities/users.entity';
+import { Rooms } from './entities/rooms.entity';
+import { Statistics } from './entities/stats.entity';
+import { MatchHistory } from './entities/matchHistory.entity';
+import { Achievements } from './entities/achievements.entity';
+
 
 @Module({
   imports: [
@@ -18,7 +23,13 @@ import { User } from './entities/user.entity'
       database: process.env.POSTGRES_DB,
       logging: true,
       synchronize: true,
-      entities: [User],
+      entities: [
+        Users,
+        Rooms,
+        Statistics,
+        MatchHistory,
+        Achievements
+      ],
     }),
   ],
   controllers: [AppController],
