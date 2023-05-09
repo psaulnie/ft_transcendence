@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
+import Message from './../Chat/Message'
 
-// Chat need to return 
 function Main() {
 	const [users, setUsers] = useState('')
 
@@ -25,6 +25,7 @@ function Main() {
 				Pong game
 			</div>
 			<div className="chat">
+				<Message />
 				<p>{users}: Oe oe oe</p>
 			</div>
 		</div>
