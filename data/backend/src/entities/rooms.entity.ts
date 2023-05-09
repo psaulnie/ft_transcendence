@@ -1,32 +1,7 @@
 import internal from 'stream';
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 
-// @Entity({ name: 'UsersList' })
-// export class UsersList {
-// 	@PrimaryGeneratedColumn()
-// 	id: number
-
-// 	@ManyToOne(() => Rooms, rooms => rooms.usersID)
-// 	userId: number
-// }
-
-// @Entity({ name: 'AdminsList' })
-// export class AdminsList {
-// 	@PrimaryGeneratedColumn()
-// 	id: number
-
-// 	@ManyToOne(() => Rooms, rooms => rooms.adminsID)
-// 	userId: number
-// }
-
-// @Entity({ name: 'BlockedUsersList' })
-// export class BlockedUsersList {
-// 	@PrimaryGeneratedColumn()
-// 	id: number
-
-// 	@ManyToOne(() => Rooms, rooms => rooms.blockedUsersID)
-// 	userId: number
-// }
+import { UsersList } from './usersList.entity';
 
 @Entity({ name: 'Rooms' })
 export class Rooms {
@@ -39,14 +14,13 @@ export class Rooms {
 	@Column()
 	ownerID: number
 
-	// To check, there's multiple value
-	// @OneToMany(() => UsersList, userslist => userslist.userId)
-	// usersID: number
+	@Column()
+	usersID: UsersList
 
-	// @OneToMany(() => AdminsList, adminslist => adminslist.userId)
-	// adminsID: number
+	@Column()
+	adminsID: UsersList
 
-	// @OneToMany(() => BlockedUsersList, blockeduserslist => blockeduserslist.userId)
-	// blockedUsersID: number
+	@Column()
+	blockedUsersID: UsersList
 
 }
