@@ -1,12 +1,9 @@
 import internal from 'stream';
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryColumn } from 'typeorm';
 
 @Entity({ name: 'Statistics' })
 export class Statistics {
-	@PrimaryGeneratedColumn()
-	id: number
-
-	@Column()
+	@PrimaryColumn()
 	userId: number
 
 	@Column()

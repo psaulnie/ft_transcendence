@@ -14,13 +14,13 @@ export class Rooms {
 	@Column()
 	ownerID: number
 
-	@Column()
+	@Column(() => UsersList)
 	usersID: UsersList
 
-	@Column()
+	@Column(() => UsersList)
 	adminsID: UsersList
 
-	@Column()
+	@Column(() => UsersList)
 	blockedUsersID: UsersList
 
 }
