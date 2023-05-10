@@ -1,4 +1,3 @@
-import React from 'react';
 
 // If logged in, show the account button
 function Navigation() {

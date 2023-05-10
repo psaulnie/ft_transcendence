@@ -1,6 +1,8 @@
 import React from 'react';
 import './App.css';
 
+import { io } from 'socket.io-client';
+import { useState } from 'react';
 
 // Components
 import Navigation from './components/Navigation/Navigation';

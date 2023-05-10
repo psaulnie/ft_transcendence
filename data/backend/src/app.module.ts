@@ -10,6 +10,7 @@ import { Statistics } from './entities/stats.entity';
 import { MatchHistory } from './entities/matchHistory.entity';
 import { Achievements } from './entities/achievements.entity';
 
+import { ChatGateway } from './gateway/chat.gateway'
 
 @Module({
   imports: [
@@ -33,6 +34,6 @@ import { Achievements } from './entities/achievements.entity';
     }),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, ChatGateway],
 })
 export class AppModule {}
