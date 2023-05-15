@@ -1,8 +1,11 @@
 import React, { KeyboardEvent, SyntheticEvent, useState } from 'react';
 import { chatSocket } from '../../chatSocket';
 
+type arg = {
+	username: string
+}
 
-export default function InputForm() {
+export default function Room({ username }: arg) {
   const [value, setValue] = useState('');
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -30,7 +33,7 @@ export default function InputForm() {
 
   function onChange(e: React.FormEvent<HTMLInputElement>)
   {
-	setValue(e.currentTarget.value);
+	setValue(username + ': ' + e.currentTarget.value);
 	setMessage(e.currentTarget.value);	
   }
 

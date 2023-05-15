@@ -5,13 +5,13 @@ type arg = {
 }
 
 export default function Messages({ messages }: arg) {
-  return (
-    <div className='messages'>
-    {
-      messages.map((message, index) =>
-        <p key={ index }>{ message }</p>
-      )
-    }
-    </div>
-  );
+	return (
+		<div className='messages'>
+		{
+		messages.map((message, index) =>
+			<p key={ index }>{ message }</p>
+		)
+		}
+		</div>
+	);
 }

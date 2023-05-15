@@ -9,9 +9,7 @@ import {
 import { Socket, Server } from 'socket.io';
 
 @WebSocketGateway({
-	cors: {
-		origin: '*',
-		},
+	cors: { origin: '*' },
 	namespace: '/gateways/chat',
 })
 export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
@@ -20,8 +18,16 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
 	@SubscribeMessage('sendMsg')
 	handleMessage(client: Socket, payload: string) {
+		// TODO send msg to good channel
 		console.log(payload);
 		this.server.emit('receiveMsg', payload);
+	}
+
+	@SubscribeMessage('username')
+	setUsername(client: Socket, payload: string) {
+		// TODO send msg to good channel
+
+		client.emit('setUsernameOk', true);
 	}
 
 	afterInit(server: Server) {
@@ -34,5 +40,5 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
 	handleConnection(client: Socket, ...args: any[]) {
 		console.log(`Client connected: ${client.id}`);
-	   }
+	}
 }

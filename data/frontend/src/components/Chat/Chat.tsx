@@ -1,42 +1,32 @@
 import React, { useState, useEffect } from 'react';
 
+import Room from './Room';
 import Messages from './Messages';
 import InputForm from './InputForm';
 
 import { chatSocket } from '../../chatSocket';
 
 function Chat() {
-	const [isConnected, setIsConnected] = useState(chatSocket.connected);
-	const [messageSent, setMsg] = useState<string[]>([]);
+	// Fetch data to check which channel is joined
+
+
+	const [username, setUsername] = useState('');
+
+	function onChange(e: React.FormEvent<HTMLInputElement>)
+	{
+	  setUsername(e.currentTarget.value);
+	}
   
-	useEffect(() => {
-	  function onConnect() {
-		setIsConnected(true);
-	  }
-  
-	  function onDisconnect() {
-		setIsConnected(false);
-	  }
-  
-	  function onMsgSent(value: string) {
-		setMsg(previous => [...previous, value]);
-	  }
-  
-	  chatSocket.on('connect', onConnect);
-	  chatSocket.on('disconnect', onDisconnect);
-	  chatSocket.on('receiveMsg', onMsgSent);
-	  return () => {
-		chatSocket.off('connect', onConnect);
-		chatSocket.off('disconnect', onDisconnect);
-		chatSocket.off('receiveMsg', onMsgSent);
-	  };
-	}, []);
 	return (
-		<div className="chat">
-			<Messages messages={ messageSent } />
-			<InputForm />
+		<div className='chat'>
+			<form>
+				<input value={username} onChange={ onChange } />
+			</form>
+			<Room username={username} />
+			<Room username={username} />
+
 		</div>
-	)
+	);
 }
 
 export default Chat;
