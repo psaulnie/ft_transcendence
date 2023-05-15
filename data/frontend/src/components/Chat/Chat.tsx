@@ -1,15 +1,12 @@
 import React, { useState, useEffect } from 'react';
 
-import Messages from './Messages'
-import InputForm from './InputForm'
-import ConnectionState from './ConnectionState';
-import ConnectionManager from './ConnectionManager';
+import Messages from './Messages';
+import InputForm from './InputForm';
 
-import { io } from 'socket.io-client';
-import { socket } from '../../socket';
+import { chatSocket } from '../../chatSocket';
 
 function Chat() {
-	const [isConnected, setIsConnected] = useState(socket.connected);
+	const [isConnected, setIsConnected] = useState(chatSocket.connected);
 	const [messageSent, setMsg] = useState<string[]>([]);
   
 	useEffect(() => {
@@ -21,23 +18,21 @@ function Chat() {
 		setIsConnected(false);
 	  }
   
-	  function onMsgSent(value: string) { // check if value is a string
+	  function onMsgSent(value: string) {
 		setMsg(previous => [...previous, value]);
 	  }
   
-	  socket.on('connect', onConnect);
-	  socket.on('disconnect', onDisconnect);
-	  socket.on('receiveMsg', onMsgSent);
+	  chatSocket.on('connect', onConnect);
+	  chatSocket.on('disconnect', onDisconnect);
+	  chatSocket.on('receiveMsg', onMsgSent);
 	  return () => {
-		socket.off('connect', onConnect);
-		socket.off('disconnect', onDisconnect);
-		socket.off('receiveMsg', onMsgSent);
+		chatSocket.off('connect', onConnect);
+		chatSocket.off('disconnect', onDisconnect);
+		chatSocket.off('receiveMsg', onMsgSent);
 	  };
 	}, []);
 	return (
 		<div className="chat">
-			<ConnectionState isConnected={ isConnected } />
-      		<ConnectionManager />
 			<Messages messages={ messageSent } />
 			<InputForm />
 		</div>

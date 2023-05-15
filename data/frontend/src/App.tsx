@@ -6,11 +6,11 @@ import Chat from './components/Chat/Chat';
 
 function App() {
   return (
-    <div className="App">
+    <div className="App"> {/* TODO rename */}
       <Navigation />
-      <div className='Main'>
+      <div className='main'>
         <Chat />
-        {/* add Game component*/}
+        {/* TODO add Game component*/}
       </div>
     </div>
   );

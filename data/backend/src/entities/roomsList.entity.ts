@@ -1,7 +1,7 @@
 import { Entity, PrimaryColumn, Column } from "typeorm";
 
-@Entity({ name: 'UsersList' })
-export class UsersList {
+@Entity({ name: 'RoomsList' })
+export class RoomsList {
 	@PrimaryColumn()
-	userId: number
+	RoomId: number
 }

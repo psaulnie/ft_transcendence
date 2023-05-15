@@ -1,6 +1,3 @@
-import { io } from 'socket.io-client';
-import { SyntheticEvent, useState } from 'react';
-
 import React from 'react';
 
 type arg = {

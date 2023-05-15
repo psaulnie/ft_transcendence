@@ -1,5 +1,5 @@
 import React, { KeyboardEvent, SyntheticEvent, useState } from 'react';
-import { socket } from '../../socket';
+import { chatSocket } from '../../chatSocket';
 
 
 export default function InputForm() {
@@ -7,26 +7,25 @@ export default function InputForm() {
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+  function send() {
+		setMessage('');
+		setValue('');
+		setIsLoading(true);
+		chatSocket.timeout(500).emit('sendMsg', value, () => {
+		setIsLoading(false);
+	});
+  }
+
   function keyPress(event: KeyboardEvent<HTMLButtonElement>) {
 	event.preventDefault();
-	if (event.key == 'Enter')
-	{
-		setMessage('');
-		setIsLoading(true);
-		socket.timeout(1000).emit('sendMsg', value, () => {
-		  setIsLoading(false);
-		});		
-	}
+	if (event.key == 'Enter' && value != '')
+		send()
   }
 
   function onSubmit(event: SyntheticEvent) {
-	setMessage('');
-    event.preventDefault();
-    setIsLoading(true);
-
-    socket.timeout(1000).emit('sendMsg', value, () => {
-      setIsLoading(false);
-    });
+	event.preventDefault();
+	if (value != '')
+		send();
   }
 
   function onChange(e: React.FormEvent<HTMLInputElement>)
@@ -36,10 +35,9 @@ export default function InputForm() {
   }
 
   return (
-    <form onSubmit={ onSubmit }>
-      <input value={message} onChange={ onChange } />
-
-      <button id='message' name='message' type="submit" disabled={ isLoading } onKeyDown={keyPress}>Send</button>
-    </form>
+	<form onSubmit={ onSubmit }>
+	  <input value={message} onChange={ onChange } />
+	  <button id='message' name='message' type="submit" disabled={ isLoading } onKeyDown={keyPress}>Send</button>
+	</form>
   );
 }

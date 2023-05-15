@@ -1,4 +1,3 @@
-import internal from 'stream';
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 
 import { UsersList } from './usersList.entity';
