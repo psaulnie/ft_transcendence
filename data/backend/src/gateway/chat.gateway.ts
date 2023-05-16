@@ -18,9 +18,13 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
 	@SubscribeMessage('sendMsg')
 	handleMessage(client: Socket, payload: string) {
-		// TODO send msg to good channel
-		console.log(payload);
-		this.server.emit('receiveMsg', payload);
+		const arr = payload.split(' ');
+		if (arr[0] == 'MSG')
+		{
+			payload = payload.replace(arr[0], '');
+			payload = payload.replace(arr[1], '');
+			this.server.emit(arr[1], payload);
+		}
 	}
 
 	afterInit(server: Server) {

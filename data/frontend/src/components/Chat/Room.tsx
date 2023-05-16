@@ -7,9 +7,10 @@ import { chatSocket } from '../../chatSocket';
 
 type arg = {
 	username: string
+	channelName: string
 }
 
-function Room({ username }: arg) {
+function Room({ username, channelName }: arg) {
 	const [isConnected, setIsConnected] = useState(chatSocket.connected); { /* TODO check if need to be removed */}
 	const [messageSent, setMsg] = useState<string[]>([]);
   
@@ -28,17 +29,17 @@ function Room({ username }: arg) {
   
 	  chatSocket.on('connect', onConnect);
 	  chatSocket.on('disconnect', onDisconnect);
-	  chatSocket.on('receiveMsg', onMsgSent);
+	  chatSocket.on(channelName, onMsgSent);
 	  return () => {
 		chatSocket.off('connect', onConnect);
 		chatSocket.off('disconnect', onDisconnect);
-		chatSocket.off('receiveMsg', onMsgSent);
+		chatSocket.off(channelName, onMsgSent);
 	  };
 	}, []);
 	return (
 		<div className="chat">
 			<Messages messages={ messageSent } />
-			<InputForm username={ username } />
+			<InputForm username={ username } channelName={ channelName } />
 		</div>
 	)
 }

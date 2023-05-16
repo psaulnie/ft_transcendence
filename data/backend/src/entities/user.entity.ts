@@ -1,5 +1,4 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
-import { RoomsList } from './roomsList.entity';
 
 @Entity({ name: 'User' })
 export class User {
@@ -25,6 +24,4 @@ export class User {
 	@Column()
 	avatar: string
 
-	@Column(() => RoomsList)
-	connectedRooms: RoomsList
 }

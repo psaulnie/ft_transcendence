@@ -3,9 +3,10 @@ import { chatSocket } from '../../chatSocket';
 
 type arg = {
 	username: string
+	channelName: string
 }
 
-export default function Room({ username }: arg) {
+export default function Room({ username, channelName }: arg) {
   const [value, setValue] = useState('');
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -33,7 +34,7 @@ export default function Room({ username }: arg) {
 
   function onChange(e: React.FormEvent<HTMLInputElement>)
   {
-	setValue(username + ': ' + e.currentTarget.value);
+	setValue('MSG ' + channelName + ' ' + username + ': ' + e.currentTarget.value);
 	setMessage(e.currentTarget.value);	
   }
 

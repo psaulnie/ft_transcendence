@@ -22,8 +22,8 @@ function Chat() {
 			<form>
 				<input value={username} onChange={ onChange } />
 			</form>
-			<Room username={username} />
-			<Room username={username} />
+			<Room username={username} channelName='general' />
+			<Room username={username} channelName='other' />
 
 		</div>
 	);
