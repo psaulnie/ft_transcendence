@@ -23,13 +23,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		this.server.emit('receiveMsg', payload);
 	}
 
-	@SubscribeMessage('username')
-	setUsername(client: Socket, payload: string) {
-		// TODO send msg to good channel
-
-		client.emit('setUsernameOk', true);
-	}
-
 	afterInit(server: Server) {
 		console.log('Init');
 	}

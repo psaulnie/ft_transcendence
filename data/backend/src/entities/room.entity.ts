@@ -2,8 +2,8 @@ import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 
 import { UsersList } from './usersList.entity';
 
-@Entity({ name: 'Rooms' })
-export class Rooms {
+@Entity({ name: 'Room' })
+export class Room {
 	@PrimaryGeneratedColumn()
 	id: number
 
