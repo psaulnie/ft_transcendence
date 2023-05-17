@@ -1,7 +1,10 @@
-import { Entity, PrimaryColumn, Column } from "typeorm";
-
+import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+// TODO maybe not needed
 @Entity({ name: 'RoomsList' })
 export class RoomsList {
-	@PrimaryColumn()
-	RoomId: number
+	@PrimaryGeneratedColumn()
+	id: number
+
+	@Column()
+	roomId: number
 }

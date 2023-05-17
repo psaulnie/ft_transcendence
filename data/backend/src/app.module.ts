@@ -5,6 +5,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
 import { UserModule } from './userModule/user.module';
+// import { RoomModule } from './roomModule/room.module';
 
 import { User } from './entities/user.entity';
 import { Room } from './entities/room.entity';
@@ -35,6 +36,7 @@ import { ChatGateway } from './gateway/chat.gateway'
 		],
 	}),
 	UserModule,
+	// RoomModule,
   ],
   controllers: [AppController],
   providers: [AppService, ChatGateway],

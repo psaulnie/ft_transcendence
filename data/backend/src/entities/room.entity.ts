@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
 
 import { UsersList } from './usersList.entity';
 
@@ -8,18 +8,25 @@ export class Room {
 	id: number
 
 	@Column()
+	roomName: string
+
+	@Column()
 	password: string
 
 	@Column()
 	ownerID: number
 
-	@Column(() => UsersList)
-	usersID: UsersList
+	@Column()
+	usersNumber: number
 
-	@Column(() => UsersList)
-	adminsID: UsersList
+	// @OneToMany(() => UsersList, usersList => usersList.userId)
+	// usersID: UsersList[]
+	// // @Column(() => UsersList)
 
-	@Column(() => UsersList)
-	blockedUsersID: UsersList
+	// @OneToMany(() => UsersList, usersList => usersList.userId)
+	// adminsID: UsersList
+
+	// @OneToMany(() => UsersList, usersList => usersList.userId)
+	// blockedUsersID: UsersList
 
 }

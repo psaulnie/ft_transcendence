@@ -2,7 +2,7 @@ import { Controller, Get, Query } from '@nestjs/common';
 import { UserService } from './user.service';
 
 
-@Controller('/chat/')
+@Controller('/api/chat/user')
 export class UserController {
   constructor(private readonly usersService: UserService) {}
 
