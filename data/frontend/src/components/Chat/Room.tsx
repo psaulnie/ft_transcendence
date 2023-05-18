@@ -11,28 +11,15 @@ type arg = {
 }
 
 function Room({ username, channelName }: arg) {
-	const [isConnected, setIsConnected] = useState(chatSocket.connected); { /* TODO check if need to be removed */}
 	const [messageSent, setMsg] = useState<string[]>([]);
   
 	useEffect(() => {
-	  function onConnect() {
-		setIsConnected(true);
-	  }
-  
-	  function onDisconnect() {
-		setIsConnected(false);
-	  }
-  
 	  function onMsgSent(value: string) {
 		setMsg(previous => [...previous, value]);
 	  }
   
-	  chatSocket.on('connect', onConnect);
-	  chatSocket.on('disconnect', onDisconnect);
 	  chatSocket.on(channelName, onMsgSent);
 	  return () => {
-		chatSocket.off('connect', onConnect);
-		chatSocket.off('disconnect', onDisconnect);
 		chatSocket.off(channelName, onMsgSent);
 	  };
 	}, []);

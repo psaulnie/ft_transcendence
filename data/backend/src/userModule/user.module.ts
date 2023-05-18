@@ -7,7 +7,7 @@ import { MatchHistory } from '../entities/matchHistory.entity';
 import { Achievements } from '../entities/achievements.entity';
 
 import { UserController } from './user.controller';
-import { UserService } from './user.service';
+import { UserService } from '../chatModule/user.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User,

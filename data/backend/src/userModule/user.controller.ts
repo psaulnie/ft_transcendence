@@ -1,5 +1,5 @@
 import { Controller, Get, Query } from '@nestjs/common';
-import { UserService } from './user.service';
+import { UserService } from '../chatModule/user.service';
 
 
 @Controller('/api/chat/user')

@@ -7,6 +7,8 @@ import {
 	OnGatewayDisconnect,
    } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
+import { RoomService } from 'src/chatModule/room.service';
+import { Inject } from '@nestjs/common';
 
 @WebSocketGateway({
 	cors: { origin: '*' },
@@ -14,6 +16,9 @@ import { Socket, Server } from 'socket.io';
 })
 export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
 
+	constructor(
+		private roomService: RoomService,
+	) {}
 	@WebSocketServer() server: Server;
 
 	@SubscribeMessage('sendMsg')
@@ -24,6 +29,27 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 			payload = payload.replace(arr[0], '');
 			payload = payload.replace(arr[1], '');
 			this.server.emit(arr[1], payload);
+		}
+	}
+
+	@SubscribeMessage('manageRooms')
+	async handleRoom(client: Socket, payload: string) {
+		const arr = payload.split(' ');
+		// check if db exist, if not create it
+		if (arr[1] == "ADD")
+		{
+			if (await this.roomService.findOne(arr[2]) == null)
+			{
+				this.roomService.createRoom(arr[2], 1); // TODO change with the user ID
+			}
+			else
+			{
+				this.roomService.addUser(arr[2], 1); // TODO change with the user ID
+			}
+		}
+		else if (arr[1] == "REMOVE")
+		{
+			this.roomService.removeUser(arr[2], 1);
 		}
 	}
 
