@@ -1,5 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
-// TODO maybe not needed
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
+
 @Entity({ name: 'RoomsList' })
 export class RoomsList {
 	@PrimaryGeneratedColumn()

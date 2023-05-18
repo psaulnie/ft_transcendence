@@ -2,8 +2,8 @@ import { Controller, Get, Query } from '@nestjs/common';
 import { RoomService } from './room.service';
 
 
-@Controller('/api/chat/room')
-export class RoomController {
+@Controller('/api/chat/')
+export class ChatController {
   constructor(private readonly roomService: RoomService) {}
 
 

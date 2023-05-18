@@ -22,10 +22,24 @@ function Chat() {
 	function createRoom(event: SyntheticEvent)
 	{
 		event.preventDefault();
-		if (rooms.find((str: string) => {return (str != newRoomName)}))
+		if (username == '')
+		{
+			alert("Set an username");
+			return ;
+		}
+		if (!rooms.includes(newRoomName, 0))
+		{
 			setRooms(previous => [...previous, newRoomName]);
+			chatSocket.emit('manageRooms', username + " ADD " + newRoomName);
+		}
 		else
 			alert("You are currently in this channel");
+	}
+
+	function removeRoom(roomName: string)
+	{
+		setRooms(rooms.filter(room => room !== roomName));
+		chatSocket.emit('manageRooms', username + " REMOVE " + roomName);
 	}
 
 	return (
@@ -46,8 +60,8 @@ function Chat() {
 					<div key={index}>
 						<p>{room}: </p>
 						<Room username={username} channelName={room} />
+						{ room != 'general' ? (<button onClick={ () => { removeRoom(room) } }>x</button>) : null }
 					</div>)}
-
 			</div>
 
 		</div>

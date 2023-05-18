@@ -29,9 +29,4 @@ export class UserService {
 	{
 		return await (this.usersRepository.delete({username: name}));
 	}
-
-	// async addConnectedRooms(): Promise<User>
-	// {
-
-	// }
 }
