@@ -39,17 +39,15 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		if (arr[1] == "ADD")
 		{
 			if (await this.roomService.findOne(arr[2]) == null)
-			{
 				this.roomService.createRoom(arr[2], 1); // TODO change with the user ID
-			}
 			else
-			{
 				this.roomService.addUser(arr[2], 1); // TODO change with the user ID
-			}
+			this.server.emit(arr[2], '=> ' + arr[0] + ' joined the room')
 		}
 		else if (arr[1] == "REMOVE")
 		{
 			this.roomService.removeUser(arr[2], 1);
+			this.server.emit(arr[2], '<= ' + arr[0] + ' left the room')
 		}
 	}
 
