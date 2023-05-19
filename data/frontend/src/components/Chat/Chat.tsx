@@ -1,15 +1,12 @@
 import React, { SyntheticEvent, useState, useEffect } from 'react';
 
 import Room from './Room';
-import Messages from './Messages';
-import InputForm from './InputForm';
-
 import { chatSocket } from '../../chatSocket';
 
 function Chat() {
 	const [username, setUsername] = useState('');
 	const [newRoomName, setNewRoomName] = useState('');
-	const [rooms, setRooms] = useState<string[]>(['general']);
+	const [rooms, setRooms] = useState<string[]>([]);
 
 	function onChange(e: React.FormEvent<HTMLInputElement>)
 	{
@@ -60,7 +57,7 @@ function Chat() {
 					<div key={index}>
 						<p>{room}: </p>
 						<Room username={username} channelName={room} />
-						{ room != 'general' ? (<button onClick={ () => { removeRoom(room) } }>x</button>) : null }
+						<button onClick={ () => { removeRoom(room) } }>x</button>
 					</div>)}
 			</div>
 
