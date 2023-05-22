@@ -44,6 +44,7 @@ function Chat() {
 			<form>
 				<p>Username:</p>
 				<input value={username} onChange={ onChange } />
+				{/* <button onClick={}>Set</button> */}
 			</form>
 			<p>------------------------------------------------</p>
 			<p>Create a new channel</p>
