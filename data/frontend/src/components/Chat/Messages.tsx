@@ -10,11 +10,10 @@ export default function Messages({ messages }: arg) {
 		{
 		messages.map((message, index) => {
 			const arr = message.split(' ');
-
 			if (arr[1] == "JOIN")
 			{
 				return(
-					<div className='userJoined'> {/*the three paragraphs must be on the same line*/}
+					<div key={ index } className='userJoined'> {/*the three paragraphs must be on the same line*/}
 						<p>=&gt; </p>
 						<p>{arr[0]}</p>
 						<p> joined the room</p>
@@ -24,7 +23,7 @@ export default function Messages({ messages }: arg) {
 			else if (arr[1] == "LEFT")
 			{
 				return(
-					<div className='userLeft'> {/*the three paragraphs must be on the same line*/}
+					<div key={ index } className='userLeft'> {/*the three paragraphs must be on the same line*/}
 						<p>&#60;= </p>
 						<p>{arr[0]}</p>
 						<p> left the room</p>

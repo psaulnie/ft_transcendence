@@ -56,11 +56,14 @@ export class RoomService {
 	async removeUser(roomName: string, userId: number)
 	{
 		const room = this.findOne(roomName);
-		if ((await room).usersID.length - 1 <= 0)
+		if (!(await room))
+			return ;
+		if ((await room).usersNumber - 1 <= 0)
 		{
 			this.removeRoom(roomName);
 			return ;
 		}
+		(await room).usersNumber -= 1;
 		(await room).usersID = (await room).usersID.filter(user => user.userId !== userId);
 		this.roomsRepository.save(await room);
 	}
@@ -68,5 +71,14 @@ export class RoomService {
 	async removeRoom(name: string)
 	{
 		return await (this.roomsRepository.delete({roomName: name}));
+	}
+
+	async removeUserFromRooms(userId: number)
+	{
+		const rooms = this.findAll();
+
+		(await rooms).forEach(element => {
+			this.removeUser(element.roomName, userId);
+		});
 	}
 }
