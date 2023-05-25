@@ -3,27 +3,22 @@ import React, { SyntheticEvent, useState, useEffect } from 'react';
 import Room from './Room';
 import { chatSocket } from '../../chatSocket';
 
-function Chat() {
-	const [username, setUsername] = useState('');
+type arg = {
+	username: string
+}
+
+function Chat({ username }: arg) {
 	const [newRoomName, setNewRoomName] = useState('');
 	const [rooms, setRooms] = useState<string[]>([]);
-
-	function onChange(e: React.FormEvent<HTMLInputElement>)
-	{
-		e.preventDefault();
-		setUsername(e.currentTarget.value);
-	}
-
+	
+	useEffect(() => {
+		chatSocket.emit("newUser", username);
+	}, []);
 	function updateNewRoomName(e: React.FormEvent<HTMLInputElement>) { setNewRoomName(e.currentTarget.value); }
 
 	function createRoom(event: SyntheticEvent)
 	{
 		event.preventDefault();
-		if (username == '')
-		{
-			alert("Set an username");
-			return ;
-		}
 		if (!rooms.includes(newRoomName, 0))
 		{
 			setRooms(previous => [...previous, newRoomName]);
@@ -38,14 +33,10 @@ function Chat() {
 		setRooms(rooms.filter(room => room !== roomName));
 		chatSocket.emit('manageRooms', username + " REMOVE " + roomName);
 	}
+  
 
 	return (
 		<div className='chat'>
-			<form>
-				<p>Username:</p>
-				<input value={username} onChange={ onChange } />
-				{/* <button onClick={}>Set</button> */}
-			</form>
 			<p>------------------------------------------------</p>
 			<p>Create a new channel</p>
 			<form onSubmit={ createRoom }>

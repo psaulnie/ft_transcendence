@@ -6,6 +6,9 @@ export class User {
 	id: number
 
 	@Column()
+	clientId: string
+
+	@Column()
 	isConnected: boolean
 	
 	@Column()
