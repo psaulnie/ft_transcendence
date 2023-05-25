@@ -43,16 +43,20 @@ export class RoomService {
 		return await (this.roomsRepository.save(room));
 	}
 
-	async addUser(roomName: string, userId: number)
+	async addUser(roomName: string, userId: number): Promise<number>
 	{
 		const room = await this.findOne(roomName);
-		console.log(room);
+
+		room.blockedUsersID.forEach(user => {
+			if (user.userId == userId)
+				return (-1);
+		});
 		const newEntry = new UsersList();
-		// newEntry.room = room;
 		newEntry.userId = userId;
 		room.usersNumber += 1;
 		room.usersID.push(newEntry);
 		await this.roomsRepository.save(room);
+		return (0);
 	}
 
 	async removeUser(roomName: string, userId: number)
@@ -95,5 +99,15 @@ export class RoomService {
 				return (admin);
 		});
 		return ("none");
+	}
+
+	async addToBanList(roomName: string, userID: number): Promise<Room>
+	{
+		const room = await this.findOne(roomName);
+		const newBlockedUser = new UsersList();
+
+		newBlockedUser.userId = userID;
+		room.blockedUsersID.push(newBlockedUser);
+		return await (this.roomsRepository.save(room));
 	}
 }
