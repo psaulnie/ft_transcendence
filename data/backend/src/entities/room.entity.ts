@@ -35,7 +35,7 @@ export class Room {
 		if (!this.adminsID)
 			this.adminsID = [];
 		if (!this.blockedUsersID)
-			this.adminsID = [];
+			this.blockedUsersID = [];
 	}
 
 }

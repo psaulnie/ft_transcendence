@@ -46,7 +46,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		{
 			payload = payload.replace(arr[0], '');
 			payload = payload.replace(arr[1], '');
-			this.server.emit(arr[1], payload);
+			payload.trim();
+			this.server.emit(arr[1], payload.trim());
 		}
 	}
 
@@ -59,7 +60,14 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 			if (await this.roomService.findOne(arr[2]) == null)
 				await this.roomService.createRoom(arr[2], user.id);
 			else
-				await this.roomService.addUser(arr[2], user.id);
+			{
+				
+				if (await this.roomService.addUser(arr[2], user.id) == -1)
+				{
+					this.server.emit(arr[2], "BAN " + arr[1]);
+					return ;
+				}
+			}
 			this.server.emit(arr[2], arr[0] + " JOIN")
 		}
 		else if (arr[1] == "REMOVE")
@@ -67,6 +75,22 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 			await this.roomService.removeUser(arr[2], user.id);
 			this.server.emit(arr[2], arr[0] + " LEFT")
 		}
+	}
+
+	@SubscribeMessage('kick')
+	async kickUser(client: Socket, payload: string) {
+		const arr = payload.split(' ');
+		const user = await this.userService.findOne(arr[0]);
+		await this.roomService.removeUser(arr[1], user.id);
+		this.server.emit(arr[0], "KICK " + arr[1]);
+	}
+
+	@SubscribeMessage('ban')
+	async banUser(client: Socket, payload: string) {
+		const arr = payload.split(' ');
+		const user = await this.userService.findOne(arr[0]);
+		await this.roomService.removeUser(arr[1], user.id);
+		this.server.emit(arr[0], "BAN " + arr[1]);
 	}
 
 	async afterInit(server: Server) {

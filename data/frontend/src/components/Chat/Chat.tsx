@@ -10,10 +10,31 @@ type arg = {
 function Chat({ username }: arg) {
 	const [newRoomName, setNewRoomName] = useState('');
 	const [rooms, setRooms] = useState<string[]>([]);
+
+	useEffect(() => {
+	  function process(value: string) {
+		const arr = value.split(' ');
+		console.log(value);
+		if (arr[0] == "KICK")
+			removeRoom(arr[1]);
+		else if (arr[0] == "BAN")
+		{
+			removeRoom(arr[1]);
+			alert("You are banned from this channel: " + arr[1]);
+		}
+			
+	  }
 	
+	  chatSocket.on(username, process);
+	  return () => {
+		chatSocket.off(username, process);
+	  };
+	}, []);
+
 	useEffect(() => {
 		chatSocket.emit("newUser", username);
 	}, []);
+
 	function updateNewRoomName(e: React.FormEvent<HTMLInputElement>) { setNewRoomName(e.currentTarget.value); }
 
 	function createRoom(event: SyntheticEvent)

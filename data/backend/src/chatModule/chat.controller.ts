@@ -8,7 +8,6 @@ export class ChatController {
 
   	@Get('role')
   	async getRole(@Query() data: any): Promise<string> {
-		console.log("=> " + data.username);
 		if (data.username == null || data.roomName == null)
 			return (null);
 		const user = await this.userService.findOne(data.username);

@@ -40,7 +40,7 @@ function Room({ username, channelName }: arg) {
 		  }, []);
 	return (
 		<div className="chat">
-			<Messages messages={ messageSent } role={ role } />
+			<Messages messages={ messageSent } role={ role } channelName={ channelName } />
 			<InputForm username={ username } channelName={ channelName } />
 		</div>
 	)
