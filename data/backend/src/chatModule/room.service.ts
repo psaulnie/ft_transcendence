@@ -13,7 +13,7 @@ export class RoomService {
 
 	async findOne(name: string): Promise<Room>
 	{
-		return await (this.roomsRepository.findOne({where: { roomName: name }}));
+		return await (this.roomsRepository.findOne({ where: { roomName: name }, relations: ['usersID'] }));
 	}
 
 	async findAll(): Promise<Room[]>
@@ -27,6 +27,7 @@ export class RoomService {
 		const usersList = new UsersList();
 
 		usersList.userId = ownerID;
+		// usersList.room = room;
 		room.roomName = name;
 		room.ownerID = ownerID;
 		room.usersNumber = 1;
@@ -44,28 +45,29 @@ export class RoomService {
 
 	async addUser(roomName: string, userId: number)
 	{
-		const room = this.findOne(roomName);
+		const room = await this.findOne(roomName);
+		console.log(room);
 		const newEntry = new UsersList();
-
+		// newEntry.room = room;
 		newEntry.userId = userId;
-		(await room).usersNumber += 1;
-		(await room).usersID.push(newEntry);
-		// return await (this.usersListRepository.save((await room).usersID))
+		room.usersNumber += 1;
+		room.usersID.push(newEntry);
+		await this.roomsRepository.save(room);
 	}
 
 	async removeUser(roomName: string, userId: number)
 	{
-		const room = this.findOne(roomName);
-		if (!(await room))
+		const room = await this.findOne(roomName);
+		if (!(room))
 			return ;
-		if ((await room).usersNumber - 1 <= 0)
+		if (room.usersNumber - 1 <= 0)
 		{
 			this.removeRoom(roomName);
 			return ;
 		}
-		(await room).usersNumber -= 1;
-		(await room).usersID = (await room).usersID.filter(user => user.userId !== userId);
-		this.roomsRepository.save(await room);
+		room.usersNumber -= 1;
+		room.usersID = (await room).usersID.filter(user => user.userId !== userId);
+		await this.roomsRepository.save(room);
 	}
 
 	async removeRoom(name: string)
