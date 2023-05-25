@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, AfterLoad } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, AfterLoad, JoinColumn } from "typeorm";
 
 import { UsersList } from './usersList.entity';
 
@@ -19,14 +19,13 @@ export class Room {
 	@Column()
 	usersNumber: number
 
-	@OneToMany(() => UsersList, usersList => usersList.userId)
+	@OneToMany(() => UsersList, usersList => usersList.room)
 	usersID: UsersList[]
-	// @Column(() => UsersList)
 
-	@OneToMany(() => UsersList, usersList => usersList.userId)
+	@OneToMany(() => UsersList, usersList => usersList.room)
 	adminsID: UsersList[]
 
-	@OneToMany(() => UsersList, usersList => usersList.userId)
+	@OneToMany(() => UsersList, usersList => usersList.room)
 	blockedUsersID: UsersList[]
 
 	@AfterLoad()
