@@ -6,9 +6,11 @@ import {
 	OnGatewayConnection,
 	OnGatewayDisconnect,
    } from '@nestjs/websockets';
+
 import { Socket, Server } from 'socket.io';
 import { RoomService } from 'src/chatModule/room.service';
-import { Inject } from '@nestjs/common';
+import { UserService } from 'src/chatModule/user.service';
+import { userStatus } from 'src/chatModule/userStatus';
 
 @WebSocketGateway({
 	cors: { origin: '*' },
@@ -18,11 +20,27 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
 	constructor(
 		private roomService: RoomService,
+		private userService: UserService,
 	) {}
 	@WebSocketServer() server: Server;
 
+	@SubscribeMessage('newUser')
+	async createUser(client: Socket, payload: string) {
+		const user = await this.userService.findOne(payload);
+		if (user == null)
+		{
+			console.log("New user: " + payload);
+			await this.userService.createUser(payload, client.id);
+		}
+		else
+		{
+			user.clientId = client.id;
+			user.status = userStatus.online;
+		}
+	}
+
 	@SubscribeMessage('sendMsg')
-	handleMessage(client: Socket, payload: string) {
+	async handleMessage(client: Socket, payload: string) {
 		const arr = payload.split(' ');
 		if (arr[0] == 'MSG')
 		{
@@ -35,32 +53,36 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	@SubscribeMessage('manageRooms')
 	async handleRoom(client: Socket, payload: string) {
 		const arr = payload.split(' ');
-		// check if db exist, if not create it
+		const user = await this.userService.findOne(arr[0]);
 		if (arr[1] == "ADD")
 		{
 			if (await this.roomService.findOne(arr[2]) == null)
-				this.roomService.createRoom(arr[2], 1); // TODO change with the user ID
+				await this.roomService.createRoom(arr[2], user.id);
 			else
-				this.roomService.addUser(arr[2], 1); // TODO change with the user ID
+				await this.roomService.addUser(arr[2], user.id);
 			this.server.emit(arr[2], arr[0] + " JOIN")
 		}
 		else if (arr[1] == "REMOVE")
 		{
-			this.roomService.removeUser(arr[2], 1);
+			await this.roomService.removeUser(arr[2], user.id);
 			this.server.emit(arr[2], arr[0] + " LEFT")
 		}
 	}
 
-	afterInit(server: Server) {
+	async afterInit(server: Server) {
 		console.log('Init');
 	}
 
-	handleDisconnect(client: Socket) {
+	async handleDisconnect(client: Socket) {
 		console.log(`Client disconnected: ${client.id}`);
+		// const user = await this.userService.findOneByClientId(client.id);
+
+		// user.status = userStatus.offline;
+		// this.roomService.removeUserFromRooms(user.id);
 		
 	}
 
-	handleConnection(client: Socket, ...args: any[]) {
+	async handleConnection(client: Socket, ...args: any[]) {
 		console.log(`Client connected: ${client.id}`);
 	}
 }

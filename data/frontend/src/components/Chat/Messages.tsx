@@ -1,10 +1,11 @@
 import React from 'react';
 
 type arg = {
-	messages: string[]
+	messages: string[],
+	role: string
 }
 
-export default function Messages({ messages }: arg) {
+export default function Messages({ messages, role }: arg) {
 	return (
 		<div className='messages'>
 		{
@@ -30,7 +31,19 @@ export default function Messages({ messages }: arg) {
 					</div>
 				);
 			}
-			return (<p key={ index }>{ message }</p>);
+			return (
+				<div key={ index } className='message'>
+					{
+						role != "none" ? (
+							<div className='options'>
+								<button>Kick</button>
+								<button>Ban</button>
+							</div>
+						) : ""
+					}
+					<p>{ message }</p>
+				</div>
+			);
 		}
 		)
 		}
