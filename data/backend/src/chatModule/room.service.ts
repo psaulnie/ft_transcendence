@@ -9,11 +9,13 @@ export class RoomService {
 	constructor(
 		@InjectRepository(Room)
 		private roomsRepository: Repository<Room>,
+		@InjectRepository(UsersList)
+		private usersListRepository: Repository<UsersList>
 	) {}
 
 	async findOne(name: string): Promise<Room>
 	{
-		return await (this.roomsRepository.findOne({ where: { roomName: name }, relations: ['usersID'] }));
+		return await (this.roomsRepository.findOne({ where: { roomName: name }, relations: ['usersID', 'blockedUsersID', 'adminsID'] }));
 	}
 
 	async findAll(): Promise<Room[]>
@@ -46,11 +48,16 @@ export class RoomService {
 	async addUser(roomName: string, userId: number): Promise<number>
 	{
 		const room = await this.findOne(roomName);
-
+		let rvalue = 0;
 		room.blockedUsersID.forEach(user => {
 			if (user.userId == userId)
-				return (-1);
+			{
+				rvalue = -1;
+				return ;
+			}
 		});
+		if (rvalue == -1)
+			return (rvalue);
 		const newEntry = new UsersList();
 		newEntry.userId = userId;
 		room.usersNumber += 1;
@@ -64,13 +71,13 @@ export class RoomService {
 		const room = await this.findOne(roomName);
 		if (!(room))
 			return ;
-		if (room.usersNumber - 1 <= 0)
+		room.usersNumber--;
+		if (room.usersNumber <= 0)
 		{
 			this.removeRoom(roomName);
 			return ;
 		}
-		room.usersNumber -= 1;
-		room.usersID = (await room).usersID.filter(user => user.userId !== userId);
+		room.usersID = room.usersID.filter(user => user.userId !== userId);
 		await this.roomsRepository.save(room);
 	}
 
@@ -82,7 +89,6 @@ export class RoomService {
 	async removeUserFromRooms(userId: number)
 	{
 		const rooms = this.findAll();
-
 		(await rooms).forEach(element => {
 			this.removeUser(element.roomName, userId);
 		});
@@ -91,7 +97,8 @@ export class RoomService {
 	async getRole(roomName: string, userId: number): Promise<string>
 	{
 		const room = await this.findOne(roomName);
-
+		if (room == null)
+			return ('none');
 		if (room.ownerID == userId)
 			return ("owner");
 		room.adminsID.forEach(admin => {
@@ -105,9 +112,8 @@ export class RoomService {
 	{
 		const room = await this.findOne(roomName);
 		const newBlockedUser = new UsersList();
-
 		newBlockedUser.userId = userID;
-		room.blockedUsersID.push(newBlockedUser);
+		room.blockedUsersID.push(await this.usersListRepository.save(newBlockedUser));
 		return await (this.roomsRepository.save(room));
 	}
 }

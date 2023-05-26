@@ -58,13 +58,15 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		if (arr[1] == "ADD")
 		{
 			if (await this.roomService.findOne(arr[2]) == null)
+			{
 				await this.roomService.createRoom(arr[2], user.id);
+			}
 			else
 			{
-				
-				if (await this.roomService.addUser(arr[2], user.id) == -1)
+				const nbr = await this.roomService.addUser(arr[2], user.id);
+				if (nbr == -1)
 				{
-					this.server.emit(arr[2], "BAN " + arr[1]);
+					this.server.emit(arr[0], "BAN " + arr[2]);
 					return ;
 				}
 			}
@@ -89,6 +91,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	async banUser(client: Socket, payload: string) {
 		const arr = payload.split(' ');
 		const user = await this.userService.findOne(arr[0]);
+		await this.roomService.addToBanList(arr[1], user.id);
 		await this.roomService.removeUser(arr[1], user.id);
 		this.server.emit(arr[0], "BAN " + arr[1]);
 	}
