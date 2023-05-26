@@ -13,8 +13,6 @@ export default function Messages({ messages, role, channelName }: arg) {
 		{
 			messages.map((message, index) => {
 				const arr = message.split(' ');
-				console.log("[" + message + "]");
-				console.log(arr);
 				if (arr[1] == "JOIN")
 				{
 					return(

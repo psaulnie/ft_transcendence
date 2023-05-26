@@ -9,8 +9,16 @@ export class UsersList {
 	@Column()
 	userId: number
 
-	@ManyToOne(() => Room, room => room.usersID)
+	@ManyToOne(() => Room, room => room.usersID, { onDelete: 'CASCADE' })
 	@JoinColumn()
 	room: Room
+
+	@ManyToOne(() => Room, room => room.adminsID, { onDelete: 'CASCADE' })
+	@JoinColumn()
+	adminRoom: Room
+
+	@ManyToOne(() => Room, room => room.blockedUsersID, { onDelete: 'CASCADE' })
+	@JoinColumn()
+	blockedRoom: Room
 
 }

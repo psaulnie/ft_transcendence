@@ -12,23 +12,22 @@ function Chat({ username }: arg) {
 	const [rooms, setRooms] = useState<string[]>([]);
 
 	useEffect(() => {
-	  function process(value: string) {
-		const arr = value.split(' ');
-		console.log(value);
-		if (arr[0] == "KICK")
-			removeRoom(arr[1]);
-		else if (arr[0] == "BAN")
-		{
-			removeRoom(arr[1]);
-			alert("You are banned from this channel: " + arr[1]);
+		function process(value: string) {
+			const arr = value.split(' ');
+
+			if (arr[0] == "KICK")
+				removeRoom(arr[1]);
+			else if (arr[0] == "BAN")
+			{
+				setRooms(rooms.filter(room => room !== arr[1]));
+				alert("You are banned from this channel: " + arr[1]);
+			}	
 		}
-			
-	  }
 	
-	  chatSocket.on(username, process);
-	  return () => {
-		chatSocket.off(username, process);
-	  };
+		chatSocket.on(username, process);
+		return () => {
+			chatSocket.off(username, process);
+	  	};
 	}, []);
 
 	useEffect(() => {
