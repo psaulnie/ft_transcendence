@@ -2,6 +2,8 @@ import React, { SyntheticEvent, useState, useEffect } from 'react';
 
 import Room from './Room';
 import { chatSocket } from '../../chatSocket';
+import { manageRoomsArgs } from './args.interface';
+import { manageRoomsTypes } from './args.types';
 
 type arg = {
 	username: string
@@ -16,7 +18,7 @@ function Chat({ username }: arg) {
 			const arr = value.split(' ');
 
 			if (arr[0] == "KICK")
-				removeRoom(arr[1]);
+				setRooms(rooms.filter(room => room !== arr[1]));
 			else if (arr[0] == "BAN")
 			{
 				setRooms(rooms.filter(room => room !== arr[1]));
@@ -42,7 +44,8 @@ function Chat({ username }: arg) {
 		if (!rooms.includes(newRoomName, 0))
 		{
 			setRooms(previous => [...previous, newRoomName]);
-			chatSocket.emit('manageRooms', username + " ADD " + newRoomName);
+			let	arg = { type: manageRoomsTypes.add, source: username, room: newRoomName, access: 0};
+			chatSocket.emit('manageRooms', arg);
 		}
 		else
 			alert("You are currently in this channel");
@@ -51,7 +54,8 @@ function Chat({ username }: arg) {
 	function removeRoom(roomName: string)
 	{
 		setRooms(rooms.filter(room => room !== roomName));
-		chatSocket.emit('manageRooms', username + " REMOVE " + roomName);
+		let	arg = { type: manageRoomsTypes.remove, source: username, room: roomName, access: 0};
+		chatSocket.emit('manageRooms', arg);
 	}
   
 

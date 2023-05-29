@@ -23,7 +23,7 @@ export class RoomService {
 		return await (this.roomsRepository.find());
 	}
 
-	async createRoom(name: string, ownerID: number): Promise<Room>
+	async createRoom(name: string, ownerID: number, access: number): Promise<Room>
 	{
 		const room = new Room();
 		const usersList = new UsersList();
@@ -33,6 +33,7 @@ export class RoomService {
 		room.roomName = name;
 		room.ownerID = ownerID;
 		room.usersNumber = 1;
+		room.access = access;
 		room.password = "";
 		if (!room.usersID)
 			room.usersID = [];
