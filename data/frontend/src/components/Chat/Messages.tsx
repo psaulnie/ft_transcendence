@@ -38,8 +38,8 @@ export default function Messages({ messages, role, channelName }: arg) {
 						{
 							role != "none" ? (
 								<div className='options'>
-									<button onClick={ () => { chatSocket.emit("kick", message.split(':')[0] + " " + channelName) } } >Kick</button>
-									<button onClick={ () => { chatSocket.emit("ban", message.split(':')[0] + " " + channelName) } } >Ban</button>
+									<button onClick={ () => { chatSocket.emit("kick", { source: '', target: message.split(':')[0], room: channelName }) } } >Kick</button>
+									<button onClick={ () => { chatSocket.emit("ban", { source: '', target: message.split(':')[0], room: channelName })  } } >Ban</button>
 								</div>
 							) : ""
 						}

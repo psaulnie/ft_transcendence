@@ -11,6 +11,9 @@ export class Room {
 	roomName: string
 
 	@Column()
+	access: number
+
+	@Column()
 	password: string
 
 	@Column()
