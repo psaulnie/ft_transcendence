@@ -14,6 +14,7 @@ import { userStatus } from 'src/chatModule/userStatus';
 
 import { manageRoomsArgs, banArgs, kickArgs, sendMsgArgs } from './args.interface';
 import { manageRoomsTypes, sendMsgTypes } from './args.types';
+import { accessStatus } from 'src/chatModule/accessStatus';
 
 @WebSocketGateway({
 	cors: { origin: '*' },
@@ -67,8 +68,12 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 					this.server.emit(payload.source, "BAN " + payload.room);
 					return ;
 				}
+				if (nbr == accessStatus.private)
+				{
+					this.server.emit(payload.source, "PRIVATE " + payload.room);
+					return ;
+				}
 			}
-			console.log(payload);
 			this.server.emit(payload.room, payload.source + " JOIN")
 		}
 		else if (payload.type == manageRoomsTypes.remove)
@@ -80,7 +85,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
 	@SubscribeMessage('kick')
 	async kickUser(client: Socket, payload: kickArgs) {
-		console.log(payload);
 		const user = await this.userService.findOne(payload.target);
 		await this.roomService.removeUser(payload.room, user.id);
 		this.server.emit(payload.target, "KICK " + payload.room);

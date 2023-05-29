@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Room } from 'src/entities/room.entity';
 import { UsersList } from 'src/entities/usersList.entity';
 import { Repository } from 'typeorm';
+import { accessStatus } from './accessStatus';
 
 @Injectable()
 export class RoomService {
@@ -50,6 +51,10 @@ export class RoomService {
 	{
 		const room = await this.findOne(roomName);
 		let rvalue = 0;
+		if (room.access == accessStatus.private)
+		{
+			return (accessStatus.private);
+		}
 		room.blockedUsersID.forEach(user => {
 			if (user.userId == userId)
 			{
@@ -64,7 +69,7 @@ export class RoomService {
 		room.usersNumber += 1;
 		room.usersID.push(newEntry);
 		await this.roomsRepository.save(room);
-		return (0);
+		return (accessStatus.public);
 	}
 
 	async removeUser(roomName: string, userId: number)
