@@ -2,8 +2,8 @@ import React, { SyntheticEvent, useState, useEffect } from 'react';
 
 import Room from './Room';
 import { chatSocket } from '../../chatSocket';
-import { manageRoomsArgs } from './args.interface';
-import { manageRoomsTypes } from './args.types';
+import { chatResponseArgs, manageRoomsArgs } from './args.interface';
+import { actionTypes, manageRoomsTypes } from './args.types';
 import { accessStatus } from './accessStatus';
 
 type arg = {
@@ -16,23 +16,21 @@ function Chat({ username }: arg) {
 	const [access, setAccess] = useState(accessStatus.public);
 
 	useEffect(() => {
-		function process(value: string) {
-			const arr = value.split(' ');
-
-			if (arr[0] == "KICK")
+		function process(value: chatResponseArgs) {
+			if (value.action == actionTypes.kick)
 			{
-				setRooms(rooms.filter(room => room !== arr[1]));
-				alert("You've been kicked from this channel: " + arr[1]);
+				setRooms(rooms.filter(room => room !== value.target));
+				alert("You've been kicked from this channel: " + value.target);
 			}
-			else if (arr[0] == "BAN")
+			else if (value.action == actionTypes.ban)
 			{
-				setRooms(rooms.filter(room => room !== arr[1]));
-				alert("You are banned from this channel: " + arr[1]);
+				setRooms(rooms.filter(room => room !== value.target));
+				alert("You are banned from this channel: " + value.target);
 			}
-			else if (arr[0] == "PRIVATE")
+			else if (value.action == actionTypes.private)
 			{
-				setRooms(rooms.filter(room => room !== arr[1]));
-				alert("You cannot join this private channel: " + arr[1]);
+				setRooms(rooms.filter(room => room !== value.target));
+				alert("You cannot join this private channel: " + value.target);
 			}
 		}
 	

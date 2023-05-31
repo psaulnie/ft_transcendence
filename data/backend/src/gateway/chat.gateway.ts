@@ -13,7 +13,7 @@ import { UserService } from 'src/chatModule/user.service';
 import { userStatus } from 'src/chatModule/userStatus';
 
 import { manageRoomsArgs, banArgs, kickArgs, sendMsgArgs } from './args.interface';
-import { manageRoomsTypes, sendMsgTypes } from './args.types';
+import { actionTypes, manageRoomsTypes, sendMsgTypes } from './args.types';
 import { accessStatus } from 'src/chatModule/accessStatus';
 
 @WebSocketGateway({
@@ -47,6 +47,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	async handleMessage(client: Socket, payload: sendMsgArgs) {
 		if (payload.type == sendMsgTypes.msg)
 		{
+			this.server.emit(payload.target, { source: payload.source , target: payload.target, action: actionTypes.msg, data: payload.data })
 			this.server.emit(payload.target, payload.source + ': ' + payload.data);
 		}
 	}
@@ -65,21 +66,21 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 				const nbr = await this.roomService.addUser(payload.room, user.id);
 				if (nbr == -1)
 				{
-					this.server.emit(payload.source, "BAN " + payload.room);
+					this.server.emit(payload.source, { source: payload.source, target: payload.room, action: actionTypes.ban })
 					return ;
 				}
 				if (nbr == accessStatus.private)
 				{
-					this.server.emit(payload.source, "PRIVATE " + payload.room);
+					this.server.emit(payload.source, { source: payload.source, target: payload.room, action: actionTypes.private })
 					return ;
 				}
 			}
-			this.server.emit(payload.room, payload.source + " JOIN")
+			this.server.emit(payload.room, { source: payload.source, target: payload.room, action: actionTypes.join })
 		}
 		else if (payload.type == manageRoomsTypes.remove)
 		{
 			await this.roomService.removeUser(payload.room, user.id);
-			this.server.emit(payload.room, payload.source + " LEFT")
+			this.server.emit(payload.room, { source: payload.source, target: payload.room, action: actionTypes.left })
 		}
 	}
 
@@ -87,7 +88,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	async kickUser(client: Socket, payload: kickArgs) {
 		const user = await this.userService.findOne(payload.target);
 		await this.roomService.removeUser(payload.room, user.id);
-		this.server.emit(payload.target, "KICK " + payload.room);
+		this.server.emit(payload.target, { source: payload.source, target: payload.room, action: actionTypes.kick })
 	}
 
 	@SubscribeMessage('ban')
@@ -95,7 +96,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		const user = await this.userService.findOne(payload.target);
 		await this.roomService.addToBanList(payload.room, user.id);
 		await this.roomService.removeUser(payload.room, user.id);
-		this.server.emit(payload.target, "BAN " + payload.room);
+		this.server.emit(payload.room, { source: payload.source, target: payload.room, action: actionTypes.ban })
 	}
 
 	async afterInit(server: Server) {
