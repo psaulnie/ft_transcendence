@@ -4,7 +4,7 @@ import Messages from './Messages';
 import InputForm from './InputForm';
 
 import { chatSocket } from '../../chatSocket';
-import { chatResponseArgs } from './args.interface';
+import { chatResponseArgs } from '../../../../shared/args.interface';
 
 type arg = {
 	username: string

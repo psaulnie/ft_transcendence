@@ -2,6 +2,8 @@ FROM node:latest
 
 WORKDIR /app
 
+RUN mkdir /shared
+
 COPY entrypoint.sh ../
 
 RUN chmod +x ../entrypoint.sh

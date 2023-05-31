@@ -1,7 +1,7 @@
 import React from 'react';
 import { chatSocket } from '../../chatSocket';
-import { chatResponseArgs } from './args.interface';
-import { actionTypes } from './args.types';
+import { chatResponseArgs } from '../../../../shared/args.interface';
+import { actionTypes } from '../../../../shared/args.types';
 
 type arg = {
 	messages: chatResponseArgs[],
