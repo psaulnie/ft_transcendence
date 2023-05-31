@@ -22,5 +22,5 @@
   },
   "include": [
     "src"
-, "../shared/args.interface.ts", "../shared/accessStatus.ts"  ]
+  ]
 }

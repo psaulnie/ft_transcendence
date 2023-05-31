@@ -12,9 +12,9 @@ import { RoomService } from 'src/chatModule/room.service';
 import { UserService } from 'src/chatModule/user.service';
 import { userStatus } from 'src/chatModule/userStatus';
 
-import { manageRoomsArgs, banArgs, kickArgs, sendMsgArgs } from '../../../shared/args.interface';
-import { actionTypes, manageRoomsTypes, sendMsgTypes } from '../../../shared/args.types';
-import { accessStatus } from '../../../shared/accessStatus';
+import { manageRoomsArgs, banArgs, kickArgs, sendMsgArgs } from './args.interface';
+import { actionTypes, manageRoomsTypes, sendMsgTypes } from './args.types';
+import { accessStatus } from 'src/chatModule/accessStatus';
 
 @WebSocketGateway({
 	cors: { origin: '*' },

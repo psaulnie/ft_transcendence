@@ -2,9 +2,9 @@ import React, { SyntheticEvent, useState, useEffect } from 'react';
 
 import Room from './Room';
 import { chatSocket } from '../../chatSocket';
-import { chatResponseArgs, manageRoomsArgs } from '../../../../shared/args.interface';
-import { actionTypes, manageRoomsTypes } from '../../../../shared/args.types';
-import { accessStatus } from '../../../../shared/accessStatus';
+import { chatResponseArgs, manageRoomsArgs } from './args.interface';
+import { actionTypes, manageRoomsTypes } from './args.types';
+import { accessStatus } from './accessStatus';
 
 type arg = {
 	username: string

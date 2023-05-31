@@ -1,7 +1,7 @@
 import React, { KeyboardEvent, SyntheticEvent, useState } from 'react';
 import { chatSocket } from '../../chatSocket';
-import { sendMsgArgs } from '../../../../shared/args.interface';
-import { sendMsgTypes } from '../../../../shared/args.types';
+import { sendMsgArgs } from './args.interface';
+import { sendMsgTypes } from './args.types';
 
 type arg = {
 	username: string

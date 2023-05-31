@@ -21,7 +21,6 @@ services:
       - "3000:3000"
     volumes:
       - ./data/frontend:/app
-      - ./data/shared:/shared
     networks:
       - ft_transcendence
     # restart: on-failure
@@ -37,7 +36,6 @@ services:
       - "5000:5000" # try without it
     volumes:
       - ./data/backend:/app
-      - ./data/shared:/shared
     networks:
       - ft_transcendence
     # restart: on-failure

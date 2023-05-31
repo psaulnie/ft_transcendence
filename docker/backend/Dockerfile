@@ -2,7 +2,6 @@ FROM node:latest
 
 WORKDIR /app
 
-RUN mkdir /shared
 #check if needed
 RUN npm install --save-dev @nestjs/typeorm typeorm
 RUN npm install --save-dev @nestjs/websockets @nestjs/platform-socket.io
