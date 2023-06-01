@@ -45,10 +45,11 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
 	@SubscribeMessage('sendMsg')
 	async handleMessage(client: Socket, payload: sendMsgArgs) {
+		console.log(payload);
 		if (payload.type == sendMsgTypes.msg)
 		{
 			this.server.emit(payload.target, { source: payload.source , target: payload.target, action: actionTypes.msg, data: payload.data })
-			this.server.emit(payload.target, payload.source + ': ' + payload.data);
+			// this.server.emit(payload.target, payload.source + ': ' + payload.data);
 		}
 	}
 
@@ -80,6 +81,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		else if (payload.type == manageRoomsTypes.remove)
 		{
 			await this.roomService.removeUser(payload.room, user.id);
+			console.log({ source: payload.source, target: payload.room, action: actionTypes.left });
 			this.server.emit(payload.room, { source: payload.source, target: payload.room, action: actionTypes.left })
 		}
 	}

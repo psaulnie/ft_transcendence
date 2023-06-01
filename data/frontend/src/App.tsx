@@ -18,7 +18,7 @@ function App() {
 	function onSubmit(e: SyntheticEvent)
 	{
 		e.preventDefault();
-		if (username != '')
+		if (username !== '')
 			setShowChat(true);
 	}
 

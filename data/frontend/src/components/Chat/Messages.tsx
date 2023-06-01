@@ -16,7 +16,7 @@ export default function Messages({ messages, role, channelName }: arg) {
 			messages.map((message, index) => {
 				// const arr = message.split(' ');
 
-				if (message.action == actionTypes.join)
+				if (message.action === actionTypes.join)
 				{
 					return(
 						<div key={ index } className='userJoined'> {/*the three paragraphs must be on the same line*/}
@@ -26,7 +26,7 @@ export default function Messages({ messages, role, channelName }: arg) {
 						</div>
 					);
 				}
-				else if (message.action == actionTypes.left)
+				else if (message.action === actionTypes.left)
 				{
 					return(
 						<div key={ index } className='userLeft'> {/*the three paragraphs must be on the same line*/}
@@ -36,12 +36,12 @@ export default function Messages({ messages, role, channelName }: arg) {
 						</div>
 					);
 				}
-				else if (message.action == actionTypes.msg)
+				else if (message.action === actionTypes.msg)
 				{
 					return (
 						<div key={ index } className='message'>
 							{
-								role != "none" ? (
+								role !== "none" ? (
 									<div className='options'>
 										<button onClick={ () => { chatSocket.emit("kick", { source: '', target: message.source, room: channelName }) } } >Kick</button>
 										<button onClick={ () => { chatSocket.emit("ban", { source: '', target: message.source, room: channelName })  } } >Ban</button>
@@ -53,6 +53,8 @@ export default function Messages({ messages, role, channelName }: arg) {
 						</div>
 					);
 				}
+				else
+					return ('');
 			}
 		)
 		}
