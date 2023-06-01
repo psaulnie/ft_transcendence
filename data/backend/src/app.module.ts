@@ -6,6 +6,8 @@ import { AppService } from './app.service';
 
 import { ChatModule } from './chatModule/chat.module';
 import { ChatGateway } from './gateway/chat.gateway'
+import { AuthModuleModule } from './auth-module/auth-module.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -22,6 +24,8 @@ import { ChatGateway } from './gateway/chat.gateway'
 		autoLoadEntities: true,
 	}),
 	ChatModule,
+	AuthModuleModule,
+	UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -5,11 +5,11 @@ import {
 	WebSocketServer,
 	OnGatewayConnection,
 	OnGatewayDisconnect,
-   } from '@nestjs/websockets';
+} from '@nestjs/websockets';
 
 import { Socket, Server } from 'socket.io';
 import { RoomService } from 'src/chatModule/room.service';
-import { UserService } from 'src/chatModule/user.service';
+import { UsersService } from 'src/users/users.service';
 import { userStatus } from 'src/chatModule/userStatus';
 
 import { manageRoomsArgs, banArgs, kickArgs, sendMsgArgs } from './args.interface';
@@ -24,20 +24,18 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
 	constructor(
 		private roomService: RoomService,
-		private userService: UserService,
-	) {}
+		private userService: UsersService,
+	) { }
 	@WebSocketServer() server: Server;
 
 	@SubscribeMessage('newUser')
 	async createUser(client: Socket, payload: string) {
 		const user = await this.userService.findOne(payload);
-		if (user == null)
-		{
+		if (user == null) {
 			console.log("New user: " + payload);
 			await this.userService.createUser(payload, client.id);
 		}
-		else
-		{
+		else {
 			user.clientId = client.id;
 			user.status = userStatus.online;
 		}
@@ -45,8 +43,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
 	@SubscribeMessage('sendMsg')
 	async handleMessage(client: Socket, payload: sendMsgArgs) {
-		if (payload.type == sendMsgTypes.msg)
-		{
+		if (payload.type == sendMsgTypes.msg) {
 			this.server.emit(payload.target, payload.source + ': ' + payload.data);
 		}
 	}
@@ -54,30 +51,24 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	@SubscribeMessage('manageRooms')
 	async handleRoom(client: Socket, payload: manageRoomsArgs) {
 		const user = await this.userService.findOne(payload.source);
-		if (payload.type == manageRoomsTypes.add)
-		{
-			if (await this.roomService.findOne(payload.room) == null)
-			{
+		if (payload.type == manageRoomsTypes.add) {
+			if (await this.roomService.findOne(payload.room) == null) {
 				await this.roomService.createRoom(payload.room, user.id, payload.access);
 			}
-			else
-			{
+			else {
 				const nbr = await this.roomService.addUser(payload.room, user.id);
-				if (nbr == -1)
-				{
+				if (nbr == -1) {
 					this.server.emit(payload.source, "BAN " + payload.room);
-					return ;
+					return;
 				}
-				if (nbr == accessStatus.private)
-				{
+				if (nbr == accessStatus.private) {
 					this.server.emit(payload.source, "PRIVATE " + payload.room);
-					return ;
+					return;
 				}
 			}
 			this.server.emit(payload.room, payload.source + " JOIN")
 		}
-		else if (payload.type == manageRoomsTypes.remove)
-		{
+		else if (payload.type == manageRoomsTypes.remove) {
 			await this.roomService.removeUser(payload.room, user.id);
 			this.server.emit(payload.room, payload.source + " LEFT")
 		}
@@ -108,7 +99,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
 		// user.status = userStatus.offline;
 		// this.roomService.removeUserFromRooms(user.id);
-		
+
 	}
 
 	async handleConnection(client: Socket, ...args: any[]) {

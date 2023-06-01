@@ -11,7 +11,7 @@ import { Achievements } from '../entities/achievements.entity';
 
 import { ChatController } from './chat.controller';
 import { RoomService } from './room.service';
-import { UserService } from './user.service';
+import { UsersService } from '../users/users.service';
 
 import { ChatGateway } from 'src/gateway/chat.gateway';
 
@@ -25,6 +25,6 @@ import { ChatGateway } from 'src/gateway/chat.gateway';
 		MatchHistory,
 		Achievements])],
 	controllers: [ChatController],
-	providers: [RoomService, UserService, ChatGateway],
+	providers: [RoomService, UsersService, ChatGateway],
 })
-export class ChatModule {}
+export class ChatModule { }
