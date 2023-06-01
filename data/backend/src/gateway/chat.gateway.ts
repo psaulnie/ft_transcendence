@@ -38,8 +38,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		}
 		else
 		{
-			user.clientId = client.id;
-			user.status = userStatus.online;
+			this.userService.updateClientID(user, client.id);
 		}
 	}
 
@@ -56,6 +55,10 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	@SubscribeMessage('manageRooms')
 	async handleRoom(client: Socket, payload: manageRoomsArgs) {
 		const user = await this.userService.findOne(payload.source);
+		if (client.id != user.clientId)
+		{
+			await this.userService.updateClientID(user, client.id);
+		}
 		if (payload.type == manageRoomsTypes.add)
 		{
 			if (await this.roomService.findOne(payload.room) == null)
@@ -107,11 +110,17 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
 	async handleDisconnect(client: Socket) {
 		console.log(`Client disconnected: ${client.id}`); // TODO fix clientId update
-		// const user = await this.userService.findOneByClientId(client.id);
-
-		// user.status = userStatus.offline;
+		const user = await this.userService.findOneByClientId(client.id);
+		if (!user)
+			return ;
+		console.log(user);
+		user.status = userStatus.offline;
 		// this.roomService.removeUserFromRooms(user.id);
-		
+		const rooms = await this.roomService.findAll();
+		rooms.forEach(element => {
+			this.roomService.removeUser(element.roomName, user.id);
+			this.server.emit(element.roomName, { source: user.username, target: element.roomName, action: actionTypes.left })
+		});
 	}
 
 	async handleConnection(client: Socket, ...args: any[]) {

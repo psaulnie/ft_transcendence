@@ -55,4 +55,11 @@ export class UserService {
 	{
 		return await (this.usersRepository.delete({username: name}));
 	}
+
+	async updateClientID(user: User, newID: string)
+	{
+		user.clientId = newID;
+		user.status = userStatus.online;
+		this.usersRepository.save(user);
+	}
 }
