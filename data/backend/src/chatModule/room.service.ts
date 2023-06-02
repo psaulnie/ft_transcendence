@@ -103,13 +103,11 @@ export class RoomService {
 	async getRole(roomName: string, userId: number): Promise<string>
 	{
 		const room = await this.findOne(roomName);
-		if (room == null)
-			return ('none');
 		if (room.ownerID == userId)
 			return ("owner");
 		room.adminsID.forEach(admin => {
 			if (admin.userId == userId)
-				return (admin);
+				return ("admin");
 		});
 		return ("none");
 	}

@@ -15,10 +15,9 @@ function App() {
 	{
 		e.preventDefault();
 		dispatch(setUsername(e.currentTarget.value));
-		console.log(user.username);
 	}
 
-	function onSubmit(e: SyntheticEvent)
+	function onSubmit(e: React.FormEvent)
 	{
 		e.preventDefault();
 		if (user.username !== '')
@@ -37,7 +36,7 @@ function App() {
 		<div className='main'>
 			<form onSubmit={onSubmit}>
 				<p>Username:</p>
-				<input value={user.username || ''} onChange={ onChange } />
+				<input name="username" value={user.username || ''} onChange={ onChange } />
 				<button>Login</button>
 			</form>
 			{user.isLoggedIn ? <button onClick={logoutButton}>Logout</button> : null}

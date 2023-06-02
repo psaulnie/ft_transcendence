@@ -5,6 +5,7 @@ import InputForm from './InputForm';
 
 import { chatSocket } from '../../chatSocket';
 import { chatResponseArgs } from './args.interface';
+import { useGetRoleQuery } from '../../store/api';
 
 type arg = {
 	username: string
@@ -13,7 +14,7 @@ type arg = {
 
 function Room({ username, channelName }: arg) {
 	const [messageSent, setMsg] = useState<chatResponseArgs[]>([]);
-	const [role, setRole] = useState('none');
+	// const [role, setRole] = useState('none');
 
 	useEffect(() => {
 	  function onMsgSent(value: chatResponseArgs) {
@@ -26,26 +27,46 @@ function Room({ username, channelName }: arg) {
 	  };
 	}, [channelName]);
 
-	const fetchUserData = () => {
-		fetch("http://localhost:5000/api/chat/role?username=" + username + "&roomName=" + channelName)
-			.then(response => {
-				return response.text()
-			  })
-			  .then(data => {
-				setRole(data)
-			  })
-		  }
-		
-		  useEffect(() => {
-			fetchUserData()
-		  });
+	const {
+		data: role,
+		isLoading,
+		isSuccess,
+		isError,
+		error
+	} = useGetRoleQuery({username, channelName})
 
+	// const fetchUserData = () => {
+	// 	fetch("http://localhost:5000/api/chat/role?username=" + username + "&roomName=" + channelName)
+	// 		.then(response => {
+	// 			return response.text()
+	// 		  })
+	// 		  .then(data => {
+	// 			setRole(data)
+	// 		  })
+	// 	  }
+		
+	// 	  useEffect(() => {
+	// 		fetchUserData()
+	// 	  });
+
+	let content;
+
+	if (isSuccess)
+	{
+		content = (
+			<Messages messages={ messageSent } role={ role.data } channelName={ channelName } />)
+	}
+	else if (isError)
+		return (<p>Error: {error.toString()}</p>)
+	else if (isLoading)
+		return (<p>Loading...</p>);
+		
 	return (
 		<div className="chat">
-			<Messages messages={ messageSent } role={ role } channelName={ channelName } />
+			{ content }
 			<InputForm username={ username } channelName={ channelName } />
 		</div>
-	)
+	);
 }
 
 export default Room;
