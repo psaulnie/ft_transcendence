@@ -4,22 +4,28 @@ import { SyntheticEvent, useState } from 'react';
 // Components
 import Navigation from './components/Navigation/Navigation';
 import Chat from './components/Chat/Chat';
+import { useSelector, useDispatch } from 'react-redux';
+import { login, logout, setUsername } from './store/user';
 
 function App() {
-	const [username, setUsername] = useState('');
-	const [showChat, setShowChat] = useState(false);
+	const user = useSelector((state: any) => state.user);
+	const dispatch = useDispatch();
 
-	function onChange(e: React.FormEvent<HTMLInputElement>)
+	// const [showChat, setShowChat] = useState(false);
+
+	function onChange(e: React.ChangeEvent<HTMLInputElement>)
 	{
 		e.preventDefault();
-		setUsername(e.currentTarget.value);
+		dispatch(setUsername(e.currentTarget.value));
+		console.log(user.tmpUsername);
+		// setUsername(e.currentTarget.value);
 	}
 
 	function onSubmit(e: SyntheticEvent)
 	{
 		e.preventDefault();
-		if (username !== '')
-			setShowChat(true);
+		if (user.tmpUsername !== '')
+			dispatch(login());
 	}
 
 	return (
@@ -28,13 +34,12 @@ function App() {
 		<div className='main'>
 			<form onSubmit={onSubmit}>
 				<p>Username:</p>
-				<input value={username} onChange={ onChange } />
-				<button>Submit</button>
+				<input value={user.tmpUsername || ''} onChange={ onChange } />
+				<button>Login</button>
 			</form>
-		{
-			showChat ? (<Chat username={username} />) : ''
-		}
-		{/* TODO add Game component*/}
+			{
+				user.isLoggedIn ? (<Chat username={user.username} />) : ''
+			}
 		</div>
 	</div>
 	);
