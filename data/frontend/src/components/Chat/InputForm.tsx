@@ -24,7 +24,7 @@ export default function Room({ username, channelName }: arg) {
 
   function keyPress(event: KeyboardEvent<HTMLButtonElement>) {
 	event.preventDefault();
-	if (event.key == 'Enter' && value.data != '')
+	if (event.key == 'Enter' && value.data !== '')
 		send();
   }
 

@@ -4,6 +4,7 @@ import Messages from './Messages';
 import InputForm from './InputForm';
 
 import { chatSocket } from '../../chatSocket';
+import { chatResponseArgs } from './args.interface';
 
 type arg = {
 	username: string
@@ -11,11 +12,11 @@ type arg = {
 }
 
 function Room({ username, channelName }: arg) {
-	const [messageSent, setMsg] = useState<string[]>([]);
+	const [messageSent, setMsg] = useState<chatResponseArgs[]>([]);
 	const [role, setRole] = useState('none');
 
 	useEffect(() => {
-	  function onMsgSent(value: string) {
+	  function onMsgSent(value: chatResponseArgs) {
 		setMsg(previous => [...previous, value]);
 	  }
 	
@@ -23,7 +24,7 @@ function Room({ username, channelName }: arg) {
 	  return () => {
 		chatSocket.off(channelName, onMsgSent);
 	  };
-	}, []);
+	}, [channelName]);
 
 	const fetchUserData = () => {
 		fetch("http://localhost:5000/api/chat/role?username=" + username + "&roomName=" + channelName)
@@ -37,7 +38,8 @@ function Room({ username, channelName }: arg) {
 		
 		  useEffect(() => {
 			fetchUserData()
-		  }, []);
+		  });
+
 	return (
 		<div className="chat">
 			<Messages messages={ messageSent } role={ role } channelName={ channelName } />

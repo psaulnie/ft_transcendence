@@ -23,3 +23,10 @@ export interface banArgs {
 	target: string,
 	room: string
 }
+
+export interface chatResponseArgs {
+	source: string,
+	target: string,
+	action: number,
+	data: string
+}

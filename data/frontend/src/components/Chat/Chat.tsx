@@ -1,9 +1,9 @@
-import React, { SyntheticEvent, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import Room from './Room';
 import { chatSocket } from '../../chatSocket';
-import { manageRoomsArgs } from './args.interface';
-import { manageRoomsTypes } from './args.types';
+import { chatResponseArgs } from './args.interface';
+import { actionTypes, manageRoomsTypes } from './args.types';
 import { accessStatus } from './accessStatus';
 
 type arg = {
@@ -16,23 +16,21 @@ function Chat({ username }: arg) {
 	const [access, setAccess] = useState(accessStatus.public);
 
 	useEffect(() => {
-		function process(value: string) {
-			const arr = value.split(' ');
-
-			if (arr[0] == "KICK")
+		function process(value: chatResponseArgs) {
+			if (value.action === actionTypes.kick)
 			{
-				setRooms(rooms.filter(room => room !== arr[1]));
-				alert("You've been kicked from this channel: " + arr[1]);
+				setRooms(rooms.filter(room => room !== value.target));
+				alert("You've been kicked from this channel: " + value.target);
 			}
-			else if (arr[0] == "BAN")
+			else if (value.action === actionTypes.ban)
 			{
-				setRooms(rooms.filter(room => room !== arr[1]));
-				alert("You are banned from this channel: " + arr[1]);
+				setRooms(rooms.filter(room => room !== value.target));
+				alert("You are banned from this channel: " + value.target);
 			}
-			else if (arr[0] == "PRIVATE")
+			else if (value.action === actionTypes.private)
 			{
-				setRooms(rooms.filter(room => room !== arr[1]));
-				alert("You cannot join this private channel: " + arr[1]);
+				setRooms(rooms.filter(room => room !== value.target));
+				alert("You cannot join this private channel: " + value.target);
 			}
 		}
 	
@@ -40,22 +38,22 @@ function Chat({ username }: arg) {
 		return () => {
 			chatSocket.off(username, process);
 	  	};
-	}, []);
+	}, [rooms, username]);
 
 	useEffect(() => {
 		chatSocket.emit("newUser", username);
-	}, []);
+	}, [username]);
 
 	function updateNewRoomName(e: React.FormEvent<HTMLInputElement>) { setNewRoomName(e.currentTarget.value); }
 
 	function changeAccess(event: React.FormEvent<HTMLSelectElement>)
 	{
 		event.preventDefault();
-		if (event.currentTarget.value == "public")
+		if (event.currentTarget.value === "public")
 			setAccess(accessStatus.public);
-		else if (event.currentTarget.value == "private")
+		else if (event.currentTarget.value === "private")
 			setAccess(accessStatus.private);
-		else if (event.currentTarget.value == "password")
+		else if (event.currentTarget.value === "password")
 			setAccess(accessStatus.protected);
 	}
 
@@ -75,8 +73,7 @@ function Chat({ username }: arg) {
 	function removeRoom(roomName: string)
 	{
 		setRooms(rooms.filter(room => room !== roomName));
-		let	arg = { type: manageRoomsTypes.remove, source: username, room: roomName, access: access};
-		chatSocket.emit('manageRooms', arg);
+		chatSocket.emit('manageRooms', { type: manageRoomsTypes.remove, source: username, room: roomName, access: access});
 	}
   
 
@@ -91,12 +88,12 @@ function Chat({ username }: arg) {
 					<option value="private">Private</option>
 					<option value="password">Password-protected</option>
 				</select>
-				<button id='rooms' name='rooms' >+</button>
+				<button id='rooms' name='rooms'>+</button>
 			</form>
 			<p>------------------------------------------------</p>
 			<div className='rooms'>
-				{rooms.map((room, index) =>
-					<div key={index}>
+				{rooms.map((room) =>
+					<div key={room}>
 						<p>{room}: </p>
 						<Room username={username} channelName={room} />
 						<button onClick={ () => { removeRoom(room) } }>x</button>
