@@ -1,15 +1,13 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 interface UserState {
-	tmpUsername: string
 	username: string
 	isLoggedIn: boolean
 }
 
-const initialUser: UserState = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user') || '{}') : { tmpUsername: "", username: "", isLoggedIn: false }
+const initialUser: UserState = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user') || '{}') : { username: "", isLoggedIn: false }
 
 const initialState: UserState = {
-	tmpUsername: initialUser.tmpUsername,
 	username: initialUser.username,
 	isLoggedIn: initialUser.isLoggedIn
 }
@@ -19,7 +17,6 @@ export const userSlice = createSlice({
   initialState,
   reducers: {
 	login: (state) => {
-		state.username = state.tmpUsername;
 		state.isLoggedIn = true;
 		localStorage.setItem('user', JSON.stringify(state))
 	},
@@ -29,7 +26,7 @@ export const userSlice = createSlice({
 		localStorage.removeItem('user');
 	},
 	setUsername: (state, action: PayloadAction<string>) => {
-		state.tmpUsername = action.payload;
+		state.username = action.payload;
 	}
   },
 })
