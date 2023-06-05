@@ -13,5 +13,6 @@ export enum actionTypes {
 	kick,
 	ban,
 	private,
-	msg
+	msg,
+	block
 }

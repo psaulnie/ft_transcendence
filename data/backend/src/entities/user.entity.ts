@@ -1,5 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany, AfterLoad } from 'typeorm';
-import { UsersList } from './usersList.entity';
+import { BlockedUsersList } from './blockedUsersList';
 
 @Entity({ name: 'User' })
 export class User {
@@ -28,8 +28,8 @@ export class User {
 	@Column()
 	avatar: string
 
-	@OneToMany(() => UsersList, usersList => usersList.room, { cascade: true })
-	blockedUsersID: UsersList[]
+	@OneToMany(() => BlockedUsersList, usersList => usersList.user, { cascade: true })
+	blockedUsersID: BlockedUsersList[]
 
 	@AfterLoad()
 	async nullCheck() {

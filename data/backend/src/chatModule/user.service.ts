@@ -3,12 +3,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
 import { userStatus } from './userStatus';
+import { BlockedUsersList } from 'src/entities/blockedUsersList';
 
 @Injectable()
 export class UserService {
 	constructor(
 		@InjectRepository(User)
 		private usersRepository: Repository<User>,
+		@InjectRepository(BlockedUsersList)
+		private blockedUsersRepository: Repository<BlockedUsersList>
 	) {}
 
 	async findOne(name: string): Promise<User>
@@ -61,5 +64,13 @@ export class UserService {
 		user.clientId = newID;
 		user.status = userStatus.online;
 		this.usersRepository.save(user);
+	}
+
+	async blockUser(user: User, blockedUserID: number)
+	{ 
+		const newEntry = new BlockedUsersList();
+		newEntry.userId = blockedUserID;
+		user.blockedUsersID.push(newEntry);
+		await this.usersRepository.save(user);
 	}
 }

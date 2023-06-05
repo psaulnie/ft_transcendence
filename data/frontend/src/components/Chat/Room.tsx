@@ -6,15 +6,12 @@ import InputForm from './InputForm';
 import { chatSocket } from '../../chatSocket';
 import { chatResponseArgs } from './args.interface';
 import { useGetRoleQuery } from '../../store/api';
+import { useSelector } from 'react-redux';
 
-type arg = {
-	username: string
-	channelName: string
-}
-
-function Room({ username, channelName }: arg) {
+function Room({channelName}: {channelName: string}) {
+	const user = useSelector((state: any) => state.user);
 	const [messageSent, setMsg] = useState<chatResponseArgs[]>([]);
-	// const [role, setRole] = useState('none');
+	let content;
 
 	useEffect(() => {
 	  function onMsgSent(value: chatResponseArgs) {
@@ -33,30 +30,15 @@ function Room({ username, channelName }: arg) {
 		isSuccess,
 		isError,
 		error
-	} = useGetRoleQuery({username, channelName})
+	} = useGetRoleQuery({username: user.username, channelName: channelName})
 
-	// const fetchUserData = () => {
-	// 	fetch("http://localhost:5000/api/chat/role?username=" + username + "&roomName=" + channelName)
-	// 		.then(response => {
-	// 			return response.text()
-	// 		  })
-	// 		  .then(data => {
-	// 			setRole(data)
-	// 		  })
-	// 	  }
-		
-	// 	  useEffect(() => {
-	// 		fetchUserData()
-	// 	  });
-
-	let content;
 
 	if (isSuccess)
 	{
 		content = (
 			<Messages messages={ messageSent } role={ role.data } channelName={ channelName } />)
 	}
-	else if (isError)
+	else if (isError) // TODO fix show real error page (make Error component)
 		return (<p>Error: {error.toString()}</p>)
 	else if (isLoading)
 		return (<p>Loading...</p>);
@@ -64,7 +46,7 @@ function Room({ username, channelName }: arg) {
 	return (
 		<div className="chat">
 			{ content }
-			<InputForm username={ username } channelName={ channelName } />
+			<InputForm channelName={ channelName } />
 		</div>
 	);
 }

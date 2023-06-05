@@ -104,6 +104,17 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		this.server.emit(payload.room, { source: payload.source, target: payload.room, action: actionTypes.ban })
 	}
 
+	@SubscribeMessage('block')
+	async blockUser(client: Socket, payload: banArgs) {
+		const user = await this.userService.findOneByClientId(client.id);
+		const blockedUser = await this.userService.findOne(payload.target);
+		
+		if (user == null || blockedUser == null)
+			return ; // TODO handle error
+		await this.userService.blockUser(user, blockedUser.id);
+		this.server.emit(payload.target, { source: payload.source, target: payload.target, action: actionTypes.block })
+	}
+
 	async afterInit(server: Server) {
 		console.log('Init');
 	}
@@ -115,7 +126,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 			return ;
 		console.log(user);
 		user.status = userStatus.offline;
-		// this.roomService.removeUserFromRooms(user.id);
 		const rooms = await this.roomService.findAll();
 		rooms.forEach(element => {
 			this.roomService.removeUser(element.roomName, user.id);

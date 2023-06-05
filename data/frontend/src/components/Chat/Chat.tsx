@@ -5,13 +5,14 @@ import { chatSocket } from '../../chatSocket';
 import { chatResponseArgs } from './args.interface';
 import { actionTypes, manageRoomsTypes } from './args.types';
 import { accessStatus } from './accessStatus';
+import { useDispatch, useSelector } from 'react-redux';
+import { useGetBlockedUsersQuery } from '../../store/api';
+import { addBlockedUser } from '../../store/user';
 
-type arg = {
-	username: string
-}
+function Chat() {
+	const user = useSelector((state: any) => state.user);
+	const dispatch = useDispatch();
 
-
-function Chat({ username }: arg) {
 	const [newRoomName, setNewRoomName] = useState('');
 	const [rooms, setRooms] = useState<string[]>([]);
 	const [access, setAccess] = useState(accessStatus.public);
@@ -33,17 +34,21 @@ function Chat({ username }: arg) {
 				setRooms(rooms.filter(room => room !== value.target));
 				alert("You cannot join this private channel: " + value.target);
 			}
+			else if (value.action === actionTypes.block)
+			{
+				alert(value.source + " blocked you");
+			}
 		}
 	
-		chatSocket.on(username, process);
+		chatSocket.on(user.username, process);
 		return () => {
-			chatSocket.off(username, process);
+			chatSocket.off(user.username, process);
 	  	};
-	}, [rooms, username]);
+	}, [rooms, user.username]);
 
 	useEffect(() => {
-		chatSocket.emit("newUser", username);
-	}, [username]);
+		chatSocket.emit("newUser", user.username);
+	}, [user.username]);
 
 	function updateNewRoomName(e: React.FormEvent<HTMLInputElement>) { setNewRoomName(e.currentTarget.value); }
 
@@ -64,7 +69,7 @@ function Chat({ username }: arg) {
 		if (!rooms.includes(newRoomName, 0))
 		{
 			setRooms(previous => [...previous, newRoomName]);
-			let	arg = { type: manageRoomsTypes.add, source: username, room: newRoomName, access: access};
+			let	arg = { type: manageRoomsTypes.add, source: user.username, room: newRoomName, access: access};
 			chatSocket.emit('manageRooms', arg);
 		}
 		else
@@ -74,10 +79,26 @@ function Chat({ username }: arg) {
 	function removeRoom(roomName: string)
 	{
 		setRooms(rooms.filter(room => room !== roomName));
-		chatSocket.emit('manageRooms', { type: manageRoomsTypes.remove, source: username, room: roomName, access: access});
+		chatSocket.emit('manageRooms', { type: manageRoomsTypes.remove, source: user.username, room: roomName, access: access});
 	}
-  
 
+	const {
+		data: blockedUsers,
+		isLoading,
+		isSuccess,
+		isError,
+		error
+	} = useGetBlockedUsersQuery({username: user.username});
+	if (isError) // TODO fix show real error page (make Error component)
+		return (<p>Error: {error.toString()}</p>)
+	else if (isLoading)
+		return (<p>Loading...</p>);
+	else if (isSuccess)
+	{
+		blockedUsers.data.forEach((element: string) => {
+			dispatch(addBlockedUser(element));
+		});
+	}
 	return (
 		<div className='chat'>
 			<p>------------------------------------------------</p>
@@ -96,7 +117,7 @@ function Chat({ username }: arg) {
 				{rooms.map((room) =>
 					<div key={room}>
 						<p>{room}: </p>
-						<Room username={username} channelName={room} />
+						<Room channelName={room} />
 						<button onClick={ () => { removeRoom(room) } }>x</button>
 					</div>)}
 			</div>

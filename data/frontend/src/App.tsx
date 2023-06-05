@@ -40,7 +40,7 @@ function App() {
 				<button>Login</button>
 			</form>
 			{user.isLoggedIn ? <button onClick={logoutButton}>Logout</button> : null}
-			{user.isLoggedIn ? (<Chat username={user.username} />) : null}
+			{user.isLoggedIn ? (<Chat />) : null}
 		</div>
 	</div>
 	);

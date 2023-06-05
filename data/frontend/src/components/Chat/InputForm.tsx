@@ -2,20 +2,17 @@ import React, { KeyboardEvent, SyntheticEvent, useState } from 'react';
 import { chatSocket } from '../../chatSocket';
 import { sendMsgArgs } from './args.interface';
 import { sendMsgTypes } from './args.types';
+import { useSelector } from 'react-redux';
 
-type arg = {
-	username: string
-	channelName: string
-}
-
-export default function Room({ username, channelName }: arg) {
-  const [value, setValue] = useState<sendMsgArgs>({ type: sendMsgTypes.msg, source: username, target: channelName, data: ''});
+export default function Room({channelName}: {channelName: string}) {
+	const user = useSelector((state: any) => state.user);
+  const [value, setValue] = useState<sendMsgArgs>({ type: sendMsgTypes.msg, source: user.username, target: channelName, data: ''});
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   function send() {
 		setMessage('');
-		setValue({ type: sendMsgTypes.msg, source: username, target: channelName, data: ''});
+		setValue({ type: sendMsgTypes.msg, source: user.username, target: channelName, data: ''});
 		setIsLoading(true);
 		chatSocket.timeout(500).emit('sendMsg', value, () => {
 		setIsLoading(false);
@@ -36,7 +33,7 @@ export default function Room({ username, channelName }: arg) {
 
   function onChange(e: React.FormEvent<HTMLInputElement>)
   {
-	setValue({ type: sendMsgTypes.msg, source: username, target: channelName, data: e.currentTarget.value });
+	setValue({ type: sendMsgTypes.msg, source: user.username, target: channelName, data: e.currentTarget.value });
 	setMessage(e.currentTarget.value);	
   }
 

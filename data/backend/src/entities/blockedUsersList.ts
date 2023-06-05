@@ -1,8 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from "typeorm";
 import { User } from "./user.entity";
 
-@Entity({ name: 'UsersList' })
-export class UsersList {
+@Entity({ name: 'BlockedUsersList' })
+export class BlockedUsersList {
 	@PrimaryGeneratedColumn()
 	id: number
 
