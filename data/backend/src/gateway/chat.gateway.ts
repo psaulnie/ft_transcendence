@@ -101,8 +101,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	async banUser(client: Socket, payload: banArgs) {
 		const user = await this.userService.findOne(payload.target);
 		await this.roomService.addToBanList(payload.room, user.id);
-		await this.roomService.removeUser(payload.room, user.id);
-		this.server.emit(payload.room, { source: payload.source, target: payload.room, action: actionTypes.ban })
+		this.server.emit(payload.target, { source: payload.source, target: payload.room, action: actionTypes.ban })
 	}
 
 	@SubscribeMessage('block')

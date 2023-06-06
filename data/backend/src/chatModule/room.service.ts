@@ -62,6 +62,7 @@ export class RoomService {
 				return ;
 			}
 		});
+		console.log(rvalue);
 		if (rvalue == -1)
 			return (rvalue);
 		const newEntry = new UsersList();
@@ -103,6 +104,8 @@ export class RoomService {
 	async getRole(roomName: string, userId: number): Promise<string>
 	{
 		const room = await this.findOne(roomName);
+		if (room.ownerID == null) // TODO fix lag 
+			return ("owner");
 		if (room.ownerID == userId)
 			return ("owner");
 		room.adminsID.forEach(admin => {
