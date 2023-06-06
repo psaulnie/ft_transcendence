@@ -44,6 +44,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
 	@SubscribeMessage('sendMsg')
 	async handleMessage(client: Socket, payload: sendMsgArgs) {
+		console.log("sendMsg");
 		console.log(payload);
 		if (payload.type == sendMsgTypes.msg)
 		{

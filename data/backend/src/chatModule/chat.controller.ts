@@ -30,20 +30,22 @@ export class ChatController {
 
 	@Get('blocked')
 	async getBlockedUser(@Query() data: any): Promise<string> {
-	  if (data.username == null) // TODO check
-	  {
-		  const res = {
-			  statusCode: 400,
-			  status: "failed"
-		  };
-		  return (JSON.stringify(res));
-	  }
-	  const user = await this.userService.findOne(data.username);
-	  const res = {
-		  status: 'success',
-		  data: user.blockedUsersID
-	   }
-	   return JSON.stringify(res);
+		console.log("getBlockedUser");
+		if (data.username == null) // TODO check
+		{
+			const res = {
+				statusCode: 400,
+				status: "failed"
+			};
+			return (JSON.stringify(res));
+		}
+		const user = await this.userService.findOne(data.username);
+		console.log(user);
+		const res = {
+			status: 'success',
+			data: user.blockedUsersID
+		}
+		return JSON.stringify(res);
   }
 
 }

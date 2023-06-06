@@ -67,7 +67,11 @@ export class UserService {
 	}
 
 	async blockUser(user: User, blockedUserID: number)
-	{ 
+	{
+		console.log("-------------------");
+		console.log("New blocked user: " + blockedUserID);
+		console.log(user);
+		console.log("-------------------");
 		const newEntry = new BlockedUsersList();
 		newEntry.userId = blockedUserID;
 		user.blockedUsersID.push(newEntry);

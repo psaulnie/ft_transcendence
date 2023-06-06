@@ -15,6 +15,7 @@ function Room({channelName}: {channelName: string}) {
 
 	useEffect(() => {
 	  function onMsgSent(value: chatResponseArgs) {
+		console.log("received: " + value.data);
 		setMsg(previous => [...previous, value]);
 	  }
 	

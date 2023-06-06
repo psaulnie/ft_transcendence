@@ -2,7 +2,8 @@ import React from 'react';
 import { chatSocket } from '../../chatSocket';
 import { chatResponseArgs } from './args.interface';
 import { actionTypes } from './args.types';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { addBlockedUser } from '../../store/user';
 
 type arg = {
 	messages: chatResponseArgs[],
@@ -12,11 +13,24 @@ type arg = {
 
 export default function Messages({ messages, role, channelName }: arg) {
 	const user = useSelector((state: any) => state.user);
+	const dispatch = useDispatch();
+
+	function blockUser(message: chatResponseArgs) {
+		chatSocket.emit("block", { source: user.username, target: message.source, room: channelName });
+		dispatch(addBlockedUser(message.source));
+	}
 
 	return (
 		<div className='messages'>
 		{
 			messages.map((message, index) => {
+				console.log(user.blockedUsers);
+				console.log(user.blockedUsers.indexOf(message.source) !== -1);
+				if (user.blockedUsers.indexOf(message.source) !== -1)
+				{
+					console.log("User blocked, not showing");
+					return ;
+				}
 				user.blockedUsers.forEach((element: string) => {
 					// dispatch(addBlockedUser(element));
 				});
@@ -40,7 +54,7 @@ export default function Messages({ messages, role, channelName }: arg) {
 						</div>
 					);
 				}
-				else if (message.action === actionTypes.msg && !user.blockedUsers.indexOf(message.source))
+				else if (message.action === actionTypes.msg)
 				{
 					return (
 						<div key={ index } className='message'>
@@ -55,7 +69,7 @@ export default function Messages({ messages, role, channelName }: arg) {
 							}
 							{
 								user.username !== message.source ? (
-									<button onClick={ () => { chatSocket.emit("block", { source: user.username, target: message.source, room: channelName }) } } >Block</button>
+									<button onClick={ () => { blockUser(message) } } >Block</button>
 								) : null
 							}
 							</div>
