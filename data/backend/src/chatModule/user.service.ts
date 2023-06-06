@@ -16,7 +16,7 @@ export class UserService {
 
 	async findOne(name: string): Promise<User>
 	{
-		return await (this.usersRepository.findOne({where: { username: name }}));
+		return await (this.usersRepository.findOne({where: { username: name }, relations: ['blockedUsersID'] }));
 	}
 
 	async findOneById(id: number): Promise<User>
@@ -66,14 +66,11 @@ export class UserService {
 		this.usersRepository.save(user);
 	}
 
-	async blockUser(user: User, blockedUserID: number)
+	async blockUser(user: User, blockedUsername: string)
 	{
-		console.log("-------------------");
-		console.log("New blocked user: " + blockedUserID);
-		console.log(user);
-		console.log("-------------------");
 		const newEntry = new BlockedUsersList();
-		newEntry.userId = blockedUserID;
+		newEntry.username = blockedUsername;
+		newEntry.user = user;
 		user.blockedUsersID.push(newEntry);
 		await this.usersRepository.save(user);
 	}

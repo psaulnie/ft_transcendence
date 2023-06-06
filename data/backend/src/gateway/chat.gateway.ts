@@ -112,7 +112,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		
 		if (user == null || blockedUser == null)
 			return ; // TODO handle error
-		await this.userService.blockUser(user, blockedUser.id);
+		await this.userService.blockUser(user, blockedUser.username);
 		this.server.emit(payload.target, { source: payload.source, target: payload.target, action: actionTypes.block })
 	}
 

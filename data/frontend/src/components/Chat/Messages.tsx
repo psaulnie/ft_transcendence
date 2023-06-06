@@ -25,12 +25,8 @@ export default function Messages({ messages, role, channelName }: arg) {
 		{
 			messages.map((message, index) => {
 				console.log(user.blockedUsers);
-				console.log(user.blockedUsers.indexOf(message.source) !== -1);
 				if (user.blockedUsers.indexOf(message.source) !== -1)
-				{
-					console.log("User blocked, not showing");
-					return ;
-				}
+					return null;
 				user.blockedUsers.forEach((element: string) => {
 					// dispatch(addBlockedUser(element));
 				});

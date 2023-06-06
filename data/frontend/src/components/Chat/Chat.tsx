@@ -89,16 +89,23 @@ function Chat() {
 		isError,
 		error
 	} = useGetBlockedUsersQuery({username: user.username});
+
+	useEffect(() => {
+		if (isSuccess)
+		{
+			console.log(blockedUsers);
+			blockedUsers.data.forEach((element: any) => {
+				dispatch(addBlockedUser(element.username));
+			});
+		}
+	}, [user.username, isSuccess]);
+
 	if (isError) // TODO fix show real error page (make Error component)
 		return (<p>Error: {error.toString()}</p>)
 	else if (isLoading)
 		return (<p>Loading...</p>);
-	else if (isSuccess)
-	{
-		blockedUsers.data.forEach((element: string) => {
-			dispatch(addBlockedUser(element));
-		});
-	}
+	
+
 	return (
 		<div className='chat'>
 			<p>------------------------------------------------</p>

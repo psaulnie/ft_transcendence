@@ -7,7 +7,7 @@ export class BlockedUsersList {
 	id: number
 
 	@Column({nullable: true})
-	userId: number
+	username: string
 
 	@ManyToOne(() => User, user => user.blockedUsersID, { onDelete: 'CASCADE' })
 	@JoinColumn()

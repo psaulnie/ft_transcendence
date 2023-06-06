@@ -34,7 +34,7 @@ export const userSlice = createSlice({
 		state.username = action.payload;
 	},
 	addBlockedUser: (state, action: PayloadAction<string>) => {
-		const nbr = state.blockedUsers.indexOf(state.username);
+		const nbr = state.blockedUsers.indexOf(action.payload);
 		if (nbr === -1)
 			state.blockedUsers.push(action.payload);
 	},
