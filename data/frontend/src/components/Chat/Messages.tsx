@@ -33,20 +33,16 @@ export default function Messages({ messages, role, channelName }: arg) {
 				if (message.action === actionTypes.join)
 				{
 					return(
-						<div key={ index } className='userJoined'> {/*the three paragraphs must be on the same line*/}
-							<p>=&gt; </p>
-							<p>{message.source}</p>
-							<p> joined the room</p>
+						<div key={ index } className='userJoined'>
+							<p>=&#62; <a>{message.source}</a> joined the room</p>
 						</div>
 					);
 				}
 				else if (message.action === actionTypes.left)
 				{
 					return(
-						<div key={ index } className='userLeft'> {/*the three paragraphs must be on the same line*/}
-							<p>&#60;= </p>
-							<p>{message.source}</p>
-							<p> left the room</p>
+						<div key={ index } className='userLeft'>
+							<p>&#60;= <a>{message.source}</a> left the room</p>
 						</div>
 					);
 				}
@@ -69,8 +65,7 @@ export default function Messages({ messages, role, channelName }: arg) {
 								) : null
 							}
 							</div>
-							<p>{ message.source }</p>
-							<p>{ message.data }</p>
+							<p><a href="">{ message.source }</a>: { message.data }</p>
 						</div>
 					);
 				}
