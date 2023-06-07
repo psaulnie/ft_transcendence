@@ -8,10 +8,9 @@ import { chatResponseArgs } from './args.interface';
 import { useGetRoleQuery } from '../../store/api';
 import { useSelector } from 'react-redux';
 
-function Room({channelName}: {channelName: string}) {
-	const user = useSelector((state: any) => state.user);
+function Room({channelName, isCreated}: {channelName: string, isCreated: boolean}) {
 	const [messageSent, setMsg] = useState<chatResponseArgs[]>([]);
-	let content;
+	let role = (isCreated ? "owner" : "none")
 
 	useEffect(() => {
 	  function onMsgSent(value: chatResponseArgs) {
@@ -24,28 +23,10 @@ function Room({channelName}: {channelName: string}) {
 	  };
 	}, [channelName]);
 
-	const {
-		data: role,
-		isLoading,
-		isSuccess,
-		isError,
-		error
-	} = useGetRoleQuery({username: user.username, channelName: channelName})
 
-
-	if (isSuccess)
-	{
-		content = (
-			<Messages messages={ messageSent } role={ role.data } channelName={ channelName } />)
-	}
-	else if (isError) // TODO fix show real error page (make Error component)
-		return (<p>Error: {error.toString()}</p>)
-	else if (isLoading)
-		return (<p>Loading...</p>);
-		
 	return (
 		<div className="chat">
-			{ content }
+			<Messages messages={ messageSent } role={ role } channelName={ channelName } />
 			<InputForm channelName={ channelName } />
 		</div>
 	);

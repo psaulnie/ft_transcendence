@@ -7,7 +7,7 @@ import { useGetRoomsListQuery } from '../../store/api';
 import { accessStatus } from './accessStatus';
 
 
-function JoinChannel({rooms, setRooms}: {rooms: string[], setRooms: any}) {
+function JoinChannel({rooms, setRooms, setIsCreated}: {rooms: string[], setRooms: any, setIsCreated: any}) {
 	const user = useSelector((state: any) => state.user);
 
 	const [newRoomName, setNewRoomName] = useState('null');
@@ -27,6 +27,7 @@ function JoinChannel({rooms, setRooms}: {rooms: string[], setRooms: any}) {
 			return ;
 		if (!rooms.includes(newRoomName, 0))
 		{
+			setIsCreated(false);
 			setRooms((previous: string[]) => [...previous, newRoomName]);
 			let	arg = { type: manageRoomsTypes.add, source: user.username, room: newRoomName, access: 0};
 			chatSocket.emit('manageRooms', arg);

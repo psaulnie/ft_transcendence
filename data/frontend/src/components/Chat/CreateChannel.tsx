@@ -6,7 +6,7 @@ import { accessStatus } from './accessStatus';
 import { useSelector } from 'react-redux';
 import { useGetIsRoomNameTakenQuery } from '../../store/api';
 
-function CreateChannel({rooms, setRooms}: {rooms: string[], setRooms: any}) {
+function CreateChannel({rooms, setRooms, setIsCreated}: {rooms: string[], setRooms: any, setIsCreated: any}) {
 	const user = useSelector((state: any) => state.user);
 	
 	const [newRoomName, setNewRoomName] = useState('');
@@ -47,6 +47,7 @@ function CreateChannel({rooms, setRooms}: {rooms: string[], setRooms: any}) {
 		event.preventDefault();
 		if (!rooms.includes(newRoomName, 0))
 		{
+			setIsCreated(true);
 			setRooms((previous: string[]) => [...previous, newRoomName]);
 			let	arg = { type: manageRoomsTypes.add, source: user.username, room: newRoomName, access: access};
 			chatSocket.emit('manageRooms', arg);

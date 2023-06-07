@@ -13,7 +13,8 @@ import JoinChannel from './JoinChannel';
 function Chat() {
 	const user = useSelector((state: any) => state.user);
 	const dispatch = useDispatch();
-
+	
+	const [isCreated, setIsCreated] = useState(false);
 	const [rooms, setRooms] = useState<string[]>([]);
 
 	useEffect(() => {
@@ -82,15 +83,15 @@ function Chat() {
 	return (
 		<div className='chat'>
 			<p>------------------------------------------------</p>
-			<CreateChannel rooms={rooms} setRooms={setRooms}/>
+			<CreateChannel rooms={rooms} setRooms={setRooms} setIsCreated={setIsCreated} />
 			<p>------------------------------------------------</p>
-			<JoinChannel rooms={rooms} setRooms={setRooms}/>
+			<JoinChannel rooms={rooms} setRooms={setRooms} setIsCreated={setIsCreated} />
 			<p>------------------------------------------------</p>
 			<div className='rooms'>
 				{rooms.map((room) =>
 					<div key={room}>
 						<p>{room}: </p>
-						<Room channelName={room}/>
+						<Room channelName={room} isCreated={isCreated}/>
 						<button onClick={ () => { removeRoom(room) } }>x</button>
 					</div>)}
 			</div>
