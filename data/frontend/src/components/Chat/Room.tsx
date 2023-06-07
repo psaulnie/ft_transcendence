@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 import Messages from './Messages';
 import InputForm from './InputForm';
 
 import { chatSocket } from '../../chatSocket';
 import { chatResponseArgs } from './args.interface';
-import { useGetRoleQuery } from '../../store/api';
-import { useSelector } from 'react-redux';
 
 function Room({channelName, isCreated}: {channelName: string, isCreated: boolean}) {
 	const [messageSent, setMsg] = useState<chatResponseArgs[]>([]);

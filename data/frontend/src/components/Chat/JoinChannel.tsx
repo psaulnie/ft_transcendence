@@ -16,8 +16,6 @@ function JoinChannel({rooms, setRooms, setIsCreated}: {rooms: string[], setRooms
 	{
 		event.preventDefault();
 		setNewRoomName(event.currentTarget.value);
-		// if (event.currentTarget.value === "public")
-		// 	setAccess(accessStatus.public);
 	}
 
 	function joinRoom(event: any)
