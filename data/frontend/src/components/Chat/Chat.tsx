@@ -4,18 +4,17 @@ import Room from './Room';
 import { chatSocket } from '../../chatSocket';
 import { chatResponseArgs } from './args.interface';
 import { actionTypes, manageRoomsTypes } from './args.types';
-import { accessStatus } from './accessStatus';
 import { useDispatch, useSelector } from 'react-redux';
 import { useGetBlockedUsersQuery } from '../../store/api';
 import { addBlockedUser } from '../../store/user';
+import CreateChannel from './CreateChannel';
+import JoinChannel from './JoinChannel';
 
 function Chat() {
 	const user = useSelector((state: any) => state.user);
 	const dispatch = useDispatch();
 
-	const [newRoomName, setNewRoomName] = useState('');
 	const [rooms, setRooms] = useState<string[]>([]);
-	const [access, setAccess] = useState(accessStatus.public);
 
 	useEffect(() => {
 		function process(value: chatResponseArgs) {
@@ -50,36 +49,10 @@ function Chat() {
 		chatSocket.emit("newUser", user.username);
 	}, [user.username]);
 
-	function updateNewRoomName(e: React.FormEvent<HTMLInputElement>) { setNewRoomName(e.currentTarget.value); }
-
-	function changeAccess(event: React.FormEvent<HTMLSelectElement>)
-	{
-		event.preventDefault();
-		if (event.currentTarget.value === "public")
-			setAccess(accessStatus.public);
-		else if (event.currentTarget.value === "private")
-			setAccess(accessStatus.private);
-		else if (event.currentTarget.value === "password")
-			setAccess(accessStatus.protected);
-	}
-
-	function createRoom(event: any)
-	{
-		event.preventDefault();
-		if (!rooms.includes(newRoomName, 0))
-		{
-			setRooms(previous => [...previous, newRoomName]);
-			let	arg = { type: manageRoomsTypes.add, source: user.username, room: newRoomName, access: access};
-			chatSocket.emit('manageRooms', arg);
-		}
-		else
-			alert("You are currently in this channel");
-	}
-
 	function removeRoom(roomName: string)
 	{
 		setRooms(rooms.filter(room => room !== roomName));
-		chatSocket.emit('manageRooms', { type: manageRoomsTypes.remove, source: user.username, room: roomName, access: access});
+		chatSocket.emit('manageRooms', { type: manageRoomsTypes.remove, source: user.username, room: roomName, access: 0});
 	}
 
 	const {
@@ -87,44 +60,37 @@ function Chat() {
 		isLoading,
 		isSuccess,
 		isError,
-		error
+		error,
+		refetch
 	} = useGetBlockedUsersQuery({username: user.username});
 
 	useEffect(() => {
+		refetch();
 		if (isSuccess)
 		{
-			console.log(blockedUsers);
 			blockedUsers.data.forEach((element: any) => {
 				dispatch(addBlockedUser(element.username));
 			});
 		}
-	}, [user.username, isSuccess]);
+	}, [user.username, isSuccess, blockedUsers, dispatch, refetch]);
 
 	if (isError) // TODO fix show real error page (make Error component)
 		return (<p>Error: {error.toString()}</p>)
 	else if (isLoading)
 		return (<p>Loading...</p>);
-	
 
 	return (
 		<div className='chat'>
 			<p>------------------------------------------------</p>
-			<p>Create a new channel</p>
-			<form onSubmit={ createRoom }>
-				<input onChange={ updateNewRoomName} />
-				<select name="roomAccess" onChange={changeAccess}>
-					<option value="public">Public</option>
-					<option value="private">Private</option>
-					<option value="password">Password-protected</option>
-				</select>
-				<button id='rooms' name='rooms'>+</button>
-			</form>
+			<CreateChannel rooms={rooms} setRooms={setRooms}/>
+			<p>------------------------------------------------</p>
+			<JoinChannel rooms={rooms} setRooms={setRooms}/>
 			<p>------------------------------------------------</p>
 			<div className='rooms'>
 				{rooms.map((room) =>
 					<div key={room}>
 						<p>{room}: </p>
-						<Room channelName={room} />
+						<Room channelName={room}/>
 						<button onClick={ () => { removeRoom(room) } }>x</button>
 					</div>)}
 			</div>

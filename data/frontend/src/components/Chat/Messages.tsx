@@ -24,7 +24,6 @@ export default function Messages({ messages, role, channelName }: arg) {
 		<div className='messages'>
 		{
 			messages.map((message, index) => {
-				console.log(user.blockedUsers);
 				if (user.blockedUsers.indexOf(message.source) !== -1)
 					return null;
 				user.blockedUsers.forEach((element: string) => {
@@ -34,7 +33,7 @@ export default function Messages({ messages, role, channelName }: arg) {
 				{
 					return(
 						<div key={ index } className='userJoined'>
-							<p>=&#62; <a>{message.source}</a> joined the room</p>
+							<p>=&#62; <a href='blank'>{message.source}</a> joined the room</p>
 						</div>
 					);
 				}
@@ -42,7 +41,7 @@ export default function Messages({ messages, role, channelName }: arg) {
 				{
 					return(
 						<div key={ index } className='userLeft'>
-							<p>&#60;= <a>{message.source}</a> left the room</p>
+							<p>&#60;= <a href='blank'>{message.source}</a> left the room</p>
 						</div>
 					);
 				}
@@ -65,7 +64,7 @@ export default function Messages({ messages, role, channelName }: arg) {
 								) : null
 							}
 							</div>
-							<p><a href="">{ message.source }</a>: { message.data }</p>
+							<p><a href="blank">{ message.source }</a>: { message.data }</p>
 						</div>
 					);
 				}

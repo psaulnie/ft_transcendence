@@ -104,6 +104,8 @@ export class RoomService {
 	async getRole(roomName: string, userId: number): Promise<string>
 	{
 		const room = await this.findOne(roomName);
+		if (!room)
+			return ("owner");
 		if (room.ownerID == null) // TODO fix lag 
 			return ("owner");
 		if (room.ownerID == userId)

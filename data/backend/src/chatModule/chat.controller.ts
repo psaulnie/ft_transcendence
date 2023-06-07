@@ -16,11 +16,7 @@ export class ChatController {
 			};
 			return (JSON.stringify(res));
 		}
-			// return (null);
 		const user = await this.userService.findOne(data.username);
-		// const role = await this.roomService.getRole(data.roomName, user.id);
-		// return (await this.roomService.getRole(data.roomName, user.id));
-		console.log(data);
 		const res = {
 			status: 'success',
 			data: await this.roomService.getRole(data.roomName, user.id)
@@ -30,7 +26,6 @@ export class ChatController {
 
 	@Get('blocked')
 	async getBlockedUser(@Query() data: any): Promise<string> {
-		console.log("getBlockedUser");
 		if (data.username == null) // TODO check
 		{
 			const res = {
@@ -40,12 +35,41 @@ export class ChatController {
 			return (JSON.stringify(res));
 		}
 		const user = await this.userService.findOne(data.username);
-		console.log(user);
 		const res = {
 			status: 'success',
 			data: user.blockedUsersID
 		}
 		return JSON.stringify(res);
-  }
+	}
+
+	@Get('rooms/list')
+	async getRoomsList(): Promise<string> {
+		const roomsList = await this.roomService.findAll();
+		const res = {
+			status: 'success',
+			data: roomsList
+		}
+		return JSON.stringify(res);
+	}
+
+	@Get('rooms/exist')
+	async getIsRoomNameTaken(@Query() data: any): Promise<string> {
+		if (data.roomName == null) // TODO check
+		{
+			const res = {
+				statusCode: 400,
+				status: "failed"
+			};
+			return (JSON.stringify(res));
+		}
+		const room = await this.roomService.findOne(data.roomName);
+		const exist = (room != null);
+		console.log(exist);
+		const res = {
+			status: 'success',
+			data: exist
+		}
+		return JSON.stringify(res);
+	}
 
 }
