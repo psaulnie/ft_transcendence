@@ -14,7 +14,6 @@ type arg = {
 export default function Messages({ messages, role, channelName }: arg) {
 	const user = useSelector((state: any) => state.user);
 	const dispatch = useDispatch();
-
 	function blockUser(message: chatResponseArgs) {
 		chatSocket.emit("block", { source: user.username, target: message.source, room: channelName });
 		dispatch(addBlockedUser(message.source));

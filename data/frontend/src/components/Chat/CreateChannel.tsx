@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useGetIsRoomNameTakenQuery } from '../../store/api';
 import { addRoom } from '../../store/rooms';
 
-function CreateChannel({setIsCreated}: {setIsCreated: any}) {
+function CreateChannel() {
 	const user = useSelector((state: any) => state.user);
 	const rooms = useSelector((state: any) => state.rooms);
 	const dispatch = useDispatch();
@@ -51,8 +51,6 @@ function CreateChannel({setIsCreated}: {setIsCreated: any}) {
 		// if (!rooms.room.includes(newRoomName, 0))
 		if (!rooms.room.find((obj: {name: string, role: string}) => obj.name === newRoomName))
 		{
-			setIsCreated(true);
-
 			dispatch(addRoom({name: newRoomName, role: "owner"}));
 			// setRooms((previous: string[]) => [...previous, newRoomName]);
 			let	arg = { type: manageRoomsTypes.add, source: user.username, room: newRoomName, access: access};

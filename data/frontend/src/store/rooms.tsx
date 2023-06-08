@@ -27,12 +27,15 @@ export const roomsSlice = createSlice({
 		state.room = state.room.filter((element) => element.name !== action.payload);
 	},
 	changeRole: (state, action: PayloadAction<roomType>) => {
-		let index = state.room.indexOf(action.payload);
-
-		state.room[index] = action.payload;
+		let room = state.room.find((obj: roomType) => obj.name === action.payload.name);
+		if (room)
+			room.role = action.payload.role;
+	},
+	quitAll: (state) => {
+		state.room = [];
 	},
   },
 })
 
-export const { addRoom, removeRoom, changeRole } = roomsSlice.actions
+export const { addRoom, removeRoom, changeRole, quitAll } = roomsSlice.actions
 export default roomsSlice.reducer

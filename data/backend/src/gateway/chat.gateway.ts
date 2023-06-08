@@ -49,12 +49,14 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		if (payload.type == sendMsgTypes.msg)
 		{
 			const user = await this.userService.findOne(payload.source);
+			const role = await this.roomService.getRole(payload.target, user.id);
+			console.log("role: " + role);
 			this.server.emit(payload.target, { 
 				source: payload.source,
 				target: payload.target,
 				action: actionTypes.msg,
 				data: payload.data,
-				role: this.roomService.getRole(payload.target, user.id) })
+				role: role })
 		}
 	}
 

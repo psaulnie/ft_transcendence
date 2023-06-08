@@ -8,7 +8,7 @@ import { accessStatus } from './accessStatus';
 import { addRoom } from '../../store/rooms';
 
 
-function JoinChannel({setIsCreated}: {setIsCreated: any}) {
+function JoinChannel() {
 	const user = useSelector((state: any) => state.user);
 	const rooms = useSelector((state: any) => state.rooms);
 	const dispatch = useDispatch();
@@ -26,13 +26,9 @@ function JoinChannel({setIsCreated}: {setIsCreated: any}) {
 		event.preventDefault();
 		if (newRoomName === 'null')
 			return ;
-		// if (!rooms.includes(newRoomName, 0))
 		if (!rooms.room.find((obj: {name: string, role: string}) => obj.name === newRoomName))
 		{
-			console.log("newroom");
-			setIsCreated(false);
 			dispatch(addRoom({name: newRoomName, role: "none"}));
-			// setRooms((previous: string[]) => [...previous, newRoomName]);
 			let	arg = { type: manageRoomsTypes.add, source: user.username, room: newRoomName, access: 0};
 			chatSocket.emit('manageRooms', arg);
 		}

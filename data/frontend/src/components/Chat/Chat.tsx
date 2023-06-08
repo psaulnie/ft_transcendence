@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 
 import Room from './Room';
 import { chatSocket } from '../../chatSocket';
@@ -9,15 +9,12 @@ import { useGetBlockedUsersQuery } from '../../store/api';
 import { addBlockedUser } from '../../store/user';
 import CreateChannel from './CreateChannel';
 import JoinChannel from './JoinChannel';
-import { addRoom, removeRoom } from '../../store/rooms';
+import { addRoom, changeRole, removeRoom } from '../../store/rooms';
 
 function Chat() {
 	const user = useSelector((state: any) => state.user);
 	const rooms = useSelector((state: any) => state.rooms)
 	const dispatch = useDispatch();
-	
-	const [isCreated, setIsCreated] = useState(false);
-	// const [rooms, setRooms] = useState<string[]>([]);
 
 	useEffect(() => {
 		function process(value: chatResponseArgs) {
@@ -42,8 +39,11 @@ function Chat() {
 				alert("You cannot join this private channel: " + value.target);
 			}
 			else if (value.action === actionTypes.block)
-			{
 				alert(value.source + " blocked you");
+			else if (value.action === actionTypes.admin)
+			{
+				dispatch(changeRole({name: value.source, role: "admin"}));
+				alert("You are now admin in " + value.source);
 			}
 		}
 	
@@ -60,7 +60,6 @@ function Chat() {
 	function quitRoom(roomName: string)
 	{		
 		dispatch(removeRoom(roomName));
-		// setRooms(rooms.filter(room => room !== roomName));
 		chatSocket.emit('manageRooms', { type: manageRoomsTypes.remove, source: user.username, room: roomName, access: 0});
 	}
 
@@ -91,15 +90,15 @@ function Chat() {
 	return (
 		<div className='chat'>
 			<p>------------------------------------------------</p>
-			<CreateChannel setIsCreated={setIsCreated} />
+			<CreateChannel/>
 			<p>------------------------------------------------</p>
-			<JoinChannel setIsCreated={setIsCreated} />
+			<JoinChannel/>
 			<p>------------------------------------------------</p>
 			<div className='rooms'>
 				{rooms.room.map((room: {name: string, role: string}) =>
 					<div key={room.name}>
 						<p>{room.name}: </p>
-						<Room channelName={room.name} isCreated={isCreated}/>
+						<Room channelName={room.name}/>
 						<button onClick={ () => { quitRoom(room.name) } }>x</button>
 					</div>)}
 			</div>

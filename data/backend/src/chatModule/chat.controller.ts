@@ -64,7 +64,6 @@ export class ChatController {
 		}
 		const room = await this.roomService.findOne(data.roomName);
 		const exist = (room != null);
-		console.log(exist);
 		const res = {
 			status: 'success',
 			data: exist
