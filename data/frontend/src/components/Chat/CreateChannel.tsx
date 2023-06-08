@@ -3,11 +3,14 @@ import React, { useState } from 'react';
 import { chatSocket } from '../../chatSocket';
 import { manageRoomsTypes } from './args.types';
 import { accessStatus } from './accessStatus';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useGetIsRoomNameTakenQuery } from '../../store/api';
+import { addRoom } from '../../store/rooms';
 
-function CreateChannel({rooms, setRooms, setIsCreated}: {rooms: string[], setRooms: any, setIsCreated: any}) {
+function CreateChannel({setIsCreated}: {setIsCreated: any}) {
 	const user = useSelector((state: any) => state.user);
+	const rooms = useSelector((state: any) => state.rooms);
+	const dispatch = useDispatch();
 	
 	const [newRoomName, setNewRoomName] = useState('');
 	const [access, setAccess] = useState(accessStatus.public);
@@ -45,10 +48,13 @@ function CreateChannel({rooms, setRooms, setIsCreated}: {rooms: string[], setRoo
 	function createRoom(event: any)
 	{
 		event.preventDefault();
-		if (!rooms.includes(newRoomName, 0))
+		// if (!rooms.room.includes(newRoomName, 0))
+		if (!rooms.room.find((obj: {name: string, role: string}) => obj.name === newRoomName))
 		{
 			setIsCreated(true);
-			setRooms((previous: string[]) => [...previous, newRoomName]);
+
+			dispatch(addRoom({name: newRoomName, role: "owner"}));
+			// setRooms((previous: string[]) => [...previous, newRoomName]);
 			let	arg = { type: manageRoomsTypes.add, source: user.username, room: newRoomName, access: access};
 			chatSocket.emit('manageRooms', arg);
 		}

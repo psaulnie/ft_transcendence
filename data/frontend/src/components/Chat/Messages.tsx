@@ -25,10 +25,7 @@ export default function Messages({ messages, role, channelName }: arg) {
 		{
 			messages.map((message, index) => {
 				if (user.blockedUsers.indexOf(message.source) !== -1)
-					return null;
-				user.blockedUsers.forEach((element: string) => {
-					// dispatch(addBlockedUser(element));
-				});
+					return (null);
 				if (message.action === actionTypes.join)
 				{
 					return(
@@ -51,16 +48,21 @@ export default function Messages({ messages, role, channelName }: arg) {
 						<div key={ index } className='message'>
 							<div className='options'>
 							{
-								role !== "none" && user.username !== message.source ? (
+								role !== "none" && user.username !== message.source && message.role === "none" ? (
 									<div className='adminOptions'>
 										<button onClick={ () => { chatSocket.emit("kick", { source: user.username, target: message.source, room: channelName }) } } >Kick</button>
 										<button onClick={ () => { chatSocket.emit("ban", { source: user.username, target: message.source, room: channelName })  } } >Ban</button>
+										<button>Mute</button>
+										<button onClick={ () => { chatSocket.emit("admin", { source: user.username, target: message.source, room: channelName }) } } >Set {message.source} as administrator</button>
 									</div>
 								) : null
 							}
 							{
 								user.username !== message.source ? (
-									<button onClick={ () => { blockUser(message) } } >Block</button>
+									<div className='standardOptions'>
+										<button onClick={ () => { blockUser(message) } } >Block</button>
+										<button>Invite {message.source} to play Pong</button>
+									</div>
 								) : null
 							}
 							</div>
@@ -68,8 +70,7 @@ export default function Messages({ messages, role, channelName }: arg) {
 						</div>
 					);
 				}
-				else
-					return ('');
+				return (null);
 			}
 		)
 		}

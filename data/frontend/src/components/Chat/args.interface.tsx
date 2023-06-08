@@ -9,16 +9,10 @@ export interface sendMsgArgs {
 	type: number,
 	source: string,
 	target: string,
-	data: string
+	data: string,
 }
 
-export interface kickArgs {
-	source: string,
-	target: string,
-	room: string
-}
-
-export interface banArgs {
+export interface actionArgs {
 	source: string,
 	target: string,
 	room: string
@@ -28,5 +22,6 @@ export interface chatResponseArgs {
 	source: string,
 	target: string,
 	action: number,
-	data: string
+	data: string,
+	role: string
 }

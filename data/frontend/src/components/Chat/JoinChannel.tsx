@@ -2,13 +2,16 @@ import React, { useState, useEffect } from 'react';
 
 import { chatSocket } from '../../chatSocket';
 import { manageRoomsTypes } from './args.types';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useGetRoomsListQuery } from '../../store/api';
 import { accessStatus } from './accessStatus';
+import { addRoom } from '../../store/rooms';
 
 
-function JoinChannel({rooms, setRooms, setIsCreated}: {rooms: string[], setRooms: any, setIsCreated: any}) {
+function JoinChannel({setIsCreated}: {setIsCreated: any}) {
 	const user = useSelector((state: any) => state.user);
+	const rooms = useSelector((state: any) => state.rooms);
+	const dispatch = useDispatch();
 
 	const [newRoomName, setNewRoomName] = useState('null');
 
@@ -23,10 +26,13 @@ function JoinChannel({rooms, setRooms, setIsCreated}: {rooms: string[], setRooms
 		event.preventDefault();
 		if (newRoomName === 'null')
 			return ;
-		if (!rooms.includes(newRoomName, 0))
+		// if (!rooms.includes(newRoomName, 0))
+		if (!rooms.room.find((obj: {name: string, role: string}) => obj.name === newRoomName))
 		{
+			console.log("newroom");
 			setIsCreated(false);
-			setRooms((previous: string[]) => [...previous, newRoomName]);
+			dispatch(addRoom({name: newRoomName, role: "none"}));
+			// setRooms((previous: string[]) => [...previous, newRoomName]);
 			let	arg = { type: manageRoomsTypes.add, source: user.username, room: newRoomName, access: 0};
 			chatSocket.emit('manageRooms', arg);
 		}
@@ -51,7 +57,6 @@ function JoinChannel({rooms, setRooms, setIsCreated}: {rooms: string[], setRooms
 		return (<p>Error: {error.toString()}</p>)
 	else if (isLoading)
 		return (<p>Loading...</p>);
-		console.log(roomsList);
 
 	return (
 		<div className='joinChannel'>
@@ -61,7 +66,7 @@ function JoinChannel({rooms, setRooms, setIsCreated}: {rooms: string[], setRooms
 					<option value="null" >Select an existing channel</option>
 					{
 						roomsList.data.map((room: any) => {
-							if (rooms.indexOf(room.roomName) === -1 && room.access !== accessStatus.private)
+							if (!rooms.room.find((obj: {name: string, role: string}) => obj.name === room.roomName) && room.access !== accessStatus.private)
 								return (
 									<option key={room.roomName} value={room.roomName}>{room.roomName}</option>
 								);

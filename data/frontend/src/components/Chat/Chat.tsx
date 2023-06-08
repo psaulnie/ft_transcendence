@@ -9,29 +9,36 @@ import { useGetBlockedUsersQuery } from '../../store/api';
 import { addBlockedUser } from '../../store/user';
 import CreateChannel from './CreateChannel';
 import JoinChannel from './JoinChannel';
+import { addRoom, removeRoom } from '../../store/rooms';
 
 function Chat() {
 	const user = useSelector((state: any) => state.user);
+	const rooms = useSelector((state: any) => state.rooms)
 	const dispatch = useDispatch();
 	
 	const [isCreated, setIsCreated] = useState(false);
-	const [rooms, setRooms] = useState<string[]>([]);
+	// const [rooms, setRooms] = useState<string[]>([]);
 
 	useEffect(() => {
 		function process(value: chatResponseArgs) {
 			if (value.action === actionTypes.kick)
 			{
-				setRooms(rooms.filter(room => room !== value.target));
+				dispatch(addRoom({ name: value.source , role: value.role }));
+				// setRooms(rooms.filter(room => room !== value.target));
 				alert("You've been kicked from this channel: " + value.target);
 			}
 			else if (value.action === actionTypes.ban)
 			{
-				setRooms(rooms.filter(room => room !== value.target));
+				dispatch(addRoom({ name: value.source , role: value.role }));
+
+				// setRooms(rooms.filter(room => room !== value.target));
 				alert("You are banned from this channel: " + value.target);
 			}
 			else if (value.action === actionTypes.private)
 			{
-				setRooms(rooms.filter(room => room !== value.target));
+				dispatch(addRoom({ name: value.source , role: value.role }));
+
+				// setRooms(rooms.filter(room => room !== value.target));
 				alert("You cannot join this private channel: " + value.target);
 			}
 			else if (value.action === actionTypes.block)
@@ -44,15 +51,16 @@ function Chat() {
 		return () => {
 			chatSocket.off(user.username, process);
 	  	};
-	}, [rooms, user.username]);
+	}, [rooms, user.username, dispatch]);
 
 	useEffect(() => {
 		chatSocket.emit("newUser", user.username);
 	}, [user.username]);
 
-	function removeRoom(roomName: string)
-	{
-		setRooms(rooms.filter(room => room !== roomName));
+	function quitRoom(roomName: string)
+	{		
+		dispatch(removeRoom(roomName));
+		// setRooms(rooms.filter(room => room !== roomName));
 		chatSocket.emit('manageRooms', { type: manageRoomsTypes.remove, source: user.username, room: roomName, access: 0});
 	}
 
@@ -83,16 +91,16 @@ function Chat() {
 	return (
 		<div className='chat'>
 			<p>------------------------------------------------</p>
-			<CreateChannel rooms={rooms} setRooms={setRooms} setIsCreated={setIsCreated} />
+			<CreateChannel setIsCreated={setIsCreated} />
 			<p>------------------------------------------------</p>
-			<JoinChannel rooms={rooms} setRooms={setRooms} setIsCreated={setIsCreated} />
+			<JoinChannel setIsCreated={setIsCreated} />
 			<p>------------------------------------------------</p>
 			<div className='rooms'>
-				{rooms.map((room) =>
-					<div key={room}>
-						<p>{room}: </p>
-						<Room channelName={room} isCreated={isCreated}/>
-						<button onClick={ () => { removeRoom(room) } }>x</button>
+				{rooms.room.map((room: {name: string, role: string}) =>
+					<div key={room.name}>
+						<p>{room.name}: </p>
+						<Room channelName={room.name} isCreated={isCreated}/>
+						<button onClick={ () => { quitRoom(room.name) } }>x</button>
 					</div>)}
 			</div>
 

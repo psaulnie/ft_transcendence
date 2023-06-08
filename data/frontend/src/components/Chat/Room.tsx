@@ -21,7 +21,6 @@ function Room({channelName, isCreated}: {channelName: string, isCreated: boolean
 	  };
 	}, [channelName]);
 
-
 	return (
 		<div className="chat">
 			<Messages messages={ messageSent } role={ role } channelName={ channelName } />

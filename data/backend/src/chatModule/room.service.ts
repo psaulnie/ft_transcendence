@@ -104,10 +104,8 @@ export class RoomService {
 	async getRole(roomName: string, userId: number): Promise<string>
 	{
 		const room = await this.findOne(roomName);
-		if (!room)
-			return ("owner");
-		if (room.ownerID == null) // TODO fix lag 
-			return ("owner");
+		if (room == null)
+			return ; // TODO check and/or fix
 		if (room.ownerID == userId)
 			return ("owner");
 		room.adminsID.forEach(admin => {
@@ -123,6 +121,15 @@ export class RoomService {
 		const newBlockedUser = new UsersList();
 		newBlockedUser.userId = userID;
 		room.blockedUsersID.push(await this.usersListRepository.save(newBlockedUser));
+		return await (this.roomsRepository.save(room));
+	}
+
+	async addAdmin(roomName: string, userID: number): Promise<Room>
+	{
+		const room = await this.findOne(roomName);
+		const newAdmin = new UsersList();
+		newAdmin.userId = userID;
+		room.adminsID.push(await this.usersListRepository.save(newAdmin));
 		return await (this.roomsRepository.save(room));
 	}
 }

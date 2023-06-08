@@ -12,7 +12,7 @@ import { RoomService } from 'src/chatModule/room.service';
 import { UserService } from 'src/chatModule/user.service';
 import { userStatus } from 'src/chatModule/userStatus';
 
-import { manageRoomsArgs, banArgs, kickArgs, sendMsgArgs } from './args.interface';
+import { manageRoomsArgs, sendMsgArgs, actionArgs } from './args.interface';
 import { actionTypes, manageRoomsTypes, sendMsgTypes } from './args.types';
 import { accessStatus } from 'src/chatModule/accessStatus';
 
@@ -48,8 +48,13 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		console.log(payload);
 		if (payload.type == sendMsgTypes.msg)
 		{
-			this.server.emit(payload.target, { source: payload.source , target: payload.target, action: actionTypes.msg, data: payload.data })
-			// this.server.emit(payload.target, payload.source + ': ' + payload.data);
+			const user = await this.userService.findOne(payload.source);
+			this.server.emit(payload.target, { 
+				source: payload.source,
+				target: payload.target,
+				action: actionTypes.msg,
+				data: payload.data,
+				role: this.roomService.getRole(payload.target, user.id) })
 		}
 	}
 
@@ -91,28 +96,38 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	}
 
 	@SubscribeMessage('kick')
-	async kickUser(client: Socket, payload: kickArgs) {
+	async kickUser(client: Socket, payload: actionArgs) {
 		const user = await this.userService.findOne(payload.target);
 		await this.roomService.removeUser(payload.room, user.id);
-		this.server.emit(payload.target, { source: payload.source, target: payload.room, action: actionTypes.kick })
+		this.server.emit(payload.target, { source: payload.source, target: payload.room, action: actionTypes.kick, role: "none" })
 	}
 
 	@SubscribeMessage('ban')
-	async banUser(client: Socket, payload: banArgs) {
+	async banUser(client: Socket, payload: actionArgs) {
 		const user = await this.userService.findOne(payload.target);
 		await this.roomService.addToBanList(payload.room, user.id);
-		this.server.emit(payload.target, { source: payload.source, target: payload.room, action: actionTypes.ban })
+		this.server.emit(payload.target, { source: payload.source, target: payload.room, action: actionTypes.ban, role: "none" })
 	}
 
 	@SubscribeMessage('block')
-	async blockUser(client: Socket, payload: banArgs) {
+	async blockUser(client: Socket, payload: actionArgs) {
 		const user = await this.userService.findOneByClientId(client.id);
 		const blockedUser = await this.userService.findOne(payload.target);
 		
 		if (user == null || blockedUser == null)
 			return ; // TODO handle error
 		await this.userService.blockUser(user, blockedUser.username);
-		this.server.emit(payload.target, { source: payload.source, target: payload.target, action: actionTypes.block })
+		this.server.emit(payload.target, { source: payload.source, target: payload.target, action: actionTypes.block, role: "none" })
+	}
+
+	@SubscribeMessage('admin')
+	async addAdmin(client: Socket, payload: actionArgs) {
+		const user = await this.userService.findOne(payload.target);
+		
+		if (user == null)
+			return ; // TODO handle error
+		await this.roomService.addAdmin(payload.room, user.id);
+		this.server.emit(payload.target, { source: payload.room, target: payload.target, action: actionTypes.admin, role: "admin" })
 	}
 
 	async afterInit(server: Server) {
