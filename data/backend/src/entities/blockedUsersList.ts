@@ -9,7 +9,7 @@ export class BlockedUsersList {
 	@Column({nullable: true})
 	username: string
 
-	@ManyToOne(() => User, user => user.blockedUsersID, { onDelete: 'CASCADE' })
+	@ManyToOne(() => User, user => user.blockedUsersID, { cascade: true, onDelete: 'CASCADE' })
 	@JoinColumn()
 	user: User
 }

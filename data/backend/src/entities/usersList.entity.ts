@@ -17,7 +17,7 @@ export class UsersList {
 	@JoinColumn()
 	adminRoom: Room
 
-	@ManyToOne(() => Room, room => room.blockedUsersID, { onDelete: 'CASCADE' })
+	@ManyToOne(() => Room, room => room.blockedUsersID, { cascade: true, onDelete: 'CASCADE' })
 	@JoinColumn()
 	blockedRoom: Room
 

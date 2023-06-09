@@ -22,13 +22,13 @@ export class Room {
 	@Column()
 	usersNumber: number
 
-	@OneToMany(() => UsersList, usersList => usersList.room, { cascade: true })
+	@OneToMany(() => UsersList, usersList => usersList.room)
 	usersID: UsersList[]
 
-	@OneToMany(() => UsersList, usersList => usersList.adminRoom, { cascade: true })
+	@OneToMany(() => UsersList, usersList => usersList.adminRoom)
 	adminsID: UsersList[]
 
-	@OneToMany(() => UsersList, usersList => usersList.blockedRoom, { cascade: true })
+	@OneToMany(() => UsersList, usersList => usersList.blockedRoom)
 	blockedUsersID: UsersList[]
 
 	@AfterLoad()

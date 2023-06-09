@@ -5,15 +5,26 @@ interface UserState {
 	isLoggedIn: boolean
 	isUserBlocked: boolean
 	blockedUsers: string[]
+	isMuted: boolean
+	mutedTime: Date
 };
 
-const initialUser: UserState = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user') || '{}') : { username: "", isLoggedIn: false, isUserBlocked: false, blockedUsers: [] };
+const initialUser: UserState = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user') || '{}') : { 
+	username: "",
+	isLoggedIn: false,
+	isUserBlocked: false,
+	blockedUsers: [],
+	isMuted: false,
+	mutedTime: null
+ };
 
 const initialState: UserState = {
 	username: initialUser.username,
 	isLoggedIn: initialUser.isLoggedIn,
 	isUserBlocked: initialUser.isUserBlocked,
-	blockedUsers: initialUser.blockedUsers
+	blockedUsers: initialUser.blockedUsers,
+	isMuted: initialUser.isMuted,
+	mutedTime: initialUser.mutedTime
 };
 
 export const userSlice = createSlice({
@@ -49,9 +60,16 @@ export const userSlice = createSlice({
 			state.isUserBlocked = false;
 		else
 			state.isUserBlocked = true;
-	}
+	},
+	mute: (state) => {
+		state.isMuted = true;
+		state.mutedTime = new Date();
+	},
+	unmute: (state) => {
+		state.isMuted = false;
+	},
   },
 })
 
-export const { login, logout, setUsername, addBlockedUser, removeBlockedUser, isUserBlocked } = userSlice.actions
+export const { login, logout, setUsername, addBlockedUser, removeBlockedUser, isUserBlocked, mute, unmute } = userSlice.actions
 export default userSlice.reducer

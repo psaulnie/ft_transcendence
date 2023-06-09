@@ -15,5 +15,6 @@ export enum actionTypes {
 	private,
 	msg,
 	block,
-	admin
+	admin,
+	mute
 }

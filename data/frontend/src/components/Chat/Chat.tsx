@@ -6,7 +6,7 @@ import { chatResponseArgs } from './args.interface';
 import { actionTypes, manageRoomsTypes } from './args.types';
 import { useDispatch, useSelector } from 'react-redux';
 import { useGetBlockedUsersQuery } from '../../store/api';
-import { addBlockedUser } from '../../store/user';
+import { addBlockedUser, mute, unmute } from '../../store/user';
 import CreateChannel from './CreateChannel';
 import JoinChannel from './JoinChannel';
 import { addRoom, changeRole, removeRoom } from '../../store/rooms';
@@ -20,22 +20,17 @@ function Chat() {
 		function process(value: chatResponseArgs) {
 			if (value.action === actionTypes.kick)
 			{
-				dispatch(addRoom({ name: value.source , role: value.role }));
-				// setRooms(rooms.filter(room => room !== value.target));
+				dispatch(removeRoom(value.source));
 				alert("You've been kicked from this channel: " + value.target);
 			}
 			else if (value.action === actionTypes.ban)
 			{
-				dispatch(addRoom({ name: value.source , role: value.role }));
-
-				// setRooms(rooms.filter(room => room !== value.target));
+				dispatch(removeRoom(value.source));
 				alert("You are banned from this channel: " + value.target);
 			}
 			else if (value.action === actionTypes.private)
 			{
-				dispatch(addRoom({ name: value.source , role: value.role }));
-
-				// setRooms(rooms.filter(room => room !== value.target));
+				dispatch(removeRoom(value.source));
 				alert("You cannot join this private channel: " + value.target);
 			}
 			else if (value.action === actionTypes.block)
@@ -44,6 +39,24 @@ function Chat() {
 			{
 				dispatch(changeRole({name: value.source, role: "admin"}));
 				alert("You are now admin in " + value.source);
+			}
+			else if (value.action === actionTypes.mute)
+			{
+				if (value.isMuted === true)
+				{
+					const time = new Date(value.date);
+					dispatch(mute());
+					alert("You are muted from this channel: " + value.target);
+					setTimeout(() => {
+						dispatch(unmute());
+					}, time.getMinutes() * 60 * 1000);
+					return ;
+				}
+				dispatch(mute());
+				alert("You've been muted from this channel: " + value.target);
+				setTimeout(() => {
+					dispatch(unmute());
+				}, 10 * 60 * 1000);
 			}
 		}
 	
@@ -55,6 +68,7 @@ function Chat() {
 
 	useEffect(() => {
 		chatSocket.emit("newUser", user.username);
+		dispatch(unmute());
 	}, [user.username]);
 
 	function quitRoom(roomName: string)

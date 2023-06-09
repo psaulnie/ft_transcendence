@@ -51,7 +51,7 @@ export default function Messages({ messages, role, channelName }: arg) {
 									<div className='adminOptions'>
 										<button onClick={ () => { chatSocket.emit("kick", { source: user.username, target: message.source, room: channelName }) } } >Kick</button>
 										<button onClick={ () => { chatSocket.emit("ban", { source: user.username, target: message.source, room: channelName })  } } >Ban</button>
-										<button>Mute</button>
+										<button onClick={ () => { chatSocket.emit("mute", { source: user.username, target: message.source, room: channelName }) } }>Mute</button>
 										<button onClick={ () => { chatSocket.emit("admin", { source: user.username, target: message.source, room: channelName }) } } >Set {message.source} as administrator</button>
 									</div>
 								) : null

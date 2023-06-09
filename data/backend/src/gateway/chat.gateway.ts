@@ -21,11 +21,13 @@ import { accessStatus } from 'src/chatModule/accessStatus';
 	namespace: '/gateways/chat',
 })
 export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
+	
+	private mutedUsers: {username: string, time: Date}[];
 
 	constructor(
 		private roomService: RoomService,
 		private userService: UserService,
-	) {}
+	) { this.mutedUsers = []; }
 	@WebSocketServer() server: Server;
 
 	@SubscribeMessage('newUser')
@@ -46,7 +48,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	async handleMessage(client: Socket, payload: sendMsgArgs) {
 		console.log("sendMsg");
 		console.log(payload);
-		if (payload.type == sendMsgTypes.msg)
+		// console.log(this.mutedUsers.findIndex((element) => element != payload.source) == -1);
+		if (payload.type == sendMsgTypes.msg && !this.mutedUsers.find((element) => element.username == payload.source))
 		{
 			const user = await this.userService.findOne(payload.source);
 			const role = await this.roomService.getRole(payload.target, user.id);
@@ -87,7 +90,12 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 					return ;
 				}
 			}
-			this.server.emit(payload.room, { source: payload.source, target: payload.room, action: actionTypes.join })
+			let mutedUser = this.mutedUsers.find((element) => element.username == payload.source);
+			console.log(mutedUser);
+			if (!mutedUser)
+				this.server.emit(payload.room, { source: payload.source, target: payload.room, action: actionTypes.join })
+			else
+				this.server.emit(payload.source, { source: payload.source, target: payload.room, action: actionTypes.mute, date: mutedUser.time})
 		}
 		else if (payload.type == manageRoomsTypes.remove)
 		{
@@ -130,6 +138,18 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 			return ; // TODO handle error
 		await this.roomService.addAdmin(payload.room, user.id);
 		this.server.emit(payload.target, { source: payload.room, target: payload.target, action: actionTypes.admin, role: "admin" })
+	}
+
+	@SubscribeMessage('mute')
+	async muteUser(client: Socket, payload: actionArgs) {
+		if (!this.mutedUsers.find((element) => element.username == payload.source))
+			this.mutedUsers.push({username: payload.target, time: new Date()});
+		setTimeout(() => {
+			this.mutedUsers.filter(function(item) {
+				return item.username !== payload.target;
+			})
+		});
+		this.server.emit(payload.target, { source: payload.room, target: payload.target, action: actionTypes.mute, role: "none" })
 	}
 
 	async afterInit(server: Server) {

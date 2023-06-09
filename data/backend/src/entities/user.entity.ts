@@ -28,7 +28,7 @@ export class User {
 	@Column()
 	avatar: string
 
-	@OneToMany(() => BlockedUsersList, usersList => usersList.user, { cascade: true })
+	@OneToMany(() => BlockedUsersList, usersList => usersList.user)
 	blockedUsersID: BlockedUsersList[]
 
 	@AfterLoad()
