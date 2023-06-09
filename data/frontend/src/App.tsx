@@ -31,7 +31,7 @@ function App() {
 	}
 
 	return (
-	<div className="App"> {/* TODO rename */}
+	<div className="App">
 		<Navigation />
 		<div className='main'>
 			<form onSubmit={onSubmit}>

@@ -39,7 +39,7 @@ export default function Room({channelName}: {channelName: string}) {
 
 	return (
 		<form onSubmit={ onSubmit }>
-			<input value={message} onChange={ onChange } disabled={user.isMuted} />
+			<input maxLength={255} value={message} onChange={ onChange } disabled={user.isMuted} />
 			<button id='message' name='message' type="submit" disabled={ isLoading || user.isMuted } onKeyDown={keyPress}>Send</button>
 		</form>
 	);

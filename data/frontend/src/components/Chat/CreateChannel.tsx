@@ -48,16 +48,14 @@ function CreateChannel() {
 	function createRoom(event: any)
 	{
 		event.preventDefault();
-		// if (!rooms.room.includes(newRoomName, 0))
 		if (!rooms.room.find((obj: {name: string, role: string}) => obj.name === newRoomName))
 		{
 			dispatch(addRoom({name: newRoomName, role: "owner"}));
-			// setRooms((previous: string[]) => [...previous, newRoomName]);
-			let	arg = { type: manageRoomsTypes.add, source: user.username, room: newRoomName, access: access};
-			chatSocket.emit('manageRooms', arg);
+			chatSocket.emit('manageRooms', { type: manageRoomsTypes.add, source: user.username, room: newRoomName, access: access});
 		}
 		else
 			alert("You are currently in this channel");
+		setNewRoomName("");
 	}
 
 
@@ -66,7 +64,7 @@ function CreateChannel() {
 		<div className='createChannel'>
 			<p>Create a new channel</p>
 			<form onSubmit={ createRoom }>
-				<input onChange={ updateNewRoomName} className={exist ? 'validForm' : 'invalidForm'}/>
+				<input maxLength={10} onChange={ updateNewRoomName} value={newRoomName} className={exist ? 'validForm' : 'invalidForm'}/>
 				<select name="roomAccess" onChange={changeAccess}>
 					<option value="public">Public</option>
 					<option value="private">Private</option>

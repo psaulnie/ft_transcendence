@@ -39,9 +39,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 			await this.userService.createUser(payload, client.id);
 		}
 		else
-		{
 			this.userService.updateClientID(user, client.id);
-		}
 	}
 
 	@SubscribeMessage('sendMsg')
@@ -49,6 +47,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		console.log("sendMsg");
 		console.log(payload);
 		// console.log(this.mutedUsers.findIndex((element) => element != payload.source) == -1);
+		if (payload.data.length > 255)
+			payload.data = payload.data.slice(0, 255);
 		if (payload.type == sendMsgTypes.msg && !this.mutedUsers.find((element) => element.username == payload.source))
 		{
 			const user = await this.userService.findOne(payload.source);
@@ -66,10 +66,10 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	@SubscribeMessage('manageRooms')
 	async handleRoom(client: Socket, payload: manageRoomsArgs) {
 		const user = await this.userService.findOne(payload.source);
+		if (payload.room.length > 10)
+			payload.room = payload.room.slice(0, 255);
 		if (client.id != user.clientId)
-		{
 			await this.userService.updateClientID(user, client.id);
-		}
 		if (payload.type == manageRoomsTypes.add)
 		{
 			if (await this.roomService.findOne(payload.room) == null)
