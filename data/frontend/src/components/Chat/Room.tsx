@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 
-import Messages from './Messages';
-import InputForm from './InputForm';
+import MessagesBox from './Message/MessagesBox';
+import InputForm from './Message/InputForm';
 
 import { chatSocket } from '../../chatSocket';
 import { chatResponseArgs } from './args.interface';
@@ -30,7 +30,7 @@ function Room({channelName}: {channelName: string}) {
 
 	return (
 		<div className="chat">
-			<Messages messages={ messageSent } role={ role } channelName={ channelName } />
+			<MessagesBox messages={ messageSent } role={ role } channelName={ channelName } />
 			<InputForm channelName={ channelName } />
 		</div>
 	);

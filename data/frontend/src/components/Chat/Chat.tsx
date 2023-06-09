@@ -9,7 +9,7 @@ import { useGetBlockedUsersQuery } from '../../store/api';
 import { addBlockedUser, mute, unmute } from '../../store/user';
 import CreateChannel from './CreateChannel';
 import JoinChannel from './JoinChannel';
-import { addRoom, changeRole, removeRoom } from '../../store/rooms';
+import { changeRole, removeRoom } from '../../store/rooms';
 
 function Chat() {
 	const user = useSelector((state: any) => state.user);
@@ -69,7 +69,7 @@ function Chat() {
 	useEffect(() => {
 		chatSocket.emit("newUser", user.username);
 		dispatch(unmute());
-	}, [user.username]);
+	}, [user.username, dispatch]);
 
 	function quitRoom(roomName: string)
 	{		

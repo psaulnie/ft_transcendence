@@ -1,7 +1,7 @@
 import React, { KeyboardEvent, SyntheticEvent, useState } from 'react';
-import { chatSocket } from '../../chatSocket';
-import { sendMsgArgs } from './args.interface';
-import { sendMsgTypes } from './args.types';
+import { chatSocket } from '../../../chatSocket';
+import { sendMsgArgs } from '../args.interface';
+import { sendMsgTypes } from '../args.types';
 import { useSelector } from 'react-redux';
 
 export default function Room({channelName}: {channelName: string}) {
