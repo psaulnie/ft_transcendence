@@ -33,8 +33,11 @@ export default function Room({channelName}: {channelName: string}) {
 
 	function onChange(e: React.FormEvent<HTMLInputElement>)
 	{
-		setValue({ type: sendMsgTypes.msg, source: user.username, target: channelName, data: e.currentTarget.value });
-		setMessage(e.currentTarget.value);	
+		if (e.currentTarget.value.length <= 255)
+		{
+			setValue({ type: sendMsgTypes.msg, source: user.username, target: channelName, data: e.currentTarget.value });
+			setMessage(e.currentTarget.value);	
+		}
 	}
 
 	return (

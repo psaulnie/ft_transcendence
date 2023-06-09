@@ -7,6 +7,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useGetIsRoomNameTakenQuery } from '../../store/api';
 import { addRoom } from '../../store/rooms';
 
+import { TextField } from '@mui/material';
+
 function CreateChannel() {
 	const user = useSelector((state: any) => state.user);
 	const rooms = useSelector((state: any) => state.rooms);
@@ -28,10 +30,11 @@ function CreateChannel() {
 	else if (isLoading)
 		return (<p>Loading...</p>);
 
-	function updateNewRoomName(e: React.FormEvent<HTMLInputElement>) 
+	function updateNewRoomName(e: any) 
 	{
 		refetch();
-		setNewRoomName(e.currentTarget.value);
+		if (e.target.value.length <= 10)
+			setNewRoomName(e.target.value);
 	}
 
 	function changeAccess(event: React.FormEvent<HTMLSelectElement>)
@@ -64,13 +67,13 @@ function CreateChannel() {
 		<div className='createChannel'>
 			<p>Create a new channel</p>
 			<form onSubmit={ createRoom }>
-				<input maxLength={10} onChange={ updateNewRoomName} value={newRoomName} className={exist ? 'validForm' : 'invalidForm'}/>
+				<TextField error={exist.data} helperText={exist.data ? 'This room already exists' : null} label="Room name" value={newRoomName} onChange={updateNewRoomName} />
 				<select name="roomAccess" onChange={changeAccess}>
 					<option value="public">Public</option>
 					<option value="private">Private</option>
 					<option value="password">Password-protected</option>
 				</select>
-				<button id='rooms' name='rooms' disabled={exist.data === true}>+</button>
+				<button id='rooms' name='rooms' disabled={exist.data === true || newRoomName === ''}>+</button>
 				{ exist.data === true ? <p>This room already exist</p> : null}
 			</form>
 		</div>

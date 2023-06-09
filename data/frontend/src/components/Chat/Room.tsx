@@ -25,7 +25,11 @@ function Room({channelName}: {channelName: string}) {
 	}, [channelName]);
 
 	useEffect(() => {
-		setRole(rooms.room.find((obj: {name: string, role: string}) => obj.name === channelName).role);
+		const cRole = rooms.room.find((obj: {name: string, role: string}) => obj.name === channelName);
+		console.log(rooms.room);
+		console.log(channelName);
+		if (cRole)
+			setRole(cRole.role);
 	}, [setRole, rooms, channelName]);
 
 	return (

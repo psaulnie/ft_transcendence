@@ -1,21 +1,23 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
-import Room from './Room';
 import { chatSocket } from '../../chatSocket';
 import { chatResponseArgs } from './args.interface';
 import { actionTypes, manageRoomsTypes } from './args.types';
+
 import { useDispatch, useSelector } from 'react-redux';
 import { useGetBlockedUsersQuery } from '../../store/api';
 import { addBlockedUser, mute, unmute } from '../../store/user';
+import { changeRole, removeRoom } from '../../store/rooms';
+
+import Room from './Room';
 import CreateChannel from './CreateChannel';
 import JoinChannel from './JoinChannel';
-import { changeRole, removeRoom } from '../../store/rooms';
 
 function Chat() {
 	const user = useSelector((state: any) => state.user);
-	const rooms = useSelector((state: any) => state.rooms)
+	const rooms = useSelector((state: any) => state.rooms);
 	const dispatch = useDispatch();
-
+	
 	useEffect(() => {
 		function process(value: chatResponseArgs) {
 			if (value.action === actionTypes.kick)
@@ -59,24 +61,24 @@ function Chat() {
 				}, 10 * 60 * 1000);
 			}
 		}
-	
+		
 		chatSocket.on(user.username, process);
 		return () => {
 			chatSocket.off(user.username, process);
-	  	};
+		};
 	}, [rooms, user.username, dispatch]);
 
 	useEffect(() => {
 		chatSocket.emit("newUser", user.username);
 		dispatch(unmute());
 	}, [user.username, dispatch]);
-
+	
 	function quitRoom(roomName: string)
 	{		
 		dispatch(removeRoom(roomName));
 		chatSocket.emit('manageRooms', { type: manageRoomsTypes.remove, source: user.username, room: roomName, access: 0});
 	}
-
+	
 	const {
 		data: blockedUsers,
 		isLoading,
@@ -95,7 +97,7 @@ function Chat() {
 			});
 		}
 	}, [user.username, isSuccess, blockedUsers, dispatch, refetch]);
-
+	
 	if (isError) // TODO fix show real error page (make Error component)
 		return (<p>Error: {error.toString()}</p>)
 	else if (isLoading)
@@ -104,9 +106,9 @@ function Chat() {
 	return (
 		<div className='chat'>
 			<p>------------------------------------------------</p>
-			<CreateChannel/>
+			<CreateChannel />
 			<p>------------------------------------------------</p>
-			<JoinChannel/>
+			<JoinChannel />
 			<p>------------------------------------------------</p>
 			<div className='rooms'>
 				{rooms.room.map((room: {name: string, role: string}) =>
@@ -114,7 +116,9 @@ function Chat() {
 						<p>{room.name}: </p>
 						<Room channelName={room.name}/>
 						<button onClick={ () => { quitRoom(room.name) } }>x</button>
-					</div>)}
+					</div>
+				)}
+
 			</div>
 
 		</div>
