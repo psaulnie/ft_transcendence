@@ -9,7 +9,7 @@ import { addRoom } from '../../store/rooms';
 
 import { TextField } from '@mui/material';
 
-function CreateChannel() {
+function CreateChannel({ setRoomIndex }: { setRoomIndex: any }) {
 	const user = useSelector((state: any) => state.user);
 	const rooms = useSelector((state: any) => state.rooms);
 	const dispatch = useDispatch();
@@ -54,6 +54,7 @@ function CreateChannel() {
 		if (!rooms.room.find((obj: {name: string, role: string}) => obj.name === newRoomName))
 		{
 			dispatch(addRoom({name: newRoomName, role: "owner"}));
+			setRoomIndex(rooms.room.length);
 			chatSocket.emit('manageRooms', { type: manageRoomsTypes.add, source: user.username, room: newRoomName, access: access});
 		}
 		else

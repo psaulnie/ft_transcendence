@@ -10,31 +10,30 @@ import { useSelector } from 'react-redux';
 function Room({channelName}: {channelName: string}) {
 	const rooms = useSelector((state: any) => state.rooms);
 
-	const [messageSent, setMsg] = useState<chatResponseArgs[]>([]);
+	// const [messageSent, setMsg] = useState<chatResponseArgs[]>([]);
 	const [role, setRole] = useState('none');
+	const [roomIndex, setRoomIndex] = useState(rooms.room.findIndex((obj: {name: string, role: string}) => obj.name === channelName));
 
-	useEffect(() => {
-	  function onMsgSent(value: chatResponseArgs) {
-		setMsg(previous => [...previous, value]);
-	  }
+	// useEffect(() => {
+	//   function onMsgSent(value: chatResponseArgs) {
+	// 	setMsg(previous => [...previous, value]);
+	//   }
 	
-	  chatSocket.on(channelName, onMsgSent);
-	  return () => {
-		chatSocket.off(channelName, onMsgSent);
-	  };
-	}, [channelName]);
+	//   chatSocket.on(channelName, onMsgSent);
+	//   return () => {
+	// 	chatSocket.off(channelName, onMsgSent);
+	//   };
+	// }, [channelName]);
 
 	useEffect(() => {
 		const cRole = rooms.room.find((obj: {name: string, role: string}) => obj.name === channelName);
-		console.log(rooms.room);
-		console.log(channelName);
 		if (cRole)
 			setRole(cRole.role);
 	}, [setRole, rooms, channelName]);
 
 	return (
 		<div className="chat">
-			<MessagesBox messages={ messageSent } role={ role } channelName={ channelName } />
+			<MessagesBox messages={ rooms.room[roomIndex].messages } role={ role } channelName={ channelName } />
 			<InputForm channelName={ channelName } />
 		</div>
 	);

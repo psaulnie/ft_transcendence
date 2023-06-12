@@ -8,7 +8,7 @@ import { accessStatus } from './accessStatus';
 import { addRoom } from '../../store/rooms';
 
 
-function JoinChannel() {
+function JoinChannel({ setRoomIndex }: { setRoomIndex: any }) {
 	const user = useSelector((state: any) => state.user);
 	const rooms = useSelector((state: any) => state.rooms);
 	const dispatch = useDispatch();
@@ -29,8 +29,9 @@ function JoinChannel() {
 		if (!rooms.room.find((obj: {name: string, role: string}) => obj.name === newRoomName))
 		{
 			dispatch(addRoom({name: newRoomName, role: "none"}));
-			let	arg = { type: manageRoomsTypes.add, source: user.username, room: newRoomName, access: 0};
-			chatSocket.emit('manageRooms', arg);
+			console.log(rooms.room.length - 1);
+			setRoomIndex(rooms.room.length);
+			chatSocket.emit('manageRooms', { type: manageRoomsTypes.add, source: user.username, room: newRoomName, access: 0});
 		}
 		else
 			alert("You are currently in this channel");

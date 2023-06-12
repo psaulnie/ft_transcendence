@@ -1,15 +1,22 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { chatResponseArgs } from '../components/Chat/args.interface';
 
 export interface roomType {
 	name: string,
-	role: string
+	role: string,
+}
+
+interface roomInterface {
+	name: string,
+	role: string,
+	messages: chatResponseArgs[]
 }
 
 interface RoomsState {
-	room: roomType[]
+	room: roomInterface[]
 };
 
-const initialUser: RoomsState = localStorage.getItem('rooms') ? JSON.parse(localStorage.getItem('rooms') || '{}') : { room: [] }; // TODO maybe add to localstorage
+const initialUser: RoomsState = localStorage.getItem('rooms') ? JSON.parse(localStorage.getItem('rooms') || '{ room: [] }') : { room: [] }; // TODO maybe add to localstorage
 
 const initialState: RoomsState = {
 	room: initialUser.room
@@ -21,7 +28,7 @@ export const roomsSlice = createSlice({
   reducers: {
 	addRoom: (state, action: PayloadAction<roomType>) => {
 		if (!state.room.find((obj: roomType) => obj.name === action.payload.name))
-			state.room.push(action.payload);
+			state.room.push({name: action.payload.name, role: action.payload.role, messages: []});
 	},
 	removeRoom: (state, action: PayloadAction<string>) => {
 		state.room = state.room.filter((element) => element.name !== action.payload);
@@ -34,8 +41,13 @@ export const roomsSlice = createSlice({
 	quitAll: (state) => {
 		state.room = [];
 	},
+	addMsg: (state, action: PayloadAction<{name: string, message: chatResponseArgs}>) => {
+		const roomIndex = state.room.findIndex((obj: roomType) => obj.name === action.payload.name);
+		if (roomIndex !== -1)
+			state.room[roomIndex].messages.push(action.payload.message);
+	},
   },
 })
 
-export const { addRoom, removeRoom, changeRole, quitAll } = roomsSlice.actions
+export const { addRoom, removeRoom, changeRole, quitAll, addMsg } = roomsSlice.actions
 export default roomsSlice.reducer

@@ -12,11 +12,16 @@ import { changeRole, removeRoom } from '../../store/rooms';
 import Room from './Room';
 import CreateChannel from './CreateChannel';
 import JoinChannel from './JoinChannel';
+import MessageProvider from './Message/MessageProvider';
+
+import { Button, Tab, Tabs } from '@mui/material';
 
 function Chat() {
 	const user = useSelector((state: any) => state.user);
 	const rooms = useSelector((state: any) => state.rooms);
 	const dispatch = useDispatch();
+
+	const [roomIndex, setRoomIndex] = useState(-1);
 	
 	useEffect(() => {
 		function process(value: chatResponseArgs) {
@@ -73,8 +78,13 @@ function Chat() {
 		dispatch(unmute());
 	}, [user.username, dispatch]);
 	
-	function quitRoom(roomName: string)
-	{		
+	function quitRoom(roomName: string, roomIndex: number)
+	{
+		console.log("at quit:" + rooms.room.length);
+		if (rooms.room.length === 1)
+			setRoomIndex(-1)
+		else if (roomIndex !== 0)
+			setRoomIndex(roomIndex - 1);
 		dispatch(removeRoom(roomName));
 		chatSocket.emit('manageRooms', { type: manageRoomsTypes.remove, source: user.username, room: roomName, access: 0});
 	}
@@ -98,6 +108,11 @@ function Chat() {
 		}
 	}, [user.username, isSuccess, blockedUsers, dispatch, refetch]);
 	
+	function changeSelectedRoom(event: React.SyntheticEvent, newIndex: number)
+	{
+		setRoomIndex(newIndex);
+	}
+
 	if (isError) // TODO fix show real error page (make Error component)
 		return (<p>Error: {error.toString()}</p>)
 	else if (isLoading)
@@ -106,19 +121,34 @@ function Chat() {
 	return (
 		<div className='chat'>
 			<p>------------------------------------------------</p>
-			<CreateChannel />
+			<CreateChannel setRoomIndex={setRoomIndex} />
 			<p>------------------------------------------------</p>
-			<JoinChannel />
+			<JoinChannel setRoomIndex={setRoomIndex} />
 			<p>------------------------------------------------</p>
-			<div className='rooms'>
-				{rooms.room.map((room: {name: string, role: string}) =>
-					<div key={room.name}>
-						<p>{room.name}: </p>
-						<Room channelName={room.name}/>
-						<button onClick={ () => { quitRoom(room.name) } }>x</button>
-					</div>
-				)}
-
+			<div className='rooms'> {/* TODO replace/stylize <p> tag with good close button*/}
+				{
+					roomIndex != -1 ? 
+						<Tabs value={roomIndex} onChange={changeSelectedRoom}>
+							{rooms.room.map((room: {name: string, role: string}, key: number) =>
+								<Tab value={key} tabIndex={key} key={key} label={
+									<span>
+										{room.name}
+										{
+											roomIndex === key ? <p onClick={() => quitRoom(room.name, key) }>x</p> : null
+										}
+										<MessageProvider roomName={room.name}/>
+									</span>
+								}/>
+								)}
+						</Tabs>
+					: null
+				}
+				{/* TODO append button to quit room*/}
+				{ 
+					roomIndex != -1 ?
+						<Room key={rooms.room[roomIndex].name} channelName={rooms.room[roomIndex].name}/>
+					: null
+				}
 			</div>
 
 		</div>
