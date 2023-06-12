@@ -3,27 +3,13 @@ import { useState, useEffect } from 'react';
 import MessagesBox from './Message/MessagesBox';
 import InputForm from './Message/InputForm';
 
-import { chatSocket } from '../../chatSocket';
-import { chatResponseArgs } from './args.interface';
 import { useSelector } from 'react-redux';
 
 function Room({channelName}: {channelName: string}) {
 	const rooms = useSelector((state: any) => state.rooms);
 
-	// const [messageSent, setMsg] = useState<chatResponseArgs[]>([]);
 	const [role, setRole] = useState('none');
-	const [roomIndex, setRoomIndex] = useState(rooms.room.findIndex((obj: {name: string, role: string}) => obj.name === channelName));
-
-	// useEffect(() => {
-	//   function onMsgSent(value: chatResponseArgs) {
-	// 	setMsg(previous => [...previous, value]);
-	//   }
-	
-	//   chatSocket.on(channelName, onMsgSent);
-	//   return () => {
-	// 	chatSocket.off(channelName, onMsgSent);
-	//   };
-	// }, [channelName]);
+	const roomIndex = rooms.room.findIndex((obj: {name: string, role: string}) => obj.name === channelName); // TODO check if need to recalculate index at every rendering in useEffect
 
 	useEffect(() => {
 		const cRole = rooms.room.find((obj: {name: string, role: string}) => obj.name === channelName);

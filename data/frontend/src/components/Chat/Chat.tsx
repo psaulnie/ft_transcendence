@@ -14,7 +14,8 @@ import CreateChannel from './CreateChannel';
 import JoinChannel from './JoinChannel';
 import MessageProvider from './Message/MessageProvider';
 
-import { Button, Tab, Tabs } from '@mui/material';
+import { IconButton, Tab, Tabs } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 
 function Chat() {
 	const user = useSelector((state: any) => state.user);
@@ -80,7 +81,6 @@ function Chat() {
 	
 	function quitRoom(roomName: string, roomIndex: number)
 	{
-		console.log("at quit:" + rooms.room.length);
 		if (rooms.room.length === 1)
 			setRoomIndex(-1)
 		else if (roomIndex !== 0)
@@ -127,14 +127,18 @@ function Chat() {
 			<p>------------------------------------------------</p>
 			<div className='rooms'> {/* TODO replace/stylize <p> tag with good close button*/}
 				{
-					roomIndex != -1 ? 
+					roomIndex !== -1 ? 
 						<Tabs value={roomIndex} onChange={changeSelectedRoom}>
 							{rooms.room.map((room: {name: string, role: string}, key: number) =>
 								<Tab value={key} tabIndex={key} key={key} label={
 									<span>
 										{room.name}
 										{
-											roomIndex === key ? <p onClick={() => quitRoom(room.name, key) }>x</p> : null
+											roomIndex === key ? 
+												<IconButton size="small" component="span" onClick={() => quitRoom(room.name, key) }>
+													<CloseIcon/>
+												</IconButton>
+											: null
 										}
 										<MessageProvider roomName={room.name}/>
 									</span>
@@ -145,7 +149,7 @@ function Chat() {
 				}
 				{/* TODO append button to quit room*/}
 				{ 
-					roomIndex != -1 ?
+					roomIndex !== -1 ?
 						<Room key={rooms.room[roomIndex].name} channelName={rooms.room[roomIndex].name}/>
 					: null
 				}
