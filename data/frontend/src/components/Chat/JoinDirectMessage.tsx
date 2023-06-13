@@ -58,7 +58,7 @@ function JoinDirectMessage({ setRoomIndex }: { setRoomIndex: any }) {
 			<p>Direct Message</p>
 				<FormControl sx={{ m: 1, minWidth: 120 }} size="small">
 					<InputLabel>Users</InputLabel>
-					<Select name="usersList" onClick={refetch} onChange={changeSelectedUser}>
+					<Select name="usersList" onClick={refetch} onChange={changeSelectedUser} defaultValue=''>
 						{
 							usersList.data.map((username: any) => {
 								if (!user.blockedUsers.find((obj: string) => obj === username))

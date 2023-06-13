@@ -62,7 +62,7 @@ function JoinChannel({ setRoomIndex }: { setRoomIndex: any }) {
 			<p>Join a new channel</p>
 				<FormControl sx={{ m: 1, minWidth: 120 }} size="small">
 					<InputLabel>Channel</InputLabel>
-					<Select name="roomsList" onClick={refetch} onChange={changeSelectedRoom}>
+					<Select name="roomsList" onClick={refetch} onChange={changeSelectedRoom} defaultValue=''>
 						{
 							roomsList.data.map((room: any) => {
 								if (!rooms.room.find((obj: {name: string, role: string}) => obj.name === room.roomName) && room.access !== accessStatus.private)

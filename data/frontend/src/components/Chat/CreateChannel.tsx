@@ -71,7 +71,7 @@ function CreateChannel({ setRoomIndex }: { setRoomIndex: any }) {
 				<TextField error={exist.data} helperText={exist.data ? 'This room already exists' : null} label="Room name" value={newRoomName} onChange={updateNewRoomName} />
 				<FormControl>
 					<InputLabel>Access</InputLabel>
-					<Select name="roomAccess" onChange={changeAccess}>
+					<Select name="roomAccess" onChange={changeAccess} defaultValue=''>
 						<MenuItem defaultChecked value="public">Public</MenuItem>
 						<MenuItem value="private">Private</MenuItem>
 						<MenuItem value="password">Password-protected</MenuItem>
