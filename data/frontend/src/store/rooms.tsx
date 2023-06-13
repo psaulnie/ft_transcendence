@@ -48,6 +48,15 @@ export const roomsSlice = createSlice({
 		const roomIndex = state.room.findIndex((obj: roomType) => obj.name === action.payload.name);
 		if (roomIndex !== -1)
 			state.room[roomIndex].messages.push(action.payload.message);
+		else
+		{
+			state.room.push({
+				name: action.payload.name,
+				role: "none",
+				isDirectMsg: true,
+				messages: [action.payload.message]
+			});
+		}
 	},
   },
 })

@@ -75,9 +75,9 @@ export class ChatController {
 	@Get('users/list')
 	async getUsersList(): Promise<string> {
 		const users = await this.userService.findAll();
-		let usersList: string[] = [];
+		let usersList: string[] = []; 
 
-		users.forEach((element) => usersList.push(element.username))
+		users.forEach((element) => usersList.push(element.username)) // TODO return also is online or not
 		const res = {
 			status: 'success',
 			data: usersList

@@ -109,6 +109,10 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 			await this.roomService.removeUser(payload.room, user.id);
 			this.server.emit(payload.room, { source: payload.source, target: payload.room, action: actionTypes.left })
 		}
+		else if (payload.type == manageRoomsTypes.addDirectMsg)
+		{
+			this.server.emit(payload.room, { source: payload.source, target: payload.room, action: actionTypes.privmsg })
+		}
 	}
 
 	@SubscribeMessage('kick')

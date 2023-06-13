@@ -4,7 +4,7 @@ import UserOptionsMenu from './UserOptionsMenu';
 type arg = {
 	message: chatResponseArgs,
 	role: string,
-	channelName: string
+	channelName: string,
 }
 
 export default function Message({ message, role, channelName }: arg) {

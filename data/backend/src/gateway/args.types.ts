@@ -1,8 +1,8 @@
 export enum manageRoomsTypes {
 	add = 0,
 	remove,
+	addDirectMsg
 }
-
 export enum sendMsgTypes {
 	msg = 0,
 }
@@ -16,5 +16,6 @@ export enum actionTypes {
 	msg,
 	block,
 	admin,
-	mute
+	mute,
+	privmsg
 }

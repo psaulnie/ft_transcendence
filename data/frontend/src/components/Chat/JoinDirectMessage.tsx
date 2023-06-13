@@ -4,7 +4,6 @@ import { chatSocket } from '../../chatSocket';
 import { manageRoomsTypes } from './args.types';
 import { useSelector, useDispatch } from 'react-redux';
 import { useGetUsersListQuery } from '../../store/api';
-import { accessStatus } from './accessStatus';
 import { addRoom } from '../../store/rooms';
 
 import { FormControl, FormHelperText, InputLabel, Select, MenuItem, SelectChangeEvent, IconButton } from '@mui/material';
@@ -32,7 +31,7 @@ function JoinDirectMessage({ setRoomIndex }: { setRoomIndex: any }) {
 		{
 			dispatch(addRoom({name: newUser, role: "none", isDirectMsg: true}));
 			setRoomIndex(rooms.room.length);
-			chatSocket.emit('manageRooms', { type: manageRoomsTypes.add, source: user.username, room: newUser, access: 0});
+			chatSocket.emit('manageRooms', { type: manageRoomsTypes.addDirectMsg, source: user.username, room: newUser, access: 0});
 		}
 		setNewUser('null');
 	}
@@ -70,9 +69,9 @@ function JoinDirectMessage({ setRoomIndex }: { setRoomIndex: any }) {
 							})
 						}
 					</Select>
-					<FormHelperText>Select an existing channel</FormHelperText>
+					<FormHelperText>Select an user</FormHelperText>
 				</FormControl>
-				<IconButton size="small" onClick={ joinRoom }>
+				<IconButton size="small" onClick={ joinRoom }> {/* TODO disable button when user not selected*/}
 					<AddIcon/>
 				</IconButton>
 		</div>

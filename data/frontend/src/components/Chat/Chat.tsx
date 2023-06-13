@@ -1,19 +1,20 @@
 import React, { useEffect, useState } from 'react';
 
 import { chatSocket } from '../../chatSocket';
-import { chatResponseArgs } from './args.interface';
-import { actionTypes, manageRoomsTypes } from './args.types';
+import { manageRoomsTypes } from './args.types';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { useGetBlockedUsersQuery } from '../../store/api';
-import { addBlockedUser, mute, unmute } from '../../store/user';
-import { changeRole, removeRoom } from '../../store/rooms';
+import { addBlockedUser, unmute } from '../../store/user';
+import { removeRoom } from '../../store/rooms';
 
 import Room from './Room';
 import CreateChannel from './CreateChannel';
 import JoinChannel from './JoinChannel';
 import MessageProvider from './Message/MessageProvider';
 import JoinDirectMessage from './JoinDirectMessage';
+import DirectMessageProvider from './DirectMessageProvider';
+import ChatProcess from './ChatProcess';
 
 import { IconButton, Tab, Tabs } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
@@ -24,56 +25,6 @@ function Chat() {
 	const dispatch = useDispatch();
 
 	const [roomIndex, setRoomIndex] = useState(-1);
-	
-	useEffect(() => {
-		function process(value: chatResponseArgs) {
-			if (value.action === actionTypes.kick)
-			{
-				dispatch(removeRoom(value.source));
-				alert("You've been kicked from this channel: " + value.target);
-			}
-			else if (value.action === actionTypes.ban)
-			{
-				dispatch(removeRoom(value.source));
-				alert("You are banned from this channel: " + value.target);
-			}
-			else if (value.action === actionTypes.private)
-			{
-				dispatch(removeRoom(value.source));
-				alert("You cannot join this private channel: " + value.target);
-			}
-			else if (value.action === actionTypes.block)
-				alert(value.source + " blocked you");
-			else if (value.action === actionTypes.admin)
-			{
-				dispatch(changeRole({name: value.source, role: "admin", isDirectMsg: false}));
-				alert("You are now admin in " + value.source);
-			}
-			else if (value.action === actionTypes.mute)
-			{
-				if (value.isMuted === true)
-				{
-					const time = new Date(value.date);
-					dispatch(mute());
-					alert("You are muted from this channel: " + value.target);
-					setTimeout(() => {
-						dispatch(unmute());
-					}, time.getMinutes() * 60 * 1000);
-					return ;
-				}
-				dispatch(mute());
-				alert("You've been muted from this channel: " + value.target);
-				setTimeout(() => {
-					dispatch(unmute());
-				}, 10 * 60 * 1000);
-			}
-		}
-		
-		chatSocket.on(user.username + "OPTIONS", process);
-		return () => {
-			chatSocket.off(user.username + "OPTIONS", process);
-		};
-	}, [rooms, user.username, dispatch]);
 
 	useEffect(() => {
 		chatSocket.emit("newUser", user.username);
@@ -87,7 +38,9 @@ function Chat() {
 		else if (roomIndex !== 0)
 			setRoomIndex(roomIndex - 1);
 		dispatch(removeRoom(roomName));
-		chatSocket.emit('manageRooms', { type: manageRoomsTypes.remove, source: user.username, room: roomName, access: 0});
+		const room = rooms.room.find((obj: any) => obj.name === roomName)
+		if (room.isDirectMessage === false)
+			chatSocket.emit('manageRooms', { type: manageRoomsTypes.remove, source: user.username, room: roomName, access: 0});
 	}
 	
 	const {
@@ -121,6 +74,7 @@ function Chat() {
 
 	return (
 		<div className='chat'>
+			<ChatProcess />
 			<p>------------------------------------------------</p>
 			<JoinDirectMessage setRoomIndex={setRoomIndex} />
 			<p>------------------------------------------------</p>
@@ -128,7 +82,8 @@ function Chat() {
 			<p>------------------------------------------------</p>
 			<JoinChannel setRoomIndex={setRoomIndex} />
 			<p>------------------------------------------------</p>
-			<div className='rooms'> {/* TODO replace/stylize <p> tag with good close button*/}
+			<div className='rooms'>
+				<DirectMessageProvider roomIndex={roomIndex} setRoomIndex={setRoomIndex}/>
 				{
 					roomIndex !== -1 ? 
 						<Tabs value={roomIndex} onChange={changeSelectedRoom}>
@@ -150,7 +105,6 @@ function Chat() {
 						</Tabs>
 					: null
 				}
-				{/* TODO append button to quit room*/}
 				{ 
 					roomIndex !== -1 ?
 						<Room key={rooms.room[roomIndex].name} channelName={rooms.room[roomIndex].name}/>
