@@ -3,50 +3,47 @@ import React, { useState, useEffect } from 'react';
 import { chatSocket } from '../../chatSocket';
 import { manageRoomsTypes } from './args.types';
 import { useSelector, useDispatch } from 'react-redux';
-import { useGetRoomsListQuery } from '../../store/api';
+import { useGetUsersListQuery } from '../../store/api';
 import { accessStatus } from './accessStatus';
 import { addRoom } from '../../store/rooms';
 
 import { FormControl, FormHelperText, InputLabel, Select, MenuItem, SelectChangeEvent, IconButton } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add'
 
-function JoinChannel({ setRoomIndex }: { setRoomIndex: any }) {
+function JoinDirectMessage({ setRoomIndex }: { setRoomIndex: any }) {
 	const user = useSelector((state: any) => state.user);
 	const rooms = useSelector((state: any) => state.rooms);
 	const dispatch = useDispatch();
 
-	const [newRoomName, setNewRoomName] = useState('null');
+	const [newUser, setNewUser] = useState('null');
 
-	function changeSelectedRoom(event: SelectChangeEvent)
+	function changeSelectedUser(event: SelectChangeEvent)
 	{
 		event.preventDefault();
-		setNewRoomName(event.target.value);
+		setNewUser(event.target.value);
 	}
 
 	function joinRoom(event: any)
 	{
 		event.preventDefault();
-		if (newRoomName === 'null')
+		if (newUser === 'null')
 			return ;
-		if (!rooms.room.find((obj: {name: string, role: string}) => obj.name === newRoomName))
+		if (!rooms.room.find((obj: {name: string, role: string}) => obj.name === newUser))
 		{
-			dispatch(addRoom({name: newRoomName, role: "none", isDirectMsg: false}));
-			console.log(rooms.room.length - 1);
+			dispatch(addRoom({name: newUser, role: "none", isDirectMsg: true}));
 			setRoomIndex(rooms.room.length);
-			chatSocket.emit('manageRooms', { type: manageRoomsTypes.add, source: user.username, room: newRoomName, access: 0});
+			chatSocket.emit('manageRooms', { type: manageRoomsTypes.add, source: user.username, room: newUser, access: 0});
 		}
-		else
-			alert("You are currently in this channel");
-		setNewRoomName('null');
+		setNewUser('null');
 	}
 
 	const {
-		data: roomsList,
+		data: usersList,
 		isLoading,
 		isError,
 		error,
 		refetch
-	} = useGetRoomsListQuery({});
+	} = useGetUsersListQuery({});
 
 	useEffect(() => {
 		refetch();
@@ -58,16 +55,16 @@ function JoinChannel({ setRoomIndex }: { setRoomIndex: any }) {
 		return (<p>Loading...</p>);
 
 	return (
-		<div className='joinChannel'>
-			<p>Join a new channel</p>
+		<div className='joinDirectMessage'>
+			<p>Direct Message</p>
 				<FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-					<InputLabel>Channel</InputLabel>
-					<Select name="roomsList" onClick={refetch} onChange={changeSelectedRoom}>
+					<InputLabel>Users</InputLabel>
+					<Select name="usersList" onClick={refetch} onChange={changeSelectedUser}>
 						{
-							roomsList.data.map((room: any) => {
-								if (!rooms.room.find((obj: {name: string, role: string}) => obj.name === room.roomName) && room.access !== accessStatus.private)
+							usersList.data.map((username: any) => {
+								if (!user.blockedUsers.find((obj: string) => obj === username))
 									return (
-										<MenuItem key={room.roomName} value={room.roomName}>{room.roomName}</MenuItem>
+										<MenuItem key={username} value={username}>{username}</MenuItem>
 									);
 								return (null);
 							})
@@ -82,4 +79,4 @@ function JoinChannel({ setRoomIndex }: { setRoomIndex: any }) {
 	)
 }
 
-export default JoinChannel;
+export default JoinDirectMessage;

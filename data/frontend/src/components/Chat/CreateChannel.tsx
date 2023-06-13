@@ -7,7 +7,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useGetIsRoomNameTakenQuery } from '../../store/api';
 import { addRoom } from '../../store/rooms';
 
-import { TextField } from '@mui/material';
+import { TextField, Select, MenuItem, FormControl, FormHelperText, SelectChangeEvent, IconButton, InputLabel } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add'
 
 function CreateChannel({ setRoomIndex }: { setRoomIndex: any }) {
 	const user = useSelector((state: any) => state.user);
@@ -37,14 +38,14 @@ function CreateChannel({ setRoomIndex }: { setRoomIndex: any }) {
 			setNewRoomName(e.target.value);
 	}
 
-	function changeAccess(event: React.FormEvent<HTMLSelectElement>)
+	function changeAccess(event: SelectChangeEvent)
 	{
 		event.preventDefault();
-		if (event.currentTarget.value === "public")
+		if (event.target.value === "public")
 			setAccess(accessStatus.public);
-		else if (event.currentTarget.value === "private")
+		else if (event.target.value === "private")
 			setAccess(accessStatus.private);
-		else if (event.currentTarget.value === "password")
+		else if (event.target.value === "password")
 			setAccess(accessStatus.protected);
 	}
 
@@ -53,7 +54,7 @@ function CreateChannel({ setRoomIndex }: { setRoomIndex: any }) {
 		event.preventDefault();
 		if (!rooms.room.find((obj: {name: string, role: string}) => obj.name === newRoomName))
 		{
-			dispatch(addRoom({name: newRoomName, role: "owner"}));
+			dispatch(addRoom({name: newRoomName, role: "owner", isDirectMsg: false}));
 			setRoomIndex(rooms.room.length);
 			chatSocket.emit('manageRooms', { type: manageRoomsTypes.add, source: user.username, room: newRoomName, access: access});
 		}
@@ -67,16 +68,20 @@ function CreateChannel({ setRoomIndex }: { setRoomIndex: any }) {
 	return (
 		<div className='createChannel'>
 			<p>Create a new channel</p>
-			<form onSubmit={ createRoom }>
 				<TextField error={exist.data} helperText={exist.data ? 'This room already exists' : null} label="Room name" value={newRoomName} onChange={updateNewRoomName} />
-				<select name="roomAccess" onChange={changeAccess}>
-					<option value="public">Public</option>
-					<option value="private">Private</option>
-					<option value="password">Password-protected</option>
-				</select>
-				<button id='rooms' name='rooms' disabled={exist.data === true || newRoomName === ''}>+</button>
+				<FormControl>
+					<InputLabel>Access</InputLabel>
+					<Select name="roomAccess" onChange={changeAccess}>
+						<MenuItem defaultChecked value="public">Public</MenuItem>
+						<MenuItem value="private">Private</MenuItem>
+						<MenuItem value="password">Password-protected</MenuItem>
+					</Select>
+					<FormHelperText>Channel access</FormHelperText>
+				</FormControl>
+				<IconButton name='rooms' disabled={exist.data === true || newRoomName === ''} onClick={ createRoom } >
+					<AddIcon/>
+				</IconButton>
 				{ exist.data === true ? <p>This room already exist</p> : null}
-			</form>
 		</div>
 	)
 }

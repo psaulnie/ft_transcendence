@@ -4,11 +4,13 @@ import { chatResponseArgs } from '../components/Chat/args.interface';
 export interface roomType {
 	name: string,
 	role: string,
+	isDirectMsg: boolean,
 }
 
 interface roomInterface {
 	name: string,
 	role: string,
+	isDirectMsg: boolean,
 	messages: chatResponseArgs[]
 }
 
@@ -27,8 +29,9 @@ export const roomsSlice = createSlice({
   initialState,
   reducers: {
 	addRoom: (state, action: PayloadAction<roomType>) => {
-		if (!state.room.find((obj: roomType) => obj.name === action.payload.name))
-			state.room.push({name: action.payload.name, role: action.payload.role, messages: []});
+		if (!state.room.find((obj: roomType) => obj.name === action.payload.name) || action.payload.isDirectMsg === true)
+			state.room.push({name: action.payload.name, role: action.payload.role, isDirectMsg: action.payload.isDirectMsg,
+								messages: []});
 	},
 	removeRoom: (state, action: PayloadAction<string>) => {
 		state.room = state.room.filter((element) => element.name !== action.payload);

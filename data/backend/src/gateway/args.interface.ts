@@ -9,7 +9,8 @@ export interface sendMsgArgs {
 	type: number,
 	source: string,
 	target: string,
-	data: string
+	data: string,
+	isDirectMessage: boolean
 }
 
 export interface actionArgs {

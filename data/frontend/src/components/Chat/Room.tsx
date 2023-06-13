@@ -20,7 +20,7 @@ function Room({channelName}: {channelName: string}) {
 	return (
 		<div className="chat">
 			<MessagesBox messages={ rooms.room[roomIndex].messages } role={ role } channelName={ channelName } />
-			<InputForm channelName={ channelName } />
+			<InputForm channelName={ channelName } isDirectMessage={rooms.room[roomIndex].isDirectMessage} />
 		</div>
 	);
 }

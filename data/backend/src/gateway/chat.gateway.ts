@@ -44,21 +44,28 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
 	@SubscribeMessage('sendMsg')
 	async handleMessage(client: Socket, payload: sendMsgArgs) {
-		console.log("sendMsg");
-		console.log(payload);
-		// console.log(this.mutedUsers.findIndex((element) => element != payload.source) == -1);
 		if (payload.data.length > 255)
 			payload.data = payload.data.slice(0, 255);
-		if (payload.type == sendMsgTypes.msg && !this.mutedUsers.find((element) => element.username == payload.source))
+		if (payload.isDirectMessage == true)
 		{
-			const user = await this.userService.findOne(payload.source);
-			const role = await this.roomService.getRole(payload.target, user.id);
-			console.log("role: " + role);
 			this.server.emit(payload.target, { 
 				source: payload.source,
 				target: payload.target,
 				action: actionTypes.msg,
 				data: payload.data,
+				isDirectMessage: true,
+				role: "none" })
+		}
+		if (payload.type == sendMsgTypes.msg && !this.mutedUsers.find((element) => element.username == payload.source))
+		{
+			const user = await this.userService.findOne(payload.source);
+			const role = await this.roomService.getRole(payload.target, user.id);
+			this.server.emit(payload.target, { 
+				source: payload.source,
+				target: payload.target,
+				action: actionTypes.msg,
+				data: payload.data,
+				isDirectMessage: false,
 				role: role })
 		}
 	}
@@ -81,12 +88,12 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 				const nbr = await this.roomService.addUser(payload.room, user.id);
 				if (nbr == -1)
 				{
-					this.server.emit(payload.source, { source: payload.source, target: payload.room, action: actionTypes.ban })
+					this.server.emit(payload.source + "OPTIONS", { source: payload.source, target: payload.room, action: actionTypes.ban })
 					return ;
 				}
 				if (nbr == accessStatus.private)
 				{
-					this.server.emit(payload.source, { source: payload.source, target: payload.room, action: actionTypes.private })
+					this.server.emit(payload.source + "OPTIONS", { source: payload.source, target: payload.room, action: actionTypes.private })
 					return ;
 				}
 			}
@@ -95,12 +102,11 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 			if (!mutedUser)
 				this.server.emit(payload.room, { source: payload.source, target: payload.room, action: actionTypes.join })
 			else
-				this.server.emit(payload.source, { source: payload.source, target: payload.room, action: actionTypes.mute, date: mutedUser.time})
+				this.server.emit(payload.source + "OPTIONS", { source: payload.source, target: payload.room, action: actionTypes.mute, date: mutedUser.time})
 		}
 		else if (payload.type == manageRoomsTypes.remove)
 		{
 			await this.roomService.removeUser(payload.room, user.id);
-			console.log({ source: payload.source, target: payload.room, action: actionTypes.left });
 			this.server.emit(payload.room, { source: payload.source, target: payload.room, action: actionTypes.left })
 		}
 	}
@@ -109,14 +115,14 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	async kickUser(client: Socket, payload: actionArgs) {
 		const user = await this.userService.findOne(payload.target);
 		await this.roomService.removeUser(payload.room, user.id);
-		this.server.emit(payload.target, { source: payload.source, target: payload.room, action: actionTypes.kick, role: "none" })
+		this.server.emit(payload.target + "OPTIONS", { source: payload.source, target: payload.room, action: actionTypes.kick, role: "none" })
 	}
 
 	@SubscribeMessage('ban')
 	async banUser(client: Socket, payload: actionArgs) {
 		const user = await this.userService.findOne(payload.target);
 		await this.roomService.addToBanList(payload.room, user.id);
-		this.server.emit(payload.target, { source: payload.source, target: payload.room, action: actionTypes.ban, role: "none" })
+		this.server.emit(payload.target + "OPTIONS", { source: payload.source, target: payload.room, action: actionTypes.ban, role: "none" })
 	}
 
 	@SubscribeMessage('block')
@@ -127,7 +133,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		if (user == null || blockedUser == null)
 			return ; // TODO handle error
 		await this.userService.blockUser(user, blockedUser.username);
-		this.server.emit(payload.target, { source: payload.source, target: payload.target, action: actionTypes.block, role: "none" })
+		this.server.emit(payload.target + "OPTIONS", { source: payload.source, target: payload.target, action: actionTypes.block, role: "none" })
 	}
 
 	@SubscribeMessage('admin')
@@ -137,7 +143,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		if (user == null)
 			return ; // TODO handle error
 		await this.roomService.addAdmin(payload.room, user.id);
-		this.server.emit(payload.target, { source: payload.room, target: payload.target, action: actionTypes.admin, role: "admin" })
+		this.server.emit(payload.target + "OPTIONS", { source: payload.room, target: payload.target, action: actionTypes.admin, role: "admin" })
 	}
 
 	@SubscribeMessage('mute')
@@ -149,7 +155,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 				return item.username !== payload.target;
 			})
 		});
-		this.server.emit(payload.target, { source: payload.room, target: payload.target, action: actionTypes.mute, role: "none" })
+		this.server.emit(payload.target + "OPTIONS", { source: payload.room, target: payload.target, action: actionTypes.mute, role: "none" })
 	}
 
 	async afterInit(server: Server) {

@@ -44,7 +44,8 @@ export class ChatController {
 
 	@Get('rooms/list')
 	async getRoomsList(): Promise<string> {
-		const roomsList = await this.roomService.findAll();
+		const roomsList = await this.roomService.findAll(); // TODO send only needed column
+
 		const res = {
 			status: 'success',
 			data: roomsList
@@ -71,4 +72,16 @@ export class ChatController {
 		return JSON.stringify(res);
 	}
 
+	@Get('users/list')
+	async getUsersList(): Promise<string> {
+		const users = await this.userService.findAll();
+		let usersList: string[] = [];
+
+		users.forEach((element) => usersList.push(element.username))
+		const res = {
+			status: 'success',
+			data: usersList
+		}
+		return JSON.stringify(res);
+	}
 }

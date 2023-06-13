@@ -10,6 +10,7 @@ export interface sendMsgArgs {
 	source: string,
 	target: string,
 	data: string,
+	isDirectMessage: boolean
 }
 
 export interface actionArgs {

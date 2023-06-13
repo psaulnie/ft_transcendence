@@ -13,6 +13,7 @@ import Room from './Room';
 import CreateChannel from './CreateChannel';
 import JoinChannel from './JoinChannel';
 import MessageProvider from './Message/MessageProvider';
+import JoinDirectMessage from './JoinDirectMessage';
 
 import { IconButton, Tab, Tabs } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
@@ -45,7 +46,7 @@ function Chat() {
 				alert(value.source + " blocked you");
 			else if (value.action === actionTypes.admin)
 			{
-				dispatch(changeRole({name: value.source, role: "admin"}));
+				dispatch(changeRole({name: value.source, role: "admin", isDirectMsg: false}));
 				alert("You are now admin in " + value.source);
 			}
 			else if (value.action === actionTypes.mute)
@@ -68,9 +69,9 @@ function Chat() {
 			}
 		}
 		
-		chatSocket.on(user.username, process);
+		chatSocket.on(user.username + "OPTIONS", process);
 		return () => {
-			chatSocket.off(user.username, process);
+			chatSocket.off(user.username + "OPTIONS", process);
 		};
 	}, [rooms, user.username, dispatch]);
 
@@ -120,6 +121,8 @@ function Chat() {
 
 	return (
 		<div className='chat'>
+			<p>------------------------------------------------</p>
+			<JoinDirectMessage setRoomIndex={setRoomIndex} />
 			<p>------------------------------------------------</p>
 			<CreateChannel setRoomIndex={setRoomIndex} />
 			<p>------------------------------------------------</p>
