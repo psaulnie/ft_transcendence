@@ -2,12 +2,15 @@ import { useEffect } from "react";
 import { actionTypes } from "./args.types";
 
 import { useDispatch, useSelector } from "react-redux";
-import { removeRoom, changeRole } from "../../store/rooms";
+import { removeRoom, changeRole, addRoom } from "../../store/rooms";
 import { mute, unmute } from "../../store/user";
 import { chatResponseArgs } from "./args.interface";
 import { chatSocket } from "../../chatSocket";
-export default function ChatProcess() {
+
+export default function ChatProcess({setRoomIndex}: {setRoomIndex: any}) {
 	const user = useSelector((state: any) => state.user);
+	const rooms = useSelector((state: any) => state.rooms);
+
 	const dispatch = useDispatch();
 
 	useEffect(() => {
@@ -51,6 +54,15 @@ export default function ChatProcess() {
 				setTimeout(() => {
 					dispatch(unmute());
 				}, 10 * 60 * 1000);
+			}
+			else if (value.action === actionTypes.wrongpassword)
+			{
+				dispatch(removeRoom(value.target))
+				alert("Wrong password"); // TODO use a snackbar
+			}
+			else if (value.action === actionTypes.rightpassword)
+			{
+				setRoomIndex(rooms.room.length);
 			}
 		}
 

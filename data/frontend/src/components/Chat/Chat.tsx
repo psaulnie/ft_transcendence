@@ -74,7 +74,7 @@ function Chat() {
 
 	return (
 		<div className='chat'>
-			<ChatProcess />
+			<ChatProcess setRoomIndex={setRoomIndex} />
 			<p>------------------------------------------------</p>
 			<JoinDirectMessage setRoomIndex={setRoomIndex} />
 			<p>------------------------------------------------</p>

@@ -73,6 +73,9 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	@SubscribeMessage('manageRooms')
 	async handleRoom(client: Socket, payload: manageRoomsArgs) {
 		const user = await this.userService.findOne(payload.source);
+		let hasPassword = false;
+		let role = "none";
+
 		if (payload.room.length > 10)
 			payload.room = payload.room.slice(0, 255);
 		if (client.id != user.clientId)
@@ -81,10 +84,24 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		{
 			if (await this.roomService.findOne(payload.room) == null)
 			{
-				await this.roomService.createRoom(payload.room, user.id, payload.access);
+				if (payload.access != accessStatus.protected)
+					await this.roomService.createRoom(payload.room, user.id, payload.access);
+				else
+					await this.roomService.createPasswordProtectedRoom(payload.room, user.id, payload.access, payload.password);
+				role = "owner";
 			}
 			else
 			{
+				if (payload.access == accessStatus.protected)
+				{
+					const roomPassword = await this.roomService.getPassword(payload.room);
+					if (roomPassword != payload.password)
+					{
+						this.server.emit(payload.source + "OPTIONS", { source: payload.source, target: payload.room, action: actionTypes.wrongpassword })
+						return ;
+					}
+					hasPassword = true;
+				}
 				const nbr = await this.roomService.addUser(payload.room, user.id);
 				if (nbr == -1)
 				{
@@ -103,6 +120,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 				this.server.emit(payload.room, { source: payload.source, target: payload.room, action: actionTypes.join })
 			else
 				this.server.emit(payload.source + "OPTIONS", { source: payload.source, target: payload.room, action: actionTypes.mute, date: mutedUser.time})
+			if (hasPassword == true)
+				this.server.emit(payload.source + "OPTIONS", { source: payload.source, target: payload.room, action: actionTypes.rightpassword, role: role})
 		}
 		else if (payload.type == manageRoomsTypes.remove)
 		{

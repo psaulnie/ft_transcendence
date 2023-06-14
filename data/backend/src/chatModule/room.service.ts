@@ -42,6 +42,24 @@ export class RoomService {
 		return await (this.roomsRepository.save(room));
 	}
 
+	async createPasswordProtectedRoom(name: string, ownerID: number, access: number, password: string): Promise<Room>
+	{
+		const room = new Room();
+		const usersList = new UsersList();
+
+		usersList.userId = ownerID;
+		// usersList.room = room;
+		room.roomName = name;
+		room.ownerID = ownerID;
+		room.usersNumber = 1;
+		room.access = access;
+		room.password = password;
+		if (!room.usersID)
+			room.usersID = [];
+		room.usersID.push(usersList);
+		return await (this.roomsRepository.save(room));
+	}
+
 	async addRoom(room: Room): Promise<Room>
 	{
 		return await (this.roomsRepository.save(room));
@@ -138,4 +156,12 @@ export class RoomService {
 		room.adminsID.push(await this.usersListRepository.save(newAdmin));
 		return await (this.roomsRepository.save(room));
 	}
+
+	async getPassword(roomName: string): Promise<string>
+	{
+		const room = await this.findOne(roomName);
+
+		return (room.password);
+	}
+
 }

@@ -9,6 +9,7 @@ import { addRoom } from '../../store/rooms';
 
 import { TextField, Select, MenuItem, FormControl, FormHelperText, SelectChangeEvent, IconButton, InputLabel } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add'
+import PasswordDialog from './PasswordDialog';
 
 function CreateChannel({ setRoomIndex }: { setRoomIndex: any }) {
 	const user = useSelector((state: any) => state.user);
@@ -17,7 +18,8 @@ function CreateChannel({ setRoomIndex }: { setRoomIndex: any }) {
 	
 	const [newRoomName, setNewRoomName] = useState('');
 	const [access, setAccess] = useState(accessStatus.public);
-	
+	const [showDialog, setShowDialog] = useState(false);
+
 	const {
 		data: exist,
 		isLoading,
@@ -54,6 +56,11 @@ function CreateChannel({ setRoomIndex }: { setRoomIndex: any }) {
 		event.preventDefault();
 		if (!rooms.room.find((obj: {name: string, role: string}) => obj.name === newRoomName))
 		{
+			if (access === accessStatus.protected)
+			{
+				setShowDialog(true);
+				return ;
+			}
 			dispatch(addRoom({name: newRoomName, role: "owner", isDirectMsg: false}));
 			setRoomIndex(rooms.room.length);
 			chatSocket.emit('manageRooms', { type: manageRoomsTypes.add, source: user.username, room: newRoomName, access: access});
@@ -81,6 +88,7 @@ function CreateChannel({ setRoomIndex }: { setRoomIndex: any }) {
 				<IconButton name='rooms' disabled={exist.data === true || newRoomName === ''} onClick={ createRoom } >
 					<AddIcon/>
 				</IconButton>
+				{ showDialog === true ? <PasswordDialog open={showDialog} setOpen={setShowDialog} roomName={newRoomName} role="owner" /> : null}
 				{ exist.data === true ? <p>This room already exist</p> : null}
 		</div>
 	)

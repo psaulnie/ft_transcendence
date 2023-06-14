@@ -71,7 +71,7 @@ function JoinDirectMessage({ setRoomIndex }: { setRoomIndex: any }) {
 					</Select>
 					<FormHelperText>Select an user</FormHelperText>
 				</FormControl>
-				<IconButton size="small" onClick={ joinRoom }> {/* TODO disable button when user not selected*/}
+				<IconButton size="small" onClick={ joinRoom } disabled={newUser === "null"}> {/* TODO disable button when user not selected*/}
 					<AddIcon/>
 				</IconButton>
 		</div>

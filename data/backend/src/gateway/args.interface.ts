@@ -2,7 +2,8 @@ export interface manageRoomsArgs {
 	type: number,
 	source: string,
 	room: string,
-	access: number
+	access: number,
+	password: string
 }
 
 export interface sendMsgArgs {
