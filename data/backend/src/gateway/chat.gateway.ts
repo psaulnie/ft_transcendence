@@ -87,7 +87,10 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 				if (payload.access != accessStatus.protected)
 					await this.roomService.createRoom(payload.room, user.id, payload.access);
 				else
+				{
+					hasPassword = true;
 					await this.roomService.createPasswordProtectedRoom(payload.room, user.id, payload.access, payload.password);
+				}
 				role = "owner";
 			}
 			else

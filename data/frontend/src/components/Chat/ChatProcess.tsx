@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { actionTypes } from "./args.types";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -7,35 +7,54 @@ import { mute, unmute } from "../../store/user";
 import { chatResponseArgs } from "./args.interface";
 import { chatSocket } from "../../chatSocket";
 
+import { Snackbar, Alert, AlertColor } from "@mui/material";
+
 export default function ChatProcess({setRoomIndex}: {setRoomIndex: any}) {
 	const user = useSelector((state: any) => state.user);
 	const rooms = useSelector((state: any) => state.rooms);
-
 	const dispatch = useDispatch();
+
+	const [open, setOpen] = useState(false);
+	const [message, setMessage] = useState('');
+	const [type, setType] = useState<AlertColor>('success');
+
+	function setSnackbar(message: string, type: AlertColor)
+	{
+		setMessage(message);
+		setType(type);
+		setOpen(true);
+	}
+
+	const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+		if (reason === 'clickaway') {
+		  return;
+		}
+		setOpen(false);
+	};
 
 	useEffect(() => {
 		function process(value: chatResponseArgs) {
 			if (value.action === actionTypes.kick)
 			{
 				dispatch(removeRoom(value.source));
-				alert("You've been kicked from this channel: " + value.target);
+				setSnackbar("You've been kicked from this channel: " + value.target, "error");
 			}
 			else if (value.action === actionTypes.ban)
 			{
 				dispatch(removeRoom(value.source));
-				alert("You are banned from this channel: " + value.target);
+				setSnackbar("You are banned from this channel: " + value.target, "error");
 			}
 			else if (value.action === actionTypes.private)
 			{
 				dispatch(removeRoom(value.source));
-				alert("You cannot join this private channel: " + value.target);
+				setSnackbar("You cannot join this private channel: " + value.target, "error");
 			}
 			else if (value.action === actionTypes.block)
-				alert(value.source + " blocked you");
+				setSnackbar(value.source + " blocked you", "warning");
 			else if (value.action === actionTypes.admin)
 			{
 				dispatch(changeRole({name: value.source, role: "admin", isDirectMsg: false}));
-				alert("You are now admin in " + value.source);
+				setSnackbar("You are now admin in " + value.source, "success");
 			}
 			else if (value.action === actionTypes.mute)
 			{
@@ -50,7 +69,7 @@ export default function ChatProcess({setRoomIndex}: {setRoomIndex: any}) {
 					return ;
 				}
 				dispatch(mute());
-				alert("You've been muted from this channel: " + value.target);
+				setSnackbar("You've been muted from this channel: " + value.target, "error")
 				setTimeout(() => {
 					dispatch(unmute());
 				}, 10 * 60 * 1000);
@@ -58,7 +77,7 @@ export default function ChatProcess({setRoomIndex}: {setRoomIndex: any}) {
 			else if (value.action === actionTypes.wrongpassword)
 			{
 				dispatch(removeRoom(value.target))
-				alert("Wrong password"); // TODO use a snackbar
+				setSnackbar("Wrong password", "error");
 			}
 			else if (value.action === actionTypes.rightpassword)
 			{
@@ -72,5 +91,11 @@ export default function ChatProcess({setRoomIndex}: {setRoomIndex: any}) {
 		};
 	}, [user.username, dispatch]);
 
-	return (null);
+	return (
+		<Snackbar open={open} autoHideDuration={5000} anchorOrigin={{vertical: 'top', horizontal: 'right'}} onClose={handleClose} >
+			<Alert onClose={handleClose} severity={type} sx={{ width: '100%' }}>
+				{message}
+ 			</Alert>
+		</Snackbar>
+	);
 }
