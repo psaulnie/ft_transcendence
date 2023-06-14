@@ -30,7 +30,9 @@ export const roomsSlice = createSlice({
   initialState,
   reducers: {
 	addRoom: (state, action: PayloadAction<roomType>) => {
-		if (!state.room.find((obj: roomType) => obj.name === action.payload.name) || action.payload.isDirectMsg === true)
+		const room = state.room.find((obj: roomType) => obj.name === action.payload.name);
+
+		if (!room)
 			state.room.push({name: action.payload.name, role: action.payload.role, isDirectMsg: action.payload.isDirectMsg,
 								messages: [], unread: false});
 	},
@@ -64,6 +66,8 @@ export const roomsSlice = createSlice({
 		}
 	},
 	setRead: (state, action: PayloadAction<number>) => {
+		// console.log(state.room[0].unread);
+		// console.log(action.payload);
 		if (state.room[action.payload])
 			state.room[action.payload].unread = false;
 	},

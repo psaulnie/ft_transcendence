@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { chatResponseArgs } from "../args.interface";
-import { addMsg, setRead } from "../../../store/rooms";
+import { addMsg, addRoom, setRead } from "../../../store/rooms";
 import { chatSocket } from "../../../chatSocket";
 
 function MessageProvider({roomName, currentRoomIndex}: {roomName: string, currentRoomIndex: number}) {
@@ -20,6 +20,8 @@ function MessageProvider({roomName, currentRoomIndex}: {roomName: string, curren
 				dispatch(setRead(roomIndex));
 			else if (currentRoomIndex === roomIndex)
 				dispatch(setRead(roomIndex));
+			if (rooms.room[roomIndex] && rooms.room[roomIndex].isDirectMessage === true)
+				dispatch(addRoom({name: value.source, role: "none",  isDirectMsg: true}));
 		}
 		
 		let currentRoom = rooms.room.find(((obj: any) => obj.name === roomName));
