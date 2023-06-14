@@ -16,7 +16,7 @@ import JoinDirectMessage from './JoinDirectMessage';
 import DirectMessageProvider from './DirectMessageProvider';
 import ChatProcess from './ChatProcess';
 
-import { IconButton, Tab, Tabs } from '@mui/material';
+import { IconButton, Tab, Tabs, Skeleton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import MarkChatUnreadIcon from '@mui/icons-material/MarkChatUnread';
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble'; 
@@ -73,7 +73,12 @@ function Chat() {
 	if (isError) // TODO fix show real error page (make Error component)
 		return (<p>Error: {error.toString()}</p>)
 	else if (isLoading)
-		return (<p>Loading...</p>);
+		return (
+			<div>
+				<Skeleton variant="text"/>
+				<Skeleton variant="rectangular" />
+			</div>
+		);
 
 	return (
 		<div className='chat'>

@@ -6,7 +6,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useGetUsersListQuery } from '../../store/api';
 import { addRoom } from '../../store/rooms';
 
-import { FormControl, FormHelperText, InputLabel, Select, MenuItem, SelectChangeEvent, IconButton } from '@mui/material';
+import { FormControl, FormHelperText, InputLabel, Select, MenuItem, SelectChangeEvent, IconButton, Skeleton } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add'
 
 function JoinDirectMessage({ setRoomIndex }: { setRoomIndex: any }) {
@@ -51,7 +51,12 @@ function JoinDirectMessage({ setRoomIndex }: { setRoomIndex: any }) {
 	if (isError) // TODO fix show real error page (make Error component)
 		return (<p>Error: {error.toString()}</p>)
 	else if (isLoading)
-		return (<p>Loading...</p>);
+		return (
+			<div>
+				<Skeleton variant="text"/>
+				<Skeleton variant="rectangular" />
+			</div>
+		);
 
 	return (
 		<div className='joinDirectMessage'>

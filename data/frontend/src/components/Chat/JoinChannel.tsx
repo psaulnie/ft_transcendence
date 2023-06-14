@@ -10,6 +10,7 @@ import { addRoom } from '../../store/rooms';
 import PasswordDialog from './PasswordDialog';
 
 import { FormControl, FormHelperText, InputLabel, Select, MenuItem, SelectChangeEvent, IconButton } from '@mui/material';
+import { Skeleton } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add'
 
 function JoinChannel({ setRoomIndex }: { setRoomIndex: any }) {
@@ -64,7 +65,12 @@ function JoinChannel({ setRoomIndex }: { setRoomIndex: any }) {
 	if (isError) // TODO fix show real error page (make Error component)
 		return (<p>Error: {error.toString()}</p>)
 	else if (isLoading)
-		return (<p>Loading...</p>);
+		return (
+			<div>
+				<Skeleton variant="text"/>
+				<Skeleton variant="rectangular" />
+			</div>
+		);
 
 	return (
 		<div className='joinChannel'>

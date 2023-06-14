@@ -1,7 +1,24 @@
 import { chatResponseArgs } from '../args.interface';
-import UserOptionsMenu from './UserOptionsMenu';
+
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
+
+import UserOptionsMenu from './UserOptionsMenu';
+
+import { styled } from '@mui/material/styles';
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
+import Grid from '@mui/material/Grid';
+import Avatar from '@mui/material/Avatar';
+import Typography from '@mui/material/Typography';
+
+const StyledPaper = styled(Paper)(({ theme }) => ({
+	backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+	...theme.typography.body2,
+	padding: theme.spacing(2),
+	maxWidth: 400,
+	color: theme.palette.text.primary,
+}));
 
 type arg = {
 	message: chatResponseArgs,
