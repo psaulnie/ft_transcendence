@@ -2,16 +2,24 @@ import { chatSocket } from '../../../chatSocket';
 import { chatResponseArgs } from '../args.interface';
 import { useDispatch, useSelector } from 'react-redux';
 import { addBlockedUser } from '../../../store/user';
+import { Menu, MenuItem } from '@mui/material';
 
 type arg = {
 	message: chatResponseArgs,
 	role: string,
-	channelName: string
+	channelName: string,
+	contextMenu: any,
+	setContextMenu: any,
+	handleContextMenu: any
 }
 
-export default function UserOptionsMenu({ message, role, channelName }: arg) {
+export default function UserOptionsMenu({ message, role, channelName, contextMenu, setContextMenu, handleContextMenu }: arg) {
 	const user = useSelector((state: any) => state.user);
 	const dispatch = useDispatch();
+
+	const handleClose = () => {
+		setContextMenu(null);
+	};
 
 	function blockUser(message: chatResponseArgs) {
 		chatSocket.emit("block", { source: user.username, target: message.source, room: channelName });
@@ -19,25 +27,32 @@ export default function UserOptionsMenu({ message, role, channelName }: arg) {
 	}
 
 	return (
-		<div className='options'>
-		{
-			role !== "none" && user.username !== message.source && message.role === "none" ? (
-				<div className='adminOptions'>
-					<button onClick={ () => { chatSocket.emit("kick", { source: user.username, target: message.source, room: channelName }) } } >Kick</button>
-					<button onClick={ () => { chatSocket.emit("ban", { source: user.username, target: message.source, room: channelName })  } } >Ban</button>
-					<button onClick={ () => { chatSocket.emit("mute", { source: user.username, target: message.source, room: channelName }) } }>Mute</button>
-					<button onClick={ () => { chatSocket.emit("admin", { source: user.username, target: message.source, room: channelName }) } } >Set {message.source} as administrator</button>
-				</div>
-			) : null
-		}
-		{
-			user.username !== message.source ? (
-				<div className='standardOptions'>
-					<button onClick={ () => { blockUser(message) } } >Block</button>
-					<button>Invite {message.source} to play Pong</button>
-				</div>
-			) : null
-		}
-		</div>
+		// <div className='options'>
+			<Menu open={contextMenu !== null}
+				onClose={handleClose}
+				anchorReference="anchorPosition"
+				anchorPosition={
+				contextMenu !== null
+					? { top: contextMenu.mouseY, left: contextMenu.mouseX }
+					: undefined}>
+				{
+					role !== "none" && user.username !== message.source && message.role === "none" ? (
+						<div className='adminOptions'>
+							<MenuItem onClick={ () => { chatSocket.emit("kick", { source: user.username, target: message.source, room: channelName }) } } >Kick</MenuItem>
+							<MenuItem onClick={ () => { chatSocket.emit("ban", { source: user.username, target: message.source, room: channelName })  } } >Ban</MenuItem>
+							<MenuItem onClick={ () => { chatSocket.emit("mute", { source: user.username, target: message.source, room: channelName }) } }>Mute</MenuItem>
+							<MenuItem onClick={ () => { chatSocket.emit("admin", { source: user.username, target: message.source, room: channelName }) } } >Set {message.source} as administrator</MenuItem>
+						</div>
+					) : null
+				}
+				{
+					user.username !== message.source ? (
+						<div className='standardOptions'>
+							<MenuItem onClick={ () => { blockUser(message) } } >Block</MenuItem>
+							<MenuItem>Invite {message.source} to play Pong</MenuItem>
+						</div>
+					) : null
+				}
+			</Menu>
 	);
 }

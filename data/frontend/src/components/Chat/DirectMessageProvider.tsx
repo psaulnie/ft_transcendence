@@ -3,7 +3,6 @@ import { useEffect } from "react";
 import { chatResponseArgs } from "./args.interface";
 import { addMsg, addRoom, setRead } from "../../store/rooms";
 import { chatSocket } from "../../chatSocket";
-import { actionTypes } from "./args.types";
 
 export default function DirectMessageProvider({roomIndex, setRoomIndex}: {roomIndex: number, setRoomIndex: any}) {
 	const user = useSelector((state: any) => state.user);
