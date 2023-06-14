@@ -4,14 +4,15 @@ import { chatResponseArgs } from '../components/Chat/args.interface';
 export interface roomType {
 	name: string,
 	role: string,
-	isDirectMsg: boolean,
+	isDirectMsg: boolean
 }
 
 interface roomInterface {
 	name: string,
 	role: string,
 	isDirectMsg: boolean,
-	messages: chatResponseArgs[]
+	messages: chatResponseArgs[],
+	unread: boolean
 }
 
 interface RoomsState {
@@ -31,7 +32,7 @@ export const roomsSlice = createSlice({
 	addRoom: (state, action: PayloadAction<roomType>) => {
 		if (!state.room.find((obj: roomType) => obj.name === action.payload.name) || action.payload.isDirectMsg === true)
 			state.room.push({name: action.payload.name, role: action.payload.role, isDirectMsg: action.payload.isDirectMsg,
-								messages: []});
+								messages: [], unread: false});
 	},
 	removeRoom: (state, action: PayloadAction<string>) => {
 		state.room = state.room.filter((element) => element.name !== action.payload);
@@ -47,19 +48,27 @@ export const roomsSlice = createSlice({
 	addMsg: (state, action: PayloadAction<{name: string, message: chatResponseArgs}>) => {
 		const roomIndex = state.room.findIndex((obj: roomType) => obj.name === action.payload.name);
 		if (roomIndex !== -1)
+		{
 			state.room[roomIndex].messages.push(action.payload.message);
+			state.room[roomIndex].unread = true;
+		}
 		else
 		{
 			state.room.push({
 				name: action.payload.name,
 				role: "none",
 				isDirectMsg: true,
-				messages: [action.payload.message]
+				messages: [action.payload.message],
+				unread: true
 			});
 		}
+	},
+	setRead: (state, action: PayloadAction<number>) => {
+		if (state.room[action.payload])
+			state.room[action.payload].unread = false;
 	},
   },
 })
 
-export const { addRoom, removeRoom, changeRole, quitAll, addMsg } = roomsSlice.actions
+export const { addRoom, removeRoom, changeRole, quitAll, addMsg, setRead } = roomsSlice.actions
 export default roomsSlice.reducer

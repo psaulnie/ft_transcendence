@@ -1,23 +1,30 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { chatResponseArgs } from "../args.interface";
-import { addMsg } from "../../../store/rooms";
+import { addMsg, setRead } from "../../../store/rooms";
 import { chatSocket } from "../../../chatSocket";
 
-function MessageProvider({roomName}: {roomName: string}) {
+function MessageProvider({roomName, currentRoomIndex}: {roomName: string, currentRoomIndex: number}) {
 	const user = useSelector((state: any) => state.user);
 	const rooms = useSelector((state: any) => state.rooms);
 	const dispatch = useDispatch();
 
 	
+	
 	useEffect(() => {
 		function onMsgSent(value: chatResponseArgs) {
+			let roomIndex = rooms.room.findIndex(((obj: any) => obj.name === roomName));
+
 			dispatch(addMsg({name: roomName, message: value}));
+			if (value.source === user.username)
+				dispatch(setRead(roomIndex));
+			else if (currentRoomIndex === roomIndex)
+				dispatch(setRead(roomIndex));
 		}
 		
 		let currentRoom = rooms.room.find(((obj: any) => obj.name === roomName));
 		let listener = roomName;
-
+		
 		if (currentRoom.isDirectMessage === true)
 			listener = roomName + user.username;
 		chatSocket.on(listener, onMsgSent);

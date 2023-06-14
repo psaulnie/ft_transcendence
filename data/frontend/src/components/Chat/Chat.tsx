@@ -6,7 +6,7 @@ import { manageRoomsTypes } from './args.types';
 import { useDispatch, useSelector } from 'react-redux';
 import { useGetBlockedUsersQuery } from '../../store/api';
 import { addBlockedUser, unmute } from '../../store/user';
-import { removeRoom } from '../../store/rooms';
+import { removeRoom, setRead } from '../../store/rooms';
 
 import Room from './Room';
 import CreateChannel from './CreateChannel';
@@ -18,6 +18,8 @@ import ChatProcess from './ChatProcess';
 
 import { IconButton, Tab, Tabs } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import MarkChatUnreadIcon from '@mui/icons-material/MarkChatUnread';
+import ChatBubbleIcon from '@mui/icons-material/ChatBubble'; 
 
 function Chat() {
 	const user = useSelector((state: any) => state.user);
@@ -65,6 +67,7 @@ function Chat() {
 	function changeSelectedRoom(event: React.SyntheticEvent, newIndex: number)
 	{
 		setRoomIndex(newIndex);
+		dispatch(setRead(newIndex));
 	}
 
 	if (isError) // TODO fix show real error page (make Error component)
@@ -86,8 +89,8 @@ function Chat() {
 				<DirectMessageProvider roomIndex={roomIndex} setRoomIndex={setRoomIndex}/>
 				{
 					roomIndex !== -1 ? 
-						<Tabs value={roomIndex} onChange={changeSelectedRoom}>
-							{rooms.room.map((room: {name: string, role: string}, key: number) =>
+						<Tabs value={roomIndex} onChange={changeSelectedRoom} variant="scrollable" scrollButtons="auto">
+							{rooms.room.map((room: {name: string, role: string, unread: boolean}, key: number, newMsg: boolean) =>
 								<Tab value={key} tabIndex={key} key={key} label={
 									<span>
 										{room.name}
@@ -98,9 +101,9 @@ function Chat() {
 												</IconButton>
 											: null
 										}
-										<MessageProvider roomName={room.name}/>
+										<MessageProvider roomName={room.name} currentRoomIndex={roomIndex}/>
 									</span>
-								}/>
+								} icon={ room.unread ? <MarkChatUnreadIcon fontSize='small'/> : <ChatBubbleIcon fontSize='small'/> } iconPosition="start" />
 								)}
 						</Tabs>
 					: null
