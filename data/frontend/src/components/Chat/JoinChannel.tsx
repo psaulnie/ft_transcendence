@@ -78,7 +78,8 @@ function JoinChannel({ setRoomIndex }: { setRoomIndex: any }) {
 									return (
 										<MenuItem key={room.roomName} value={room.roomName} onClick={() => setAccess(room.access)}>{room.roomName}</MenuItem>
 									);
-								return (null);
+								else
+									return (null);
 							})
 						}
 					</Select>

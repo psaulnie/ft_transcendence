@@ -2,14 +2,14 @@ import { useEffect, useState } from "react";
 import { actionTypes } from "./args.types";
 
 import { useDispatch, useSelector } from "react-redux";
-import { removeRoom, changeRole, addRoom } from "../../store/rooms";
+import { removeRoom, changeRole } from "../../store/rooms";
 import { mute, unmute } from "../../store/user";
 import { chatResponseArgs } from "./args.interface";
 import { chatSocket } from "../../chatSocket";
 
 import { Snackbar, Alert, AlertColor } from "@mui/material";
 
-export default function ChatProcess({setRoomIndex}: {setRoomIndex: any}) {
+export default function ChatProcess({roomIndex, setRoomIndex}: {roomIndex: number, setRoomIndex: any}) {
 	const user = useSelector((state: any) => state.user);
 	const rooms = useSelector((state: any) => state.rooms);
 	const dispatch = useDispatch();
@@ -33,20 +33,32 @@ export default function ChatProcess({setRoomIndex}: {setRoomIndex: any}) {
 	};
 
 	useEffect(() => {
+
+		function quitRoom(roomName: string)
+		{
+			if (rooms.room.length === 1)
+				setRoomIndex(-1)
+			else
+				setRoomIndex(0);
+			console.log(roomIndex);
+			dispatch(removeRoom(roomName));
+		}
+
 		function process(value: chatResponseArgs) {
 			if (value.action === actionTypes.kick)
 			{
-				dispatch(removeRoom(value.source));
+				console.log(value);
+				quitRoom(value.target);
 				setSnackbar("You've been kicked from this channel: " + value.target, "error");
 			}
 			else if (value.action === actionTypes.ban)
 			{
-				dispatch(removeRoom(value.source));
+				quitRoom(value.target);
 				setSnackbar("You are banned from this channel: " + value.target, "error");
 			}
 			else if (value.action === actionTypes.private)
 			{
-				dispatch(removeRoom(value.source));
+				quitRoom(value.target);
 				setSnackbar("You cannot join this private channel: " + value.target, "error");
 			}
 			else if (value.action === actionTypes.block)
@@ -89,7 +101,7 @@ export default function ChatProcess({setRoomIndex}: {setRoomIndex: any}) {
 		return () => {
 			chatSocket.off(user.username + "OPTIONS", process);
 		};
-	}, [user.username, dispatch]);
+	}, [user.username, dispatch, rooms, setRoomIndex, roomIndex]);
 
 	return (
 		<Snackbar open={open} autoHideDuration={5000} anchorOrigin={{vertical: 'top', horizontal: 'right'}} onClose={handleClose} >

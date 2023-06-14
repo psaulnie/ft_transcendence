@@ -74,7 +74,7 @@ function Chat() {
 
 	return (
 		<div className='chat'>
-			<ChatProcess setRoomIndex={setRoomIndex} />
+			<ChatProcess roomIndex={roomIndex} setRoomIndex={setRoomIndex} />
 			<p>------------------------------------------------</p>
 			<JoinDirectMessage setRoomIndex={setRoomIndex} />
 			<p>------------------------------------------------</p>
@@ -106,7 +106,7 @@ function Chat() {
 					: null
 				}
 				{ 
-					roomIndex !== -1 ?
+					roomIndex !== -1 && rooms.room[roomIndex] ?
 						<Room key={rooms.room[roomIndex].name} channelName={rooms.room[roomIndex].name}/>
 					: null
 				}
