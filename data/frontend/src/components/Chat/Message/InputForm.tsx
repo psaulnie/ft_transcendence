@@ -4,6 +4,9 @@ import { sendMsgArgs } from '../args.interface';
 import { sendMsgTypes } from '../args.types';
 import { useSelector } from 'react-redux';
 
+import { Button, Grid, TextField } from '@mui/material';
+import SendIcon from '@mui/icons-material/Send';
+
 export default function Room({channelName, isDirectMessage}: {channelName: string, isDirectMessage: boolean}) {
 	const user = useSelector((state: any) => state.user);
 
@@ -33,19 +36,25 @@ export default function Room({channelName, isDirectMessage}: {channelName: strin
 		send();
 	}
 
-	function onChange(e: React.FormEvent<HTMLInputElement>)
+	function onChange(e: any)
 	{
-		if (e.currentTarget.value.length <= 255)
+		if (e.target.value.length <= 255)
 		{
-			setValue({ type: sendMsgTypes.msg, source: user.username, target: channelName, data: e.currentTarget.value, isDirectMessage: isDirectMessage });
-			setMessage(e.currentTarget.value);	
+			setValue({ type: sendMsgTypes.msg, source: user.username, target: channelName, data: e.target.value, isDirectMessage: isDirectMessage });
+			setMessage(e.target.value);	
 		}
 	}
 
 	return (
-		<form onSubmit={ onSubmit }>
-			<input maxLength={255} value={message} onChange={ onChange } disabled={user.isMuted} />
-			<button id='message' name='message' type="submit" disabled={ isLoading || user.isMuted } onKeyDown={keyPress}>Send</button>
-		</form>
+		<Grid container justifyContent='center' alignItems='center'>
+			<Grid item xs={10} >
+				<TextField fullWidth value={message} onChange={onChange} disabled={user.isMuted} /> {/* TODO character limit */}
+			</Grid>
+			<Grid item xs={2}>
+				<Button variant='contained' name='message' type="submit"
+						disabled={ isLoading || user.isMuted } onKeyDown={keyPress}
+						onClick={onSubmit} endIcon={<SendIcon />}>Send</Button>
+			</Grid>
+		</Grid>
 	);
 }

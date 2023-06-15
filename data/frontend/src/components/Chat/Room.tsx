@@ -5,6 +5,8 @@ import InputForm from './Message/InputForm';
 
 import { useSelector } from 'react-redux';
 
+import { Grid, Box } from '@mui/material';
+
 function Room({channelName}: {channelName: string}) {
 	const rooms = useSelector((state: any) => state.rooms);
 
@@ -17,11 +19,18 @@ function Room({channelName}: {channelName: string}) {
 			setRole(cRole.role);
 	}, [setRole, rooms, channelName]);
 
+
 	return (
-		<div className="chat">
-			<MessagesBox messages={ rooms.room[roomIndex].messages } role={ role } channelName={ channelName } />
-			<InputForm channelName={ channelName } isDirectMessage={rooms.room[roomIndex].isDirectMessage} />
-		</div>
+		<Grid>
+			<Grid xs={12}>
+				<Box sx={{ height: '80vh', padding: '16px', overflow: 'auto' }}>
+					<MessagesBox messages={ rooms.room[roomIndex].messages } role={ role } channelName={ channelName } />
+				</Box>
+			</Grid>
+			<Grid xs={12}>
+				<InputForm channelName={ channelName } isDirectMessage={rooms.room[roomIndex].isDirectMessage} />
+			</Grid>
+		</Grid>
 	);
 }
 

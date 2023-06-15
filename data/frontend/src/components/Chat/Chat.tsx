@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 
 import { chatSocket } from '../../chatSocket';
 import { manageRoomsTypes } from './args.types';
@@ -86,9 +86,9 @@ function Chat() {
 	return (
 		<div className='chat'>
 			<ChatProcess roomIndex={roomIndex} setRoomIndex={setRoomIndex} />
-			<Grid container sx={{ height: '100vh' }}>
-				<Grid item sx={{ width: '25%', backgroundColor: 'lightgray' }}>
-						<Box sx={{ backgroundColor: '#282c34', height: '100%', padding: '16px', borderRadius: '10px'}}>
+			<Grid container sx={{ display: 'flex'}} justifyContent="space-evenly">
+				<Grid item xs={3}>
+						<Box sx={{ backgroundColor: '#102b47', height: '100%', padding: '16px', borderRadius: '10px'}}>
 							<Grid container>
 								<JoinDirectMessage setRoomIndex={setRoomIndex} />
 							</Grid>
@@ -100,36 +100,38 @@ function Chat() {
 							</Grid>
 						</Box>
 				</Grid>
-				<Grid item sx={{ width: '75%' }}>
-					<Box sx={{ height: '100%', padding: '16px' }}>
+				<Grid item xs={7}>
 						<DirectMessageProvider roomIndex={roomIndex} setRoomIndex={setRoomIndex}/>
-						{
-							roomIndex !== -1 ? 
-								<Tabs value={roomIndex} onChange={changeSelectedRoom} variant="scrollable" scrollButtons="auto">
-									{rooms.room.map((room: {name: string, role: string, unread: boolean}, key: number, newMsg: boolean) =>
-										<Tab value={key} tabIndex={key} key={key} label={
-											<span>
-												{room.name}
-												{
-													roomIndex === key ? 
-														<IconButton size="small" component="span" onClick={() => quitRoom(room.name, key) }>
-															<CloseIcon/>
-														</IconButton>
-													: null
-												}
-												<MessageProvider roomName={room.name} currentRoomIndex={roomIndex}/>
-											</span>
-										} icon={ room.unread ? <MarkChatUnreadIcon fontSize='small'/> : <ChatBubbleIcon fontSize='small'/> } iconPosition="start" />
-										)}
-								</Tabs>
-							: null
-						}
-						{ 
-							roomIndex !== -1 && rooms.room[roomIndex] ?
-								<Room key={rooms.room[roomIndex].name} channelName={rooms.room[roomIndex].name}/>
-							: null
-						}
-					</Box>
+						<Grid>
+							{ 
+								roomIndex !== -1 && rooms.room[roomIndex] ?
+									<Room key={rooms.room[roomIndex].name} channelName={rooms.room[roomIndex].name}/>
+								: null
+							}	
+						</Grid>
+						<Grid item sx={{ marginBottom: '70px' }}>
+							{
+								roomIndex !== -1 ? 
+									<Tabs sx={{position: 'fixed', bottom:"0", width:"100%"}} value={roomIndex} onChange={changeSelectedRoom} variant="scrollable" scrollButtons="auto">
+										{rooms.room.map((room: {name: string, role: string, unread: boolean}, key: number, newMsg: boolean) =>
+											<Tab value={key} tabIndex={key} key={key} label={
+												<span>
+													{room.name}
+													{
+														roomIndex === key ? 
+															<IconButton size="small" component="span" onClick={() => quitRoom(room.name, key) }>
+																<CloseIcon/>
+															</IconButton>
+														: null
+													}
+													<MessageProvider roomName={room.name} currentRoomIndex={roomIndex}/>
+												</span>
+											} icon={ room.unread ? <MarkChatUnreadIcon fontSize='small'/> : <ChatBubbleIcon fontSize='small'/> } iconPosition="start" />
+											)}
+									</Tabs>
+								: null
+							}
+						</Grid>
 				</Grid>
 			</Grid>
 		</div>

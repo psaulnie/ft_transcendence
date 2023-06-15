@@ -13,7 +13,7 @@ import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
-	backgroundColor: '#1A2027',
+	backgroundColor: '#102b47',
 	...theme.typography.body2,
 	padding: theme.spacing(2),
 	maxWidth: 400,
