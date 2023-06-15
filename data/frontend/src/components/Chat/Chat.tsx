@@ -62,7 +62,9 @@ function Chat() {
 				dispatch(addBlockedUser(element.username));
 			});
 		}
-	}, [user.username, isSuccess, blockedUsers, dispatch, refetch]);
+		if (rooms.room.length !== 0)
+			setRoomIndex(0);
+	}, [user.username, isSuccess, blockedUsers, dispatch, refetch, setRoomIndex, rooms]);
 	
 	function changeSelectedRoom(event: React.SyntheticEvent, newIndex: number)
 	{

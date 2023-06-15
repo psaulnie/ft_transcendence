@@ -13,11 +13,10 @@ import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
-	backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+	backgroundColor: '#1A2027',
 	...theme.typography.body2,
 	padding: theme.spacing(2),
 	maxWidth: 400,
-	color: theme.palette.text.primary,
 }));
 
 type arg = {
@@ -46,13 +45,40 @@ export default function Message({ message, role, channelName }: arg) {
 	};
 
 	return (
-		<div className='message'onContextMenu={handleContextMenu} style={{ cursor: 'context-menu' }}>
+		<div className='message'onContextMenu={handleContextMenu} >
 			{
 				user.username !== message.source ? 
 					<UserOptionsMenu message={message} role={role} channelName={channelName} contextMenu={contextMenu} setContextMenu={setContextMenu} handleContextMenu={handleContextMenu} />
 				: null
 			}
-			<p>{ message.source }: { message.data }</p>
+			<Box sx={{ flexGrow: 1, overflow: 'hidden', px: 3}} >
+				<StyledPaper
+					sx={{
+					my: 1,
+					mx: 'auto',
+					p: 2,
+					}}
+				>
+					<Grid container wrap="nowrap" spacing={2}>
+						{	user.username !== message.source ? 
+								<Grid item>
+									<Avatar>{message.source[0]}</Avatar>
+								</Grid>
+							: null
+						}
+						<Grid item xs style={{ flexWrap: 'wrap' } }>
+							<Typography style={ {color: 'white', overflowWrap: 'break-word', textAlign: user.username !== message.source ? 'start' : 'end'} } >{ message.data }</Typography>
+						</Grid>
+						{
+							user.username === message.source ? 
+								<Grid item>
+									<Avatar>{message.source[0]}</Avatar>
+								</Grid>
+							: null
+						}
+					</Grid>
+	  			</StyledPaper>
+			</Box>
 		</div>
 	);
 }
