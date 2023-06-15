@@ -14,7 +14,6 @@ export default function Room({channelName, isDirectMessage}: {channelName: strin
 	const [message, setMessage] = useState('');
 	const [isLoading, setIsLoading] = useState(false);
 
-	
 	function send() {
 		setMessage('');
 		setValue({ type: sendMsgTypes.msg, source: user.username, target: channelName, data: '', isDirectMessage: isDirectMessage});
@@ -25,9 +24,9 @@ export default function Room({channelName, isDirectMessage}: {channelName: strin
 	}
 
 	function keyPress(event: KeyboardEvent<HTMLButtonElement>) {
-	event.preventDefault();
-	if (event.key ==='Enter' && value.data !== '')
-		send();
+		event.preventDefault();
+		if (event.key ==='Enter' && value.data !== '')
+			send();
 	}
 
 	function onSubmit(event: SyntheticEvent) {
@@ -46,15 +45,17 @@ export default function Room({channelName, isDirectMessage}: {channelName: strin
 	}
 
 	return (
-		<Grid container justifyContent='center' alignItems='center'>
-			<Grid item xs={10} >
-				<TextField fullWidth value={message} onChange={onChange} disabled={user.isMuted} /> {/* TODO character limit */}
+		<form onSubmit={onSubmit}>
+			<Grid container justifyContent='center' alignItems='center'>
+					<Grid item xs={10} >
+						<TextField fullWidth value={message} onChange={onChange} disabled={user.isMuted}/> {/* TODO character limit */}
+					</Grid>
+					<Grid item xs={2}>
+						<Button variant='contained' name='message' type="submit"
+								disabled={ isLoading || user.isMuted } onKeyDown={keyPress}
+								endIcon={<SendIcon />}>Send</Button>
+					</Grid>
 			</Grid>
-			<Grid item xs={2}>
-				<Button variant='contained' name='message' type="submit"
-						disabled={ isLoading || user.isMuted } onKeyDown={keyPress}
-						onClick={onSubmit} endIcon={<SendIcon />}>Send</Button>
-			</Grid>
-		</Grid>
+		</form>
 	);
 }
