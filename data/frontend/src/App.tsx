@@ -1,15 +1,33 @@
 import './App.css';
 
-import { SyntheticEvent } from 'react';
-// Components
-import Navigation from './components/Navigation/Navigation';
-import Chat from './components/Chat/Chat';
+import { SyntheticEvent, useState } from 'react';
+
 import { useSelector, useDispatch } from 'react-redux';
 import { login, logout, setUsername } from './store/user';
+// Components
+import Navigation from './components/Navigation/Navigation';
+import NavDrawer from './components/Navigation/NavDrawer';
+import Chat from './components/Chat/Chat';
 
 function App() {
 	const user = useSelector((state: any) => state.user);
 	const dispatch = useDispatch();
+	
+	const [drawerState, setDrawerState] = useState(false);
+
+	const toggleDrawer =
+    (open: boolean) =>
+    (event: React.KeyboardEvent | React.MouseEvent) => {
+      if (
+        event.type === 'keydown' &&
+        ((event as React.KeyboardEvent).key === 'Tab' ||
+          (event as React.KeyboardEvent).key === 'Shift')
+      ) {
+        return;
+      }
+
+      setDrawerState(open);
+    };
 
 	function onChange(e: React.ChangeEvent<HTMLInputElement>)
 	{
@@ -32,13 +50,18 @@ function App() {
 
 	return (
 	<div className="App">
-		<Navigation />
+		<Navigation setDrawerState={setDrawerState}/>
+		<NavDrawer state={drawerState} toggleDrawer={toggleDrawer}/>
 		<div className='main'>
-			<form onSubmit={onSubmit}>
-				<p>Username:</p>
-				<input name="username" value={user.username || ''} onChange={ onChange } />
-				<button>Login</button>
-			</form>
+			{
+				user.isLoggedIn === false ?
+					<form onSubmit={onSubmit}>
+						<p>Username:</p>
+						<input name="username" value={user.username || ''} onChange={ onChange } />
+						<button>Login</button>
+					</form>
+				: null
+			}
 			{user.isLoggedIn ? <button onClick={logoutButton}>Logout</button> : null}
 			{user.isLoggedIn ? (<Chat />) : null}
 		</div>

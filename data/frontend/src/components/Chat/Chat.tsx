@@ -16,7 +16,8 @@ import JoinDirectMessage from './JoinDirectMessage';
 import DirectMessageProvider from './DirectMessageProvider';
 import ChatProcess from './ChatProcess';
 
-import { IconButton, Tab, Tabs, Skeleton } from '@mui/material';
+import { IconButton, Tab, Tabs, Skeleton, Box, Grid } from '@mui/material';
+
 import CloseIcon from '@mui/icons-material/Close';
 import MarkChatUnreadIcon from '@mui/icons-material/MarkChatUnread';
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble'; 
@@ -85,43 +86,52 @@ function Chat() {
 	return (
 		<div className='chat'>
 			<ChatProcess roomIndex={roomIndex} setRoomIndex={setRoomIndex} />
-			<p>------------------------------------------------</p>
-			<JoinDirectMessage setRoomIndex={setRoomIndex} />
-			<p>------------------------------------------------</p>
-			<CreateChannel setRoomIndex={setRoomIndex} />
-			<p>------------------------------------------------</p>
-			<JoinChannel setRoomIndex={setRoomIndex} />
-			<p>------------------------------------------------</p>
-			<div className='rooms'>
-				<DirectMessageProvider roomIndex={roomIndex} setRoomIndex={setRoomIndex}/>
-				{
-					roomIndex !== -1 ? 
-						<Tabs value={roomIndex} onChange={changeSelectedRoom} variant="scrollable" scrollButtons="auto">
-							{rooms.room.map((room: {name: string, role: string, unread: boolean}, key: number, newMsg: boolean) =>
-								<Tab value={key} tabIndex={key} key={key} label={
-									<span>
-										{room.name}
-										{
-											roomIndex === key ? 
-												<IconButton size="small" component="span" onClick={() => quitRoom(room.name, key) }>
-													<CloseIcon/>
-												</IconButton>
-											: null
-										}
-										<MessageProvider roomName={room.name} currentRoomIndex={roomIndex}/>
-									</span>
-								} icon={ room.unread ? <MarkChatUnreadIcon fontSize='small'/> : <ChatBubbleIcon fontSize='small'/> } iconPosition="start" />
-								)}
-						</Tabs>
-					: null
-				}
-				{ 
-					roomIndex !== -1 && rooms.room[roomIndex] ?
-						<Room key={rooms.room[roomIndex].name} channelName={rooms.room[roomIndex].name}/>
-					: null
-				}
-			</div>
-
+			<Grid container sx={{ height: '100vh' }}>
+				<Grid item sx={{ width: '25%', backgroundColor: 'lightgray' }}>
+						<Box sx={{ backgroundColor: '#282c34', height: '100%', padding: '16px', borderRadius: '10px'}}>
+							<Grid container>
+								<JoinDirectMessage setRoomIndex={setRoomIndex} />
+							</Grid>
+							<Grid container>
+								<CreateChannel setRoomIndex={setRoomIndex} />
+							</Grid>
+							<Grid container>
+								<JoinChannel setRoomIndex={setRoomIndex} />
+							</Grid>
+						</Box>
+				</Grid>
+				<Grid item sx={{ width: '75%' }}>
+					<Box sx={{ height: '100%', padding: '16px' }}>
+						<DirectMessageProvider roomIndex={roomIndex} setRoomIndex={setRoomIndex}/>
+						{
+							roomIndex !== -1 ? 
+								<Tabs value={roomIndex} onChange={changeSelectedRoom} variant="scrollable" scrollButtons="auto">
+									{rooms.room.map((room: {name: string, role: string, unread: boolean}, key: number, newMsg: boolean) =>
+										<Tab value={key} tabIndex={key} key={key} label={
+											<span>
+												{room.name}
+												{
+													roomIndex === key ? 
+														<IconButton size="small" component="span" onClick={() => quitRoom(room.name, key) }>
+															<CloseIcon/>
+														</IconButton>
+													: null
+												}
+												<MessageProvider roomName={room.name} currentRoomIndex={roomIndex}/>
+											</span>
+										} icon={ room.unread ? <MarkChatUnreadIcon fontSize='small'/> : <ChatBubbleIcon fontSize='small'/> } iconPosition="start" />
+										)}
+								</Tabs>
+							: null
+						}
+						{ 
+							roomIndex !== -1 && rooms.room[roomIndex] ?
+								<Room key={rooms.room[roomIndex].name} channelName={rooms.room[roomIndex].name}/>
+							: null
+						}
+					</Box>
+				</Grid>
+			</Grid>
 		</div>
 	);
 }
