@@ -1,8 +1,9 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { chatResponseArgs } from "../args.interface";
-import { addMsg, addRoom, setRead } from "../../../store/rooms";
+import { addMsg, addRoom, setHasPassword, setRead } from "../../../store/rooms";
 import { chatSocket } from "../../../chatSocket";
+import { actionTypes } from "../args.types";
 
 function MessageProvider({roomName, currentRoomIndex}: {roomName: string, currentRoomIndex: number}) {
 	const user = useSelector((state: any) => state.user);
@@ -15,14 +16,18 @@ function MessageProvider({roomName, currentRoomIndex}: {roomName: string, curren
 		function onMsgSent(value: chatResponseArgs) {
 			let roomIndex = rooms.room.findIndex(((obj: any) => obj.name === roomName));
 
-			console.log(value);
-			dispatch(addMsg({name: roomName, message: value}));
-			if (value.source === user.username || currentRoomIndex === roomIndex)
+			if (value.action === actionTypes.hasPassword)
+				dispatch(setHasPassword({index: roomIndex, value: true}));
+			else
 			{
-				dispatch(setRead(roomIndex));
+				dispatch(addMsg({name: roomName, message: value}));
+				if (value.source === user.username || currentRoomIndex === roomIndex)
+				{
+					dispatch(setRead(roomIndex));
+				}
+				if (rooms.room[roomIndex] && rooms.room[roomIndex].isDirectMessage === true)
+					dispatch(addRoom({name: value.source, role: "none",  isDirectMsg: true, hasPassword: false}));
 			}
-			if (rooms.room[roomIndex] && rooms.room[roomIndex].isDirectMessage === true)
-				dispatch(addRoom({name: value.source, role: "none",  isDirectMsg: true, hasPassword: false}));
 		}
 		
 		let currentRoom = rooms.room.find(((obj: any) => obj.name === roomName));

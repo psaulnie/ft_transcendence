@@ -20,7 +20,7 @@ export default function RoomOptionsMenu({contextMenu, setContextMenu, roomIndex,
 	const handleClose = () => {
 		setContextMenu(null);
 	};
-	console.log(rooms.room[roomIndex]);
+
 	return (
 		<Menu open={contextMenu !== null}
 			onClose={handleClose}
@@ -33,16 +33,15 @@ export default function RoomOptionsMenu({contextMenu, setContextMenu, roomIndex,
 				{
 					role !== "none" ?
 						<div>
-
-							<MenuItem disabled={rooms.room[roomIndex].hasPassword !== false} onClick={ () => {  } } >Set a password</MenuItem>
-							<MenuItem disabled={rooms.room[roomIndex].hasPassword !== true} >Change password</MenuItem>
+							<MenuItem disabled={rooms.room[roomIndex].hasPassword !== false} onClick={ () => { setShowDialog(true) } } >Set a password</MenuItem>
+							<MenuItem disabled={rooms.room[roomIndex].hasPassword !== true} onClick={ () => { setShowDialog(true) } } >Change password</MenuItem>
 							<MenuItem disabled={rooms.room[roomIndex].hasPassword !== true} >Remove password</MenuItem> {/* TODO change disabled */}
 						</div>
 					: null
 				}
 				<Divider/>
 				<MenuItem>Invite user</MenuItem>
-				{ showDialog === true ? <PasswordDialog open={showDialog} setOpen={setShowDialog} roomName={roomName} role="none" createRoom={true} /> : null}
+				{ showDialog === true ? <PasswordDialog open={showDialog} setOpen={setShowDialog} roomName={roomName} role="none" createRoom={false} /> : null}
 			</div>
 	</Menu>
 	);

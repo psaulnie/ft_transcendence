@@ -172,6 +172,7 @@ export class RoomService {
 		if (room)
 		{
 			room.password = password;
+			room.access = accessStatus.protected;
 			await this.roomsRepository.save(room);
 		}
 	}

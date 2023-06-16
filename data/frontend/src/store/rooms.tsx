@@ -72,8 +72,12 @@ export const roomsSlice = createSlice({
 		if (state.room[action.payload])
 			state.room[action.payload].unread = false;
 	},
+	setHasPassword: (state, action: PayloadAction<{index: number, value: boolean}>) => {
+		if (state.room[action.payload.index])
+			state.room[action.payload.index].hasPassword = action.payload.value;
+	}
   },
 })
 
-export const { addRoom, removeRoom, changeRole, quitAll, addMsg, setRead } = roomsSlice.actions
+export const { addRoom, removeRoom, changeRole, quitAll, addMsg, setRead, setHasPassword } = roomsSlice.actions
 export default roomsSlice.reducer

@@ -186,7 +186,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	@SubscribeMessage('setPasswordToRoom')
 	async setPasswordToRoom(client: Socket, payload: {room: string, password: string}) {
 		this.roomService.setPasswordToRoom(payload.room, payload.password);
-		// TODO tell people in room that the password has changed
+		this.server.emit(payload.room, { source: payload.room, target: payload.room, action: actionTypes.hasPassword });
 	}
 
 	async afterInit(server: Server) {

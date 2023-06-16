@@ -32,6 +32,8 @@ function JoinChannel({ setRoomIndex }: { setRoomIndex: any }) {
 
 	function joinRoom(event: any)
 	{
+		console.log(access);
+		console.log(newRoomName);
 		event.preventDefault();
 		if (newRoomName === '')
 			return ;
@@ -81,6 +83,7 @@ function JoinChannel({ setRoomIndex }: { setRoomIndex: any }) {
 					<Select name="roomsList" onOpen={refetch} onClick={refetch} onChange={changeSelectedRoom} value={newRoomName} defaultValue=''>
 						{
 							roomsList.data.map((room: any) => {
+								console.log(room.access);
 								if (!rooms.room.find((obj: {name: string, role: string, hasPassword: boolean}) => obj.name === room.roomName) && room.access !== accessStatus.private)
 									return (
 										<MenuItem key={room.roomName} value={room.roomName} onClick={() => setAccess(room.access)}>
