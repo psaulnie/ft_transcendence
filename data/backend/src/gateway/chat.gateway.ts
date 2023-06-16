@@ -46,6 +46,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	async handleMessage(client: Socket, payload: sendMsgArgs) {
 		if (payload.data.length > 255)
 			payload.data = payload.data.slice(0, 255);
+		console.log("a");
 		if (payload.isDirectMessage == true)
 		{
 			this.server.emit(payload.target, { 
