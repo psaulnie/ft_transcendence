@@ -100,7 +100,7 @@ function JoinChannel({ setRoomIndex }: { setRoomIndex: any }) {
 				<IconButton size="small" onClick={ joinRoom }>
 					<AddIcon/>
 				</IconButton>
-				{ showDialog === true ? <PasswordDialog open={showDialog} setOpen={setShowDialog} roomName={newRoomName} role="none" /> : null}
+				{ showDialog === true ? <PasswordDialog open={showDialog} setOpen={setShowDialog} roomName={newRoomName} role="none" createRoom={true} /> : null}
 		</div>
 	)
 }

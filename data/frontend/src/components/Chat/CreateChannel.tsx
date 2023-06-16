@@ -95,7 +95,7 @@ function CreateChannel({ setRoomIndex }: { setRoomIndex: any }) {
 				<IconButton name='rooms' disabled={exist.data === true || newRoomName === ''} onClick={ createRoom } >
 					<AddIcon/>
 				</IconButton>
-				{ showDialog === true ? <PasswordDialog open={showDialog} setOpen={setShowDialog} roomName={newRoomName} role="owner" /> : null}
+				{ showDialog === true ? <PasswordDialog open={showDialog} setOpen={setShowDialog} roomName={newRoomName} role="owner" createRoom={true} /> : null}
 				{ exist.data === true ? <p>This room already exist</p> : null}
 		</div>
 	)

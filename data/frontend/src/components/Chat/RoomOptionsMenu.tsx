@@ -1,5 +1,9 @@
-import { Menu, MenuItem, Divider } from "@mui/material";
+import { useState } from "react";
 import { useSelector } from "react-redux";
+
+import { Menu, MenuItem, Divider } from "@mui/material";
+
+import PasswordDialog from "./PasswordDialog";
 
 type arg = {
 	contextMenu: any,
@@ -10,6 +14,8 @@ type arg = {
 }
 
 export default function RoomOptionsMenu({contextMenu, setContextMenu, roomIndex, roomName, role}: arg) {
+	const [showDialog, setShowDialog] = useState(false);
+
 	const rooms = useSelector((state: any) => state.rooms);
 	const handleClose = () => {
 		setContextMenu(null);
@@ -36,6 +42,7 @@ export default function RoomOptionsMenu({contextMenu, setContextMenu, roomIndex,
 				}
 				<Divider/>
 				<MenuItem>Invite user</MenuItem>
+				{ showDialog === true ? <PasswordDialog open={showDialog} setOpen={setShowDialog} roomName={roomName} role="none" createRoom={true} /> : null}
 			</div>
 	</Menu>
 	);

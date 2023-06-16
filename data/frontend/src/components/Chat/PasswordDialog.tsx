@@ -14,7 +14,8 @@ type arg = {
 	open: boolean,
 	setOpen: any,
 	roomName: string,
-	role: string
+	role: string,
+	createRoom: boolean
 };
 
 const Transition = React.forwardRef(function Transition(
@@ -26,7 +27,7 @@ const Transition = React.forwardRef(function Transition(
 	return <Zoom ref={ref} {...props} style={{ transitionDelay: '100ms' }} />;
   });
 
-export default function PasswordDialog({open, setOpen, roomName, role}: arg) {
+export default function PasswordDialog({open, setOpen, roomName, role, createRoom}: arg) {
 	const user = useSelector((state: any) => state.user);
 	const dispatch = useDispatch();
 	const [password, setPassword] = useState('');
@@ -44,10 +45,16 @@ export default function PasswordDialog({open, setOpen, roomName, role}: arg) {
 		e.preventDefault();
 		if (password != '')
 		{
-			setPassword(password);
-			dispatch(addRoom({name: roomName, role: role, isDirectMsg: false, hasPassword: true}));
-			chatSocket.emit('manageRooms', { type: manageRoomsTypes.add, source: user.username,
-							room: roomName, access: accessStatus.protected, password: password });
+			if (createRoom === true)
+			{
+				dispatch(addRoom({name: roomName, role: role, isDirectMsg: false, hasPassword: true}));
+				chatSocket.emit('manageRooms', { type: manageRoomsTypes.add, source: user.username,
+								room: roomName, access: accessStatus.protected, password: password });
+			}
+			else
+			{
+				chatSocket.emit('setPasswordToRoom', {room: roomName, password: password});
+			}
 			setOpen(false);
 		}
 	}

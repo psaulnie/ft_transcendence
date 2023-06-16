@@ -166,4 +166,14 @@ export class RoomService {
 		return (room.password);
 	}
 
+	async setPasswordToRoom(roomName: string, password: string)
+	{
+		const room = await this.findOne(roomName)
+		if (room)
+		{
+			room.password = password;
+			await this.roomsRepository.save(room);
+		}
+	}
+
 }
