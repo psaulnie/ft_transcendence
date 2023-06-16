@@ -46,7 +46,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	async handleMessage(client: Socket, payload: sendMsgArgs) {
 		if (payload.data.length > 255)
 			payload.data = payload.data.slice(0, 255);
-		console.log("a");
 		if (payload.isDirectMessage == true)
 		{
 			this.server.emit(payload.target, { 
@@ -119,7 +118,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 				}
 			}
 			let mutedUser = this.mutedUsers.find((element) => element.username == payload.source);
-			console.log(mutedUser);
 			if (!mutedUser)
 				this.server.emit(payload.room, { source: payload.source, target: payload.room, action: actionTypes.join })
 			else
@@ -194,7 +192,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		const user = await this.userService.findOneByClientId(client.id);
 		if (!user)
 			return ;
-		console.log(user);
 		user.status = userStatus.offline;
 		const rooms = await this.roomService.findAll();
 		rooms.forEach(element => {

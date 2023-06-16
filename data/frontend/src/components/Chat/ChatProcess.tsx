@@ -40,14 +40,12 @@ export default function ChatProcess({roomIndex, setRoomIndex}: {roomIndex: numbe
 				setRoomIndex(-1)
 			else
 				setRoomIndex(0);
-			console.log(roomIndex);
 			dispatch(removeRoom(roomName));
 		}
 
 		function process(value: chatResponseArgs) {
 			if (value.action === actionTypes.kick)
 			{
-				console.log(value);
 				quitRoom(value.target);
 				setSnackbar("You've been kicked from this channel: " + value.target, "error");
 			}
