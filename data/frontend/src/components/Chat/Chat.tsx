@@ -1,105 +1,138 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+
+import { chatSocket } from '../../chatSocket';
+import { manageRoomsTypes } from './args.types';
+
+import { useDispatch, useSelector } from 'react-redux';
+import { useGetBlockedUsersQuery } from '../../store/api';
+import { addBlockedUser, unmute } from '../../store/user';
+import { removeRoom, setRead } from '../../store/rooms';
 
 import Room from './Room';
-import { chatSocket } from '../../chatSocket';
-import { chatResponseArgs } from './args.interface';
-import { actionTypes, manageRoomsTypes } from './args.types';
-import { accessStatus } from './accessStatus';
+import CreateChannel from './CreateChannel';
+import JoinChannel from './JoinChannel';
+import MessageProvider from './Message/MessageProvider';
+import JoinDirectMessage from './JoinDirectMessage';
+import DirectMessageProvider from './DirectMessageProvider';
+import ChatProcess from './ChatProcess';
 
-type arg = {
-	username: string
-}
+import { IconButton, Tab, Tabs, Skeleton, Box, Grid } from '@mui/material';
 
-function Chat({ username }: arg) {
-	const [newRoomName, setNewRoomName] = useState('');
-	const [rooms, setRooms] = useState<string[]>([]);
-	const [access, setAccess] = useState(accessStatus.public);
+import CloseIcon from '@mui/icons-material/Close';
+import MarkChatUnreadIcon from '@mui/icons-material/MarkChatUnread';
+import ChatBubbleIcon from '@mui/icons-material/ChatBubble'; 
+
+function Chat() {
+	const user = useSelector((state: any) => state.user);
+	const rooms = useSelector((state: any) => state.rooms);
+	const dispatch = useDispatch();
+
+	const [roomIndex, setRoomIndex] = useState(-1);
 
 	useEffect(() => {
-		function process(value: chatResponseArgs) {
-			if (value.action === actionTypes.kick)
-			{
-				setRooms(rooms.filter(room => room !== value.target));
-				alert("You've been kicked from this channel: " + value.target);
-			}
-			else if (value.action === actionTypes.ban)
-			{
-				setRooms(rooms.filter(room => room !== value.target));
-				alert("You are banned from this channel: " + value.target);
-			}
-			else if (value.action === actionTypes.private)
-			{
-				setRooms(rooms.filter(room => room !== value.target));
-				alert("You cannot join this private channel: " + value.target);
-			}
-		}
+		chatSocket.emit("newUser", user.username);
+		dispatch(unmute());
+	}, [user.username, dispatch]);
 	
-		chatSocket.on(username, process);
-		return () => {
-			chatSocket.off(username, process);
-	  	};
-	}, [rooms, username]);
+	function quitRoom(roomName: string, roomIndex: number)
+	{
+		if (rooms.room.length === 1)
+			setRoomIndex(-1)
+		else if (roomIndex !== 0)
+			setRoomIndex(roomIndex - 1);
+		chatSocket.emit('manageRooms', { type: manageRoomsTypes.remove, source: user.username, room: roomName, access: 0});
+		dispatch(removeRoom(roomName));
+	}
+	
+	const {
+		data: blockedUsers,
+		isLoading,
+		isSuccess,
+		isError,
+		error,
+		refetch
+	} = useGetBlockedUsersQuery({username: user.username});
 
 	useEffect(() => {
-		chatSocket.emit("newUser", username);
-	}, [username]);
-
-	function updateNewRoomName(e: React.FormEvent<HTMLInputElement>) { setNewRoomName(e.currentTarget.value); }
-
-	function changeAccess(event: React.FormEvent<HTMLSelectElement>)
-	{
-		event.preventDefault();
-		if (event.currentTarget.value === "public")
-			setAccess(accessStatus.public);
-		else if (event.currentTarget.value === "private")
-			setAccess(accessStatus.private);
-		else if (event.currentTarget.value === "password")
-			setAccess(accessStatus.protected);
-	}
-
-	function createRoom(event: any)
-	{
-		event.preventDefault();
-		if (!rooms.includes(newRoomName, 0))
+		refetch();
+		if (isSuccess)
 		{
-			setRooms(previous => [...previous, newRoomName]);
-			let	arg = { type: manageRoomsTypes.add, source: username, room: newRoomName, access: access};
-			chatSocket.emit('manageRooms', arg);
+			blockedUsers.data.forEach((element: any) => {
+				dispatch(addBlockedUser(element.username));
+			});
 		}
-		else
-			alert("You are currently in this channel");
+		// if (rooms.room.length !== 0)
+		// 	setRoomIndex(0); // TODO check if necessary
+
+	}, [user.username, isSuccess, blockedUsers, dispatch, refetch, setRoomIndex, rooms]);
+	
+	function changeSelectedRoom(event: React.SyntheticEvent, newIndex: number)
+	{
+		setRoomIndex(newIndex);
+		dispatch(setRead(newIndex));
 	}
 
-	function removeRoom(roomName: string)
-	{
-		setRooms(rooms.filter(room => room !== roomName));
-		chatSocket.emit('manageRooms', { type: manageRoomsTypes.remove, source: username, room: roomName, access: access});
-	}
-  
+	if (isError) // TODO fix show real error page (make Error component)
+		return (<p>Error: {error.toString()}</p>)
+	else if (isLoading)
+		return (
+			<div>
+				<Skeleton variant="text"/>
+				<Skeleton variant="rectangular" />
+			</div>
+		);
 
 	return (
 		<div className='chat'>
-			<p>------------------------------------------------</p>
-			<p>Create a new channel</p>
-			<form onSubmit={ createRoom }>
-				<input onChange={ updateNewRoomName} />
-				<select name="roomAccess" onChange={changeAccess}>
-					<option value="public">Public</option>
-					<option value="private">Private</option>
-					<option value="password">Password-protected</option>
-				</select>
-				<button id='rooms' name='rooms'>+</button>
-			</form>
-			<p>------------------------------------------------</p>
-			<div className='rooms'>
-				{rooms.map((room) =>
-					<div key={room}>
-						<p>{room}: </p>
-						<Room username={username} channelName={room} />
-						<button onClick={ () => { removeRoom(room) } }>x</button>
-					</div>)}
-			</div>
-
+			<ChatProcess roomIndex={roomIndex} setRoomIndex={setRoomIndex} />
+			<Grid container sx={{ display: 'flex'}} justifyContent="space-evenly">
+				<Grid item xs={3}>
+						<Box sx={{ backgroundColor: '#102b47', height: '100%', padding: '16px', borderRadius: '10px'}}>
+							<Grid container>
+								<JoinDirectMessage setRoomIndex={setRoomIndex} />
+							</Grid>
+							<Grid container>
+								<CreateChannel setRoomIndex={setRoomIndex} />
+							</Grid>
+							<Grid container>
+								<JoinChannel setRoomIndex={setRoomIndex} />
+							</Grid>
+						</Box>
+				</Grid>
+				<Grid item xs={7}>
+						<DirectMessageProvider roomIndex={roomIndex} setRoomIndex={setRoomIndex}/>
+						<Grid>
+							{ 
+								roomIndex !== -1 && rooms.room[roomIndex] ?
+									<Room key={rooms.room[roomIndex].name} channelName={rooms.room[roomIndex].name}/>
+								: null
+							}	
+						</Grid>
+						<Grid item sx={{ marginBottom: '70px' }}>
+							{
+								roomIndex !== -1 ? 
+									<Tabs sx={{position: 'fixed', bottom:"0", width:"100%"}} value={roomIndex} onChange={changeSelectedRoom} variant="scrollable" scrollButtons="auto">
+										{rooms.room.map((room: {name: string, role: string, unread: boolean}, key: number) =>
+											<Tab value={key} tabIndex={key} key={key} label={
+												<span>
+													{room.name}
+													{
+														roomIndex === key ? 
+															<IconButton size="small" component="span" onClick={() => quitRoom(room.name, key) }>
+																<CloseIcon/>
+															</IconButton>
+														: null
+													}
+													<MessageProvider roomName={room.name} currentRoomIndex={roomIndex}/>
+												</span>
+											} icon={ room.unread ? <MarkChatUnreadIcon fontSize='small'/> : <ChatBubbleIcon fontSize='small'/> } iconPosition="start" />
+											)}
+									</Tabs>
+								: null
+							}
+						</Grid>
+				</Grid>
+			</Grid>
 		</div>
 	);
 }

@@ -3,17 +3,20 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
 import { userStatus } from './userStatus';
+import { BlockedUsersList } from 'src/entities/blockedUsersList';
 
 @Injectable()
 export class UserService {
 	constructor(
 		@InjectRepository(User)
 		private usersRepository: Repository<User>,
+		@InjectRepository(BlockedUsersList)
+		private blockedUsersRepository: Repository<BlockedUsersList>
 	) {}
 
 	async findOne(name: string): Promise<User>
 	{
-		return await (this.usersRepository.findOne({where: { username: name }}));
+		return await (this.usersRepository.findOne({where: { username: name }, relations: ['blockedUsersID'] }));
 	}
 
 	async findOneById(id: number): Promise<User>
@@ -61,5 +64,14 @@ export class UserService {
 		user.clientId = newID;
 		user.status = userStatus.online;
 		this.usersRepository.save(user);
+	}
+
+	async blockUser(user: User, blockedUsername: string)
+	{
+		const newEntry = new BlockedUsersList();
+		newEntry.username = blockedUsername;
+		newEntry.user = user;
+		user.blockedUsersID.push(newEntry);
+		await this.usersRepository.save(user);
 	}
 }

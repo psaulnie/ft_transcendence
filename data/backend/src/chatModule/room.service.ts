@@ -42,6 +42,24 @@ export class RoomService {
 		return await (this.roomsRepository.save(room));
 	}
 
+	async createPasswordProtectedRoom(name: string, ownerID: number, access: number, password: string): Promise<Room>
+	{
+		const room = new Room();
+		const usersList = new UsersList();
+
+		usersList.userId = ownerID;
+		// usersList.room = room;
+		room.roomName = name;
+		room.ownerID = ownerID;
+		room.usersNumber = 1;
+		room.access = access;
+		room.password = password;
+		if (!room.usersID)
+			room.usersID = [];
+		room.usersID.push(usersList);
+		return await (this.roomsRepository.save(room));
+	}
+
 	async addRoom(room: Room): Promise<Room>
 	{
 		return await (this.roomsRepository.save(room));
@@ -77,7 +95,9 @@ export class RoomService {
 		const room = await this.findOne(roomName);
 		if (!(room))
 			return ;
-		room.usersNumber--;
+		console.log("-1 user in " + roomName);
+		// if (room.usersID.find((obj: UsersList) => obj.userId === userId))
+			room.usersNumber--;
 		if (room.usersNumber <= 0)
 		{
 			this.removeRoom(roomName);
@@ -102,15 +122,22 @@ export class RoomService {
 
 	async getRole(roomName: string, userId: number): Promise<string>
 	{
+		let	isAdmin = false;
 		const room = await this.findOne(roomName);
 		if (room == null)
-			return ('none');
+			return (null); // TODO check and/or fix
 		if (room.ownerID == userId)
 			return ("owner");
 		room.adminsID.forEach(admin => {
 			if (admin.userId == userId)
-				return (admin);
+			{
+				isAdmin = true;
+				return ;
+			}
 		});
+		if (isAdmin)
+			return ("admin");
+
 		return ("none");
 	}
 
@@ -122,4 +149,21 @@ export class RoomService {
 		room.blockedUsersID.push(await this.usersListRepository.save(newBlockedUser));
 		return await (this.roomsRepository.save(room));
 	}
+
+	async addAdmin(roomName: string, userID: number): Promise<Room>
+	{
+		const room = await this.findOne(roomName);
+		const newAdmin = new UsersList();
+		newAdmin.userId = userID;
+		room.adminsID.push(await this.usersListRepository.save(newAdmin));
+		return await (this.roomsRepository.save(room));
+	}
+
+	async getPassword(roomName: string): Promise<string>
+	{
+		const room = await this.findOne(roomName);
+
+		return (room.password);
+	}
+
 }

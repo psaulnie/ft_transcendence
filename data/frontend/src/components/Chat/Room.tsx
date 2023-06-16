@@ -1,51 +1,37 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
-import Messages from './Messages';
-import InputForm from './InputForm';
+import MessagesBox from './Message/MessagesBox';
+import InputForm from './Message/InputForm';
 
-import { chatSocket } from '../../chatSocket';
-import { chatResponseArgs } from './args.interface';
+import { useSelector } from 'react-redux';
 
-type arg = {
-	username: string
-	channelName: string
-}
+import { Grid, Box } from '@mui/material';
 
-function Room({ username, channelName }: arg) {
-	const [messageSent, setMsg] = useState<chatResponseArgs[]>([]);
+function Room({channelName}: {channelName: string}) {
+	const rooms = useSelector((state: any) => state.rooms);
+
 	const [role, setRole] = useState('none');
+	const roomIndex = rooms.room.findIndex((obj: {name: string, role: string}) => obj.name === channelName); // TODO check if need to recalculate index at every rendering in useEffect
 
 	useEffect(() => {
-	  function onMsgSent(value: chatResponseArgs) {
-		setMsg(previous => [...previous, value]);
-	  }
-	
-	  chatSocket.on(channelName, onMsgSent);
-	  return () => {
-		chatSocket.off(channelName, onMsgSent);
-	  };
-	}, [channelName]);
+		const cRole = rooms.room.find((obj: {name: string, role: string}) => obj.name === channelName);
+		if (cRole)
+			setRole(cRole.role);
+	}, [setRole, rooms, channelName]);
 
-	const fetchUserData = () => {
-		fetch("http://localhost:5000/api/chat/role?username=" + username + "&roomName=" + channelName)
-			.then(response => {
-				return response.text()
-			  })
-			  .then(data => {
-				setRole(data)
-			  })
-		  }
-		
-		  useEffect(() => {
-			fetchUserData()
-		  });
 
 	return (
-		<div className="chat">
-			<Messages messages={ messageSent } role={ role } channelName={ channelName } />
-			<InputForm username={ username } channelName={ channelName } />
-		</div>
-	)
+		<Grid>
+			<Grid item xs={12}>
+				<Box sx={{ height: '80vh', padding: '16px', overflow: 'auto' }}>
+					<MessagesBox messages={ rooms.room[roomIndex].messages } role={ role } channelName={ channelName } />
+				</Box>
+			</Grid>
+			<Grid item xs={12}>
+				<InputForm channelName={ channelName } isDirectMessage={rooms.room[roomIndex].isDirectMessage} />
+			</Grid>
+		</Grid>
+	);
 }
 
 export default Room;
