@@ -4,7 +4,8 @@ import { chatResponseArgs } from '../components/Chat/args.interface';
 export interface roomType {
 	name: string,
 	role: string,
-	isDirectMsg: boolean
+	isDirectMsg: boolean,
+	hasPassword: boolean
 }
 
 interface roomInterface {
@@ -12,7 +13,8 @@ interface roomInterface {
 	role: string,
 	isDirectMsg: boolean,
 	messages: chatResponseArgs[],
-	unread: boolean
+	unread: boolean,
+	hasPassword: boolean
 }
 
 interface RoomsState {
@@ -34,7 +36,7 @@ export const roomsSlice = createSlice({
 
 		if (!room)
 			state.room.push({name: action.payload.name, role: action.payload.role, isDirectMsg: action.payload.isDirectMsg,
-								messages: [], unread: false});
+								messages: [], unread: false, hasPassword: action.payload.hasPassword});
 	},
 	removeRoom: (state, action: PayloadAction<string>) => {
 		state.room = state.room.filter((element) => element.name !== action.payload);
@@ -61,7 +63,8 @@ export const roomsSlice = createSlice({
 				role: "none",
 				isDirectMsg: true,
 				messages: [action.payload.message],
-				unread: true
+				unread: true,
+				hasPassword: false
 			});
 		}
 	},

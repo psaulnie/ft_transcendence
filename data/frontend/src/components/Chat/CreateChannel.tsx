@@ -61,12 +61,14 @@ function CreateChannel({ setRoomIndex }: { setRoomIndex: any }) {
 		event.preventDefault();
 		if (!rooms.room.find((obj: {name: string, role: string}) => obj.name === newRoomName))
 		{
+			let hasPassword = false;
 			if (access === accessStatus.protected)
 			{
 				setShowDialog(true);
+				hasPassword = true;
 				return ;
 			}
-			dispatch(addRoom({name: newRoomName, role: "owner", isDirectMsg: false}));
+			dispatch(addRoom({name: newRoomName, role: "owner", isDirectMsg: false, hasPassword: hasPassword}));
 			setRoomIndex(rooms.room.length);
 			chatSocket.emit('manageRooms', { type: manageRoomsTypes.add, source: user.username, room: newRoomName, access: access});
 		}

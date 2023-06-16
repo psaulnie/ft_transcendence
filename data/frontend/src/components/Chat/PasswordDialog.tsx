@@ -45,7 +45,7 @@ export default function PasswordDialog({open, setOpen, roomName, role}: arg) {
 		if (password != '')
 		{
 			setPassword(password);
-			dispatch(addRoom({name: roomName, role: role, isDirectMsg: false}));
+			dispatch(addRoom({name: roomName, role: role, isDirectMsg: false, hasPassword: true}));
 			chatSocket.emit('manageRooms', { type: manageRoomsTypes.add, source: user.username,
 							room: roomName, access: accessStatus.protected, password: password });
 			setOpen(false);

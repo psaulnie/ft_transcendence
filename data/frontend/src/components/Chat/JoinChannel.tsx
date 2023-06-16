@@ -9,9 +9,11 @@ import { addRoom } from '../../store/rooms';
 
 import PasswordDialog from './PasswordDialog';
 
-import { FormControl, FormHelperText, InputLabel, Select, MenuItem, SelectChangeEvent, IconButton } from '@mui/material';
+import { FormControl, FormHelperText, InputLabel, Select, MenuItem, SelectChangeEvent, IconButton, Grid } from '@mui/material';
 import { Skeleton } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add'
+import LockIcon from '@mui/icons-material/Lock';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
 function JoinChannel({ setRoomIndex }: { setRoomIndex: any }) {
 	const user = useSelector((state: any) => state.user);
@@ -40,7 +42,7 @@ function JoinChannel({ setRoomIndex }: { setRoomIndex: any }) {
 				setShowDialog(true);
 				return ;
 			}
-			dispatch(addRoom({name: newRoomName, role: "none", isDirectMsg: false}));
+			dispatch(addRoom({name: newRoomName, role: "none", isDirectMsg: false, hasPassword: (access === accessStatus.protected)}));
 			setRoomIndex(rooms.room.length);
 			chatSocket.emit('manageRooms', { type: manageRoomsTypes.add, source: user.username, room: newRoomName, access: 0});
 		}
@@ -79,9 +81,14 @@ function JoinChannel({ setRoomIndex }: { setRoomIndex: any }) {
 					<Select name="roomsList" onOpen={refetch} onClick={refetch} onChange={changeSelectedRoom} value={newRoomName} defaultValue=''>
 						{
 							roomsList.data.map((room: any) => {
-								if (!rooms.room.find((obj: {name: string, role: string}) => obj.name === room.roomName) && room.access !== accessStatus.private)
+								if (!rooms.room.find((obj: {name: string, role: string, hasPassword: boolean}) => obj.name === room.roomName) && room.access !== accessStatus.private)
 									return (
-										<MenuItem key={room.roomName} value={room.roomName} onClick={() => setAccess(room.access)}>{room.roomName}</MenuItem>
+										<MenuItem key={room.roomName} value={room.roomName} onClick={() => setAccess(room.access)}>
+											<Grid container>
+												<Grid item xs={10}>{room.roomName}</Grid>
+												{room.hasPassword === false ? <VisibilityIcon/> : <LockIcon />}
+											</Grid>
+										</MenuItem>
 									);
 								else
 									return (null);

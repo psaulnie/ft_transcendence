@@ -36,10 +36,9 @@ export class ChatController {
 		}
 		const user = await this.userService.findOne(data.username);
 		let blockedUsersID;
+
 		if (user)
-		{
 			blockedUsersID = user.blockedUsersID;	
-		}
 		else
 			blockedUsersID = [];
 		const res = {
@@ -51,8 +50,15 @@ export class ChatController {
 
 	@Get('rooms/list')
 	async getRoomsList(): Promise<string> {
-		const roomsList = await this.roomService.findAll(); // TODO send only needed column
+		const rooms = await this.roomService.findAll(); // TODO send only needed column
+		let roomsList: {}[] = []; 
 
+		rooms.forEach((element) => roomsList.push({
+			roomName: element.roomName,
+			hasPassword: (element.password !== ''),
+			access: element.access
+			}
+		));
 		const res = {
 			status: 'success',
 			data: roomsList

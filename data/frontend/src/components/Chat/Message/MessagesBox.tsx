@@ -30,13 +30,11 @@ export default function MessagesBox({ messages, role, channelName }: arg) {
 				if (user.blockedUsers.indexOf(message.source) !== -1)
 					return (null);
 				if (message.action === actionTypes.join)
-					return (<JoinMessage key={index} message={message} />)
+					return (<JoinMessage key={index} message={message} />);
 				else if (message.action === actionTypes.left)
-					return (<LeftMessage key={index} message={message} />)
+					return (<LeftMessage key={index} message={message} />);
 				else if (message.action === actionTypes.msg)
-					return (
-							<Message key={index} message={message} role={role} channelName={channelName} />
-						)
+					return (<Message key={index} message={message} role={role} channelName={channelName} />);
 				return (null);
 			}
 		)

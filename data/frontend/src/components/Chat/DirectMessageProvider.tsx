@@ -12,7 +12,7 @@ export default function DirectMessageProvider({roomIndex, setRoomIndex}: {roomIn
 
 	useEffect(() => {
 		function onMsgSent(value: chatResponseArgs) {
-			dispatch(addRoom({name: value.source, role: "none",  isDirectMsg: true}))
+			dispatch(addRoom({name: value.source, role: "none",  isDirectMsg: true, hasPassword: false}))
 			if (value.action !== actionTypes.left)
 				dispatch(addMsg({name: value.source, message: value}));
 			if (roomIndex === -1)

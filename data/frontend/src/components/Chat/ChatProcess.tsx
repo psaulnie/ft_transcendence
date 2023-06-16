@@ -63,7 +63,7 @@ export default function ChatProcess({roomIndex, setRoomIndex}: {roomIndex: numbe
 				setSnackbar(value.source + " blocked you", "warning");
 			else if (value.action === actionTypes.admin)
 			{
-				dispatch(changeRole({name: value.source, role: "admin", isDirectMsg: false}));
+				dispatch(changeRole({name: value.source, role: "admin", isDirectMsg: false, hasPassword: false}));
 				setSnackbar("You are now admin in " + value.source, "success");
 			}
 			else if (value.action === actionTypes.mute)

@@ -1,26 +1,21 @@
 import React, { useEffect, useState } from 'react';
 
 import { chatSocket } from '../../chatSocket';
-import { manageRoomsTypes } from './args.types';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { useGetBlockedUsersQuery } from '../../store/api';
 import { addBlockedUser, unmute } from '../../store/user';
-import { removeRoom, setRead } from '../../store/rooms';
 
 import Room from './Room';
 import CreateChannel from './CreateChannel';
 import JoinChannel from './JoinChannel';
-import MessageProvider from './Message/MessageProvider';
 import JoinDirectMessage from './JoinDirectMessage';
 import DirectMessageProvider from './DirectMessageProvider';
 import ChatProcess from './ChatProcess';
 
-import { IconButton, Tab, Tabs, Skeleton, Box, Grid } from '@mui/material';
+import { Skeleton, Box, Grid } from '@mui/material';
 
-import CloseIcon from '@mui/icons-material/Close';
-import MarkChatUnreadIcon from '@mui/icons-material/MarkChatUnread';
-import ChatBubbleIcon from '@mui/icons-material/ChatBubble'; 
+import RoomTabs from './RoomTabs';
 
 function Chat() {
 	const user = useSelector((state: any) => state.user);
@@ -34,15 +29,7 @@ function Chat() {
 		dispatch(unmute());
 	}, [user.username, dispatch]);
 	
-	function quitRoom(roomName: string, roomIndex: number)
-	{
-		if (rooms.room.length === 1)
-			setRoomIndex(-1)
-		else if (roomIndex !== 0)
-			setRoomIndex(roomIndex - 1);
-		chatSocket.emit('manageRooms', { type: manageRoomsTypes.remove, source: user.username, room: roomName, access: 0});
-		dispatch(removeRoom(roomName));
-	}
+
 	
 	const {
 		data: blockedUsers,
@@ -66,11 +53,7 @@ function Chat() {
 
 	}, [user.username, isSuccess, blockedUsers, dispatch, refetch, setRoomIndex, rooms]);
 	
-	function changeSelectedRoom(event: React.SyntheticEvent, newIndex: number)
-	{
-		setRoomIndex(newIndex);
-		dispatch(setRead(newIndex));
-	}
+
 
 	if (isError) // TODO fix show real error page (make Error component)
 		return (<p>Error: {error.toString()}</p>)
@@ -109,27 +92,7 @@ function Chat() {
 							}	
 						</Grid>
 						<Grid item sx={{ marginBottom: '70px' }}>
-							{
-								roomIndex !== -1 ? 
-									<Tabs sx={{position: 'fixed', bottom:"0", width:"100%"}} value={roomIndex} onChange={changeSelectedRoom} variant="scrollable" scrollButtons="auto">
-										{rooms.room.map((room: {name: string, role: string, unread: boolean}, key: number) =>
-											<Tab value={key} tabIndex={key} key={key} label={
-												<span>
-													{room.name}
-													{
-														roomIndex === key ? 
-															<IconButton size="small" component="span" onClick={() => quitRoom(room.name, key) }>
-																<CloseIcon/>
-															</IconButton>
-														: null
-													}
-													<MessageProvider roomName={room.name} currentRoomIndex={roomIndex}/>
-												</span>
-											} icon={ room.unread ? <MarkChatUnreadIcon fontSize='small'/> : <ChatBubbleIcon fontSize='small'/> } iconPosition="start" />
-											)}
-									</Tabs>
-								: null
-							}
+							<RoomTabs roomIndex={roomIndex} setRoomIndex={setRoomIndex} />
 						</Grid>
 				</Grid>
 			</Grid>
