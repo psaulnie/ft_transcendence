@@ -63,10 +63,10 @@ function JoinDirectMessage({ setRoomIndex }: { setRoomIndex: any }) {
 			<p>Direct Message</p>
 				<FormControl sx={{ m: 1, minWidth: 120 }} size="small">
 					<InputLabel>Users</InputLabel>
-					<Select name="usersList" onClick={refetch} onChange={changeSelectedUser} defaultValue=''>
+					<Select name="usersList" onClick={refetch} onChange={changeSelectedUser} value={newUser} defaultValue=''>
 						{
 							usersList.data.map((username: any) => {
-								if (!user.blockedUsers.find((obj: string) => obj === username))
+								if (!user.blockedUsers.find((obj: string) => obj === username) && user.username !== username)
 									return (
 										<MenuItem key={username} value={username}>{username}</MenuItem>
 									);

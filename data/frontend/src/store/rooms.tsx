@@ -66,8 +66,6 @@ export const roomsSlice = createSlice({
 		}
 	},
 	setRead: (state, action: PayloadAction<number>) => {
-		// console.log(state.room[0].unread);
-		// console.log(action.payload);
 		if (state.room[action.payload])
 			state.room[action.payload].unread = false;
 	},

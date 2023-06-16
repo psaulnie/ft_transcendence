@@ -22,12 +22,12 @@ function Room({channelName}: {channelName: string}) {
 
 	return (
 		<Grid>
-			<Grid xs={12}>
+			<Grid item xs={12}>
 				<Box sx={{ height: '80vh', padding: '16px', overflow: 'auto' }}>
 					<MessagesBox messages={ rooms.room[roomIndex].messages } role={ role } channelName={ channelName } />
 				</Box>
 			</Grid>
-			<Grid xs={12}>
+			<Grid item xs={12}>
 				<InputForm channelName={ channelName } isDirectMessage={rooms.room[roomIndex].isDirectMessage} />
 			</Grid>
 		</Grid>

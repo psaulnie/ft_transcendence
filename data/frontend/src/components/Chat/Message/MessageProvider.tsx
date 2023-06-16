@@ -15,11 +15,12 @@ function MessageProvider({roomName, currentRoomIndex}: {roomName: string, curren
 		function onMsgSent(value: chatResponseArgs) {
 			let roomIndex = rooms.room.findIndex(((obj: any) => obj.name === roomName));
 
+			console.log(value);
 			dispatch(addMsg({name: roomName, message: value}));
-			if (value.source === user.username)
+			if (value.source === user.username || currentRoomIndex === roomIndex)
+			{
 				dispatch(setRead(roomIndex));
-			else if (currentRoomIndex === roomIndex)
-				dispatch(setRead(roomIndex));
+			}
 			if (rooms.room[roomIndex] && rooms.room[roomIndex].isDirectMessage === true)
 				dispatch(addRoom({name: value.source, role: "none",  isDirectMsg: true}));
 		}

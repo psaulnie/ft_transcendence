@@ -18,7 +18,7 @@ function JoinChannel({ setRoomIndex }: { setRoomIndex: any }) {
 	const rooms = useSelector((state: any) => state.rooms);
 	const dispatch = useDispatch();
 
-	const [newRoomName, setNewRoomName] = useState('null');
+	const [newRoomName, setNewRoomName] = useState('');
 	const [showDialog, setShowDialog] = useState(false);
 	const [access, setAccess] = useState(0);
 
@@ -31,7 +31,7 @@ function JoinChannel({ setRoomIndex }: { setRoomIndex: any }) {
 	function joinRoom(event: any)
 	{
 		event.preventDefault();
-		if (newRoomName === 'null')
+		if (newRoomName === '')
 			return ;
 		if (!rooms.room.find((obj: {name: string, role: string}) => obj.name === newRoomName))
 		{
@@ -41,13 +41,12 @@ function JoinChannel({ setRoomIndex }: { setRoomIndex: any }) {
 				return ;
 			}
 			dispatch(addRoom({name: newRoomName, role: "none", isDirectMsg: false}));
-			console.log(rooms.room.length - 1);
 			setRoomIndex(rooms.room.length);
 			chatSocket.emit('manageRooms', { type: manageRoomsTypes.add, source: user.username, room: newRoomName, access: 0});
 		}
 		else
 			alert("You are currently in this channel");
-		setNewRoomName('null');
+		setNewRoomName('');
 	}
 
 	const {
@@ -77,7 +76,7 @@ function JoinChannel({ setRoomIndex }: { setRoomIndex: any }) {
 			<p>Join a new channel</p>
 				<FormControl sx={{ m: 1, minWidth: 120 }} size="small">
 					<InputLabel>Channel</InputLabel>
-					<Select name="roomsList" onOpen={refetch} onClick={refetch} onChange={changeSelectedRoom} defaultValue=''>
+					<Select name="roomsList" onOpen={refetch} onClick={refetch} onChange={changeSelectedRoom} value={newRoomName} defaultValue=''>
 						{
 							roomsList.data.map((room: any) => {
 								if (!rooms.room.find((obj: {name: string, role: string}) => obj.name === room.roomName) && room.access !== accessStatus.private)

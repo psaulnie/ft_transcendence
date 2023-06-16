@@ -95,7 +95,8 @@ export class RoomService {
 		const room = await this.findOne(roomName);
 		if (!(room))
 			return ;
-		if (room.usersID.find((obj: UsersList) => obj.userId === userId))
+		console.log("-1 user in " + roomName);
+		// if (room.usersID.find((obj: UsersList) => obj.userId === userId))
 			room.usersNumber--;
 		if (room.usersNumber <= 0)
 		{

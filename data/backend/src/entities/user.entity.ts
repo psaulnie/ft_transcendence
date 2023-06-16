@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany, AfterLoad } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, AfterLoad, JoinColumn } from 'typeorm';
 import { BlockedUsersList } from './blockedUsersList';
 
 @Entity({ name: 'User' })
@@ -28,7 +28,8 @@ export class User {
 	@Column()
 	avatar: string
 
-	@OneToMany(() => BlockedUsersList, usersList => usersList.user)
+	@OneToMany(() => BlockedUsersList, blockedUsersID => blockedUsersID.user)
+	@JoinColumn()
 	blockedUsersID: BlockedUsersList[]
 
 	@AfterLoad()

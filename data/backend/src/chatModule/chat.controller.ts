@@ -35,9 +35,16 @@ export class ChatController {
 			return (JSON.stringify(res));
 		}
 		const user = await this.userService.findOne(data.username);
+		let blockedUsersID;
+		if (user)
+		{
+			blockedUsersID = user.blockedUsersID;	
+		}
+		else
+			blockedUsersID = [];
 		const res = {
 			status: 'success',
-			data: user.blockedUsersID
+			data: blockedUsersID
 		}
 		return JSON.stringify(res);
 	}

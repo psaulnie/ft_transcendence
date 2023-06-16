@@ -40,10 +40,8 @@ function Chat() {
 			setRoomIndex(-1)
 		else if (roomIndex !== 0)
 			setRoomIndex(roomIndex - 1);
+		chatSocket.emit('manageRooms', { type: manageRoomsTypes.remove, source: user.username, room: roomName, access: 0});
 		dispatch(removeRoom(roomName));
-		const room = rooms.room.find((obj: any) => obj.name === roomName)
-		if (room.isDirectMessage === false)
-			chatSocket.emit('manageRooms', { type: manageRoomsTypes.remove, source: user.username, room: roomName, access: 0});
 	}
 	
 	const {
@@ -63,8 +61,9 @@ function Chat() {
 				dispatch(addBlockedUser(element.username));
 			});
 		}
-		if (rooms.room.length !== 0)
-			setRoomIndex(0);
+		// if (rooms.room.length !== 0)
+		// 	setRoomIndex(0); // TODO check if necessary
+
 	}, [user.username, isSuccess, blockedUsers, dispatch, refetch, setRoomIndex, rooms]);
 	
 	function changeSelectedRoom(event: React.SyntheticEvent, newIndex: number)
@@ -113,7 +112,7 @@ function Chat() {
 							{
 								roomIndex !== -1 ? 
 									<Tabs sx={{position: 'fixed', bottom:"0", width:"100%"}} value={roomIndex} onChange={changeSelectedRoom} variant="scrollable" scrollButtons="auto">
-										{rooms.room.map((room: {name: string, role: string, unread: boolean}, key: number, newMsg: boolean) =>
+										{rooms.room.map((room: {name: string, role: string, unread: boolean}, key: number) =>
 											<Tab value={key} tabIndex={key} key={key} label={
 												<span>
 													{room.name}
