@@ -91,7 +91,10 @@ export default function ChatProcess({roomIndex, setRoomIndex}: {roomIndex: numbe
 			}
 			else if (value.action === actionTypes.rightpassword)
 			{
-				setRoomIndex(rooms.room.length);
+				if (roomIndex === -1)
+					setRoomIndex(0);
+				else
+					setRoomIndex(rooms.room.length);
 			}
 		}
 
