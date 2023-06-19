@@ -177,4 +177,15 @@ export class RoomService {
 		}
 	}
 
+	async removePasswordToRoom(roomName: string)
+	{
+		const room = await this.findOne(roomName)
+		if (room)
+		{
+			room.password = '';
+			room.access = accessStatus.public;
+			await this.roomsRepository.save(room);
+		}
+	}
+
 }

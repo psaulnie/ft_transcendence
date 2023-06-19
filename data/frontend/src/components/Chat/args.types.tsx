@@ -21,5 +21,6 @@ export enum actionTypes {
 	privmsg,
 	wrongpassword,
 	rightpassword,
-	hasPassword
+	hasPassword,
+	noPassword
 }

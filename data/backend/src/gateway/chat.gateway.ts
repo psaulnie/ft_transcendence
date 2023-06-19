@@ -189,6 +189,12 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		this.server.emit(payload.room, { source: payload.room, target: payload.room, action: actionTypes.hasPassword });
 	}
 
+	@SubscribeMessage('removePasswordToRoom')
+	async removePasswordToRoom(client: Socket, payload: string) {
+		this.roomService.removePasswordToRoom(payload);
+		this.server.emit(payload, { source: payload, target: payload, action: actionTypes.noPassword });
+	}
+
 	async afterInit(server: Server) {
 		console.log('Init');
 	}

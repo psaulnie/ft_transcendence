@@ -18,6 +18,8 @@ function MessageProvider({roomName, currentRoomIndex}: {roomName: string, curren
 
 			if (value.action === actionTypes.hasPassword)
 				dispatch(setHasPassword({index: roomIndex, value: true}));
+			else if (value.action === actionTypes.noPassword)
+				dispatch(setHasPassword({index: roomIndex, value: false}));
 			else
 			{
 				dispatch(addMsg({name: roomName, message: value}));

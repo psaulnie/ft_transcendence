@@ -62,7 +62,7 @@ export default function PasswordDialog({open, setOpen, roomName, role, createRoo
 	return (
 		<Dialog open={open} onClose={closePasswordDialog} TransitionComponent={Transition} keepMounted>
 			<DialogTitle>
-				Set a password
+				Enter password:
 			</DialogTitle>
 			<TextField helperText="Password" label="Room name" value={password} onChange={updatePassword} />
 			<DialogActions>

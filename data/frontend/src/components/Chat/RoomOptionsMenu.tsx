@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import { Menu, MenuItem, Divider } from "@mui/material";
 
 import PasswordDialog from "./PasswordDialog";
+import { chatSocket } from "../../chatSocket";
 
 type arg = {
 	contextMenu: any,
@@ -21,6 +22,11 @@ export default function RoomOptionsMenu({contextMenu, setContextMenu, roomIndex,
 		setContextMenu(null);
 	};
 
+	function removePassword()
+	{
+		
+	}
+
 	return (
 		<Menu open={contextMenu !== null}
 			onClose={handleClose}
@@ -35,11 +41,11 @@ export default function RoomOptionsMenu({contextMenu, setContextMenu, roomIndex,
 						<div>
 							<MenuItem disabled={rooms.room[roomIndex].hasPassword !== false} onClick={ () => { setShowDialog(true) } } >Set a password</MenuItem>
 							<MenuItem disabled={rooms.room[roomIndex].hasPassword !== true} onClick={ () => { setShowDialog(true) } } >Change password</MenuItem>
-							<MenuItem disabled={rooms.room[roomIndex].hasPassword !== true} >Remove password</MenuItem> {/* TODO change disabled */}
+							<MenuItem disabled={rooms.room[roomIndex].hasPassword !== true} onClick={ () => chatSocket.emit('removePasswordToRoom', roomName) }>Remove password</MenuItem>
+							<Divider/>
 						</div>
 					: null
 				}
-				<Divider/>
 				<MenuItem>Invite user</MenuItem>
 				{ showDialog === true ? <PasswordDialog open={showDialog} setOpen={setShowDialog} roomName={roomName} role="none" createRoom={false} /> : null}
 			</div>
