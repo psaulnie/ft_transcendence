@@ -22,11 +22,6 @@ export default function RoomOptionsMenu({contextMenu, setContextMenu, roomIndex,
 		setContextMenu(null);
 	};
 
-	function removePassword()
-	{
-		
-	}
-
 	return (
 		<Menu open={contextMenu !== null}
 			onClose={handleClose}

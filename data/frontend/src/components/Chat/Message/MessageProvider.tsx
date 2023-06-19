@@ -41,7 +41,7 @@ function MessageProvider({roomName, currentRoomIndex}: {roomName: string, curren
 		return () => {
 		  chatSocket.off(listener, onMsgSent);
 		};
-	  }, [roomName, dispatch]);
+	  }, [roomName, dispatch, currentRoomIndex, rooms, user]);
 
 	return (null);
 }

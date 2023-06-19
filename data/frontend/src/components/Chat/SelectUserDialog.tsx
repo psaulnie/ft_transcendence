@@ -27,7 +27,7 @@ const Transition = React.forwardRef(function Transition(
 	return <Zoom ref={ref} {...props} style={{ transitionDelay: '100ms' }} />;
   });
 
-export default function PasswordDialog({open, setOpen, roomName, role, createRoom}: arg) {
+export default function SelectUserDialog({open, setOpen, roomName, role, createRoom}: arg) {
 	const user = useSelector((state: any) => state.user);
 	const dispatch = useDispatch();
 	const [password, setPassword] = useState('');
@@ -43,7 +43,7 @@ export default function PasswordDialog({open, setOpen, roomName, role, createRoo
 
 	function confirmButton(e: any) {
 		e.preventDefault();
-		if (password !== '')
+		if (password != '')
 		{
 			if (createRoom === true)
 			{
