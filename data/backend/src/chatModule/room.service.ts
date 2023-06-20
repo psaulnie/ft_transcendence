@@ -65,11 +65,13 @@ export class RoomService {
 		return await (this.roomsRepository.save(room));
 	}
 
-	async addUser(roomName: string, userId: number): Promise<number>
+	async addUser(roomName: string, userId: number, invited: boolean): Promise<number>
 	{
 		const room = await this.findOne(roomName);
+		if (!room)
+			return ;
 		let rvalue = 0;
-		if (room.access == accessStatus.private)
+		if (room.access == accessStatus.private && !invited)
 		{
 			return (accessStatus.private);
 		}

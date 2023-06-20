@@ -2,12 +2,17 @@ import { useEffect, useState } from "react";
 import { actionTypes } from "./args.types";
 
 import { useDispatch, useSelector } from "react-redux";
-import { removeRoom, changeRole } from "../../store/rooms";
+import { removeRoom, changeRole, addRoom } from "../../store/rooms";
 import { mute, unmute } from "../../store/user";
 import { chatResponseArgs } from "./args.interface";
 import { chatSocket } from "../../chatSocket";
+import { manageRoomsTypes } from "./args.types";
 
-import { Snackbar, Alert, AlertColor } from "@mui/material";
+import { Snackbar, Alert, AlertColor, IconButton, Box } from "@mui/material";
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
+import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
+import { accessStatus } from "./accessStatus";
 
 export default function ChatProcess({roomIndex, setRoomIndex}: {roomIndex: number, setRoomIndex: any}) {
 	const user = useSelector((state: any) => state.user);
@@ -15,8 +20,11 @@ export default function ChatProcess({roomIndex, setRoomIndex}: {roomIndex: numbe
 	const dispatch = useDispatch();
 
 	const [open, setOpen] = useState(false);
+	const [openInvite, setOpenInvite] = useState(false);
 	const [message, setMessage] = useState('');
 	const [type, setType] = useState<AlertColor>('success');
+
+	const [room, setRoom] = useState('');
 
 	function setSnackbar(message: string, type: AlertColor)
 	{
@@ -25,12 +33,41 @@ export default function ChatProcess({roomIndex, setRoomIndex}: {roomIndex: numbe
 		setOpen(true);
 	}
 
+	function setInviteSnackbar(message: string, type: AlertColor)
+	{
+		setMessage(message);
+		setType(type);
+		setOpenInvite(true);
+	}
+
 	const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
 		if (reason === 'clickaway') {
 		  return;
 		}
 		setOpen(false);
 	};
+
+	const handleCloseInvite = (event?: React.SyntheticEvent | Event, reason?: string) => {
+		if (reason === 'clickaway') {
+		  return;
+		}
+		setOpenInvite(false);
+	};
+
+	function acceptInvite()
+	{
+		if (room === '')
+			return ;
+		setOpenInvite(false);
+		console.log(room);
+		dispatch(addRoom({name: room, role: 'none', isDirectMsg: false, hasPassword: false}));
+		chatSocket.emit('joinPrivateRoom', { roomName: room, username: user.username });
+		if (roomIndex === -1)
+			setRoomIndex(0);
+		else
+			setRoomIndex(rooms.room.at(-1));
+		setRoom('');
+	}
 
 	useEffect(() => {
 
@@ -98,7 +135,8 @@ export default function ChatProcess({roomIndex, setRoomIndex}: {roomIndex: numbe
 			}
 			else if (value.action === actionTypes.invited)
 			{
-				setSnackbar("You've been invited in this channel: " + value.source, "success");
+				setInviteSnackbar("You've been invited in this channel: " + value.source, "info");
+				setRoom(value.source);
 			}
 		}
 
@@ -109,10 +147,34 @@ export default function ChatProcess({roomIndex, setRoomIndex}: {roomIndex: numbe
 	}, [user.username, dispatch, rooms, setRoomIndex, roomIndex]);
 
 	return (
-		<Snackbar open={open} autoHideDuration={5000} anchorOrigin={{vertical: 'top', horizontal: 'right'}} onClose={handleClose} >
-			<Alert onClose={handleClose} severity={type} sx={{ width: '100%' }}>
-				{message}
- 			</Alert>
-		</Snackbar>
+		<div>
+			<Snackbar open={open} autoHideDuration={5000} anchorOrigin={{vertical: 'top', horizontal: 'right'}} onClose={handleClose} >
+				<Alert onClose={handleClose} severity={type} sx={{ width: '100%' }}>
+					{message}
+				</Alert>
+			</Snackbar>
+			<Snackbar open={openInvite} autoHideDuration={10000} anchorOrigin={{vertical: 'top', horizontal: 'right'}} onClose={handleCloseInvite}>
+				<Box sx={{
+					backgroundColor: '#fff',
+					color: '#000',
+					borderRadius: '10px',
+					width: '100%',
+					display: 'flex',
+					alignItems: 'center',
+					flexWrap: 'wrap',
+				}}>
+					<PeopleAltIcon sx={{color: '#000'}}/>
+					{message}
+					<IconButton size='small' sx={{color: '#000'}} onClick={acceptInvite}>
+						<CheckIcon/>
+					</IconButton>
+					<IconButton size='small' sx={{color: '#000'}} onClick={handleCloseInvite}>
+						<CloseIcon/>
+					</IconButton>
+				</Box>
+				{/* <Alert onClose={handleCloseInvite} severity={type} sx={{ width: '100%' }}> */}
+				{/* </Alert> */}
+			</Snackbar>
+		</div>
 	);
 }

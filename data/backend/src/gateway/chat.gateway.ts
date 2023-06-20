@@ -105,7 +105,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 					}
 					hasPassword = true;
 				}
-				const nbr = await this.roomService.addUser(payload.room, user.id);
+				const nbr = await this.roomService.addUser(payload.room, user.id, false);
 				if (nbr == -1)
 				{
 					this.server.emit(payload.source + "OPTIONS", { source: payload.source, target: payload.room, action: actionTypes.ban })
@@ -200,6 +200,19 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		if (!payload.roomName || !payload.username)
 			return ;
 		this.server.emit(payload.username + "OPTIONS", { source: payload.roomName, target: payload.username, action: actionTypes.invited });
+	}
+
+	@SubscribeMessage('joinPrivateRoom')
+	async joinPrivateRoom(client: Socket, payload: {roomName: string, username: string}) {
+		if (!payload.roomName || !payload.username)
+			return ;
+		console.log(payload.username);
+		const user = await this.userService.findOne(payload.username);
+		if (!user)
+			return ;
+		console.log("salut");
+		await this.roomService.addUser(payload.roomName, user.id, true);
+		this.server.emit(payload.roomName, { source: payload.username, target: payload.roomName, action: actionTypes.join })
 	}
 
 	async afterInit(server: Server) {
