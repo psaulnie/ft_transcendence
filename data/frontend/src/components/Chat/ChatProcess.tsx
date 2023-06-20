@@ -59,7 +59,6 @@ export default function ChatProcess({roomIndex, setRoomIndex}: {roomIndex: numbe
 		if (room === '')
 			return ;
 		setOpenInvite(false);
-		console.log(room);
 		dispatch(addRoom({name: room, role: 'none', isDirectMsg: false, hasPassword: false}));
 		chatSocket.emit('joinPrivateRoom', { roomName: room, username: user.username });
 		if (roomIndex === -1)

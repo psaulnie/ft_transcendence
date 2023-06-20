@@ -197,7 +197,6 @@ export class RoomService {
 		const room = await this.roomsRepository.findOne({ where: { roomName: roomName }, relations: { usersID: true } });
 		if (!room)
 			return (false);
-		console.log(room.usersID);
 		if (!room.usersID.find((obj: any) => obj.userId == userID))
 			return (false);
 		else

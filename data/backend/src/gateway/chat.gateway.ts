@@ -206,11 +206,9 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	async joinPrivateRoom(client: Socket, payload: {roomName: string, username: string}) {
 		if (!payload.roomName || !payload.username)
 			return ;
-		console.log(payload.username);
 		const user = await this.userService.findOne(payload.username);
 		if (!user)
 			return ;
-		console.log("salut");
 		await this.roomService.addUser(payload.roomName, user.id, true);
 		this.server.emit(payload.roomName, { source: payload.username, target: payload.roomName, action: actionTypes.join })
 	}
