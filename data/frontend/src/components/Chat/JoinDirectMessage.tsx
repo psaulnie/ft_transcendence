@@ -14,7 +14,7 @@ function JoinDirectMessage({ setRoomIndex }: { setRoomIndex: any }) {
 	const rooms = useSelector((state: any) => state.rooms);
 	const dispatch = useDispatch();
 
-	const [newUser, setNewUser] = useState('null');
+	const [newUser, setNewUser] = useState('');
 
 	function changeSelectedUser(event: SelectChangeEvent)
 	{
@@ -25,7 +25,7 @@ function JoinDirectMessage({ setRoomIndex }: { setRoomIndex: any }) {
 	function joinRoom(event: any)
 	{
 		event.preventDefault();
-		if (newUser === 'null')
+		if (newUser === '')
 			return ;
 		if (!rooms.room.find((obj: {name: string, role: string}) => obj.name === newUser))
 		{
@@ -33,7 +33,7 @@ function JoinDirectMessage({ setRoomIndex }: { setRoomIndex: any }) {
 			setRoomIndex(rooms.room.length);
 			chatSocket.emit('manageRooms', { type: manageRoomsTypes.addDirectMsg, source: user.username, room: newUser, access: 0});
 		}
-		setNewUser('null');
+		setNewUser('');
 	}
 
 	const {
@@ -65,18 +65,17 @@ function JoinDirectMessage({ setRoomIndex }: { setRoomIndex: any }) {
 					<InputLabel>Users</InputLabel>
 					<Select name="usersList" onClick={refetch} onChange={changeSelectedUser} value={newUser} defaultValue=''>
 						{
-							usersList.data.map((username: any) => {
+							usersList.data.map((username: any, key: number) => {
 								if (!user.blockedUsers.find((obj: string) => obj === username) && user.username !== username)
 									return (
-										<MenuItem key={username} value={username}>{username}</MenuItem>
+										<MenuItem key={key} value={username}>{username}</MenuItem>
 									);
-								return (null);
 							})
 						}
 					</Select>
 					<FormHelperText>Select an user</FormHelperText>
 				</FormControl>
-				<IconButton size="small" onClick={ joinRoom } disabled={newUser === "null"}> {/* TODO disable button when user not selected*/}
+				<IconButton size="small" onClick={ joinRoom } disabled={newUser === ""}> {/* TODO disable button when user not selected*/}
 					<AddIcon/>
 				</IconButton>
 		</div>

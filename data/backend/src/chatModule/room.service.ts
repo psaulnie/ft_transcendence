@@ -83,9 +83,11 @@ export class RoomService {
 		if (rvalue == -1)
 			return (rvalue);
 		const newEntry = new UsersList();
+
 		newEntry.userId = userId;
 		room.usersNumber += 1;
 		room.usersID.push(newEntry);
+		await this.usersListRepository.save(newEntry);
 		await this.roomsRepository.save(room);
 		return (accessStatus.public);
 	}
@@ -186,6 +188,18 @@ export class RoomService {
 			room.access = accessStatus.public;
 			await this.roomsRepository.save(room);
 		}
+	}
+
+	async isUserInRoom(roomName: string, userID: number): Promise<boolean>
+	{
+		const room = await this.roomsRepository.findOne({ where: { roomName: roomName }, relations: { usersID: true } });
+		if (!room)
+			return (false);
+		console.log(room.usersID);
+		if (!room.usersID.find((obj: any) => obj.userId == userID))
+			return (false);
+		else
+			return (true);
 	}
 
 }

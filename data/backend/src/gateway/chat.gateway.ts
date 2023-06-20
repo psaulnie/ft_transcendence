@@ -195,6 +195,13 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		this.server.emit(payload, { source: payload, target: payload, action: actionTypes.noPassword });
 	}
 
+	@SubscribeMessage('inviteUser')
+	async inviteUser(client: Socket, payload: {roomName: string, username: string}) {
+		if (!payload.roomName || !payload.username)
+			return ;
+		this.server.emit(payload.username + "OPTIONS", { source: payload.roomName, target: payload.username, action: actionTypes.invited });
+	}
+
 	async afterInit(server: Server) {
 		console.log('Init');
 	}

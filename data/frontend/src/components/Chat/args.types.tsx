@@ -22,5 +22,6 @@ export enum actionTypes {
 	wrongpassword,
 	rightpassword,
 	hasPassword,
-	noPassword
+	noPassword,
+	invited
 }

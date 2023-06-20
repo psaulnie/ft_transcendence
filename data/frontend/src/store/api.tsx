@@ -30,6 +30,14 @@ export const apiSlice = createApi({
 				method: 'GET'
 			})
 		}),
+		getFilteredUserList: builder.query({
+			query: ({username = null, roomName = null}) => ({
+				url: '/api/chat/users/list/filtered',
+				method: 'GET',
+				params: { username: username, roomName: roomName },
+
+			})
+		}),
 		getIsRoomNameTaken: builder.query({
 			query: ({roomName = null}) => ({
 				url: '/api/chat/rooms/exist',
@@ -40,4 +48,10 @@ export const apiSlice = createApi({
 	})
 })
 
-export const { useGetRoleQuery, useGetBlockedUsersQuery, useGetRoomsListQuery, useGetIsRoomNameTakenQuery, useGetUsersListQuery } = apiSlice
+export const {	useGetRoleQuery,
+				useGetBlockedUsersQuery,
+				useGetRoomsListQuery,
+				useGetIsRoomNameTakenQuery,
+				useGetUsersListQuery,
+				useGetFilteredUserListQuery
+} = apiSlice

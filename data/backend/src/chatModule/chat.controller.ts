@@ -97,4 +97,29 @@ export class ChatController {
 		}
 		return JSON.stringify(res);
 	}
+
+	@Get('users/list/filtered')
+	async getFilteredUserList(@Query() data: any): Promise<string> {
+		if (data.username == null || data.roomName == null) // TODO check
+		{
+			const res = {
+				statusCode: 400,
+				status: "failed"
+			};
+			return (JSON.stringify(res));
+		}
+
+		const users = await this.userService.findAll();
+		let usersList: {}[] = [];
+
+		users.forEach((element) => {
+			if (element.username != data.username && this.roomService.isUserInRoom(data.roomName, element.id))
+				usersList.push({label: element.username})
+		}) // TODO return also is online or not
+		const res = {
+			status: 'success',
+			data: usersList
+		}
+		return JSON.stringify(res);
+	}
 }

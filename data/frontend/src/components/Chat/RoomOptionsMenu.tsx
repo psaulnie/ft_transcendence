@@ -4,6 +4,8 @@ import { useSelector } from "react-redux";
 import { Menu, MenuItem, Divider } from "@mui/material";
 
 import PasswordDialog from "./PasswordDialog";
+import SelectUserDialog from "./SelectUserDialog";
+
 import { chatSocket } from "../../chatSocket";
 
 type arg = {
@@ -15,35 +17,57 @@ type arg = {
 }
 
 export default function RoomOptionsMenu({contextMenu, setContextMenu, roomIndex, roomName, role}: arg) {
-	const [showDialog, setShowDialog] = useState(false);
+	const [showPasswordDialog, setShowPasswordDialog] = useState(false);
+	const [showUserDialog, setShowUserDialog] = useState(false);
 
 	const rooms = useSelector((state: any) => state.rooms);
 	const handleClose = () => {
 		setContextMenu(null);
 	};
 
+	function setPassword()
+	{
+		setShowPasswordDialog(true);
+		setContextMenu(null);
+	}
+
+
+	function removePassword()
+	{
+		chatSocket.emit('removePasswordToRoom', roomName);
+		setContextMenu(null)
+	}
+
+	function showDialog()
+	{
+		setShowUserDialog(true);
+		setContextMenu(null);
+	}
 	return (
-		<Menu open={contextMenu !== null}
-			onClose={handleClose}
-			anchorReference="anchorPosition"
-			anchorPosition={
-			contextMenu !== null
-				? { top: contextMenu.mouseY, left: contextMenu.mouseX }
-				: undefined}>
-			<div>
-				{
-					role !== "none" ?
-						<div>
-							<MenuItem disabled={rooms.room[roomIndex].hasPassword !== false} onClick={ () => { setShowDialog(true) } } >Set a password</MenuItem>
-							<MenuItem disabled={rooms.room[roomIndex].hasPassword !== true} onClick={ () => { setShowDialog(true) } } >Change password</MenuItem>
-							<MenuItem disabled={rooms.room[roomIndex].hasPassword !== true} onClick={ () => chatSocket.emit('removePasswordToRoom', roomName) }>Remove password</MenuItem>
-							<Divider/>
-						</div>
-					: null
-				}
-				<MenuItem>Invite user</MenuItem>
-				{ showDialog === true ? <PasswordDialog open={showDialog} setOpen={setShowDialog} roomName={roomName} role="none" createRoom={false} /> : null}
-			</div>
-	</Menu>
+		<div>
+			<Menu open={contextMenu !== null}
+				onClose={handleClose}
+				anchorReference="anchorPosition"
+				anchorPosition={
+				contextMenu !== null
+					? { top: contextMenu.mouseY, left: contextMenu.mouseX }
+					: undefined}>
+				<div>
+					{
+						role !== "none" ?
+							<div>
+								<MenuItem disabled={rooms.room[roomIndex].hasPassword !== false} onClick={setPassword} >Set a password</MenuItem>
+								<MenuItem disabled={rooms.room[roomIndex].hasPassword !== true} onClick={setPassword} >Change password</MenuItem>
+								<MenuItem disabled={rooms.room[roomIndex].hasPassword !== true} onClick={removePassword}>Remove password</MenuItem>
+								<Divider/>
+							</div>
+						: null
+					}
+					<MenuItem onClick={ showDialog } >Invite user</MenuItem>
+				</div>
+			</Menu>
+			{ showPasswordDialog === true ? <PasswordDialog open={showPasswordDialog} setOpen={setShowPasswordDialog} roomName={roomName} role="none" createRoom={false} /> : null}
+			{ showUserDialog === true ? <SelectUserDialog open={showUserDialog} setOpen={setShowUserDialog} roomName={roomName} /> : null}
+		</div>
 	);
 }

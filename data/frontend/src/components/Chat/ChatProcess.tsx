@@ -43,7 +43,7 @@ export default function ChatProcess({roomIndex, setRoomIndex}: {roomIndex: numbe
 			dispatch(removeRoom(roomName));
 		}
 
-		function process(value: chatResponseArgs) {
+		function process(value: chatResponseArgs) { // TODO function pointer ?
 			if (value.action === actionTypes.kick)
 			{
 				quitRoom(value.target);
@@ -95,6 +95,10 @@ export default function ChatProcess({roomIndex, setRoomIndex}: {roomIndex: numbe
 					setRoomIndex(0);
 				else
 					setRoomIndex(rooms.room.length);
+			}
+			else if (value.action === actionTypes.invited)
+			{
+				setSnackbar("You've been invited in this channel: " + value.source, "success");
 			}
 		}
 
