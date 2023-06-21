@@ -27,8 +27,6 @@ function Chat() {
 		dispatch(unmute());
 	}, [user.username, dispatch]);
 	
-
-	
 	const {
 		data: blockedUsers,
 		isLoading,

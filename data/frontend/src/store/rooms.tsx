@@ -46,7 +46,7 @@ export const roomsSlice = createSlice({
 		{
 			state.room.push({name: action.payload.name, role: action.payload.role, isDirectMsg: action.payload.isDirectMsg,
 								messages: [], unread: false, hasPassword: action.payload.hasPassword});
-			if (action.payload.openTab)
+			if (action.payload.openTab || state.index === -1)
 				state.index++;
 		}
 	},
@@ -54,7 +54,7 @@ export const roomsSlice = createSlice({
 		state.room = state.room.filter((element) => element.name !== action.payload);
 		if (state.room.length === 0)
 			state.index = -1;
-		else
+		else if (state.index !== 0)
 			state.index--;
 	},
 	changeRole: (state, action: PayloadAction<roomType>) => {
