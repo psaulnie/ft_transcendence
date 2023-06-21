@@ -85,11 +85,11 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 			if (await this.roomService.findOne(payload.room) == null)
 			{
 				if (payload.access != accessStatus.protected)
-					await this.roomService.createRoom(payload.room, user.id, payload.access);
+					await this.roomService.createRoom(payload.room, user, payload.access);
 				else
 				{
 					hasPassword = true;
-					await this.roomService.createPasswordProtectedRoom(payload.room, user.id, payload.access, payload.password);
+					await this.roomService.createPasswordProtectedRoom(payload.room, user, payload.access, payload.password);
 				}
 				role = "owner";
 			}
@@ -105,7 +105,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 					}
 					hasPassword = true;
 				}
-				const nbr = await this.roomService.addUser(payload.room, user.id, false);
+				const nbr = await this.roomService.addUser(payload.room, user, false);
 				if (nbr == -1)
 				{
 					this.server.emit(payload.source + "OPTIONS", { source: payload.source, target: payload.room, action: actionTypes.ban })
@@ -146,7 +146,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	@SubscribeMessage('ban')
 	async banUser(client: Socket, payload: actionArgs) {
 		const user = await this.userService.findOne(payload.target);
-		await this.roomService.addToBanList(payload.room, user.id);
+		await this.roomService.addToBanList(payload.room, user);
 		this.server.emit(payload.target + "OPTIONS", { source: payload.source, target: payload.room, action: actionTypes.ban, role: "none" })
 	}
 
@@ -167,7 +167,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		
 		if (user == null)
 			return ; // TODO handle error
-		await this.roomService.addAdmin(payload.room, user.id);
+		await this.roomService.addAdmin(payload.room, user);
 		this.server.emit(payload.target + "OPTIONS", { source: payload.room, target: payload.target, action: actionTypes.admin, role: "admin" })
 	}
 
@@ -196,10 +196,10 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	}
 
 	@SubscribeMessage('inviteUser')
-	async inviteUser(client: Socket, payload: {roomName: string, username: string}) {
+	async inviteUser(client: Socket, payload: {roomName: string, username: string, hasPassword: boolean}) {
 		if (!payload.roomName || !payload.username)
 			return ;
-		this.server.emit(payload.username + "OPTIONS", { source: payload.roomName, target: payload.username, action: actionTypes.invited });
+		this.server.emit(payload.username + "OPTIONS", { source: payload.roomName, target: payload.username, action: actionTypes.invited, hasPassword: payload.hasPassword });
 	}
 
 	@SubscribeMessage('joinPrivateRoom')
@@ -209,7 +209,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		const user = await this.userService.findOne(payload.username);
 		if (!user)
 			return ;
-		await this.roomService.addUser(payload.roomName, user.id, true);
+		await this.roomService.addUser(payload.roomName, user, true);
 		this.server.emit(payload.roomName, { source: payload.username, target: payload.roomName, action: actionTypes.join })
 	}
 

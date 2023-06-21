@@ -5,7 +5,9 @@ import InputForm from './Message/InputForm';
 
 import { useSelector } from 'react-redux';
 
-import { Grid, Box } from '@mui/material';
+import { Grid, Box, Typography } from '@mui/material';
+
+import UsersList from './UsersList';
 
 function Room({channelName}: {channelName: string}) {
 	const rooms = useSelector((state: any) => state.rooms);
@@ -21,14 +23,22 @@ function Room({channelName}: {channelName: string}) {
 
 
 	return (
-		<Grid>
-			<Grid item xs={12}>
-				<Box sx={{ height: '80vh', padding: '16px', overflow: 'auto' }}>
-					<MessagesBox messages={ rooms.room[roomIndex].messages } role={ role } channelName={ channelName } />
-				</Box>
+		<Grid sx={{display: 'flex'}}>
+			<Grid item xs={8}>
+				<Grid item xs={12}>
+					<Box sx={{ height: '80vh', padding: '16px', overflow: 'auto' }}>
+						<MessagesBox messages={ rooms.room[roomIndex].messages } role={ role } channelName={ channelName } />
+					</Box>
+				</Grid>
+				<Grid item xs={12}>
+					<InputForm channelName={ channelName } isDirectMessage={rooms.room[roomIndex].isDirectMessage} />
+				</Grid>
 			</Grid>
-			<Grid item xs={12}>
-				<InputForm channelName={ channelName } isDirectMessage={rooms.room[roomIndex].isDirectMessage} />
+			<Grid item xs={4}>
+				<Box sx={{ backgroundColor: '#102b47', height: '100%', padding: '16px', borderRadius: '10px'}}>
+					<Typography>Users:</Typography>
+					<UsersList roomName={channelName} />
+				</Box>
 			</Grid>
 		</Grid>
 	);

@@ -1,5 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany, AfterLoad, JoinColumn } from 'typeorm';
 import { BlockedUsersList } from './blockedUsersList';
+import { UsersList } from './usersList.entity';
 
 @Entity({ name: 'User' })
 export class User {
@@ -32,9 +33,15 @@ export class User {
 	@JoinColumn()
 	blockedUsersID: BlockedUsersList[]
 
+	@OneToMany(() => UsersList, usersList => usersList.user)
+	@JoinColumn()
+	usersList: UsersList[]
+
 	@AfterLoad()
 	async nullCheck() {
 		if (!this.blockedUsersID)
 			this.blockedUsersID = [];
+		if (!this.usersList)
+			this.usersList = [];
 	}
 }

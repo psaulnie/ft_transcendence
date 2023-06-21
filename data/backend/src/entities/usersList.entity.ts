@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn, OneToOne } from "typeorm";
 import { Room } from "./room.entity";
+import { User } from "./user.entity";
 
 @Entity({ name: 'UsersList' })
 export class UsersList {
@@ -8,6 +9,15 @@ export class UsersList {
 
 	@Column()
 	userId: number
+
+	@Column()
+	role: string
+
+	@ManyToOne(() => User, user => user.usersList)
+	user: User
+
+	@Column()
+	isBanned: boolean
 
 	@ManyToOne(() => Room, room => room.usersID, { onDelete: 'CASCADE' })
 	@JoinColumn()

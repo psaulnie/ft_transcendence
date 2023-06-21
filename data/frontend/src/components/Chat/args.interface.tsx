@@ -27,4 +27,5 @@ export interface chatResponseArgs {
 	role: string,
 	isMuted: boolean,
 	date: Date,
+	hasPassword: boolean
 }

@@ -43,6 +43,8 @@ export default function RoomOptionsMenu({contextMenu, setContextMenu, roomIndex,
 		setShowUserDialog(true);
 		setContextMenu(null);
 	}
+	if (rooms.index !== roomIndex)
+		return (null);
 	return (
 		<div>
 			<Menu open={contextMenu !== null}
@@ -63,7 +65,7 @@ export default function RoomOptionsMenu({contextMenu, setContextMenu, roomIndex,
 							</div>
 						: null
 					}
-					<MenuItem onClick={ showDialog } >Invite user</MenuItem>
+					{ !rooms.room[roomIndex].isDirectMsg ? <MenuItem onClick={ showDialog } >Invite user</MenuItem> : null }
 				</div>
 			</Menu>
 			{ showPasswordDialog === true ? <PasswordDialog open={showPasswordDialog} setOpen={setShowPasswordDialog} roomName={roomName} role="none" createRoom={false} /> : null}

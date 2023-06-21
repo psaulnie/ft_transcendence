@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 
 import { chatSocket } from '../../chatSocket';
 
@@ -45,17 +45,14 @@ function Chat() {
 				dispatch(addBlockedUser(element.username));
 			});
 		}
-		// if (rooms.room.length !== 0)
-		// 	setRoomIndex(0); // TODO check if necessary
-		
 	}, [user.username, isSuccess, blockedUsers, dispatch, refetch, rooms]);
 	
 	if (!chatSocket.connected)
 		return (<p>Chat Socket error</p>);
 	if (isError) // TODO fix show real error page (make Error component)
-	return (<p>Error: {error.toString()}</p>)
+		return (<p>Error: {error.toString()}</p>)
 	else if (isLoading)
-	return (
+		return (
 			<div>
 				<Skeleton variant="text"/>
 				<Skeleton variant="rectangular" />

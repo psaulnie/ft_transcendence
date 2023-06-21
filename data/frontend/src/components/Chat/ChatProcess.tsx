@@ -25,6 +25,7 @@ export default function ChatProcess() {
 	const [type, setType] = useState<AlertColor>('success');
 
 	const [room, setRoom] = useState('');
+	const [hasPassword, setHasPassword] = useState(false);
 
 	function setSnackbar(message: string, type: AlertColor)
 	{
@@ -59,9 +60,10 @@ export default function ChatProcess() {
 		if (room === '')
 			return ;
 		setOpenInvite(false);
-		dispatch(addRoom({name: room, role: 'none', isDirectMsg: false, hasPassword: false, openTab: true}));
+		dispatch(addRoom({name: room, role: 'none', isDirectMsg: false, hasPassword: hasPassword, openTab: true}));
 		chatSocket.emit('joinPrivateRoom', { roomName: room, username: user.username });
 		setRoom('');
+		setHasPassword(false);
 	}
 
 	useEffect(() => {
@@ -120,6 +122,8 @@ export default function ChatProcess() {
 			else if (value.action === actionTypes.invited)
 			{
 				setInviteSnackbar("You've been invited in this channel: " + value.source, "info");
+				if (value.hasPassword)
+					setHasPassword(true);
 				setRoom(value.source);
 			}
 		}
@@ -156,8 +160,6 @@ export default function ChatProcess() {
 						<CloseIcon/>
 					</IconButton>
 				</Box>
-				{/* <Alert onClose={handleCloseInvite} severity={type} sx={{ width: '100%' }}> */}
-				{/* </Alert> */}
 			</Snackbar>
 		</div>
 	);

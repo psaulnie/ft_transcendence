@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Room } from 'src/entities/room.entity';
+import { User } from 'src/entities/user.entity';
 import { UsersList } from 'src/entities/usersList.entity';
 import { Repository } from 'typeorm';
 import { accessStatus } from './accessStatus';
@@ -19,20 +20,28 @@ export class RoomService {
 		return await (this.roomsRepository.findOne({ where: { roomName: name }, relations: ['usersID', 'blockedUsersID', 'adminsID'] }));
 	}
 
+	async findOneAllLoaded(name: string): Promise<Room>
+	{
+		return await (this.roomsRepository.findOne({ where: { roomName: name }, relations: ['usersID', 'blockedUsersID', 'adminsID', 'usersID.user'] }));
+	}
+
 	async findAll(): Promise<Room[]>
 	{
 		return await (this.roomsRepository.find());
 	}
 
-	async createRoom(name: string, ownerID: number, access: number): Promise<Room>
+	async createRoom(name: string, user: User, access: number): Promise<Room>
 	{
 		const room = new Room();
 		const usersList = new UsersList();
 
-		usersList.userId = ownerID;
-		// usersList.room = room;
+		usersList.userId = user.id;
+		usersList.user = user;
+		usersList.role = 'owner';
+		usersList.isBanned = false;
+	
 		room.roomName = name;
-		room.ownerID = ownerID;
+		room.ownerID = user.id;
 		room.usersNumber = 1;
 		room.access = access;
 		room.password = "";
@@ -42,15 +51,18 @@ export class RoomService {
 		return await (this.roomsRepository.save(room));
 	}
 
-	async createPasswordProtectedRoom(name: string, ownerID: number, access: number, password: string): Promise<Room>
+	async createPasswordProtectedRoom(name: string, user: User, access: number, password: string): Promise<Room>
 	{
 		const room = new Room();
 		const usersList = new UsersList();
 
-		usersList.userId = ownerID;
-		// usersList.room = room;
+		usersList.userId = user.id;
+		usersList.user = user;
+		usersList.role = 'owner';
+		usersList.isBanned = false;
+
 		room.roomName = name;
-		room.ownerID = ownerID;
+		room.ownerID = user.id;
 		room.usersNumber = 1;
 		room.access = access;
 		room.password = password;
@@ -65,7 +77,7 @@ export class RoomService {
 		return await (this.roomsRepository.save(room));
 	}
 
-	async addUser(roomName: string, userId: number, invited: boolean): Promise<number>
+	async addUser(roomName: string, user: User, invited: boolean): Promise<number>
 	{
 		const room = await this.findOne(roomName);
 		if (!room)
@@ -76,7 +88,7 @@ export class RoomService {
 			return (accessStatus.private);
 		}
 		room.blockedUsersID.forEach(user => {
-			if (user.userId == userId)
+			if (user.userId == user.id)
 			{
 				rvalue = -1;
 				return ;
@@ -86,7 +98,11 @@ export class RoomService {
 			return (rvalue);
 		const newEntry = new UsersList();
 
-		newEntry.userId = userId;
+		newEntry.userId = user.id;
+		newEntry.user = user;
+		newEntry.role = 'none';
+		newEntry.isBanned = false;
+
 		room.usersNumber += 1;
 		room.usersID.push(newEntry);
 		await this.usersListRepository.save(newEntry);
@@ -100,8 +116,7 @@ export class RoomService {
 		if (!(room))
 			return ;
 		console.log("-1 user in " + roomName);
-		// if (room.usersID.find((obj: UsersList) => obj.userId === userId))
-			room.usersNumber--;
+		room.usersNumber--;
 		if (room.usersNumber <= 0)
 		{
 			this.removeRoom(roomName);
@@ -132,8 +147,8 @@ export class RoomService {
 			return (null); // TODO check and/or fix
 		if (room.ownerID == userId)
 			return ("owner");
-		room.adminsID.forEach(admin => {
-			if (admin.userId == userId)
+		room.usersID.forEach(user => {
+			if (user.role == 'admin' && user.userId == userId)
 			{
 				isAdmin = true;
 				return ;
@@ -141,24 +156,31 @@ export class RoomService {
 		});
 		if (isAdmin)
 			return ("admin");
-
 		return ("none");
 	}
 
-	async addToBanList(roomName: string, userID: number): Promise<Room>
+	async addToBanList(roomName: string, user: User): Promise<Room>
 	{
 		const room = await this.findOne(roomName);
+		const userInList = room.usersID.find((obj) => obj.userId == user.id);
 		const newBlockedUser = new UsersList();
-		newBlockedUser.userId = userID;
+
+		newBlockedUser.userId = user.id;
+		userInList.isBanned = true;
+		await this.roomsRepository.save(userInList);
 		room.blockedUsersID.push(await this.usersListRepository.save(newBlockedUser));
 		return await (this.roomsRepository.save(room));
 	}
 
-	async addAdmin(roomName: string, userID: number): Promise<Room>
+	async addAdmin(roomName: string, user: User): Promise<Room>
 	{
 		const room = await this.findOne(roomName);
+		const userInList = room.usersID.find((obj) => obj.userId == user.id);
 		const newAdmin = new UsersList();
-		newAdmin.userId = userID;
+
+		userInList.role = 'admin';
+		newAdmin.userId = user.id;
+		await this.roomsRepository.save(userInList);
 		room.adminsID.push(await this.usersListRepository.save(newAdmin));
 		return await (this.roomsRepository.save(room));
 	}
@@ -195,9 +217,7 @@ export class RoomService {
 	async isUserInRoom(roomName: string, userID: number): Promise<boolean>
 	{
 		const room = await this.findOne(roomName);
-		if (!room)
-			return (false);
-		if (!room.usersID.find((obj: any) => obj.userId == userID))
+		if (!room || !room.usersID.find((obj: any) => obj.userId == userID))
 			return (false);
 		else
 			return (true);

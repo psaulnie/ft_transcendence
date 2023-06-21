@@ -24,16 +24,17 @@ export default function RoomTabs()
 		mouseY: number;
 	  } | null>(null);
 
-	const handleContextMenu = (event: React.MouseEvent) => {
+	const handleContextMenu = (event: React.MouseEvent, key: number) => {
 		event.preventDefault();
-		setContextMenu(
-			contextMenu === null
-			? {
-				mouseX: event.clientX + 2,
-				mouseY: event.clientY - 6,
-				}
-			: null,
-		);
+		if (rooms.index === key)
+			setContextMenu(
+				contextMenu === null
+				? {
+					mouseX: event.clientX + 2,
+					mouseY: event.clientY - 6,
+					}
+				: null,
+			);
 	};
 	function changeSelectedRoom(event: React.SyntheticEvent, newIndex: number)
 	{
@@ -51,7 +52,7 @@ export default function RoomTabs()
 		return (
 			<Tabs sx={{position: 'fixed', bottom:"0", width:"100%"}} value={rooms.index} onChange={changeSelectedRoom} variant="scrollable" scrollButtons="auto">
 				{rooms.room.map((room: {name: string, role: string, unread: boolean}, key: number) =>
-					<Tab value={key} tabIndex={key} key={key} onContextMenu={handleContextMenu} label={
+					<Tab onClick={() => dispatch(setRead(key)) } value={key} tabIndex={key} key={key} onContextMenu={(event) => handleContextMenu(event, key)} label={
 						<span>
 							{room.name}
 							{

@@ -1,6 +1,7 @@
 import { Controller, Query, Get } from '@nestjs/common';
 import { RoomService } from './room.service';
 import { UserService } from './user.service';
+import { UsersList } from 'src/entities/usersList.entity';
 
 @Controller('/api/chat/')
 export class ChatController {
@@ -62,6 +63,32 @@ export class ChatController {
 		const res = {
 			status: 'success',
 			data: roomsList
+		}
+		return JSON.stringify(res);
+	}
+
+	@Get('room/users')
+	async getUsersInRoom(@Query() data: any): Promise<string> {
+		if (data.roomName == null) // TODO check
+		{
+			const res = {
+				statusCode: 400,
+				status: "failed"
+			};
+			return (JSON.stringify(res));
+		}
+		const room = await this.roomService.findOneAllLoaded(data.roomName);
+		let usersList = [];
+
+		console.log(room.usersID);
+		room.usersID.forEach((element: UsersList) => {
+			console.log(element);
+			usersList.push({username: element.user.username, role: element.role});
+		})
+		// usersList.push({name: });
+		const res = {
+			status: 'success',
+			data: usersList
 		}
 		return JSON.stringify(res);
 	}
