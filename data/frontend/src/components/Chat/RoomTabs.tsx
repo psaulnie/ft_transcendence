@@ -10,11 +10,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useState } from "react";
 
 import { chatSocket } from "../../chatSocket";
-import { removeRoom, setRead } from "../../store/rooms";
+import { removeRoom, setRead, setRoomIndex } from "../../store/rooms";
 import { manageRoomsTypes } from "./args.types";
 import RoomOptionsMenu from "./RoomOptionsMenu";
 
-export default function RoomTabs({roomIndex, setRoomIndex}: {roomIndex: number, setRoomIndex: any })
+export default function RoomTabs()
 {
 	const user = useSelector((state: any) => state.user);
 	const rooms = useSelector((state: any) => state.rooms);
@@ -37,35 +37,31 @@ export default function RoomTabs({roomIndex, setRoomIndex}: {roomIndex: number, 
 	};
 	function changeSelectedRoom(event: React.SyntheticEvent, newIndex: number)
 	{
-		setRoomIndex(newIndex);
+		dispatch(setRoomIndex(newIndex));
 		dispatch(setRead(newIndex));
 	}
 
-	function quitRoom(roomName: string, roomIndex: number)
+	function quitRoom(roomName: string)
 	{
-		if (rooms.room.length === 1)
-			setRoomIndex(-1)
-		else if (roomIndex !== 0)
-			setRoomIndex(roomIndex - 1);
 		chatSocket.emit('manageRooms', { type: manageRoomsTypes.remove, source: user.username, room: roomName, access: 0});
 		dispatch(removeRoom(roomName));
 	}
 
-	if (roomIndex !== -1)
+	if (rooms.index !== -1)
 		return (
-			<Tabs sx={{position: 'fixed', bottom:"0", width:"100%"}} value={roomIndex} onChange={changeSelectedRoom} variant="scrollable" scrollButtons="auto">
+			<Tabs sx={{position: 'fixed', bottom:"0", width:"100%"}} value={rooms.index} onChange={changeSelectedRoom} variant="scrollable" scrollButtons="auto">
 				{rooms.room.map((room: {name: string, role: string, unread: boolean}, key: number) =>
 					<Tab value={key} tabIndex={key} key={key} onContextMenu={handleContextMenu} label={
 						<span>
 							{room.name}
 							{
-								roomIndex === key ? 
-									<IconButton size="small" component="span" onClick={() => quitRoom(room.name, key) }>
+								rooms.index === key ? 
+									<IconButton size="small" component="span" onClick={() => quitRoom(room.name) }>
 										<CloseIcon/>
 									</IconButton>
 								: null
 							}
-							<MessageProvider roomName={room.name} currentRoomIndex={roomIndex}/>
+							<MessageProvider roomName={room.name}/>
 							<RoomOptionsMenu contextMenu={contextMenu} setContextMenu={setContextMenu} roomIndex={key} roomName={room.name} role={room.role}/>
 						</span>
 					} icon={ room.unread ? <MarkChatUnreadIcon fontSize='small'/> : <ChatBubbleIcon fontSize='small'/> } iconPosition="start" />

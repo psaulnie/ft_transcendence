@@ -22,8 +22,6 @@ function Chat() {
 	const rooms = useSelector((state: any) => state.rooms);
 	const dispatch = useDispatch();
 
-	const [roomIndex, setRoomIndex] = useState(-1);
-
 	useEffect(() => {
 		chatSocket.emit("newUser", user.username);
 		dispatch(unmute());
@@ -51,7 +49,7 @@ function Chat() {
 		// if (rooms.room.length !== 0)
 		// 	setRoomIndex(0); // TODO check if necessary
 
-	}, [user.username, isSuccess, blockedUsers, dispatch, refetch, setRoomIndex, rooms]);
+	}, [user.username, isSuccess, blockedUsers, dispatch, refetch, rooms]);
 	
 
 
@@ -67,32 +65,32 @@ function Chat() {
 
 	return (
 		<div className='chat'>
-			<ChatProcess roomIndex={roomIndex} setRoomIndex={setRoomIndex} />
+			<ChatProcess/>
 			<Grid container sx={{ display: 'flex'}} justifyContent="space-evenly">
 				<Grid item xs={3}>
 						<Box sx={{ backgroundColor: '#102b47', height: '100%', padding: '16px', borderRadius: '10px'}}>
 							<Grid container>
-								<JoinDirectMessage setRoomIndex={setRoomIndex} />
+								<JoinDirectMessage/>
 							</Grid>
 							<Grid container>
-								<CreateChannel setRoomIndex={setRoomIndex} />
+								<CreateChannel/>
 							</Grid>
 							<Grid container>
-								<JoinChannel setRoomIndex={setRoomIndex} />
+								<JoinChannel/>
 							</Grid>
 						</Box>
 				</Grid>
 				<Grid item xs={7}>
-						<DirectMessageProvider roomIndex={roomIndex} setRoomIndex={setRoomIndex}/>
+						<DirectMessageProvider/>
 						<Grid>
 							{ 
-								roomIndex !== -1 && rooms.room[roomIndex] ?
-									<Room key={rooms.room[roomIndex].name} channelName={rooms.room[roomIndex].name}/>
+								rooms.index !== -1 && rooms.room[rooms.index] ?
+									<Room key={rooms.room[rooms.index].name} channelName={rooms.room[rooms.index].name}/>
 								: null
 							}	
 						</Grid>
 						<Grid item sx={{ marginBottom: '70px' }}>
-							<RoomTabs roomIndex={roomIndex} setRoomIndex={setRoomIndex} />
+							<RoomTabs/>
 						</Grid>
 				</Grid>
 			</Grid>

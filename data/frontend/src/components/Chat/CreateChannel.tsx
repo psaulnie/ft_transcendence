@@ -11,7 +11,7 @@ import { TextField, Select, MenuItem, FormControl, FormHelperText, SelectChangeE
 import AddIcon from '@mui/icons-material/Add'
 import PasswordDialog from './PasswordDialog';
 
-function CreateChannel({ setRoomIndex }: { setRoomIndex: any }) {
+function CreateChannel() {
 	const user = useSelector((state: any) => state.user);
 	const rooms = useSelector((state: any) => state.rooms);
 	const dispatch = useDispatch();
@@ -68,8 +68,7 @@ function CreateChannel({ setRoomIndex }: { setRoomIndex: any }) {
 				hasPassword = true;
 				return ;
 			}
-			dispatch(addRoom({name: newRoomName, role: "owner", isDirectMsg: false, hasPassword: hasPassword}));
-			setRoomIndex(rooms.room.length);
+			dispatch(addRoom({name: newRoomName, role: "owner", isDirectMsg: false, hasPassword: hasPassword, openTab: true}));
 			chatSocket.emit('manageRooms', { type: manageRoomsTypes.add, source: user.username, room: newRoomName, access: access});
 		}
 		else

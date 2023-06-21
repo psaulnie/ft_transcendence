@@ -3,6 +3,7 @@ import { chatResponseArgs } from '../args.interface';
 import { useDispatch, useSelector } from 'react-redux';
 import { addBlockedUser } from '../../../store/user';
 import { Menu, MenuItem } from '@mui/material';
+import { addRoom } from '../../../store/rooms';
 
 type arg = {
 	message: chatResponseArgs,
@@ -15,6 +16,7 @@ type arg = {
 
 export default function UserOptionsMenu({ message, role, channelName, contextMenu, setContextMenu, handleContextMenu }: arg) {
 	const user = useSelector((state: any) => state.user);
+	const rooms = useSelector((state: any) => state.rooms);
 	const dispatch = useDispatch();
 
 	const handleClose = () => {
@@ -26,8 +28,11 @@ export default function UserOptionsMenu({ message, role, channelName, contextMen
 		dispatch(addBlockedUser(message.source));
 	}
 
+	function sendMessage() {
+		dispatch(addRoom({name: message.source, role: 'none', hasPassword: false, isDirectMsg: true, openTab: true}));
+	}
+
 	return (
-		// <div className='options'>
 			<Menu open={contextMenu !== null}
 				onClose={handleClose}
 				anchorReference="anchorPosition"
@@ -49,6 +54,7 @@ export default function UserOptionsMenu({ message, role, channelName, contextMen
 					user.username !== message.source ? (
 						<div className='standardOptions'>
 							<MenuItem onClick={ () => { blockUser(message) } } >Block</MenuItem>
+							<MenuItem onClick={ () => { sendMessage() } }>Send message</MenuItem>
 							<MenuItem>Invite {message.source} to play Pong</MenuItem>
 						</div>
 					) : null

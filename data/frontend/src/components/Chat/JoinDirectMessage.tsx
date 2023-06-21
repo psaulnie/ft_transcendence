@@ -9,7 +9,7 @@ import { addRoom } from '../../store/rooms';
 import { FormControl, FormHelperText, InputLabel, Select, MenuItem, SelectChangeEvent, IconButton, Skeleton } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add'
 
-function JoinDirectMessage({ setRoomIndex }: { setRoomIndex: any }) {
+function JoinDirectMessage() {
 	const user = useSelector((state: any) => state.user);
 	const rooms = useSelector((state: any) => state.rooms);
 	const dispatch = useDispatch();
@@ -29,8 +29,7 @@ function JoinDirectMessage({ setRoomIndex }: { setRoomIndex: any }) {
 			return ;
 		if (!rooms.room.find((obj: {name: string, role: string}) => obj.name === newUser))
 		{
-			dispatch(addRoom({name: newUser, role: "none", isDirectMsg: true, hasPassword: false}));
-			setRoomIndex(rooms.room.length);
+			dispatch(addRoom({name: newUser, role: "none", isDirectMsg: true, hasPassword: false, openTab: true}));
 			chatSocket.emit('manageRooms', { type: manageRoomsTypes.addDirectMsg, source: user.username, room: newUser, access: 0});
 		}
 		setNewUser('');

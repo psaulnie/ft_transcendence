@@ -15,7 +15,7 @@ import AddIcon from '@mui/icons-material/Add'
 import LockIcon from '@mui/icons-material/Lock';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 
-function JoinChannel({ setRoomIndex }: { setRoomIndex: any }) {
+function JoinChannel() {
 	const user = useSelector((state: any) => state.user);
 	const rooms = useSelector((state: any) => state.rooms);
 	const dispatch = useDispatch();
@@ -42,8 +42,7 @@ function JoinChannel({ setRoomIndex }: { setRoomIndex: any }) {
 				setShowDialog(true);
 				return ;
 			}
-			dispatch(addRoom({name: newRoomName, role: "none", isDirectMsg: false, hasPassword: (access === accessStatus.protected)}));
-			setRoomIndex(rooms.room.length);
+			dispatch(addRoom({name: newRoomName, role: "none", isDirectMsg: false, hasPassword: (access === accessStatus.protected), openTab: true}));
 			chatSocket.emit('manageRooms', { type: manageRoomsTypes.add, source: user.username, room: newRoomName, access: 0});
 		}
 		else

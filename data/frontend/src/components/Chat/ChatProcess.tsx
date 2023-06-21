@@ -14,7 +14,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import { accessStatus } from "./accessStatus";
 
-export default function ChatProcess({roomIndex, setRoomIndex}: {roomIndex: number, setRoomIndex: any}) {
+export default function ChatProcess() {
 	const user = useSelector((state: any) => state.user);
 	const rooms = useSelector((state: any) => state.rooms);
 	const dispatch = useDispatch();
@@ -59,12 +59,8 @@ export default function ChatProcess({roomIndex, setRoomIndex}: {roomIndex: numbe
 		if (room === '')
 			return ;
 		setOpenInvite(false);
-		dispatch(addRoom({name: room, role: 'none', isDirectMsg: false, hasPassword: false}));
+		dispatch(addRoom({name: room, role: 'none', isDirectMsg: false, hasPassword: false, openTab: true}));
 		chatSocket.emit('joinPrivateRoom', { roomName: room, username: user.username });
-		if (roomIndex === -1)
-			setRoomIndex(0);
-		else
-			setRoomIndex(rooms.room.at(-1));
 		setRoom('');
 	}
 
@@ -72,10 +68,6 @@ export default function ChatProcess({roomIndex, setRoomIndex}: {roomIndex: numbe
 
 		function quitRoom(roomName: string)
 		{
-			if (rooms.room.length === 1)
-				setRoomIndex(-1)
-			else
-				setRoomIndex(0);
 			dispatch(removeRoom(roomName));
 		}
 
@@ -125,13 +117,6 @@ export default function ChatProcess({roomIndex, setRoomIndex}: {roomIndex: numbe
 				dispatch(removeRoom(value.target))
 				setSnackbar("Wrong password", "error");
 			}
-			else if (value.action === actionTypes.rightpassword)
-			{
-				if (roomIndex === -1)
-					setRoomIndex(0);
-				else
-					setRoomIndex(rooms.room.length);
-			}
 			else if (value.action === actionTypes.invited)
 			{
 				setInviteSnackbar("You've been invited in this channel: " + value.source, "info");
@@ -143,7 +128,7 @@ export default function ChatProcess({roomIndex, setRoomIndex}: {roomIndex: numbe
 		return () => {
 			chatSocket.off(user.username + "OPTIONS", process);
 		};
-	}, [user.username, dispatch, rooms, setRoomIndex, roomIndex]);
+	}, [user.username, dispatch, rooms]);
 
 	return (
 		<div>

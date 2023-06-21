@@ -5,7 +5,7 @@ import { addMsg, addRoom, setHasPassword, setRead } from "../../../store/rooms";
 import { chatSocket } from "../../../chatSocket";
 import { actionTypes } from "../args.types";
 
-function MessageProvider({roomName, currentRoomIndex}: {roomName: string, currentRoomIndex: number}) {
+function MessageProvider({roomName}: {roomName: string}) {
 	const user = useSelector((state: any) => state.user);
 	const rooms = useSelector((state: any) => state.rooms);
 	const dispatch = useDispatch();
@@ -23,12 +23,12 @@ function MessageProvider({roomName, currentRoomIndex}: {roomName: string, curren
 			else
 			{
 				dispatch(addMsg({name: roomName, message: value}));
-				if (value.source === user.username || currentRoomIndex === roomIndex)
+				if (value.source === user.username || rooms.index === roomIndex)
 				{
 					dispatch(setRead(roomIndex));
 				}
 				if (rooms.room[roomIndex] && rooms.room[roomIndex].isDirectMessage === true)
-					dispatch(addRoom({name: value.source, role: "none",  isDirectMsg: true, hasPassword: false}));
+					dispatch(addRoom({name: value.source, role: "none",  isDirectMsg: true, hasPassword: false, openTab: false}));
 			}
 		}
 		
@@ -41,7 +41,7 @@ function MessageProvider({roomName, currentRoomIndex}: {roomName: string, curren
 		return () => {
 		  chatSocket.off(listener, onMsgSent);
 		};
-	  }, [roomName, dispatch, currentRoomIndex, rooms, user]);
+	  }, [roomName, dispatch, rooms, user]);
 
 	return (null);
 }
