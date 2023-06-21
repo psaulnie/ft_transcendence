@@ -27,6 +27,7 @@ function Chat() {
 		dispatch(unmute());
 	}, [user.username, dispatch]);
 	
+	
 	const {
 		data: blockedUsers,
 		isLoading,
@@ -35,7 +36,7 @@ function Chat() {
 		error,
 		refetch
 	} = useGetBlockedUsersQuery({username: user.username});
-
+	
 	useEffect(() => {
 		refetch();
 		if (isSuccess)
@@ -46,15 +47,15 @@ function Chat() {
 		}
 		// if (rooms.room.length !== 0)
 		// 	setRoomIndex(0); // TODO check if necessary
-
+		
 	}, [user.username, isSuccess, blockedUsers, dispatch, refetch, rooms]);
 	
-
-
+	if (!chatSocket.connected)
+		return (<p>Chat Socket error</p>);
 	if (isError) // TODO fix show real error page (make Error component)
-		return (<p>Error: {error.toString()}</p>)
+	return (<p>Error: {error.toString()}</p>)
 	else if (isLoading)
-		return (
+	return (
 			<div>
 				<Skeleton variant="text"/>
 				<Skeleton variant="rectangular" />
