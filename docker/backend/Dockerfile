@@ -7,6 +7,8 @@ RUN npm install --save-dev @nestjs/typeorm typeorm
 RUN npm install --save-dev @nestjs/websockets @nestjs/platform-socket.io
 RUN npm install
 
+RUN npm install --save @nestjs/jwt
+
 COPY entrypoint.sh ../
 
 RUN chmod +x ../entrypoint.sh

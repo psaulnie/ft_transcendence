@@ -11,15 +11,18 @@ export class User {
 
 	@Column()
 	isConnected: boolean
-	
+
 	@Column()
 	apiToken: string
 
 	@Column()
 	intraUsername: string
 
-	@Column({name: 'username'})
+	@Column({ name: 'username' })
 	username: string
+
+	@Column()
+	password: string
 
 	@Column()
 	status: number

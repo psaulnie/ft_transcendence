@@ -26,7 +26,7 @@ function Room({ username, channelName }: arg) {
 	}, []);
 
 	const fetchUserData = () => {
-		fetch("http://localhost:5500/api/chat/role?username=" + username + "&roomName=" + channelName)
+		fetch("http://localhost:5000/api/chat/role?username=" + username + "&roomName=" + channelName)
 			.then(response => {
 				return response.text()
 			})

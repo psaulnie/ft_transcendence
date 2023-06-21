@@ -11,7 +11,26 @@ export class UsersService {
 		private usersRepository: Repository<User>,
 	) { }
 
-	async findOne(name: string): Promise<User> {
+	// For testing only, TO REMOVE-----------------------------------------------------------
+	private readonly users = [
+		{
+			id: 1,
+			username: 'john',
+			password: 'changeme',
+		},
+		{
+			id: 2,
+			username: 'maria',
+			password: 'guess',
+		},
+	];
+
+	async findOne(username: string): Promise<{ id: number, username: string, password: string } | undefined> {
+		return this.users.find(user => user.username === username);
+	}
+	//----------------------------------------------------------------------------------------
+
+	async findOneByUsername(name: string): Promise<User> {
 		return await (this.usersRepository.findOne({ where: { username: name } }));
 	}
 

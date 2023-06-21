@@ -10,7 +10,7 @@ import {
 import { Socket, Server } from 'socket.io';
 import { RoomService } from 'src/chatModule/room.service';
 import { UsersService } from 'src/users/users.service';
-import { userStatus } from 'src/chatModule/userStatus';
+import { userStatus } from 'src/users/userStatus';
 
 import { manageRoomsArgs, banArgs, kickArgs, sendMsgArgs } from './args.interface';
 import { manageRoomsTypes, sendMsgTypes } from './args.types';
@@ -30,7 +30,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
 	@SubscribeMessage('newUser')
 	async createUser(client: Socket, payload: string) {
-		const user = await this.userService.findOne(payload);
+		const user = await this.userService.findOneByUsername(payload); //Change findOne !
 		if (user == null) {
 			console.log("New user: " + payload);
 			await this.userService.createUser(payload, client.id);

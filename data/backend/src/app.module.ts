@@ -6,28 +6,28 @@ import { AppService } from './app.service';
 
 import { ChatModule } from './chatModule/chat.module';
 import { ChatGateway } from './gateway/chat.gateway'
-import { AuthModuleModule } from './auth-module/auth-module.module';
+import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 
 @Module({
-  imports: [
-	ConfigModule.forRoot(),
-	TypeOrmModule.forRoot({
-		type: 'postgres',
-		host: 'database',
-		port: 5432,
-		username: process.env.POSTGRES_USER,
-		password: process.env.POSTGRES_PASSWORD,
-		database: process.env.POSTGRES_DB,
-		logging: false,
-		synchronize: true,
-		autoLoadEntities: true,
-	}),
-	ChatModule,
-	AuthModuleModule,
-	UsersModule,
-  ],
-  controllers: [AppController],
-  providers: [AppService],
+	imports: [
+		ConfigModule.forRoot(),
+		TypeOrmModule.forRoot({
+			type: 'postgres',
+			host: 'database',
+			port: 5432,
+			username: process.env.POSTGRES_USER,
+			password: process.env.POSTGRES_PASSWORD,
+			database: process.env.POSTGRES_DB,
+			logging: false,
+			synchronize: true,
+			autoLoadEntities: true,
+		}),
+		ChatModule,
+		AuthModule,
+		UsersModule,
+	],
+	controllers: [AppController],
+	providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }
