@@ -64,7 +64,7 @@ export default function PasswordDialog({open, setOpen, roomName, role, createRoo
 			<DialogTitle>
 				Enter password:
 			</DialogTitle>
-			<TextField helperText="Password" label="Room name" value={password} onChange={updatePassword} />
+			<TextField helperText="Enter password" label="Password" value={password} onChange={updatePassword} />
 			<DialogActions>
 				<Button onClick={closePasswordDialog}>Cancel</Button>
 				<Button disabled={password === '' ? true : false} onClick={confirmButton}>Confirm</Button>

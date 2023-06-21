@@ -2,7 +2,7 @@ import { chatSocket } from '../../../chatSocket';
 import { chatResponseArgs } from '../args.interface';
 import { useDispatch, useSelector } from 'react-redux';
 import { addBlockedUser } from '../../../store/user';
-import { Menu, MenuItem } from '@mui/material';
+import { Menu, MenuItem, Divider } from '@mui/material';
 import { addRoom } from '../../../store/rooms';
 
 type arg = {
@@ -35,11 +35,13 @@ export default function UserOptionsMenu({ message, role, channelName, contextMen
 	return (
 			<Menu open={contextMenu !== null}
 				onClose={handleClose}
+				onClick={handleClose}
 				anchorReference="anchorPosition"
 				anchorPosition={
 				contextMenu !== null
 					? { top: contextMenu.mouseY, left: contextMenu.mouseX }
-					: undefined}>
+					: undefined}
+			>
 				{
 					role !== "none" && user.username !== message.source && message.role === "none" ? (
 						<div className='adminOptions'>
@@ -47,15 +49,18 @@ export default function UserOptionsMenu({ message, role, channelName, contextMen
 							<MenuItem onClick={ () => { chatSocket.emit("ban", { source: user.username, target: message.source, room: channelName })  } } >Ban</MenuItem>
 							<MenuItem onClick={ () => { chatSocket.emit("mute", { source: user.username, target: message.source, room: channelName }) } }>Mute</MenuItem>
 							<MenuItem onClick={ () => { chatSocket.emit("admin", { source: user.username, target: message.source, room: channelName }) } } >Set {message.source} as administrator</MenuItem>
+							<Divider/>
 						</div>
 					) : null
 				}
 				{
 					user.username !== message.source ? (
 						<div className='standardOptions'>
+							<MenuItem>See profile</MenuItem>
+							<MenuItem>Add as friend</MenuItem>
+							<MenuItem>Invite {message.source} to play Pong</MenuItem>
 							<MenuItem onClick={ () => { blockUser(message) } } >Block</MenuItem>
 							<MenuItem onClick={ () => { sendMessage() } }>Send message</MenuItem>
-							<MenuItem>Invite {message.source} to play Pong</MenuItem>
 						</div>
 					) : null
 				}

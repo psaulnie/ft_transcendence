@@ -194,7 +194,7 @@ export class RoomService {
 
 	async isUserInRoom(roomName: string, userID: number): Promise<boolean>
 	{
-		const room = await this.roomsRepository.findOne({ where: { roomName: roomName }, relations: { usersID: true } });
+		const room = await this.findOne(roomName);
 		if (!room)
 			return (false);
 		if (!room.usersID.find((obj: any) => obj.userId == userID))
