@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn, OneToOne } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from "typeorm";
 import { Room } from "./room.entity";
 import { User } from "./user.entity";
 
@@ -6,9 +6,6 @@ import { User } from "./user.entity";
 export class UsersList {
 	@PrimaryGeneratedColumn()
 	id: number
-
-	@Column()
-	userId: number
 
 	@Column()
 	role: string
@@ -22,13 +19,4 @@ export class UsersList {
 	@ManyToOne(() => Room, room => room.usersID, { onDelete: 'CASCADE' })
 	@JoinColumn()
 	room: Room
-
-	@ManyToOne(() => Room, room => room.adminsID, { onDelete: 'CASCADE' })
-	@JoinColumn()
-	adminRoom: Room
-
-	@ManyToOne(() => Room, room => room.blockedUsersID, { cascade: true, onDelete: 'CASCADE' })
-	@JoinColumn()
-	blockedRoom: Room
-
 }

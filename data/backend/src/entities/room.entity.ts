@@ -25,20 +25,10 @@ export class Room {
 	@OneToMany(() => UsersList, usersList => usersList.room, { eager: true })
 	usersID: UsersList[]
 
-	@OneToMany(() => UsersList, usersList => usersList.adminRoom, { eager: true })
-	adminsID: UsersList[]
-
-	@OneToMany(() => UsersList, usersList => usersList.blockedRoom, { eager: true })
-	blockedUsersID: UsersList[]
-
 	@AfterLoad()
 	async nullCheck() {
 		if (!this.usersID)
 			this.usersID = [];
-		if (!this.adminsID)
-			this.adminsID = [];
-		if (!this.blockedUsersID)
-			this.blockedUsersID = [];
 	}
 
 }

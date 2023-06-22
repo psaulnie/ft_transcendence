@@ -81,7 +81,6 @@ export class ChatController {
 		let usersList = [];
 
 		room.usersID.forEach((element: UsersList) => {
-			console.log(element);
 			usersList.push({username: element.user.username, role: element.role});
 		})
 
