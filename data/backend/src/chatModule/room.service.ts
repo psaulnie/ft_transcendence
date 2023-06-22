@@ -47,7 +47,8 @@ export class RoomService {
 		room.password = "";
 		if (!room.usersID)
 			room.usersID = [];
-		room.usersID.push(usersList);
+		// room.usersID.push(usersList);
+		room.usersID.push(await this.usersListRepository.save(usersList));
 		return await (this.roomsRepository.save(room));
 	}
 
@@ -68,7 +69,7 @@ export class RoomService {
 		room.password = password;
 		if (!room.usersID)
 			room.usersID = [];
-		room.usersID.push(usersList);
+		room.usersID.push(await this.roomsRepository.save(usersList));
 		return await (this.roomsRepository.save(room));
 	}
 
@@ -104,8 +105,7 @@ export class RoomService {
 		newEntry.isBanned = false;
 
 		room.usersNumber += 1;
-		room.usersID.push(newEntry);
-		await this.usersListRepository.save(newEntry);
+		room.usersID.push(await this.usersListRepository.save(newEntry));
 		await this.roomsRepository.save(room);
 		return (accessStatus.public);
 	}
@@ -180,7 +180,9 @@ export class RoomService {
 
 		userInList.role = 'admin';
 		newAdmin.userId = user.id;
-		await this.roomsRepository.save(userInList);
+		newAdmin.role = 'admin';
+		newAdmin.isBanned = false;
+		await this.usersListRepository.save(userInList);
 		room.adminsID.push(await this.usersListRepository.save(newAdmin));
 		return await (this.roomsRepository.save(room));
 	}

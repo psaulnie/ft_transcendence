@@ -6,15 +6,15 @@ import { Menu, MenuItem, Divider } from '@mui/material';
 import { addRoom } from '../../../store/rooms';
 
 type arg = {
-	message: chatResponseArgs,
+	cUser: {username: string, role: string},
 	role: string,
-	channelName: string,
+	roomName: string,
 	contextMenu: any,
 	setContextMenu: any,
 	handleContextMenu: any
 }
 
-export default function UserOptionsMenu({ message, role, channelName, contextMenu, setContextMenu, handleContextMenu }: arg) {
+export default function UserOptionsMenu({ cUser, role, roomName, contextMenu, setContextMenu, handleContextMenu }: arg) {
 	const user = useSelector((state: any) => state.user);
 	const rooms = useSelector((state: any) => state.rooms);
 	const dispatch = useDispatch();
@@ -23,13 +23,13 @@ export default function UserOptionsMenu({ message, role, channelName, contextMen
 		setContextMenu(null);
 	};
 
-	function blockUser(message: chatResponseArgs) {
-		chatSocket.emit("block", { source: user.username, target: message.source, room: channelName });
-		dispatch(addBlockedUser(message.source));
+	function blockUser(cUser: {username: string, role: string}) {
+		chatSocket.emit("block", { source: user.username, target: cUser.username, room: roomName });
+		dispatch(addBlockedUser(cUser.role));
 	}
 
 	function sendMessage() {
-		dispatch(addRoom({name: message.source, role: 'none', hasPassword: false, isDirectMsg: true, openTab: true}));
+		dispatch(addRoom({name: cUser.username, role: 'none', hasPassword: false, isDirectMsg: true, openTab: true}));
 	}
 
 	return (
@@ -43,23 +43,23 @@ export default function UserOptionsMenu({ message, role, channelName, contextMen
 					: undefined}
 			>
 				{
-					role !== "none" && user.username !== message.source && message.role === "none" ? (
+					role !== "none" && user.username !== cUser.username && cUser.role === "none" ? (
 						<div className='adminOptions'>
-							<MenuItem onClick={ () => { chatSocket.emit("kick", { source: user.username, target: message.source, room: channelName }) } } >Kick</MenuItem>
-							<MenuItem onClick={ () => { chatSocket.emit("ban", { source: user.username, target: message.source, room: channelName })  } } >Ban</MenuItem>
-							<MenuItem onClick={ () => { chatSocket.emit("mute", { source: user.username, target: message.source, room: channelName }) } }>Mute</MenuItem>
-							<MenuItem onClick={ () => { chatSocket.emit("admin", { source: user.username, target: message.source, room: channelName }) } } >Set {message.source} as administrator</MenuItem>
+							<MenuItem onClick={ () => { chatSocket.emit("kick", { source: user.username, target: cUser.username, room: roomName }) } } >Kick</MenuItem>
+							<MenuItem onClick={ () => { chatSocket.emit("ban", { source: user.username, target: cUser.username, room: roomName })  } } >Ban</MenuItem>
+							<MenuItem onClick={ () => { chatSocket.emit("mute", { source: user.username, target: cUser.username, room: roomName }) } }>Mute</MenuItem>
+							<MenuItem onClick={ () => { chatSocket.emit("admin", { source: user.username, target: cUser.username, room: roomName }) } } >Set {cUser.username} as administrator</MenuItem>
 							<Divider/>
 						</div>
 					) : null
 				}
 				{
-					user.username !== message.source ? (
+					user.username !== cUser.username ? (
 						<div className='standardOptions'>
 							<MenuItem>See profile</MenuItem>
 							<MenuItem>Add as friend</MenuItem>
-							<MenuItem>Invite {message.source} to play Pong</MenuItem>
-							<MenuItem onClick={ () => { blockUser(message) } } >Block</MenuItem>
+							<MenuItem>Invite {cUser.username} to play Pong</MenuItem>
+							<MenuItem onClick={ () => { blockUser(cUser) } } >Block</MenuItem>
 							<MenuItem onClick={ () => { sendMessage() } }>Send message</MenuItem>
 						</div>
 					) : null

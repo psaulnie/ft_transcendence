@@ -5,10 +5,10 @@ export const apiSlice = createApi({
 	baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:5000' }),
 	endpoints: builder => ({
 		getRole: builder.query({
-			query: ({username = null, channelName = null}) => ({
+			query: ({username = null, roomName = null}) => ({
 				url: '/api/chat/role',
 				method: 'GET',
-				params: { username: username, roomName: channelName},
+				params: { username: username, roomName: roomName},
 			}),
 		}),
 		getBlockedUsers: builder.query({

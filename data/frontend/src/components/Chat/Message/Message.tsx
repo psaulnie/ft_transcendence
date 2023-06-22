@@ -22,10 +22,10 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
 type arg = {
 	message: chatResponseArgs,
 	role: string,
-	channelName: string,
+	roomName: string,
 }
 
-export default function Message({ message, role, channelName }: arg) {
+export default function Message({ message, role, roomName }: arg) {
 	const user = useSelector((state: any) => state.user);
 	const [contextMenu, setContextMenu] = useState<{
 		mouseX: number;
@@ -45,10 +45,10 @@ export default function Message({ message, role, channelName }: arg) {
 	};
 
 	return (
-		<div className='message'onContextMenu={handleContextMenu} >
+		<div className='message' onContextMenu={handleContextMenu} >
 			{
 				user.username !== message.source ? 
-					<UserOptionsMenu message={message} role={role} channelName={channelName} contextMenu={contextMenu} setContextMenu={setContextMenu} handleContextMenu={handleContextMenu} />
+					<UserOptionsMenu cUser={{username: message.source, role: message.role}} role={role} roomName={roomName} contextMenu={contextMenu} setContextMenu={setContextMenu} handleContextMenu={handleContextMenu} />
 				: null
 			}
 			<Box sx={{ flexGrow: 1, overflow: 'hidden', px: 3}} >

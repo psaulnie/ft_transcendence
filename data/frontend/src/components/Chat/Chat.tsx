@@ -81,7 +81,7 @@ function Chat() {
 						<Grid>
 							{ 
 								rooms.index !== -1 && rooms.room[rooms.index] ?
-									<Room key={rooms.room[rooms.index].name} channelName={rooms.room[rooms.index].name}/>
+									<Room key={rooms.room[rooms.index].name} roomName={rooms.room[rooms.index].name}/>
 								: null
 							}	
 						</Grid>

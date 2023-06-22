@@ -80,12 +80,11 @@ export class ChatController {
 		const room = await this.roomService.findOneAllLoaded(data.roomName);
 		let usersList = [];
 
-		console.log(room.usersID);
 		room.usersID.forEach((element: UsersList) => {
 			console.log(element);
 			usersList.push({username: element.user.username, role: element.role});
 		})
-		// usersList.push({name: });
+
 		const res = {
 			status: 'success',
 			data: usersList

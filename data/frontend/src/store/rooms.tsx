@@ -14,7 +14,8 @@ interface roomInterface {
 	isDirectMsg: boolean,
 	messages: chatResponseArgs[],
 	unread: boolean,
-	hasPassword: boolean
+	hasPassword: boolean,
+	usersList: {username: string, role: string}[]
 }
 
 interface RoomsState {
@@ -46,7 +47,7 @@ export const roomsSlice = createSlice({
 		if (!room)
 		{
 			state.room.push({name: action.payload.name, role: action.payload.role, isDirectMsg: action.payload.isDirectMsg,
-								messages: [], unread: false, hasPassword: action.payload.hasPassword});
+								messages: [], unread: false, hasPassword: action.payload.hasPassword, usersList: []});
 			if (action.payload.openTab || state.index === -1)
 				state.index++;
 		}
@@ -85,7 +86,8 @@ export const roomsSlice = createSlice({
 				isDirectMsg: true,
 				messages: [action.payload.message],
 				unread: true,
-				hasPassword: false
+				hasPassword: false,
+				usersList: []
 			});
 		}
 	},
@@ -100,9 +102,30 @@ export const roomsSlice = createSlice({
 	setRoomIndex: (state, action: PayloadAction<number>) => {
 		if (action.payload >= 0 || action.payload <= state.index)
 			state.index = action.payload;
+	},
+	addUser: (state, action: PayloadAction<{roomName: string, username: string, role: string}>)  => {
+		const roomIndex = state.room.findIndex((obj: roomType) => obj.name === action.payload.roomName);
+		if (state.room[roomIndex] && state.room[roomIndex].usersList.indexOf({username: action.payload.username, role: action.payload.role}) !== -1)
+			state.room[roomIndex].usersList.push({username: action.payload.username, role: action.payload.role})
+	},
+	removeUser: (state, action: PayloadAction<{roomName: string, username: string}>) => {
+		const roomIndex = state.room.findIndex((obj: roomType) => obj.name === action.payload.roomName);
+		if (state.room[roomIndex])
+			state.room[roomIndex].usersList.filter((element) => element.username !== action.payload.username);
 	}
   },
 })
 
-export const { addRoom, removeRoom, changeRole, quitAll, addMsg, setRead, setHasPassword, setRoomIndex } = roomsSlice.actions
+export const {	addRoom,
+				removeRoom,
+				changeRole,
+				quitAll,
+				addMsg,
+				setRead,
+				setHasPassword,
+				setRoomIndex,
+				addUser,
+				removeUser,
+			} = roomsSlice.actions
+
 export default roomsSlice.reducer

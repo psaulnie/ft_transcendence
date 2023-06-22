@@ -7,16 +7,16 @@ import { useSelector } from 'react-redux';
 import { Button, Grid, TextField } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 
-export default function Room({channelName, isDirectMessage}: {channelName: string, isDirectMessage: boolean}) {
+export default function Room({roomName, isDirectMessage}: {roomName: string, isDirectMessage: boolean}) {
 	const user = useSelector((state: any) => state.user);
 
-	const [value, setValue] = useState<sendMsgArgs>({ type: sendMsgTypes.msg, source: user.username, target: channelName, data: '', isDirectMessage: isDirectMessage});
+	const [value, setValue] = useState<sendMsgArgs>({ type: sendMsgTypes.msg, source: user.username, target: roomName, data: '', isDirectMessage: isDirectMessage});
 	const [message, setMessage] = useState('');
 	const [isLoading, setIsLoading] = useState(false);
 
 	function send() {
 		setMessage('');
-		setValue({ type: sendMsgTypes.msg, source: user.username, target: channelName, data: '', isDirectMessage: isDirectMessage});
+		setValue({ type: sendMsgTypes.msg, source: user.username, target: roomName, data: '', isDirectMessage: isDirectMessage});
 		setIsLoading(true);
 		chatSocket.timeout(500).emit('sendMsg', value, () => {
 			setIsLoading(false);
@@ -39,7 +39,7 @@ export default function Room({channelName, isDirectMessage}: {channelName: strin
 	{
 		if (e.target.value.length <= 255)
 		{
-			setValue({ type: sendMsgTypes.msg, source: user.username, target: channelName, data: e.target.value, isDirectMessage: isDirectMessage });
+			setValue({ type: sendMsgTypes.msg, source: user.username, target: roomName, data: e.target.value, isDirectMessage: isDirectMessage });
 			setMessage(e.target.value);	
 		}
 	}
