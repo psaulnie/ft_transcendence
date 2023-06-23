@@ -2,8 +2,9 @@ import { chatResponseArgs } from '../args.interface';
 
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-
 import UserOptionsMenu from './UserOptionsMenu';
+
+import { useGetUsersInRoomQuery } from '../../../store/api';
 
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -31,9 +32,22 @@ export default function Message({ message, role, roomName }: arg) {
 		mouseX: number;
 		mouseY: number;
 	  } | null>(null);
+	const [showAdminOpt, setShowAdminOpt] = useState(false);
+
+	const {
+		data: usersList,
+		isSuccess
+	} = useGetUsersInRoomQuery({roomName: roomName});
 
 	const handleContextMenu = (event: React.MouseEvent) => {
 		event.preventDefault();
+		if (isSuccess)
+		{
+			if (usersList.data.find((obj: any) => obj.username === message.source))
+				setShowAdminOpt(true);
+		}
+		else
+			setShowAdminOpt(false);
 		setContextMenu(
 			contextMenu === null
 			? {
@@ -48,7 +62,10 @@ export default function Message({ message, role, roomName }: arg) {
 		<div className='message' onContextMenu={handleContextMenu} >
 			{
 				user.username !== message.source ? 
-					<UserOptionsMenu cUser={{username: message.source, role: message.role}} role={role} roomName={roomName} contextMenu={contextMenu} setContextMenu={setContextMenu} handleContextMenu={handleContextMenu} />
+					<UserOptionsMenu cUser={{username: message.source, role: message.role}} role={role}
+						roomName={roomName}
+						contextMenu={contextMenu} setContextMenu={setContextMenu}
+						showAdminOpt={showAdminOpt}/>
 				: null
 			}
 			<Box sx={{ flexGrow: 1, overflow: 'hidden', px: 3}} >

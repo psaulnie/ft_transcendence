@@ -140,6 +140,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	async kickUser(client: Socket, payload: actionArgs) {
 		const user = await this.userService.findOne(payload.target);
 		await this.roomService.removeUser(payload.room, user.id);
+		this.server.emit(payload.room, { source: payload.target, target: payload.room, action: actionTypes.left })
 		this.server.emit(payload.target + "OPTIONS", { source: payload.source, target: payload.room, action: actionTypes.kick, role: "none" })
 	}
 
@@ -147,6 +148,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	async banUser(client: Socket, payload: actionArgs) {
 		const user = await this.userService.findOne(payload.target);
 		await this.roomService.addToBanList(payload.room, user);
+		this.server.emit(payload.room, { source: payload.target, target: payload.room, action: actionTypes.left })
 		this.server.emit(payload.target + "OPTIONS", { source: payload.source, target: payload.room, action: actionTypes.ban, role: "none" })
 	}
 

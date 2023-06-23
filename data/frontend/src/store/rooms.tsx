@@ -103,16 +103,6 @@ export const roomsSlice = createSlice({
 		if (action.payload >= 0 || action.payload <= state.index)
 			state.index = action.payload;
 	},
-	addUser: (state, action: PayloadAction<{roomName: string, username: string, role: string}>)  => {
-		const roomIndex = state.room.findIndex((obj: roomType) => obj.name === action.payload.roomName);
-		if (state.room[roomIndex] && state.room[roomIndex].usersList.indexOf({username: action.payload.username, role: action.payload.role}) !== -1)
-			state.room[roomIndex].usersList.push({username: action.payload.username, role: action.payload.role})
-	},
-	removeUser: (state, action: PayloadAction<{roomName: string, username: string}>) => {
-		const roomIndex = state.room.findIndex((obj: roomType) => obj.name === action.payload.roomName);
-		if (state.room[roomIndex])
-			state.room[roomIndex].usersList.filter((element) => element.username !== action.payload.username);
-	}
   },
 })
 
@@ -124,8 +114,6 @@ export const {	addRoom,
 				setRead,
 				setHasPassword,
 				setRoomIndex,
-				addUser,
-				removeUser,
 			} = roomsSlice.actions
 
 export default roomsSlice.reducer

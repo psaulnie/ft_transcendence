@@ -1,5 +1,4 @@
 import { chatSocket } from '../../../chatSocket';
-import { chatResponseArgs } from '../args.interface';
 import { useDispatch, useSelector } from 'react-redux';
 import { addBlockedUser } from '../../../store/user';
 import { Menu, MenuItem, Divider } from '@mui/material';
@@ -11,13 +10,14 @@ type arg = {
 	roomName: string,
 	contextMenu: any,
 	setContextMenu: any,
-	handleContextMenu: any
+	showAdminOpt: boolean
 }
 
-export default function UserOptionsMenu({ cUser, role, roomName, contextMenu, setContextMenu, handleContextMenu }: arg) {
+export default function UserOptionsMenu({ cUser, role, roomName, contextMenu, setContextMenu, showAdminOpt }: arg) {
 	const user = useSelector((state: any) => state.user);
-	const rooms = useSelector((state: any) => state.rooms);
 	const dispatch = useDispatch();
+
+
 
 	const handleClose = () => {
 		setContextMenu(null);
@@ -43,7 +43,7 @@ export default function UserOptionsMenu({ cUser, role, roomName, contextMenu, se
 					: undefined}
 			>
 				{
-					role !== "none" && user.username !== cUser.username && cUser.role === "none" ? (
+					role !== "none" && user.username !== cUser.username && cUser.role === "none" && showAdminOpt ? (
 						<div className='adminOptions'>
 							<MenuItem onClick={ () => { chatSocket.emit("kick", { source: user.username, target: cUser.username, room: roomName }) } } >Kick</MenuItem>
 							<MenuItem onClick={ () => { chatSocket.emit("ban", { source: user.username, target: cUser.username, room: roomName })  } } >Ban</MenuItem>

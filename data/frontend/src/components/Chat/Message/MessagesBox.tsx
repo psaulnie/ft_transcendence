@@ -7,8 +7,6 @@ import Message from './Message';
 
 import { useRef, useEffect } from 'react';
 
-import { Grid } from '@mui/material';
-
 type arg = {
 	messages: chatResponseArgs[],
 	role: string,

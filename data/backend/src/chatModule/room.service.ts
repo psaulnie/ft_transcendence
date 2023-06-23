@@ -20,11 +20,6 @@ export class RoomService {
 		return await (this.roomsRepository.findOne({ where: { roomName: name }, relations: ['usersID', 'usersID.user'] }));
 	}
 
-	async findOneAllLoaded(name: string): Promise<Room>
-	{
-		return await (this.roomsRepository.findOne({ where: { roomName: name }, relations: ['usersID', 'usersID.user'] }));
-	}
-
 	async findAll(): Promise<Room[]>
 	{
 		return await (this.roomsRepository.find());
@@ -89,12 +84,10 @@ export class RoomService {
 		{
 			return (accessStatus.private);
 		}
+		console.log(room.usersID);
 		const rightUser = room.usersID.find((obj) => obj.user.id === user.id)
 		
-		if (!rightUser)
-			return ; // TODO check
-		
-		if (rightUser.isBanned)
+		if (rightUser && rightUser.isBanned)
 			return (-1);
 
 		const newEntry = new UsersList();

@@ -1,16 +1,20 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { chatResponseArgs } from "../args.interface";
-import { addMsg, addRoom, addUser, removeUser, setHasPassword, setRead } from "../../../store/rooms";
+import { addMsg, addRoom, setHasPassword, setRead } from "../../../store/rooms";
 import { chatSocket } from "../../../chatSocket";
 import { actionTypes } from "../args.types";
+
+import { useGetUsersInRoomQuery } from "../../../store/api";
 
 function MessageProvider({roomName}: {roomName: string}) {
 	const user = useSelector((state: any) => state.user);
 	const rooms = useSelector((state: any) => state.rooms);
 	const dispatch = useDispatch();
 
-	
+	const {
+		refetch
+	} = useGetUsersInRoomQuery({roomName: roomName});
 	
 	useEffect(() => {
 		function onMsgSent(value: chatResponseArgs) {
@@ -22,10 +26,11 @@ function MessageProvider({roomName}: {roomName: string}) {
 				dispatch(setHasPassword({index: roomIndex, value: false}));
 			else
 			{
-				if (value.action === actionTypes.join)
-					dispatch(addUser({roomName: roomName, username: value.source, role: value.role}));
-				else if (value.action === actionTypes.left)
-					dispatch(removeUser({roomName: roomName, username: value.source}));
+				if (value.action === actionTypes.join || value.action === actionTypes.left)
+				{
+					console.log('refetch')
+					refetch();
+				}
 				dispatch(addMsg({name: roomName, message: value}));
 				if (value.source === user.username || rooms.index === roomIndex)
 				{

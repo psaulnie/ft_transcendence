@@ -77,7 +77,7 @@ export class ChatController {
 			};
 			return (JSON.stringify(res));
 		}
-		const room = await this.roomService.findOneAllLoaded(data.roomName);
+		const room = await this.roomService.findOne(data.roomName);
 		let usersList = [];
 
 		room.usersID.forEach((element: UsersList) => {

@@ -9,7 +9,6 @@ import StarOutlineIcon from '@mui/icons-material/StarOutline';
 import PersonIcon from '@mui/icons-material/Person';
 
 import UserOptionsMenu from "./Message/UserOptionsMenu";
-import { addUser } from "../../store/rooms";
 
 export default function UsersList({roomName, role}: {roomName: string, role: string}) {
 	const user = useSelector((state: any) => state.user);
@@ -56,8 +55,8 @@ export default function UsersList({roomName, role}: {roomName: string, role: str
 	
 	useEffect(() => {
 		refetch();
-	}, [refetch]);
-
+	}, [refetch, isSuccess]);
+	
 	if (isError) // TODO fix show real error page (make Error component)
 		return (<p>Error: {error.toString()}</p>)
 	else if (isLoading)
@@ -67,35 +66,37 @@ export default function UsersList({roomName, role}: {roomName: string, role: str
 					<Skeleton variant="rectangular" />
 				</div>
 			);
-
 	return (
 		<Grid>
 			<List>
-				{
-					usersList.data.map((cUser: any) => {
-						dispatch(addUser({roomName: roomName, username: cUser.username, role: cUser.role}));
-						return (
-							<ListItem disablePadding dense >
-								<ListItemButton onClick={(e) => handleContextMenu(e, cUser.username)}>
-									<ListItemAvatar>
-										<Avatar>
-											{cUser.username[0]}
-										</Avatar>
-									</ListItemAvatar>
-									<ListItemText primary={<Typography display='block' fontWeight={cUser.username === user.username ? 'bold' : 'normal'}>{cUser.username}</Typography>} />
-									<ListItemIcon>
-										{getRoleIcon(cUser.role)}
-									</ListItemIcon>
-								</ListItemButton>
-							{
-								cUser.username !== user.username ? 
-									<UserOptionsMenu cUser={cUser} role={role} roomName={roomName} contextMenu={contextMenu} setContextMenu={setContextMenu} handleContextMenu={handleContextMenu} />
+			{
+				usersList.data.map((cUser: any, key: number) => {						
+					return (
+						<ListItem disablePadding dense key={key} >
+							<ListItemButton onClick={(e) => handleContextMenu(e, cUser.username)}>
+								<ListItemAvatar>
+									<Avatar>
+										{cUser.username[0]}
+									</Avatar>
+								</ListItemAvatar>
+								<ListItemText primary={<Typography display='block' fontWeight={cUser.username === user.username ? 'bold' : 'normal'}>{cUser.username}</Typography>} />
+								<ListItemIcon>
+									{getRoleIcon(cUser.role)}
+								</ListItemIcon>
+							</ListItemButton>
+						{
+							cUser.username !== user.username ? 
+								<UserOptionsMenu cUser={cUser}
+									role={role}
+									roomName={roomName}
+									contextMenu={contextMenu} setContextMenu={setContextMenu}
+									showAdminOpt={true} />
 								: null
-							}
-						  	</ListItem>
-						);
-					})
-				}
+						}
+						</ListItem>
+					);
+				})
+			}
 			</List>
 		</Grid>
 	);
