@@ -68,7 +68,7 @@ function CreateChannel() {
 				hasPassword = true;
 				return ;
 			}
-			dispatch(addRoom({name: newRoomName, role: "owner", isDirectMsg: false, hasPassword: hasPassword, openTab: true}));
+			dispatch(addRoom({name: newRoomName, role: "owner", isDirectMsg: false, hasPassword: hasPassword, openTab: true, isMuted: false}));
 			chatSocket.emit('manageRooms', { type: manageRoomsTypes.add, source: user.username, room: newRoomName, access: access});
 		}
 		else

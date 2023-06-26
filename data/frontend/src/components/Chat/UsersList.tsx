@@ -1,6 +1,6 @@
 import { useGetUsersInRoomQuery } from "../../store/api";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
 import { Grid, Skeleton, ListItem, ListItemButton, List, ListItemIcon, ListItemText, ListItemAvatar, Avatar, Typography } from "@mui/material";
 
@@ -12,17 +12,23 @@ import UserOptionsMenu from "./Message/UserOptionsMenu";
 
 export default function UsersList({roomName, role}: {roomName: string, role: string}) {
 	const user = useSelector((state: any) => state.user);
-	const rooms = useSelector((state: any) => state.rooms);
 
-	const dispatch = useDispatch();
 	const [contextMenu, setContextMenu] = useState<{
 		mouseX: number;
 		mouseY: number;
-	  } | null>(null);
+	} | null>(null);
+
+	const {
+		data: usersList,
+		isLoading,
+		isError,
+		error,
+		refetch
+	} = useGetUsersInRoomQuery({roomName: roomName});
 
 	const handleContextMenu = (event: React.MouseEvent, username: string) => {
 		event.preventDefault();
-	
+		refetch();
 		if (user.username !== username)
 			setContextMenu(
 				contextMenu === null
@@ -44,18 +50,10 @@ export default function UsersList({roomName, role}: {roomName: string, role: str
 			return (<PersonIcon/>);
 	}
 
-	const {
-		data: usersList,
-		isLoading,
-		isError,
-		isSuccess,
-		error,
-		refetch
-	} = useGetUsersInRoomQuery({roomName: roomName});
 	
 	useEffect(() => {
 		refetch();
-	}, [refetch, isSuccess]);
+	}, [refetch]);
 	
 	if (isError) // TODO fix show real error page (make Error component)
 		return (<p>Error: {error.toString()}</p>)

@@ -1,11 +1,11 @@
 import { chatSocket } from '../../../chatSocket';
 import { useDispatch, useSelector } from 'react-redux';
 import { addBlockedUser } from '../../../store/user';
-import { Menu, MenuItem, Divider } from '@mui/material';
+import { Menu, MenuItem, Divider, Skeleton } from '@mui/material';
 import { addRoom } from '../../../store/rooms';
 
 type arg = {
-	cUser: {username: string, role: string},
+	cUser: {username: string, role: string, isMuted: boolean},
 	role: string,
 	roomName: string,
 	contextMenu: any,
@@ -15,9 +15,8 @@ type arg = {
 
 export default function UserOptionsMenu({ cUser, role, roomName, contextMenu, setContextMenu, showAdminOpt }: arg) {
 	const user = useSelector((state: any) => state.user);
+	const rooms = useSelector((state: any) => state.rooms);
 	const dispatch = useDispatch();
-
-
 
 	const handleClose = () => {
 		setContextMenu(null);
@@ -29,7 +28,7 @@ export default function UserOptionsMenu({ cUser, role, roomName, contextMenu, se
 	}
 
 	function sendMessage() {
-		dispatch(addRoom({name: cUser.username, role: 'none', hasPassword: false, isDirectMsg: true, openTab: true}));
+		dispatch(addRoom({name: cUser.username, role: 'none', hasPassword: false, isDirectMsg: true, openTab: true, isMuted: false}));
 	}
 
 	return (
@@ -47,7 +46,13 @@ export default function UserOptionsMenu({ cUser, role, roomName, contextMenu, se
 						<div className='adminOptions'>
 							<MenuItem onClick={ () => { chatSocket.emit("kick", { source: user.username, target: cUser.username, room: roomName }) } } >Kick</MenuItem>
 							<MenuItem onClick={ () => { chatSocket.emit("ban", { source: user.username, target: cUser.username, room: roomName })  } } >Ban</MenuItem>
-							<MenuItem onClick={ () => { chatSocket.emit("mute", { source: user.username, target: cUser.username, room: roomName }) } }>Mute</MenuItem>
+							{
+								!cUser.isMuted ?
+									<MenuItem onClick={ () => { chatSocket.emit("mute", { source: user.username, target: cUser.username, room: roomName }) } }>Mute</MenuItem>
+								:
+									<MenuItem onClick={ () => { chatSocket.emit("unmute", { source: user.username, target: cUser.username, room: roomName }) } }>Unmute</MenuItem>
+
+							}
 							<MenuItem onClick={ () => { chatSocket.emit("admin", { source: user.username, target: cUser.username, room: roomName }) } } >Set {cUser.username} as administrator</MenuItem>
 							<Divider/>
 						</div>

@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { actionTypes } from "./args.types";
 
 import { useDispatch, useSelector } from "react-redux";
-import { removeRoom, changeRole, addRoom } from "../../store/rooms";
-import { mute, unmute } from "../../store/user";
+import { removeRoom, changeRole, addRoom, mute, unmute } from "../../store/rooms";
+
 import { chatResponseArgs } from "./args.interface";
 import { chatSocket } from "../../chatSocket";
 import { manageRoomsTypes } from "./args.types";
@@ -60,7 +60,7 @@ export default function ChatProcess() {
 		if (room === '')
 			return ;
 		setOpenInvite(false);
-		dispatch(addRoom({name: room, role: 'none', isDirectMsg: false, hasPassword: hasPassword, openTab: true}));
+		dispatch(addRoom({name: room, role: 'none', isDirectMsg: false, hasPassword: hasPassword, openTab: true, isMuted: false}));
 		chatSocket.emit('joinPrivateRoom', { roomName: room, username: user.username });
 		setRoom('');
 		setHasPassword(false);
@@ -98,21 +98,13 @@ export default function ChatProcess() {
 			}
 			else if (value.action === actionTypes.mute)
 			{
-				if (value.isMuted === true)
-				{
-					const time = new Date(value.date);
-					dispatch(mute());
-					alert("You are muted from this channel: " + value.target);
-					setTimeout(() => {
-						dispatch(unmute());
-					}, time.getMinutes() * 60 * 1000);
-					return ;
-				}
-				dispatch(mute());
-				setSnackbar("You've been muted from this channel: " + value.target, "error")
-				setTimeout(() => {
-					dispatch(unmute());
-				}, 10 * 60 * 1000);
+				dispatch(mute(value.source));
+				setSnackbar("You are mute from this channel: " + value.source, "error")
+			}
+			else if (value.action === actionTypes.unmute)
+			{
+				dispatch(unmute(value.source));
+				setSnackbar("You've been unmuted from this channel: " + value.source, "success");
 			}
 			else if (value.action === actionTypes.wrongpassword)
 			{

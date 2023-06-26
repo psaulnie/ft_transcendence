@@ -37,7 +37,7 @@ function MessageProvider({roomName}: {roomName: string}) {
 					dispatch(setRead(roomIndex));
 				}
 				if (rooms.room[roomIndex] && rooms.room[roomIndex].isDirectMessage === true)
-					dispatch(addRoom({name: value.source, role: "none",  isDirectMsg: true, hasPassword: false, openTab: false}));
+					dispatch(addRoom({name: value.source, role: "none",  isDirectMsg: true, hasPassword: false, openTab: false, isMuted: false}));
 			}
 		}
 		

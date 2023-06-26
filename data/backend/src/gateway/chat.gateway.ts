@@ -22,12 +22,10 @@ import { accessStatus } from 'src/chatModule/accessStatus';
 })
 export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
 	
-	private mutedUsers: {username: string, time: Date}[];
-
 	constructor(
 		private roomService: RoomService,
 		private userService: UserService,
-	) { this.mutedUsers = []; }
+	) { }
 	@WebSocketServer() server: Server;
 
 	@SubscribeMessage('newUser')
@@ -46,6 +44,9 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	async handleMessage(client: Socket, payload: sendMsgArgs) {
 		if (payload.data.length > 255)
 			payload.data = payload.data.slice(0, 255);
+		const user = await this.userService.findOne(payload.source);
+		if (!user)
+			return ; // TODO check
 		if (payload.isDirectMessage == true)
 		{
 			this.server.emit(payload.target, { 
@@ -56,9 +57,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 				isDirectMessage: true,
 				role: "none" })
 		}
-		if (payload.type == sendMsgTypes.msg && !this.mutedUsers.find((element) => element.username == payload.source))
+		if (payload.type == sendMsgTypes.msg && (await this.roomService.isMuted(payload.target, user)) === false) // TODO ADD IF MUTED
 		{
-			const user = await this.userService.findOne(payload.source);
 			const role = await this.roomService.getRole(payload.target, user.id);
 			this.server.emit(payload.target, { 
 				source: payload.source,
@@ -117,11 +117,10 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 					return ;
 				}
 			}
-			let mutedUser = this.mutedUsers.find((element) => element.username == payload.source);
-			if (!mutedUser)
+			if (this.roomService.isMuted(payload.room, user))
 				this.server.emit(payload.room, { source: payload.source, target: payload.room, action: actionTypes.join })
 			else
-				this.server.emit(payload.source + "OPTIONS", { source: payload.source, target: payload.room, action: actionTypes.mute, date: mutedUser.time})
+				this.server.emit(payload.source + "OPTIONS", { source: payload.source, target: payload.room, action: actionTypes.mute})
 			if (hasPassword == true)
 				this.server.emit(payload.source + "OPTIONS", { source: payload.source, target: payload.room, action: actionTypes.rightpassword, role: role})
 		}
@@ -175,14 +174,22 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
 	@SubscribeMessage('mute')
 	async muteUser(client: Socket, payload: actionArgs) {
-		if (!this.mutedUsers.find((element) => element.username == payload.source))
-			this.mutedUsers.push({username: payload.target, time: new Date()});
-		setTimeout(() => {
-			this.mutedUsers.filter(function(item) {
-				return item.username !== payload.target;
-			})
-		});
+		const user = await this.userService.findOne(payload.target);
+
+		if (user == null)
+			return ; // TODO handle error
+		await this.roomService.addToMutedList(payload.room, user);
 		this.server.emit(payload.target + "OPTIONS", { source: payload.room, target: payload.target, action: actionTypes.mute, role: "none" })
+	}
+
+	@SubscribeMessage('unmute')
+	async unmuteUser(client: Socket, payload: actionArgs) {
+		const user = await this.userService.findOne(payload.target);
+
+		if (user == null)
+			return ; // TODO handle error
+		await this.roomService.removeFromMutedList(payload.room, user);
+		this.server.emit(payload.target + "OPTIONS", { source: payload.room, target: payload.target, action: actionTypes.unmute, role: "none" })
 	}
 
 	@SubscribeMessage('setPasswordToRoom')

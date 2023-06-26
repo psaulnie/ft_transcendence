@@ -1,4 +1,4 @@
-import React, { KeyboardEvent, SyntheticEvent, useState } from 'react';
+import React, { KeyboardEvent, SyntheticEvent, useEffect, useState } from 'react';
 import { chatSocket } from '../../../chatSocket';
 import { sendMsgArgs } from '../args.interface';
 import { sendMsgTypes } from '../args.types';
@@ -9,12 +9,18 @@ import SendIcon from '@mui/icons-material/Send';
 
 export default function Room({roomName, isDirectMessage}: {roomName: string, isDirectMessage: boolean}) {
 	const user = useSelector((state: any) => state.user);
+	const rooms = useSelector((state: any) => state.rooms);
 
 	const [value, setValue] = useState<sendMsgArgs>({ type: sendMsgTypes.msg, source: user.username, target: roomName, data: '', isDirectMessage: isDirectMessage});
 	const [message, setMessage] = useState('');
 	const [isLoading, setIsLoading] = useState(false);
+	const [isMuted, setIsMuted] = useState(false);
 
 	function send() {
+		const room = rooms.room.find((obj: any) => obj.name === roomName);
+		if (room)
+			setIsMuted(room.isMuted);
+		console.log(room);
 		setMessage('');
 		setValue({ type: sendMsgTypes.msg, source: user.username, target: roomName, data: '', isDirectMessage: isDirectMessage});
 		setIsLoading(true);
@@ -44,15 +50,25 @@ export default function Room({roomName, isDirectMessage}: {roomName: string, isD
 		}
 	}
 
+	useEffect(() => {
+		const room = rooms.room.find((obj: any) => obj.name === roomName);
+		if (room)
+		{
+			setIsMuted(room.isMuted);
+		}
+		setIsMuted(false);
+	}, []);
+
+
 	return (
 		<form onSubmit={onSubmit}>
 			<Grid container justifyContent='center' alignItems='center'>
 					<Grid item xs={10} >
-						<TextField fullWidth value={message} onChange={onChange} disabled={user.isMuted}/> {/* TODO character limit */}
+						<TextField fullWidth value={message} onChange={onChange} disabled={isMuted}/> {/* TODO character limit */}
 					</Grid>
 					<Grid item xs={2}>
 						<Button variant='contained' name='message' type="submit"
-								disabled={ isLoading || user.isMuted } onKeyDown={keyPress}
+								disabled={ isLoading || isMuted } onKeyDown={keyPress}
 								endIcon={<SendIcon />}>Send</Button>
 					</Grid>
 			</Grid>

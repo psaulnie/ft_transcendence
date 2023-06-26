@@ -16,6 +16,9 @@ export class UsersList {
 	@Column()
 	isBanned: boolean
 
+	@Column()
+	isMuted: boolean
+
 	@ManyToOne(() => Room, room => room.usersID, { onDelete: 'CASCADE' })
 	@JoinColumn()
 	room: Room

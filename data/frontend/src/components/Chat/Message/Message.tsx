@@ -33,18 +33,26 @@ export default function Message({ message, role, roomName }: arg) {
 		mouseY: number;
 	  } | null>(null);
 	const [showAdminOpt, setShowAdminOpt] = useState(false);
+	const [isMuted, setIsMuted] = useState(false);
 
 	const {
 		data: usersList,
-		isSuccess
+		isSuccess,
+		refetch
 	} = useGetUsersInRoomQuery({roomName: roomName});
 
 	const handleContextMenu = (event: React.MouseEvent) => {
 		event.preventDefault();
+		refetch();
 		if (isSuccess)
 		{
-			if (usersList.data.find((obj: any) => obj.username === message.source))
+			const cUser = usersList.data.find((obj: any) => obj.username === message.source)
+			if (cUser)
+			{
+
 				setShowAdminOpt(true);
+				setIsMuted(cUser.isMuted);
+			}
 		}
 		else
 			setShowAdminOpt(false);
@@ -62,7 +70,7 @@ export default function Message({ message, role, roomName }: arg) {
 		<div className='message' onContextMenu={handleContextMenu} >
 			{
 				user.username !== message.source ? 
-					<UserOptionsMenu cUser={{username: message.source, role: message.role}} role={role}
+					<UserOptionsMenu cUser={{username: message.source, role: message.role, isMuted: isMuted}} role={role}
 						roomName={roomName}
 						contextMenu={contextMenu} setContextMenu={setContextMenu}
 						showAdminOpt={showAdminOpt}/>

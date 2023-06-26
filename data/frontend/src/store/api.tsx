@@ -62,5 +62,5 @@ export const {	useGetRoleQuery,
 				useGetIsRoomNameTakenQuery,
 				useGetUsersListQuery,
 				useGetFilteredUserListQuery,
-				useGetUsersInRoomQuery
+				useGetUsersInRoomQuery,
 } = apiSlice

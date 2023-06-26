@@ -29,7 +29,7 @@ function JoinDirectMessage() {
 			return ;
 		if (!rooms.room.find((obj: {name: string, role: string}) => obj.name === newUser))
 		{
-			dispatch(addRoom({name: newUser, role: "none", isDirectMsg: true, hasPassword: false, openTab: true}));
+			dispatch(addRoom({name: newUser, role: "none", isDirectMsg: true, hasPassword: false, openTab: true, isMuted: false}));
 			chatSocket.emit('manageRooms', { type: manageRoomsTypes.addDirectMsg, source: user.username, room: newUser, access: 0});
 		}
 		setNewUser('');

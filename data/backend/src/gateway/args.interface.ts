@@ -27,5 +27,4 @@ export interface chatResponseArgs {
 	data: string,
 	role: string,
 	isMuted: boolean,
-	date: Date,
 }

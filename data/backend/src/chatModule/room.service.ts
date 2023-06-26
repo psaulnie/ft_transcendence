@@ -34,6 +34,7 @@ export class RoomService {
 		usersList.user = user;
 		usersList.role = 'owner';
 		usersList.isBanned = false;
+		usersList.isMuted = false;
 	
 		room.roomName = name;
 		room.ownerID = user.id;
@@ -56,6 +57,7 @@ export class RoomService {
 		usersList.user = user;
 		usersList.role = 'owner';
 		usersList.isBanned = false;
+		usersList.isMuted = false;
 
 		room.roomName = name;
 		room.ownerID = user.id;
@@ -95,6 +97,7 @@ export class RoomService {
 		newEntry.user = user;
 		newEntry.role = 'none';
 		newEntry.isBanned = false;
+		newEntry.isMuted = false;
 
 		room.usersNumber += 1;
 		room.usersID.push(await this.usersListRepository.save(newEntry));
@@ -115,7 +118,11 @@ export class RoomService {
 			this.removeRoom(roomName);
 			return ;
 		}
-		room.usersID = room.usersID.filter(user => user.user.id !== userId);
+		room.usersID = room.usersID.filter(user => {
+			if (user.user.id)
+				return (user.user.id !== userId);
+			return (true);
+		});
 		await this.roomsRepository.save(room);
 	}
 
@@ -164,6 +171,44 @@ export class RoomService {
 		userInList.isBanned = true;
 		await this.roomsRepository.save(userInList);
 		return await (this.roomsRepository.save(room));
+	}
+
+	async addToMutedList(roomName: string, user: User): Promise<Room>
+	{
+		console.log('addtomutedlist');
+		const room = await this.findOne(roomName);
+		if (!room)
+			return ;
+		const userInList = room.usersID.find((obj) => obj.user.id == user.id);
+		userInList.isMuted = true;
+		await this.usersListRepository.save(userInList);
+		return await (this.roomsRepository.save(room));
+	}
+
+	async removeFromMutedList(roomName: string, user: User): Promise<Room>
+	{
+		console.log('removefrommutedlist');
+		const room = await this.findOne(roomName);
+		if (!room)
+			return ;
+		const userInList = room.usersID.find((obj) => obj.user.id == user.id);
+		userInList.isMuted = false;
+		await this.usersListRepository.save(userInList);
+		return await (this.roomsRepository.save(room));
+	}
+
+	async isMuted(roomName: string, user: User): Promise<boolean>
+	{
+		const room = await this.findOne(roomName);
+		if (!room)
+			return (false); // TODO check
+		const userInList = room.usersID.find((obj) => obj.user.id == user.id);
+		if (!userInList)
+			return (false); // TODO check
+		console.log('ismuted');
+		return (userInList.isMuted);
+
+
 	}
 
 	async addAdmin(roomName: string, user: User): Promise<Room>

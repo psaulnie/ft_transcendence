@@ -4,7 +4,7 @@ import { chatSocket } from '../../chatSocket';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { useGetBlockedUsersQuery } from '../../store/api';
-import { addBlockedUser, unmute } from '../../store/user';
+import { addBlockedUser } from '../../store/user';
 
 import Room from './Room';
 import CreateChannel from './CreateChannel';
@@ -24,7 +24,6 @@ function Chat() {
 
 	useEffect(() => {
 		chatSocket.emit("newUser", user.username);
-		dispatch(unmute());
 	}, [user.username, dispatch]);
 	
 	
