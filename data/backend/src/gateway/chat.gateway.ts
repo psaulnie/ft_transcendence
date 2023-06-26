@@ -153,13 +153,22 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
 	@SubscribeMessage('block')
 	async blockUser(client: Socket, payload: actionArgs) {
-		const user = await this.userService.findOneByClientId(client.id);
+		const user = await this.userService.findOne(payload.source);
 		const blockedUser = await this.userService.findOne(payload.target);
 		
 		if (user == null || blockedUser == null)
 			return ; // TODO handle error
 		await this.userService.blockUser(user, blockedUser.username);
-		this.server.emit(payload.target + "OPTIONS", { source: payload.source, target: payload.target, action: actionTypes.block, role: "none" })
+	}
+
+	@SubscribeMessage('unblock')
+	async unblockUser(client: Socket, payload: actionArgs) {
+		const user = await this.userService.findOneByClientId(client.id);
+		const blockedUser = await this.userService.findOne(payload.target);
+		
+		if (user == null || blockedUser == null)
+			return ; // TODO handle error
+		await this.userService.unblockUser(user, blockedUser.username);
 	}
 
 	@SubscribeMessage('admin')

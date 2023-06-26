@@ -1,6 +1,6 @@
 import { chatSocket } from '../../../chatSocket';
 import { useDispatch, useSelector } from 'react-redux';
-import { addBlockedUser } from '../../../store/user';
+import { addBlockedUser, removeBlockedUser } from '../../../store/user';
 import { Menu, MenuItem, Divider, Skeleton } from '@mui/material';
 import { addRoom } from '../../../store/rooms';
 
@@ -25,6 +25,11 @@ export default function UserOptionsMenu({ cUser, role, roomName, contextMenu, se
 	function blockUser(cUser: {username: string, role: string}) {
 		chatSocket.emit("block", { source: user.username, target: cUser.username, room: roomName });
 		dispatch(addBlockedUser(cUser.role));
+	}
+
+	function unblockUser(cUser: {username: string, role: string}) {
+		chatSocket.emit("unblock", { source: user.username, target: cUser.username, room: roomName });
+		dispatch(removeBlockedUser(cUser.role));
 	}
 
 	function sendMessage() {
@@ -64,7 +69,12 @@ export default function UserOptionsMenu({ cUser, role, roomName, contextMenu, se
 							<MenuItem>See profile</MenuItem>
 							<MenuItem>Add as friend</MenuItem>
 							<MenuItem>Invite {cUser.username} to play Pong</MenuItem>
-							<MenuItem onClick={ () => { blockUser(cUser) } } >Block</MenuItem>
+							{
+								user.blockedUsers.find((element: string) => element === cUser.username) ?
+									<MenuItem onClick={ () => { unblockUser(cUser) } } >Unblock</MenuItem>
+								:
+									<MenuItem onClick={ () => { blockUser(cUser) } } >Block</MenuItem>
+							}
 							<MenuItem onClick={ () => { sendMessage() } }>Send message</MenuItem>
 						</div>
 					) : null

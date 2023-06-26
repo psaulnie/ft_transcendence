@@ -81,8 +81,8 @@ export class ChatController {
 		let usersList = [];
 
 		room.usersID.forEach((element: UsersList) => {
-			console.log(element.isMuted);
-			usersList.push({username: element.user.username, role: element.role, isMuted: element.isMuted});
+			if (element.user && element.user.username)
+				usersList.push({username: element.user.username, role: element.role, isMuted: element.isMuted});
 		})
 
 		const res = {

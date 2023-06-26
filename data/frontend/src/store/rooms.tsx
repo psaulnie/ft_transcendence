@@ -110,8 +110,6 @@ export const roomsSlice = createSlice({
 			const roomIndex = state.room.findIndex((obj: roomType) => obj.name === action.payload);
 			if (roomIndex !== -1)
 				state.room[roomIndex].isMuted = true;
-			console.log(roomIndex);
-			console.log(action.payload);
 		},
 		unmute: (state, action: PayloadAction<string>) => {
 			const roomIndex = state.room.findIndex((obj: roomType) => obj.name === action.payload);

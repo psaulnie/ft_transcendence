@@ -119,7 +119,7 @@ export class RoomService {
 			return ;
 		}
 		room.usersID = room.usersID.filter(user => {
-			if (user.user.id)
+			if (user.user && user.user.id)
 				return (user.user.id !== userId);
 			return (true);
 		});

@@ -74,4 +74,10 @@ export class UserService {
 		user.blockedUsersID.push(newEntry);
 		await this.usersRepository.save(user);
 	}
+
+	async unblockUser(user: User, blockedUsername: string)
+	{
+		user.blockedUsersID.filter((obj) => obj.username !== blockedUsername);
+		await this.usersRepository.save(user);
+	}
 }

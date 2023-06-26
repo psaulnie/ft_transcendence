@@ -89,8 +89,6 @@ export default function ChatProcess() {
 				quitRoom(value.target);
 				setSnackbar("You cannot join this private channel: " + value.target, "error");
 			}
-			else if (value.action === actionTypes.block)
-				setSnackbar(value.source + " blocked you", "warning");
 			else if (value.action === actionTypes.admin)
 			{
 				dispatch(changeRole({name: value.source, role: "admin", isDirectMsg: false, hasPassword: false}));
