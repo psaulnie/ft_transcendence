@@ -46,9 +46,9 @@ export const userSlice = createSlice({
 			state.blockedUsers.push(action.payload);
 	},
 	removeBlockedUser: (state, action: PayloadAction<string>) => {
-		state.blockedUsers.filter(function(item) {
-			return item !== action.payload
-		})
+		const index = state.blockedUsers.indexOf(action.payload);
+		if (index !== -1)
+			state.blockedUsers.splice(index, 1);
 	},
 	isUserBlocked: (state) => {
 		const nbr = state.blockedUsers.indexOf(state.username);

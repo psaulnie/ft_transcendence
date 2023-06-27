@@ -13,14 +13,12 @@ import { RoomService } from './room.service';
 import { UserService } from './user.service';
 
 import { ChatGateway } from 'src/gateway/chat.gateway';
-import { BlockedUsersList } from 'src/entities/blockedUsersList';
 
 @Module({
 	imports: [TypeOrmModule.forFeature([
 		Room,
 		User,
 		UsersList,
-		BlockedUsersList,
 		Statistics,
 		MatchHistory,
 		Achievements])],

@@ -38,9 +38,9 @@ export class ChatController {
 		const user = await this.userService.findOne(data.username);
 		let blockedUsersID;
 
-		if (user)
-			blockedUsersID = user.blockedUsersID;	
-		else
+		// if (user) // TODO fix function
+		// 	blockedUsersID = user.blockedUsersID;	
+		// else
 			blockedUsersID = [];
 		const res = {
 			status: 'success',
@@ -81,6 +81,7 @@ export class ChatController {
 		let usersList = [];
 
 		room.usersID.forEach((element: UsersList) => {
+			console.log(element);
 			if (element.user && element.user.username)
 				usersList.push({username: element.user.username, role: element.role, isMuted: element.isMuted});
 		})
@@ -120,6 +121,30 @@ export class ChatController {
 		const res = {
 			status: 'success',
 			data: usersList
+		}
+		return JSON.stringify(res);
+	}
+
+	@Get('user/room/info')
+	async getUserInfoInRoom(@Query() data: any): Promise<string> {
+		if (data.username == null || data.roomName == null) // TODO check
+		{
+			const res = {
+				statusCode: 400,
+				status: "failed"
+			};
+			return (JSON.stringify(res));
+		}
+		const room = await this.roomService.findOne(data.roomName);
+		if (!room)
+			return ; // TODO real error
+
+		const user = room.usersID.find((obj) => obj.user.username == data.username);
+		if (!user)
+			return ; // TODO real error
+		const res = {
+			status: 'success',
+			data: { isMuted: user.isMuted, role: user.role, status: user.user.status }
 		}
 		return JSON.stringify(res);
 	}

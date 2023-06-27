@@ -3,20 +3,17 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
 import { userStatus } from './userStatus';
-import { BlockedUsersList } from 'src/entities/blockedUsersList';
 
 @Injectable()
 export class UserService {
 	constructor(
 		@InjectRepository(User)
 		private usersRepository: Repository<User>,
-		@InjectRepository(BlockedUsersList)
-		private blockedUsersRepository: Repository<BlockedUsersList>
 	) {}
 
 	async findOne(name: string): Promise<User>
 	{
-		return await (this.usersRepository.findOne({where: { username: name }, relations: ['blockedUsersID'] }));
+		return await (this.usersRepository.findOne({where: { username: name }, relations: ['blockedUsers'] }));
 	}
 
 	async findOneById(id: number): Promise<User>
@@ -36,11 +33,13 @@ export class UserService {
 
 	async addUser(user: User): Promise<User>
 	{
+		console.log("adduser");
 		return await (this.usersRepository.save(user));
 	}
 
 	async createUser(name: string, clientId: string)
 	{
+		console.log("createuser");
 		const newUser = new User();
 
 		newUser.clientId = clientId;
@@ -56,28 +55,30 @@ export class UserService {
 
 	async removeUser(name: string)
 	{
+		console.log("removeuser");
 		return await (this.usersRepository.delete({username: name}));
 	}
 
 	async updateClientID(user: User, newID: string)
 	{
+		console.log("updateclientid");
 		user.clientId = newID;
 		user.status = userStatus.online;
 		this.usersRepository.save(user);
 	}
 
-	async blockUser(user: User, blockedUsername: string)
+	async blockUser(user: User, blockedUser: User)
 	{
-		const newEntry = new BlockedUsersList();
-		newEntry.username = blockedUsername;
-		newEntry.user = user;
-		user.blockedUsersID.push(newEntry);
+		console.log("blockuser");
+		user.blockedUsers.push(blockedUser);
 		await this.usersRepository.save(user);
+
 	}
 
-	async unblockUser(user: User, blockedUsername: string)
+	async unblockUser(user: User, blockedUser: User)
 	{
-		user.blockedUsersID.filter((obj) => obj.username !== blockedUsername);
+		console.log("unblockuser");
+		user.blockedUsers = user.blockedUsers.filter((obj) => obj.username !== blockedUser.username);
 		await this.usersRepository.save(user);
 	}
 }

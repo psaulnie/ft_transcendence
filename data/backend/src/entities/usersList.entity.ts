@@ -10,7 +10,8 @@ export class UsersList {
 	@Column()
 	role: string
 
-	@ManyToOne(() => User, user => user.usersList)
+	@ManyToOne(() => User, user => user.id)
+	@JoinColumn()
 	user: User
 
 	@Column()

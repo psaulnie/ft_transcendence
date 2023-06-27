@@ -1,7 +1,7 @@
 import { chatSocket } from '../../../chatSocket';
 import { useDispatch, useSelector } from 'react-redux';
 import { addBlockedUser, removeBlockedUser } from '../../../store/user';
-import { Menu, MenuItem, Divider, Skeleton } from '@mui/material';
+import { Menu, MenuItem, Divider } from '@mui/material';
 import { addRoom } from '../../../store/rooms';
 
 type arg = {
@@ -15,7 +15,6 @@ type arg = {
 
 export default function UserOptionsMenu({ cUser, role, roomName, contextMenu, setContextMenu, showAdminOpt }: arg) {
 	const user = useSelector((state: any) => state.user);
-	const rooms = useSelector((state: any) => state.rooms);
 	const dispatch = useDispatch();
 
 	const handleClose = () => {
@@ -24,12 +23,12 @@ export default function UserOptionsMenu({ cUser, role, roomName, contextMenu, se
 
 	function blockUser(cUser: {username: string, role: string}) {
 		chatSocket.emit("block", { source: user.username, target: cUser.username, room: roomName });
-		dispatch(addBlockedUser(cUser.role));
+		dispatch(addBlockedUser(cUser.username));
 	}
 
 	function unblockUser(cUser: {username: string, role: string}) {
 		chatSocket.emit("unblock", { source: user.username, target: cUser.username, room: roomName });
-		dispatch(removeBlockedUser(cUser.role));
+		dispatch(removeBlockedUser(cUser.username));
 	}
 
 	function sendMessage() {

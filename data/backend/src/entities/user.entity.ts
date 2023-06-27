@@ -1,5 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany, AfterLoad, JoinColumn } from 'typeorm';
-import { BlockedUsersList } from './blockedUsersList';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, AfterLoad, JoinColumn, ManyToMany, JoinTable } from 'typeorm';
 import { UsersList } from './usersList.entity';
 
 @Entity({ name: 'User' })
@@ -29,19 +28,13 @@ export class User {
 	@Column()
 	avatar: string
 
-	@OneToMany(() => BlockedUsersList, blockedUsersID => blockedUsersID.user)
-	@JoinColumn()
-	blockedUsersID: BlockedUsersList[]
-
-	@OneToMany(() => UsersList, usersList => usersList.user)
-	@JoinColumn()
-	usersList: UsersList[]
+	@ManyToMany(() => User, blockedUsers => blockedUsers.blockedUsers)
+	@JoinTable()
+	blockedUsers: User[]
 
 	@AfterLoad()
 	async nullCheck() {
-		if (!this.blockedUsersID)
-			this.blockedUsersID = [];
-		if (!this.usersList)
-			this.usersList = [];
+		if (!this.blockedUsers)
+			this.blockedUsers = [];
 	}
 }

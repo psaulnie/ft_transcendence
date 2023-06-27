@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import UserOptionsMenu from './UserOptionsMenu';
 
-import { useGetUsersInRoomQuery } from '../../../store/api';
+import { useGetUserInfoInRoomQuery, useGetUsersInRoomQuery } from '../../../store/api';
 
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -36,23 +36,18 @@ export default function Message({ message, role, roomName }: arg) {
 	const [isMuted, setIsMuted] = useState(false);
 
 	const {
-		data: usersList,
+		data: cUser,
 		isSuccess,
 		refetch
-	} = useGetUsersInRoomQuery({roomName: roomName});
+	} = useGetUserInfoInRoomQuery({username: message.source, roomName: roomName});
 
 	const handleContextMenu = (event: React.MouseEvent) => {
 		event.preventDefault();
 		refetch();
 		if (isSuccess)
 		{
-			const cUser = usersList.data.find((obj: any) => obj.username === message.source)
-			if (cUser)
-			{
-
 				setShowAdminOpt(true);
-				setIsMuted(cUser.isMuted);
-			}
+				setIsMuted(cUser.data.isMuted);
 		}
 		else
 			setShowAdminOpt(false);

@@ -47,6 +47,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		const user = await this.userService.findOne(payload.source);
 		if (!user)
 			return ; // TODO check
+		console.log("sendmsg");
 		if (payload.isDirectMessage == true)
 		{
 			this.server.emit(payload.target, { 
@@ -158,7 +159,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		
 		if (user == null || blockedUser == null)
 			return ; // TODO handle error
-		await this.userService.blockUser(user, blockedUser.username);
+		await this.userService.blockUser(user, blockedUser);
 	}
 
 	@SubscribeMessage('unblock')
@@ -168,7 +169,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		
 		if (user == null || blockedUser == null)
 			return ; // TODO handle error
-		await this.userService.unblockUser(user, blockedUser.username);
+		await this.userService.unblockUser(user, blockedUser);
 	}
 
 	@SubscribeMessage('admin')

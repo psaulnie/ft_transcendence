@@ -86,7 +86,6 @@ export class RoomService {
 		{
 			return (accessStatus.private);
 		}
-		console.log(room.usersID);
 		const rightUser = room.usersID.find((obj) => obj.user.id === user.id)
 		
 		if (rightUser && rightUser.isBanned)
@@ -115,6 +114,7 @@ export class RoomService {
 		room.usersNumber--;
 		if (room.usersNumber <= 0)
 		{
+			console.log("room deleted");
 			this.removeRoom(roomName);
 			return ;
 		}
@@ -199,14 +199,18 @@ export class RoomService {
 
 	async isMuted(roomName: string, user: User): Promise<boolean>
 	{
+		console.log('ismuted');
 		const room = await this.findOne(roomName);
 		if (!room)
 			return (false); // TODO check
-		const userInList = room.usersID.find((obj) => obj.user.id == user.id);
+		const userInList = room.usersID.find((obj) => {
+			if (obj.user && obj.user.id)
+				return (obj.user.id == user.id);
+			return (false);
+		});
 		if (!userInList)
 			return (false); // TODO check
-		console.log('ismuted');
-		return (userInList.isMuted);
+			return (userInList.isMuted);
 
 
 	}
