@@ -13,14 +13,10 @@ export default function Room({roomName, isDirectMessage}: {roomName: string, isD
 
 	const [value, setValue] = useState<sendMsgArgs>({ type: sendMsgTypes.msg, source: user.username, target: roomName, data: '', isDirectMessage: isDirectMessage});
 	const [message, setMessage] = useState('');
-	const [isLoading, setIsLoading] = useState(false);
-	const [isMuted, setIsMuted] = useState(false);
+	const [isLoading, setIsLoading] = useState(false);	
+	const [cRoom, setcRoom] = useState(rooms.room[0]);
 
 	function send() {
-		const room = rooms.room.find((obj: any) => obj.name === roomName);
-		if (room)
-			setIsMuted(room.isMuted);
-		console.log(room);
 		setMessage('');
 		setValue({ type: sendMsgTypes.msg, source: user.username, target: roomName, data: '', isDirectMessage: isDirectMessage});
 		setIsLoading(true);
@@ -50,25 +46,15 @@ export default function Room({roomName, isDirectMessage}: {roomName: string, isD
 		}
 	}
 
-	useEffect(() => {
-		const room = rooms.room.find((obj: any) => obj.name === roomName);
-		if (room)
-		{
-			setIsMuted(room.isMuted);
-		}
-		setIsMuted(false);
-	}, []);
-
-
 	return (
 		<form onSubmit={onSubmit}>
 			<Grid container justifyContent='center' alignItems='center'>
 					<Grid item xs={10} >
-						<TextField fullWidth value={message} onChange={onChange} disabled={isMuted}/> {/* TODO character limit */}
+						<TextField fullWidth value={message} onChange={onChange} disabled={cRoom.isMuted}/> {/* TODO character limit */}
 					</Grid>
 					<Grid item xs={2}>
 						<Button variant='contained' name='message' type="submit"
-								disabled={ isLoading || isMuted } onKeyDown={keyPress}
+								disabled={ isLoading || rooms.room.find((obj: any) => obj.name === roomName).isMuted } onKeyDown={keyPress}
 								endIcon={<SendIcon />}>Send</Button>
 					</Grid>
 			</Grid>

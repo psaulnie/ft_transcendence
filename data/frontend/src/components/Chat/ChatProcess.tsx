@@ -68,25 +68,20 @@ export default function ChatProcess() {
 
 	useEffect(() => {
 
-		function quitRoom(roomName: string)
-		{
-			dispatch(removeRoom(roomName));
-		}
-
 		function process(value: chatResponseArgs) { // TODO function pointer ?
 			if (value.action === actionTypes.kick)
 			{
-				quitRoom(value.target);
+				dispatch(removeRoom(value.target));
 				setSnackbar("You've been kicked from this channel: " + value.target, "error");
 			}
 			else if (value.action === actionTypes.ban)
 			{
-				quitRoom(value.target);
+				dispatch(removeRoom(value.target));
 				setSnackbar("You are banned from this channel: " + value.target, "error");
 			}
 			else if (value.action === actionTypes.private)
 			{
-				quitRoom(value.target);
+				dispatch(removeRoom(value.target));
 				setSnackbar("You cannot join this private channel: " + value.target, "error");
 			}
 			else if (value.action === actionTypes.admin)

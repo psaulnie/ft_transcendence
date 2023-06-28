@@ -65,9 +65,12 @@ export const roomsSlice = createSlice({
 				state.index--;
 		},
 		changeRole: (state, action: PayloadAction<roomType>) => {
-			let room = state.room.find((obj: roomType) => obj.name === action.payload.name);
-			if (room)
-				room.role = action.payload.role;
+			const roomIndex = state.room.findIndex((obj: roomType) => obj.name === action.payload.name);
+			if (roomIndex !== -1)
+			{
+				state.room[roomIndex].role = action.payload.role;
+				state.room = [...state.room];
+			}
 		},
 		quitAll: (state) => {
 			state.room = [];
@@ -109,12 +112,20 @@ export const roomsSlice = createSlice({
 		mute: (state, action: PayloadAction<string>) => {
 			const roomIndex = state.room.findIndex((obj: roomType) => obj.name === action.payload);
 			if (roomIndex !== -1)
+			{
 				state.room[roomIndex].isMuted = true;
+				state.room = [...state.room];
+			}
 		},
 		unmute: (state, action: PayloadAction<string>) => {
 			const roomIndex = state.room.findIndex((obj: roomType) => obj.name === action.payload);
 			if (roomIndex !== -1)
+			{
 				state.room[roomIndex].isMuted = false;
+				state.room = [...state.room];
+			}
+
+
 		},
 	},
 })

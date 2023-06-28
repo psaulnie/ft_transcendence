@@ -47,7 +47,7 @@ export default function UserOptionsMenu({ cUser, role, roomName, contextMenu, se
 			>
 				{
 					role !== "none" && user.username !== cUser.username && cUser.role === "none" && showAdminOpt ? (
-						<div className='adminOptions'>
+						<span>
 							<MenuItem onClick={ () => { chatSocket.emit("kick", { source: user.username, target: cUser.username, room: roomName }) } } >Kick</MenuItem>
 							<MenuItem onClick={ () => { chatSocket.emit("ban", { source: user.username, target: cUser.username, room: roomName })  } } >Ban</MenuItem>
 							{
@@ -59,12 +59,12 @@ export default function UserOptionsMenu({ cUser, role, roomName, contextMenu, se
 							}
 							<MenuItem onClick={ () => { chatSocket.emit("admin", { source: user.username, target: cUser.username, room: roomName }) } } >Set {cUser.username} as administrator</MenuItem>
 							<Divider/>
-						</div>
+						</span>
 					) : null
 				}
 				{
 					user.username !== cUser.username ? (
-						<div className='standardOptions'>
+						<span>
 							<MenuItem>See profile</MenuItem>
 							<MenuItem>Add as friend</MenuItem>
 							<MenuItem>Invite {cUser.username} to play Pong</MenuItem>
@@ -75,7 +75,7 @@ export default function UserOptionsMenu({ cUser, role, roomName, contextMenu, se
 									<MenuItem onClick={ () => { blockUser(cUser) } } >Block</MenuItem>
 							}
 							<MenuItem onClick={ () => { sendMessage() } }>Send message</MenuItem>
-						</div>
+						</span>
 					) : null
 				}
 			</Menu>

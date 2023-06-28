@@ -79,7 +79,12 @@ export default function UsersList({roomName, role}: {roomName: string, role: str
 								</ListItemAvatar>
 								<ListItemText primary={<Typography display='block' fontWeight={cUser.username === user.username ? 'bold' : 'normal'}>{cUser.username}</Typography>} />
 								<ListItemIcon>
-									{getRoleIcon(cUser.role)}
+									{
+										user.username === cUser.username ?
+											getRoleIcon(role)
+										:
+											getRoleIcon(cUser.role)
+									}
 								</ListItemIcon>
 							</ListItemButton>
 						{
