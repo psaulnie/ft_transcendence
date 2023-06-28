@@ -13,7 +13,7 @@ function Room({roomName}: {roomName: string}) {
 	const rooms = useSelector((state: any) => state.rooms);
 
 	const [role, setRole] = useState('none');
-	const roomIndex = rooms.room.findIndex((obj: {name: string, role: string}) => obj.name === roomName); // TODO check if need to recalculate index at every rendering in useEffect
+	const roomIndex = rooms.room.findIndex((obj: {name: string, role: string}) => obj.name === roomName);
 
 	useEffect(() => {
 		const cRole = rooms.room.find((obj: {name: string, role: string}) => obj.name === roomName);

@@ -148,7 +148,7 @@ export class RoomService {
 		let	isAdmin = false;
 		const room = await this.findOne(roomName);
 		if (room == null)
-			return (null); // TODO check and/or fix
+			return (null); // TODO handle error (maybe working)
 		if (room.ownerID == userId)
 			return ("owner");
 		room.usersID.forEach(user => {
@@ -202,14 +202,14 @@ export class RoomService {
 		console.log('ismuted');
 		const room = await this.findOne(roomName);
 		if (!room)
-			return (false); // TODO check
+			return (false); // TODO handle error
 		const userInList = room.usersID.find((obj) => {
 			if (obj.user && obj.user.id)
 				return (obj.user.id == user.id);
 			return (false);
 		});
 		if (!userInList)
-			return (false); // TODO check
+			return (false); // TODO handle error
 			return (userInList.isMuted);
 
 

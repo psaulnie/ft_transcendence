@@ -6,13 +6,11 @@ import { removeRoom, changeRole, addRoom, mute, unmute } from "../../store/rooms
 
 import { chatResponseArgs } from "./args.interface";
 import { chatSocket } from "../../chatSocket";
-import { manageRoomsTypes } from "./args.types";
 
 import { Snackbar, Alert, AlertColor, IconButton, Box } from "@mui/material";
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
-import { accessStatus } from "./accessStatus";
 
 export default function ChatProcess() {
 	const user = useSelector((state: any) => state.user);
@@ -23,7 +21,6 @@ export default function ChatProcess() {
 	const [openInvite, setOpenInvite] = useState(false);
 	const [message, setMessage] = useState('');
 	const [type, setType] = useState<AlertColor>('success');
-
 	const [room, setRoom] = useState('');
 	const [hasPassword, setHasPassword] = useState(false);
 
@@ -68,7 +65,7 @@ export default function ChatProcess() {
 
 	useEffect(() => {
 
-		function process(value: chatResponseArgs) { // TODO function pointer ?
+		function process(value: chatResponseArgs) {
 			if (value.action === actionTypes.kick)
 			{
 				dispatch(removeRoom(value.target));

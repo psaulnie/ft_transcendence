@@ -4,12 +4,11 @@ import { chatSocket } from "../../chatSocket";
 import { Dialog, DialogTitle, DialogActions, Button, Zoom, TextField, Autocomplete, Skeleton, DialogContent } from "@mui/material";
 import { TransitionProps } from "@mui/material/transitions";
 
-import { manageRoomsTypes } from "./args.types";
 import { useDispatch, useSelector } from "react-redux";
-import { accessStatus } from "./accessStatus";
 
-import { addRoom } from "../../store/rooms";
 import { useGetFilteredUserListQuery } from "../../store/api";
+
+import Error from "../Global/Error";
 
 type arg = {
 	open: boolean,
@@ -28,7 +27,6 @@ const Transition = React.forwardRef(function Transition(
 
 export default function SelectUserDialog({open, setOpen, roomName}: arg) {
 	const user = useSelector((state: any) => state.user);
-	const dispatch = useDispatch();
 	const [selectedUser, setSelectedUser] = useState('');
 
 	function updateUser(e: any, value: any) {
@@ -61,8 +59,8 @@ export default function SelectUserDialog({open, setOpen, roomName}: arg) {
 		refetch();
 	}, [refetch]);
 
-	if (isError) // TODO fix show real error page (make Error component)
-		return (<p>Error: {error.toString()}</p>)
+	if (isError)
+		return (<Error error={error} />)
 	if (isLoading)
 		return (
 			<Skeleton variant="rectangular" />

@@ -8,6 +8,7 @@ import StarIcon from '@mui/icons-material/Star';
 import StarOutlineIcon from '@mui/icons-material/StarOutline';
 import PersonIcon from '@mui/icons-material/Person';
 
+import Error from "../Global/Error";
 import UserOptionsMenu from "./Message/UserOptionsMenu";
 
 export default function UsersList({roomName, role}: {roomName: string, role: string}) {
@@ -55,8 +56,8 @@ export default function UsersList({roomName, role}: {roomName: string, role: str
 		refetch();
 	}, [refetch]);
 	
-	if (isError) // TODO fix show real error page (make Error component)
-		return (<p>Error: {error.toString()}</p>)
+	if (isError)
+		return (<Error error={error} />)
 	else if (isLoading)
 		return (
 				<div>

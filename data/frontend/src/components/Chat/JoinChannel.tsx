@@ -8,6 +8,7 @@ import { accessStatus } from './accessStatus';
 import { addRoom } from '../../store/rooms';
 
 import PasswordDialog from './PasswordDialog';
+import Error from '../Global/Error';
 
 import { FormControl, FormHelperText, InputLabel, Select, MenuItem, SelectChangeEvent, IconButton, Grid } from '@mui/material';
 import { Skeleton } from '@mui/material';
@@ -62,8 +63,8 @@ function JoinChannel() {
 		refetch();
 	}, [refetch]);
 
-	if (isError) // TODO fix show real error page (make Error component)
-		return (<p>Error: {error.toString()}</p>)
+	if (isError)
+		return (<Error error={error} />)
 	else if (isLoading)
 		return (
 			<div>

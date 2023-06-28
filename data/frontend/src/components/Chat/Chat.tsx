@@ -12,6 +12,7 @@ import JoinChannel from './JoinChannel';
 import JoinDirectMessage from './JoinDirectMessage';
 import DirectMessageProvider from './DirectMessageProvider';
 import ChatProcess from './ChatProcess';
+import Error from '../Global/Error';
 
 import { Skeleton, Box, Grid } from '@mui/material';
 
@@ -48,8 +49,8 @@ function Chat() {
 	
 	if (!chatSocket.connected)
 		return (<p>Chat Socket error</p>);
-	if (isError) // TODO fix show real error page (make Error component)
-		return (<p>Error: {error.toString()}</p>)
+	if (isError)
+		return (<Error error={error} />)
 	else if (isLoading)
 		return (
 			<div>

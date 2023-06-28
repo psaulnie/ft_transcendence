@@ -6,6 +6,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useGetUsersListQuery } from '../../store/api';
 import { addRoom } from '../../store/rooms';
 
+import Error from '../Global/Error';
+
 import { FormControl, FormHelperText, InputLabel, Select, MenuItem, SelectChangeEvent, IconButton, Skeleton } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add'
 
@@ -47,8 +49,8 @@ function JoinDirectMessage() {
 		refetch();
 	}, [refetch]);
 
-	if (isError) // TODO fix show real error page (make Error component)
-		return (<p>Error: {error.toString()}</p>)
+	if (isError)
+		return (<Error error={error} />)
 	else if (isLoading)
 		return (
 			<div>
@@ -74,7 +76,7 @@ function JoinDirectMessage() {
 					</Select>
 					<FormHelperText>Select an user</FormHelperText>
 				</FormControl>
-				<IconButton size="small" onClick={ joinRoom } disabled={newUser === ""}> {/* TODO disable button when user not selected*/}
+				<IconButton size="small" onClick={ joinRoom } disabled={newUser === ""}>
 					<AddIcon/>
 				</IconButton>
 		</div>

@@ -42,11 +42,11 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
 	@SubscribeMessage('sendMsg')
 	async handleMessage(client: Socket, payload: sendMsgArgs) {
-		if (payload.data.length > 255)
-			payload.data = payload.data.slice(0, 255);
+		if (payload.data.length > 50)
+			payload.data = payload.data.slice(0, 50);
 		const user = await this.userService.findOne(payload.source);
 		if (!user)
-			return ; // TODO check
+			return ; // TODO handle error
 		console.log("sendmsg");
 		if (payload.isDirectMessage == true)
 		{
@@ -58,7 +58,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 				isDirectMessage: true,
 				role: "none" })
 		}
-		if (payload.type == sendMsgTypes.msg && (await this.roomService.isMuted(payload.target, user)) === false) // TODO ADD IF MUTED
+		if (payload.type == sendMsgTypes.msg && (await this.roomService.isMuted(payload.target, user)) === false)
 		{
 			const role = await this.roomService.getRole(payload.target, user.id);
 			this.server.emit(payload.target, { 
@@ -78,7 +78,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		let role = "none";
 
 		if (payload.room.length > 10)
-			payload.room = payload.room.slice(0, 255);
+			payload.room = payload.room.slice(0, 10);
 		if (client.id != user.clientId)
 			await this.userService.updateClientID(user, client.id);
 		if (payload.type == manageRoomsTypes.add)
@@ -237,7 +237,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	}
 
 	async handleDisconnect(client: Socket) {
-		console.log(`Client disconnected: ${client.id}`); // TODO fix clientId update
+		console.log(`Client disconnected: ${client.id}`);
 		const user = await this.userService.findOneByClientId(client.id);
 		if (!user)
 			return ;

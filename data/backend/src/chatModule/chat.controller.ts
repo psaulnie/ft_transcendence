@@ -9,7 +9,7 @@ export class ChatController {
 
   	@Get('role')
   	async getRole(@Query() data: any): Promise<string> {
-		if (data.username == null || data.roomName == null) // TODO check
+		if (data.username == null || data.roomName == null) // TODO handle error
 		{
 			const res = {
 				statusCode: 400,
@@ -26,8 +26,8 @@ export class ChatController {
 	}
 
 	@Get('blocked')
-	async getBlockedUser(@Query() data: any): Promise<string> {
-		if (data.username == null) // TODO check
+	async getBlockedUser(@Query() data: any): Promise<string> { // TODO fix function
+		if (data.username == null) // TODO handle error
 		{
 			const res = {
 				statusCode: 400,
@@ -36,22 +36,17 @@ export class ChatController {
 			return (JSON.stringify(res));
 		}
 		const user = await this.userService.findOne(data.username);
-		let blockedUsersID;
 
-		// if (user) // TODO fix function
-		// 	blockedUsersID = user.blockedUsersID;	
-		// else
-			blockedUsersID = [];
 		const res = {
 			status: 'success',
-			data: blockedUsersID
+			data: []
 		}
 		return JSON.stringify(res);
 	}
 
 	@Get('rooms/list')
 	async getRoomsList(): Promise<string> {
-		const rooms = await this.roomService.findAll(); // TODO send only needed column
+		const rooms = await this.roomService.findAll();
 		let roomsList: {}[] = []; 
 
 		rooms.forEach((element) => roomsList.push({
@@ -69,7 +64,7 @@ export class ChatController {
 
 	@Get('room/users')
 	async getUsersInRoom(@Query() data: any): Promise<string> {
-		if (data.roomName == null) // TODO check
+		if (data.roomName == null) // TODO handle error
 		{
 			const res = {
 				statusCode: 400,
@@ -95,7 +90,7 @@ export class ChatController {
 
 	@Get('rooms/exist')
 	async getIsRoomNameTaken(@Query() data: any): Promise<string> {
-		if (data.roomName == null) // TODO check
+		if (data.roomName == null) // TODO handle error
 		{
 			const res = {
 				statusCode: 400,
@@ -117,7 +112,7 @@ export class ChatController {
 		const users = await this.userService.findAll();
 		let usersList: string[] = []; 
 
-		users.forEach((element) => usersList.push(element.username)) // TODO return also is online or not
+		users.forEach((element) => usersList.push(element.username))
 		const res = {
 			status: 'success',
 			data: usersList
@@ -127,7 +122,7 @@ export class ChatController {
 
 	@Get('user/room/info')
 	async getUserInfoInRoom(@Query() data: any): Promise<string> {
-		if (data.username == null || data.roomName == null) // TODO check
+		if (data.username == null || data.roomName == null) // TODO handle error
 		{
 			const res = {
 				statusCode: 400,
@@ -137,11 +132,11 @@ export class ChatController {
 		}
 		const room = await this.roomService.findOne(data.roomName);
 		if (!room)
-			return ; // TODO real error
+			return ; // TODO handle error
 
 		const user = room.usersID.find((obj) => obj.user.username == data.username);
 		if (!user)
-			return ; // TODO real error
+			return ; // TODO handle error
 		const res = {
 			status: 'success',
 			data: { isMuted: user.isMuted, role: user.role, status: user.user.status }
@@ -151,7 +146,7 @@ export class ChatController {
 
 	@Get('users/list/filtered')
 	async getFilteredUserList(@Query() data: any): Promise<string> {
-		if (data.username == null || data.roomName == null) // TODO check
+		if (data.username == null || data.roomName == null) // TODO handle error
 		{
 			const res = {
 				statusCode: 400,
@@ -166,7 +161,7 @@ export class ChatController {
 		users.forEach((element) => {
 			if (element.username != data.username && this.roomService.isUserInRoom(data.roomName, element.id))
 				usersList.push({label: element.username})
-		}) // TODO return also is online or not
+		});
 		const res = {
 			status: 'success',
 			data: usersList

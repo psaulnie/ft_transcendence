@@ -1,4 +1,4 @@
-import React, { KeyboardEvent, SyntheticEvent, useEffect, useState } from 'react';
+import React, { KeyboardEvent, SyntheticEvent, useState } from 'react';
 import { chatSocket } from '../../../chatSocket';
 import { sendMsgArgs } from '../args.interface';
 import { sendMsgTypes } from '../args.types';
@@ -14,7 +14,6 @@ export default function Room({roomName, isDirectMessage}: {roomName: string, isD
 	const [value, setValue] = useState<sendMsgArgs>({ type: sendMsgTypes.msg, source: user.username, target: roomName, data: '', isDirectMessage: isDirectMessage});
 	const [message, setMessage] = useState('');
 	const [isLoading, setIsLoading] = useState(false);	
-	const [cRoom, setcRoom] = useState(rooms.room[0]);
 
 	function send() {
 		setMessage('');
@@ -39,7 +38,7 @@ export default function Room({roomName, isDirectMessage}: {roomName: string, isD
 
 	function onChange(e: any)
 	{
-		if (e.target.value.length <= 255)
+		if (e.target.value.length <= 50)
 		{
 			setValue({ type: sendMsgTypes.msg, source: user.username, target: roomName, data: e.target.value, isDirectMessage: isDirectMessage });
 			setMessage(e.target.value);	
@@ -50,7 +49,7 @@ export default function Room({roomName, isDirectMessage}: {roomName: string, isD
 		<form onSubmit={onSubmit}>
 			<Grid container justifyContent='center' alignItems='center'>
 					<Grid item xs={10} >
-						<TextField fullWidth value={message} onChange={onChange} disabled={cRoom.isMuted}/> {/* TODO character limit */}
+						<TextField fullWidth value={message} onChange={onChange} disabled={rooms.room.find((obj: any) => obj.name === roomName).isMuted}/> {/* TODO character limit */}
 					</Grid>
 					<Grid item xs={2}>
 						<Button variant='contained' name='message' type="submit"

@@ -7,6 +7,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useGetIsRoomNameTakenQuery } from '../../store/api';
 import { addRoom } from '../../store/rooms';
 
+import Error from '../Global/Error';
+
 import { TextField, Select, MenuItem, FormControl, FormHelperText, SelectChangeEvent, IconButton, InputLabel, Skeleton } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add'
 import PasswordDialog from './PasswordDialog';
@@ -28,8 +30,8 @@ function CreateChannel() {
 		refetch
 	} = useGetIsRoomNameTakenQuery({roomName: newRoomName});
 	
-	if (isError) // TODO fix show real error page (make Error component)
-		return (<p>Error: {error.toString()}</p>)
+	if (isError)
+		return (<Error error={error} />)
 	else if (isLoading)
 		return (
 			<div>
