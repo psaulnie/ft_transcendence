@@ -25,7 +25,7 @@ export class ChatController {
 		 return JSON.stringify(res);
 	}
 
-	@Get('blocked')
+	@Get('user/blocked')
 	async getBlockedUser(@Query() data: any): Promise<string> { // TODO fix function
 		if (data.username == null) // TODO handle error
 		{
@@ -36,10 +36,18 @@ export class ChatController {
 			return (JSON.stringify(res));
 		}
 		const user = await this.userService.findOne(data.username);
-
+		if (!user)
+			return ; // TODO handle error
+		let usersList = [];
+		const blockedUsers = user.blockedUsers;
+		blockedUsers.forEach((element) => {
+			if (element.username)
+				usersList.push(element.username);
+		});
+		console.log("blockedusers");
 		const res = {
 			status: 'success',
-			data: []
+			data: usersList
 		}
 		return JSON.stringify(res);
 	}
@@ -76,7 +84,6 @@ export class ChatController {
 		let usersList = [];
 
 		room.usersID.forEach((element: UsersList) => {
-			console.log(element);
 			if (element.user && element.user.username)
 				usersList.push({username: element.user.username, role: element.role, isMuted: element.isMuted});
 		})

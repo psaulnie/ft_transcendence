@@ -28,7 +28,6 @@ function MessageProvider({roomName}: {roomName: string}) {
 			{
 				if (value.action === actionTypes.join || value.action === actionTypes.left)
 				{
-					console.log('refetch')
 					refetch();
 				}
 				dispatch(addMsg({name: roomName, message: value}));

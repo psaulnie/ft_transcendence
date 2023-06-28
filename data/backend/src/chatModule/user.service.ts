@@ -72,7 +72,6 @@ export class UserService {
 		console.log("blockuser");
 		user.blockedUsers.push(blockedUser);
 		await this.usersRepository.save(user);
-
 	}
 
 	async unblockUser(user: User, blockedUser: User)

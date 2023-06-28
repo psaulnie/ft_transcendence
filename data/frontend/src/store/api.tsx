@@ -13,7 +13,7 @@ export const apiSlice = createApi({
 		}),
 		getBlockedUsers: builder.query({
 			query: ({username = null}) => ({
-				url: '/api/chat/blocked',
+				url: '/api/chat/user/blocked',
 				method: 'GET',
 				params: { username: username },
 			})

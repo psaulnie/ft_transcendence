@@ -160,6 +160,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		if (user == null || blockedUser == null)
 			return ; // TODO handle error
 		await this.userService.blockUser(user, blockedUser);
+		console.log(await this.userService.findOne(payload.source));
 	}
 
 	@SubscribeMessage('unblock')

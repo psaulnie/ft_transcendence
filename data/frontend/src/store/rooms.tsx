@@ -124,8 +124,6 @@ export const roomsSlice = createSlice({
 				state.room[roomIndex].isMuted = false;
 				state.room = [...state.room];
 			}
-
-
 		},
 	},
 })

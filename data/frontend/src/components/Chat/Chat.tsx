@@ -24,9 +24,7 @@ function Chat() {
 	const dispatch = useDispatch();
 
 	useEffect(() => {
-		chatSocket.emit("newUser", user.username);
 	}, [user.username, dispatch]);
-	
 	
 	const {
 		data: blockedUsers,
@@ -42,7 +40,7 @@ function Chat() {
 		if (isSuccess)
 		{
 			blockedUsers.data.forEach((element: any) => {
-				dispatch(addBlockedUser(element.username));
+				dispatch(addBlockedUser(element));
 			});
 		}
 	}, [user.username, isSuccess, blockedUsers, dispatch, refetch, rooms]);

@@ -49,7 +49,7 @@ export default function Room({roomName, isDirectMessage}: {roomName: string, isD
 		<form onSubmit={onSubmit}>
 			<Grid container justifyContent='center' alignItems='center'>
 					<Grid item xs={10} >
-						<TextField fullWidth value={message} onChange={onChange} disabled={rooms.room.find((obj: any) => obj.name === roomName).isMuted}/> {/* TODO character limit */}
+						<TextField fullWidth value={message} onChange={onChange} disabled={rooms.room.find((obj: any) => obj.name === roomName).isMuted}/>
 					</Grid>
 					<Grid item xs={2}>
 						<Button variant='contained' name='message' type="submit"
