@@ -56,7 +56,7 @@ export default function RoomOptionsMenu({contextMenu, setContextMenu, roomIndex,
 					: undefined}>
 				<div>
 					{
-						role !== "none" ?
+						role === "owner" ?
 							<div>
 								<MenuItem disabled={rooms.room[roomIndex].hasPassword !== false} onClick={setPassword} >Set a password</MenuItem>
 								<MenuItem disabled={rooms.room[roomIndex].hasPassword !== true} onClick={setPassword} >Change password</MenuItem>
