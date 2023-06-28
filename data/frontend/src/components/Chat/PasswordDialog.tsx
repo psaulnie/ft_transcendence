@@ -14,7 +14,8 @@ type arg = {
 	open: boolean,
 	setOpen: any,
 	roomName: string,
-	role: string
+	role: string,
+	createRoom: boolean
 };
 
 const Transition = React.forwardRef(function Transition(
@@ -26,7 +27,7 @@ const Transition = React.forwardRef(function Transition(
 	return <Zoom ref={ref} {...props} style={{ transitionDelay: '100ms' }} />;
   });
 
-export default function PasswordDialog({open, setOpen, roomName, role}: arg) {
+export default function PasswordDialog({open, setOpen, roomName, role, createRoom}: arg) {
 	const user = useSelector((state: any) => state.user);
 	const dispatch = useDispatch();
 	const [password, setPassword] = useState('');
@@ -42,12 +43,18 @@ export default function PasswordDialog({open, setOpen, roomName, role}: arg) {
 
 	function confirmButton(e: any) {
 		e.preventDefault();
-		if (password != '')
+		if (password !== '')
 		{
-			setPassword(password);
-			dispatch(addRoom({name: roomName, role: role, isDirectMsg: false}));
-			chatSocket.emit('manageRooms', { type: manageRoomsTypes.add, source: user.username,
-							room: roomName, access: accessStatus.protected, password: password });
+			if (createRoom === true)
+			{
+				dispatch(addRoom({name: roomName, role: role, isDirectMsg: false, hasPassword: true, openTab: true, isMuted: false}));
+				chatSocket.emit('manageRooms', { type: manageRoomsTypes.add, source: user.username,
+								room: roomName, access: accessStatus.protected, password: password });
+			}
+			else
+			{
+				chatSocket.emit('setPasswordToRoom', {room: roomName, password: password});
+			}
 			setOpen(false);
 		}
 	}
@@ -55,9 +62,9 @@ export default function PasswordDialog({open, setOpen, roomName, role}: arg) {
 	return (
 		<Dialog open={open} onClose={closePasswordDialog} TransitionComponent={Transition} keepMounted>
 			<DialogTitle>
-				Set a password
+				Enter password:
 			</DialogTitle>
-			<TextField helperText="Password" label="Room name" value={password} onChange={updatePassword} />
+			<TextField helperText="Enter password" label="Password" value={password} onChange={updatePassword} />
 			<DialogActions>
 				<Button onClick={closePasswordDialog}>Cancel</Button>
 				<Button disabled={password === '' ? true : false} onClick={confirmButton}>Confirm</Button>

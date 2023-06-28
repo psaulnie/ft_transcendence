@@ -8,12 +8,15 @@ import { accessStatus } from './accessStatus';
 import { addRoom } from '../../store/rooms';
 
 import PasswordDialog from './PasswordDialog';
+import Error from '../Global/Error';
 
-import { FormControl, FormHelperText, InputLabel, Select, MenuItem, SelectChangeEvent, IconButton } from '@mui/material';
+import { FormControl, FormHelperText, InputLabel, Select, MenuItem, SelectChangeEvent, IconButton, Grid } from '@mui/material';
 import { Skeleton } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add'
+import LockIcon from '@mui/icons-material/Lock';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
-function JoinChannel({ setRoomIndex }: { setRoomIndex: any }) {
+function JoinChannel() {
 	const user = useSelector((state: any) => state.user);
 	const rooms = useSelector((state: any) => state.rooms);
 	const dispatch = useDispatch();
@@ -40,8 +43,7 @@ function JoinChannel({ setRoomIndex }: { setRoomIndex: any }) {
 				setShowDialog(true);
 				return ;
 			}
-			dispatch(addRoom({name: newRoomName, role: "none", isDirectMsg: false}));
-			setRoomIndex(rooms.room.length);
+			dispatch(addRoom({name: newRoomName, role: "none", isDirectMsg: false, hasPassword: (access === accessStatus.protected), openTab: true, isMuted: false}));
 			chatSocket.emit('manageRooms', { type: manageRoomsTypes.add, source: user.username, room: newRoomName, access: 0});
 		}
 		else
@@ -61,8 +63,8 @@ function JoinChannel({ setRoomIndex }: { setRoomIndex: any }) {
 		refetch();
 	}, [refetch]);
 
-	if (isError) // TODO fix show real error page (make Error component)
-		return (<p>Error: {error.toString()}</p>)
+	if (isError)
+		return (<Error error={error} />)
 	else if (isLoading)
 		return (
 			<div>
@@ -79,9 +81,14 @@ function JoinChannel({ setRoomIndex }: { setRoomIndex: any }) {
 					<Select name="roomsList" onOpen={refetch} onClick={refetch} onChange={changeSelectedRoom} value={newRoomName} defaultValue=''>
 						{
 							roomsList.data.map((room: any) => {
-								if (!rooms.room.find((obj: {name: string, role: string}) => obj.name === room.roomName) && room.access !== accessStatus.private)
+								if (!rooms.room.find((obj: {name: string, role: string, hasPassword: boolean}) => obj.name === room.roomName) && room.access !== accessStatus.private)
 									return (
-										<MenuItem key={room.roomName} value={room.roomName} onClick={() => setAccess(room.access)}>{room.roomName}</MenuItem>
+										<MenuItem key={room.roomName} value={room.roomName} onClick={() => setAccess(room.access)}>
+											<Grid container>
+												<Grid item xs={10}>{room.roomName}</Grid>
+												{room.hasPassword === false ? <VisibilityIcon/> : <LockIcon />}
+											</Grid>
+										</MenuItem>
 									);
 								else
 									return (null);
@@ -93,7 +100,7 @@ function JoinChannel({ setRoomIndex }: { setRoomIndex: any }) {
 				<IconButton size="small" onClick={ joinRoom }>
 					<AddIcon/>
 				</IconButton>
-				{ showDialog === true ? <PasswordDialog open={showDialog} setOpen={setShowDialog} roomName={newRoomName} role="none" /> : null}
+				{ showDialog === true ? <PasswordDialog open={showDialog} setOpen={setShowDialog} roomName={newRoomName} role="none" createRoom={true} /> : null}
 		</div>
 	)
 }

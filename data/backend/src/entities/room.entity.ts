@@ -22,23 +22,13 @@ export class Room {
 	@Column()
 	usersNumber: number
 
-	@OneToMany(() => UsersList, usersList => usersList.room)
+	@OneToMany(() => UsersList, usersList => usersList.room, { eager: true })
 	usersID: UsersList[]
-
-	@OneToMany(() => UsersList, usersList => usersList.adminRoom)
-	adminsID: UsersList[]
-
-	@OneToMany(() => UsersList, usersList => usersList.blockedRoom)
-	blockedUsersID: UsersList[]
 
 	@AfterLoad()
 	async nullCheck() {
 		if (!this.usersID)
 			this.usersID = [];
-		if (!this.adminsID)
-			this.adminsID = [];
-		if (!this.blockedUsersID)
-			this.blockedUsersID = [];
 	}
 
 }

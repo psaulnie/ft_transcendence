@@ -7,11 +7,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useGetIsRoomNameTakenQuery } from '../../store/api';
 import { addRoom } from '../../store/rooms';
 
+import Error from '../Global/Error';
+
 import { TextField, Select, MenuItem, FormControl, FormHelperText, SelectChangeEvent, IconButton, InputLabel, Skeleton } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add'
 import PasswordDialog from './PasswordDialog';
 
-function CreateChannel({ setRoomIndex }: { setRoomIndex: any }) {
+function CreateChannel() {
 	const user = useSelector((state: any) => state.user);
 	const rooms = useSelector((state: any) => state.rooms);
 	const dispatch = useDispatch();
@@ -28,8 +30,8 @@ function CreateChannel({ setRoomIndex }: { setRoomIndex: any }) {
 		refetch
 	} = useGetIsRoomNameTakenQuery({roomName: newRoomName});
 	
-	if (isError) // TODO fix show real error page (make Error component)
-		return (<p>Error: {error.toString()}</p>)
+	if (isError)
+		return (<Error error={error} />)
 	else if (isLoading)
 		return (
 			<div>
@@ -61,13 +63,14 @@ function CreateChannel({ setRoomIndex }: { setRoomIndex: any }) {
 		event.preventDefault();
 		if (!rooms.room.find((obj: {name: string, role: string}) => obj.name === newRoomName))
 		{
+			let hasPassword = false;
 			if (access === accessStatus.protected)
 			{
 				setShowDialog(true);
+				hasPassword = true;
 				return ;
 			}
-			dispatch(addRoom({name: newRoomName, role: "owner", isDirectMsg: false}));
-			setRoomIndex(rooms.room.length);
+			dispatch(addRoom({name: newRoomName, role: "owner", isDirectMsg: false, hasPassword: hasPassword, openTab: true, isMuted: false}));
 			chatSocket.emit('manageRooms', { type: manageRoomsTypes.add, source: user.username, room: newRoomName, access: access});
 		}
 		else
@@ -93,7 +96,7 @@ function CreateChannel({ setRoomIndex }: { setRoomIndex: any }) {
 				<IconButton name='rooms' disabled={exist.data === true || newRoomName === ''} onClick={ createRoom } >
 					<AddIcon/>
 				</IconButton>
-				{ showDialog === true ? <PasswordDialog open={showDialog} setOpen={setShowDialog} roomName={newRoomName} role="owner" /> : null}
+				{ showDialog === true ? <PasswordDialog open={showDialog} setOpen={setShowDialog} roomName={newRoomName} role="owner" createRoom={true} /> : null}
 				{ exist.data === true ? <p>This room already exist</p> : null}
 		</div>
 	)

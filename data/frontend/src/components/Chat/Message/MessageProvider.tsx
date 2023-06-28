@@ -1,28 +1,44 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { chatResponseArgs } from "../args.interface";
-import { addMsg, addRoom, setRead } from "../../../store/rooms";
+import { addMsg, addRoom, setHasPassword, setRead } from "../../../store/rooms";
 import { chatSocket } from "../../../chatSocket";
+import { actionTypes } from "../args.types";
 
-function MessageProvider({roomName, currentRoomIndex}: {roomName: string, currentRoomIndex: number}) {
+import { useGetUsersInRoomQuery } from "../../../store/api";
+
+function MessageProvider({roomName}: {roomName: string}) {
 	const user = useSelector((state: any) => state.user);
 	const rooms = useSelector((state: any) => state.rooms);
 	const dispatch = useDispatch();
 
-	
+	const {
+		refetch
+	} = useGetUsersInRoomQuery({roomName: roomName});
 	
 	useEffect(() => {
 		function onMsgSent(value: chatResponseArgs) {
 			let roomIndex = rooms.room.findIndex(((obj: any) => obj.name === roomName));
 
-			console.log(value);
-			dispatch(addMsg({name: roomName, message: value}));
-			if (value.source === user.username || currentRoomIndex === roomIndex)
+			if (value.action === actionTypes.hasPassword)
+				dispatch(setHasPassword({index: roomIndex, value: true}));
+			else if (value.action === actionTypes.noPassword)
+				dispatch(setHasPassword({index: roomIndex, value: false}));
+			else
 			{
-				dispatch(setRead(roomIndex));
+				if (value.action === actionTypes.join || value.action === actionTypes.left)
+				{
+					console.log('refetch')
+					refetch();
+				}
+				dispatch(addMsg({name: roomName, message: value}));
+				if (value.source === user.username || rooms.index === roomIndex)
+				{
+					dispatch(setRead(roomIndex));
+				}
+				if (rooms.room[roomIndex] && rooms.room[roomIndex].isDirectMessage === true)
+					dispatch(addRoom({name: value.source, role: "none",  isDirectMsg: true, hasPassword: false, openTab: false, isMuted: false}));
 			}
-			if (rooms.room[roomIndex] && rooms.room[roomIndex].isDirectMessage === true)
-				dispatch(addRoom({name: value.source, role: "none",  isDirectMsg: true}));
 		}
 		
 		let currentRoom = rooms.room.find(((obj: any) => obj.name === roomName));
@@ -34,7 +50,7 @@ function MessageProvider({roomName, currentRoomIndex}: {roomName: string, curren
 		return () => {
 		  chatSocket.off(listener, onMsgSent);
 		};
-	  }, [roomName, dispatch]);
+	  }, [roomName, dispatch, rooms, user]);
 
 	return (null);
 }

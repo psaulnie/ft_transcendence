@@ -18,7 +18,11 @@ export enum actionTypes {
 	block,
 	admin,
 	mute,
+	unmute,
 	privmsg,
 	wrongpassword,
-	rightpassword
+	rightpassword,
+	hasPassword,
+	noPassword,
+	invited
 }

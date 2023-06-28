@@ -6,15 +6,17 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useGetUsersListQuery } from '../../store/api';
 import { addRoom } from '../../store/rooms';
 
+import Error from '../Global/Error';
+
 import { FormControl, FormHelperText, InputLabel, Select, MenuItem, SelectChangeEvent, IconButton, Skeleton } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add'
 
-function JoinDirectMessage({ setRoomIndex }: { setRoomIndex: any }) {
+function JoinDirectMessage() {
 	const user = useSelector((state: any) => state.user);
 	const rooms = useSelector((state: any) => state.rooms);
 	const dispatch = useDispatch();
 
-	const [newUser, setNewUser] = useState('null');
+	const [newUser, setNewUser] = useState('');
 
 	function changeSelectedUser(event: SelectChangeEvent)
 	{
@@ -25,15 +27,14 @@ function JoinDirectMessage({ setRoomIndex }: { setRoomIndex: any }) {
 	function joinRoom(event: any)
 	{
 		event.preventDefault();
-		if (newUser === 'null')
+		if (newUser === '')
 			return ;
 		if (!rooms.room.find((obj: {name: string, role: string}) => obj.name === newUser))
 		{
-			dispatch(addRoom({name: newUser, role: "none", isDirectMsg: true}));
-			setRoomIndex(rooms.room.length);
+			dispatch(addRoom({name: newUser, role: "none", isDirectMsg: true, hasPassword: false, openTab: true, isMuted: false}));
 			chatSocket.emit('manageRooms', { type: manageRoomsTypes.addDirectMsg, source: user.username, room: newUser, access: 0});
 		}
-		setNewUser('null');
+		setNewUser('');
 	}
 
 	const {
@@ -48,8 +49,8 @@ function JoinDirectMessage({ setRoomIndex }: { setRoomIndex: any }) {
 		refetch();
 	}, [refetch]);
 
-	if (isError) // TODO fix show real error page (make Error component)
-		return (<p>Error: {error.toString()}</p>)
+	if (isError)
+		return (<Error error={error} />)
 	else if (isLoading)
 		return (
 			<div>
@@ -65,18 +66,17 @@ function JoinDirectMessage({ setRoomIndex }: { setRoomIndex: any }) {
 					<InputLabel>Users</InputLabel>
 					<Select name="usersList" onClick={refetch} onChange={changeSelectedUser} value={newUser} defaultValue=''>
 						{
-							usersList.data.map((username: any) => {
+							usersList.data.map((username: any, key: number) => {
 								if (!user.blockedUsers.find((obj: string) => obj === username) && user.username !== username)
 									return (
-										<MenuItem key={username} value={username}>{username}</MenuItem>
+										<MenuItem key={key} value={username}>{username}</MenuItem>
 									);
-								return (null);
 							})
 						}
 					</Select>
 					<FormHelperText>Select an user</FormHelperText>
 				</FormControl>
-				<IconButton size="small" onClick={ joinRoom } disabled={newUser === "null"}> {/* TODO disable button when user not selected*/}
+				<IconButton size="small" onClick={ joinRoom } disabled={newUser === ""}>
 					<AddIcon/>
 				</IconButton>
 		</div>

@@ -7,16 +7,17 @@ import { useSelector } from 'react-redux';
 import { Button, Grid, TextField } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 
-export default function Room({channelName, isDirectMessage}: {channelName: string, isDirectMessage: boolean}) {
+export default function Room({roomName, isDirectMessage}: {roomName: string, isDirectMessage: boolean}) {
 	const user = useSelector((state: any) => state.user);
+	const rooms = useSelector((state: any) => state.rooms);
 
-	const [value, setValue] = useState<sendMsgArgs>({ type: sendMsgTypes.msg, source: user.username, target: channelName, data: '', isDirectMessage: isDirectMessage});
+	const [value, setValue] = useState<sendMsgArgs>({ type: sendMsgTypes.msg, source: user.username, target: roomName, data: '', isDirectMessage: isDirectMessage});
 	const [message, setMessage] = useState('');
-	const [isLoading, setIsLoading] = useState(false);
+	const [isLoading, setIsLoading] = useState(false);	
 
 	function send() {
 		setMessage('');
-		setValue({ type: sendMsgTypes.msg, source: user.username, target: channelName, data: '', isDirectMessage: isDirectMessage});
+		setValue({ type: sendMsgTypes.msg, source: user.username, target: roomName, data: '', isDirectMessage: isDirectMessage});
 		setIsLoading(true);
 		chatSocket.timeout(500).emit('sendMsg', value, () => {
 			setIsLoading(false);
@@ -37,9 +38,9 @@ export default function Room({channelName, isDirectMessage}: {channelName: strin
 
 	function onChange(e: any)
 	{
-		if (e.target.value.length <= 255)
+		if (e.target.value.length <= 50)
 		{
-			setValue({ type: sendMsgTypes.msg, source: user.username, target: channelName, data: e.target.value, isDirectMessage: isDirectMessage });
+			setValue({ type: sendMsgTypes.msg, source: user.username, target: roomName, data: e.target.value, isDirectMessage: isDirectMessage });
 			setMessage(e.target.value);	
 		}
 	}
@@ -48,11 +49,11 @@ export default function Room({channelName, isDirectMessage}: {channelName: strin
 		<form onSubmit={onSubmit}>
 			<Grid container justifyContent='center' alignItems='center'>
 					<Grid item xs={10} >
-						<TextField fullWidth value={message} onChange={onChange} disabled={user.isMuted}/> {/* TODO character limit */}
+						<TextField fullWidth value={message} onChange={onChange} disabled={rooms.room.find((obj: any) => obj.name === roomName).isMuted}/> {/* TODO character limit */}
 					</Grid>
 					<Grid item xs={2}>
 						<Button variant='contained' name='message' type="submit"
-								disabled={ isLoading || user.isMuted } onKeyDown={keyPress}
+								disabled={ isLoading || rooms.room.find((obj: any) => obj.name === roomName).isMuted } onKeyDown={keyPress}
 								endIcon={<SendIcon />}>Send</Button>
 					</Grid>
 			</Grid>

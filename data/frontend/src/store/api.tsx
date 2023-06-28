@@ -5,10 +5,10 @@ export const apiSlice = createApi({
 	baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:5000' }),
 	endpoints: builder => ({
 		getRole: builder.query({
-			query: ({username = null, channelName = null}) => ({
+			query: ({username = null, roomName = null}) => ({
 				url: '/api/chat/role',
 				method: 'GET',
-				params: { username: username, roomName: channelName},
+				params: { username: username, roomName: roomName },
 			}),
 		}),
 		getBlockedUsers: builder.query({
@@ -24,11 +24,34 @@ export const apiSlice = createApi({
 				method: 'GET'
 			})
 		}),
+		getUsersInRoom: builder.query({
+			query: ({roomName = null}) => ({
+				url: '/api/chat/room/users',
+				method: 'GET',
+				params: { roomName: roomName },
+
+			})
+		}),
 		getUsersList: builder.query({
 			query: () => ({
 				url: '/api/chat/users/list',
 				method: 'GET'
 			})
+		}),
+		getFilteredUserList: builder.query({
+			query: ({username = null, roomName = null}) => ({
+				url: '/api/chat/users/list/filtered',
+				method: 'GET',
+				params: { username: username, roomName: roomName },
+
+			})
+		}),
+		getUserInfoInRoom: builder.query({
+			query: ({username = null, roomName = null}) => ({
+				url: '/api/chat/user/room/info',
+				method: 'GET',
+				params: { username: username, roomName: roomName },
+			}),
 		}),
 		getIsRoomNameTaken: builder.query({
 			query: ({roomName = null}) => ({
@@ -40,4 +63,12 @@ export const apiSlice = createApi({
 	})
 })
 
-export const { useGetRoleQuery, useGetBlockedUsersQuery, useGetRoomsListQuery, useGetIsRoomNameTakenQuery, useGetUsersListQuery } = apiSlice
+export const {	useGetRoleQuery,
+				useGetBlockedUsersQuery,
+				useGetRoomsListQuery,
+				useGetIsRoomNameTakenQuery,
+				useGetUsersListQuery,
+				useGetFilteredUserListQuery,
+				useGetUsersInRoomQuery,
+				useGetUserInfoInRoomQuery
+} = apiSlice

@@ -2,8 +2,9 @@ import { chatResponseArgs } from '../args.interface';
 
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-
 import UserOptionsMenu from './UserOptionsMenu';
+
+import { useGetUserInfoInRoomQuery, useGetUsersInRoomQuery } from '../../../store/api';
 
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -22,18 +23,34 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
 type arg = {
 	message: chatResponseArgs,
 	role: string,
-	channelName: string,
+	roomName: string,
 }
 
-export default function Message({ message, role, channelName }: arg) {
+export default function Message({ message, role, roomName }: arg) {
 	const user = useSelector((state: any) => state.user);
 	const [contextMenu, setContextMenu] = useState<{
 		mouseX: number;
 		mouseY: number;
 	  } | null>(null);
+	const [showAdminOpt, setShowAdminOpt] = useState(false);
+	const [isMuted, setIsMuted] = useState(false);
+
+	const {
+		data: cUser,
+		isSuccess,
+		refetch
+	} = useGetUserInfoInRoomQuery({username: message.source, roomName: roomName});
 
 	const handleContextMenu = (event: React.MouseEvent) => {
 		event.preventDefault();
+		refetch();
+		if (isSuccess)
+		{
+				setShowAdminOpt(true);
+				setIsMuted(cUser.data.isMuted);
+		}
+		else
+			setShowAdminOpt(false);
 		setContextMenu(
 			contextMenu === null
 			? {
@@ -45,10 +62,13 @@ export default function Message({ message, role, channelName }: arg) {
 	};
 
 	return (
-		<div className='message'onContextMenu={handleContextMenu} >
+		<div className='message' onContextMenu={handleContextMenu} >
 			{
 				user.username !== message.source ? 
-					<UserOptionsMenu message={message} role={role} channelName={channelName} contextMenu={contextMenu} setContextMenu={setContextMenu} handleContextMenu={handleContextMenu} />
+					<UserOptionsMenu cUser={{username: message.source, role: message.role, isMuted: isMuted}} role={role}
+						roomName={roomName}
+						contextMenu={contextMenu} setContextMenu={setContextMenu}
+						showAdminOpt={showAdminOpt}/>
 				: null
 			}
 			<Box sx={{ flexGrow: 1, overflow: 'hidden', px: 3}} >
