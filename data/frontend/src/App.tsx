@@ -32,7 +32,6 @@ function App() {
 	};
 
 	const apiGetProfile = () => {
-		console.log(profileRequestOptions)
 		fetch("http://localhost:5000/profile", profileRequestOptions)
 			.then((response) => response.json())
 			.then((json) => {
