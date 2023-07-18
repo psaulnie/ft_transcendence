@@ -24,6 +24,7 @@ function Chat() {
 	const dispatch = useDispatch();
 
 	useEffect(() => {
+		chatSocket.emit("newUser", user.username);
 	}, [user.username, dispatch]);
 	
 	const {
@@ -37,7 +38,7 @@ function Chat() {
 	
 	useEffect(() => {
 		refetch();
-		if (isSuccess)
+		if (isSuccess && blockedUsers)
 		{
 			blockedUsers.data.forEach((element: any) => {
 				dispatch(addBlockedUser(element));

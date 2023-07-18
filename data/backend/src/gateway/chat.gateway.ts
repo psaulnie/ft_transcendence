@@ -76,10 +76,9 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		const user = await this.userService.findOne(payload.source);
 		let hasPassword = false;
 		let role = "none";
-
 		if (payload.room.length > 10)
 			payload.room = payload.room.slice(0, 10);
-		if (client.id != user.clientId)
+		if (!user.clientId || client.id != user.clientId)
 			await this.userService.updateClientID(user, client.id);
 		if (payload.type == manageRoomsTypes.add)
 		{

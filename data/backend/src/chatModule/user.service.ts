@@ -49,6 +49,8 @@ export class UserService {
 		newUser.username = name;
 		newUser.isConnected = true;
 		newUser.status = userStatus.online;
+		if (!newUser.blockedUsers)
+			newUser.blockedUsers = [];
 		
 		this.usersRepository.save(newUser);
 	}
