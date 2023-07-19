@@ -18,6 +18,8 @@ export class ChatController {
 			return (JSON.stringify(res));
 		}
 		const user = await this.userService.findOne(data.username);
+		if (!user)
+			return ; // TODO handle error
 		const res = {
 			status: 'success',
 			data: await this.roomService.getRole(data.roomName, user.id)
@@ -81,8 +83,8 @@ export class ChatController {
 			return (JSON.stringify(res));
 		}
 		const room = await this.roomService.findOne(data.roomName);
-		console.log(data.roomName);
-		console.log(room);
+		if (!room)
+			return ; // TODO handle error
 		let usersList = [];
 
 		room.usersID.forEach((element: UsersList) => {
@@ -165,6 +167,8 @@ export class ChatController {
 		}
 
 		const users = await this.userService.findAll();
+		if (!users)
+			return ; // TODO handle error
 		let usersList: {}[] = [];
 
 		users.forEach((element) => {
