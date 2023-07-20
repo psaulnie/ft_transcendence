@@ -74,7 +74,7 @@ export default function SelectUserDialog({open, setOpen, roomName}: arg) {
 			</DialogTitle>
 			<DialogContent>
 				<Autocomplete
-					options={usersList.data}
+					options={usersList}
 					sx={{ width: 300 }}	
 					renderInput={(params: any) => <TextField {...params} label="User" value={params}/>}
 					value={selectedUser} onChange={updateUser}

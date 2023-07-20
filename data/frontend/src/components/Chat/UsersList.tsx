@@ -69,7 +69,7 @@ export default function UsersList({roomName, role}: {roomName: string, role: str
 		<Grid>
 			<List>
 			{
-				usersList.data.map((cUser: any, key: number) => {						
+				usersList.map((cUser: any, key: number) => {						
 					return (
 						<ListItem disablePadding dense key={key} >
 							<ListItemButton onClick={(e) => handleContextMenu(e, cUser.username)}>

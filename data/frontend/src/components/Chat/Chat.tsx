@@ -40,7 +40,7 @@ function Chat() {
 		refetch();
 		if (isSuccess && blockedUsers)
 		{
-			blockedUsers.data.forEach((element: any) => {
+			blockedUsers.forEach((element: any) => {
 				dispatch(addBlockedUser(element));
 			});
 		}

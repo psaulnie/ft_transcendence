@@ -66,7 +66,7 @@ function JoinDirectMessage() {
 					<InputLabel>Users</InputLabel>
 					<Select name="usersList" onClick={refetch} onChange={changeSelectedUser} value={newUser} defaultValue=''>
 						{
-							usersList.data.map((username: any, key: number) => {
+							usersList.map((username: any, key: number) => {
 								if (!user.blockedUsers.find((obj: string) => obj === username) && user.username !== username)
 									return (
 										<MenuItem key={key} value={username}>{username}</MenuItem>
