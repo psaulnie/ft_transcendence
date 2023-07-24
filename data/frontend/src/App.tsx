@@ -3,12 +3,10 @@ import './App.css';
 import { SyntheticEvent, useState } from 'react';
 // Components
 import Navigation from './components/Navigation/Navigation';
-import Chat from './components/Chat/Chat';
 
 function App() {
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
-	const [showChat, setShowChat] = useState(false);
 	const [apiToken, setApiToken] = useState('');
 
 	const signInRequestOptions = {
@@ -21,7 +19,6 @@ function App() {
 		headers: { 'Authorization': `Bearer ${apiToken}` }
 	};
 
-	//Get Method
 	const apiGet = () => {
 		fetch("http://localhost:5000/auth/login", signInRequestOptions)
 			.then((response) => response.json())
@@ -31,15 +28,51 @@ function App() {
 			});
 	};
 
+	// const apiSignIn = () => {
+	async function apiSignIn() {
+		try {
+			await fetch("http://localhost:5000/auth/signIn", signInRequestOptions)
+				.then(response => response.json())
+				.then((json) => {
+					if (json.statusCode) {
+						throw new Error('bad password');
+					}
+					console.log("Successfully logged");
+					console.log('JSON ', json);
+					console.log(json.user);
+				});
+		}
+		catch (e) {
+			console.log('Error from apiSignIn: ', e);
+		}
+	}
+
 	const apiGetProfile = () => {
 		console.log(profileRequestOptions)
 		fetch("http://localhost:5000/profile", profileRequestOptions)
-			.then((response) => response.json())
 			.then((json) => {
 				console.log(json);
 			});
 	};
 
+	// async function apiLogInIntra() {
+	// 	try {
+	// 		await fetch("http://localhost:5000/auth/intra", signInRequestOptions)
+	// 			.then(response => response.json())
+	// 			.then((json) => {
+	// 				if (json.statusCode) {
+	// 					throw new Error('bad password');
+	// 				}
+	// 				console.log("Successfully logged");
+	// 				console.log('JSON ', json);
+	// 				console.log(json.user);
+	// 			});
+	// 	}
+	// 	catch (e) {
+	// 		console.log('Error from apiSignIn: ', e);
+	// 	}
+	// }
+	//
 	function onUsernameChange(e: React.FormEvent<HTMLInputElement>) {
 		e.preventDefault();
 		setUsername(e.currentTarget.value);
@@ -50,20 +83,20 @@ function App() {
 		setPassword(e.currentTarget.value);
 	}
 
-	function onSubmit(e: SyntheticEvent) {
-		e.preventDefault();
-		if (username != '')
-			setShowChat(true);
-	}
-
 	function signIn(e: SyntheticEvent) {
 		e.preventDefault();
-		apiGet();
+		apiSignIn();
 	}
 
 	function logIn(e: SyntheticEvent) {
 		e.preventDefault();
-		apiGetProfile();
+		apiGet();
+		// apiGetProfile();
+	}
+
+	function intraLogIn(e: SyntheticEvent) {
+		e.preventDefault();
+		apiLogInIntra();
 	}
 
 	return (
@@ -75,11 +108,8 @@ function App() {
 					<input value={password} onChange={onPasswordChange} />
 					<button onClick={signIn}>SignIn</button>
 					<button onClick={logIn}>LogIn</button>
+					<button onClick={intraLogIn}>Intra login</button>
 				</form>
-
-				{
-					showChat ? (<Chat username={username} />) : ''
-				}
 				{/* TODO add Game component*/}
 			</div>
 		</div>
