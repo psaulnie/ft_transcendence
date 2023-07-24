@@ -79,6 +79,7 @@ export default function SelectUserDialog({open, setOpen, roomName}: arg) {
 					renderInput={(params: any) => <TextField {...params} label="User" value={params}/>}
 					value={selectedUser} onChange={updateUser}
 					isOptionEqualToValue={(option: any, value: any) => option.value === value.value}
+					onClick={refetch}
 				/>
 			</DialogContent>
 			<DialogActions>

@@ -2,6 +2,7 @@ import { Controller, Query, Get, HttpException } from '@nestjs/common';
 import { RoomService } from './room.service';
 import { UserService } from './user.service';
 import { UsersList } from 'src/entities/usersList.entity';
+import { userStatus } from './userStatus';
 
 @Controller('/api/chat/')
 export class ChatController {
@@ -100,10 +101,17 @@ export class ChatController {
 		const users = await this.userService.findAll();
 		let usersList: {}[] = [];
 
-		users.forEach((element) => {
-			if (element.username != data.username && this.roomService.isUserInRoom(data.roomName, element.id))
+		for (const element of users) {
+			console.log(element.username);
+			console.log(await this.roomService.isUserInRoom(data.roomName, element.id) );
+			if (element.username != data.username && (await this.roomService.isUserInRoom(data.roomName, element.id) == false && element.status == userStatus.online))
 				usersList.push({label: element.username})
-		});
+		}
+		// users.forEach((element) => {
+		// 	const isInRoom = await this.roomService.isUserInRoom(data.roomName, element.id);
+		// 	if (element.username != data.username && (await this.roomService.isUserInRoom(data.roomName, element.id) == false && element.status == userStatus.online))
+		// 		usersList.push({label: element.username})
+		// });
 		return (usersList);
 	}
 }
