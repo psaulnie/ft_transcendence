@@ -80,7 +80,7 @@ function JoinChannel() {
 					<InputLabel>Channel</InputLabel>
 					<Select name="roomsList" onOpen={refetch} onClick={refetch} onChange={changeSelectedRoom} value={newRoomName} defaultValue=''>
 						{
-							roomsList.data.map((room: any) => {
+							roomsList.map((room: any) => {
 								if (!rooms.room.find((obj: {name: string, role: string, hasPassword: boolean}) => obj.name === room.roomName) && room.access !== accessStatus.private)
 									return (
 										<MenuItem key={room.roomName} value={room.roomName} onClick={() => setAccess(room.access)}>

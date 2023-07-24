@@ -47,7 +47,7 @@ export default function Message({ message, role, roomName }: arg) {
 		if (isSuccess)
 		{
 				setShowAdminOpt(true);
-				setIsMuted(cUser.data.isMuted);
+				setIsMuted(cUser.isMuted);
 		}
 		else
 			setShowAdminOpt(false);

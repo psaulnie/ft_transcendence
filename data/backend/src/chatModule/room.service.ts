@@ -265,7 +265,10 @@ export class RoomService {
 	{
 		console.log('isuserinroom');
 		const room = await this.findOne(roomName);
-		if (!room || !room.usersID.find((obj: any) => obj.userId == userID))
+		room.usersID.forEach(element => {
+			console.log(userID + " " + element.user.id + " " + element.user.username);
+		});
+		if (!room || !room.usersID.find((obj: any) => obj.user.id == userID))
 			return (false);
 		else
 			return (true);

@@ -83,7 +83,7 @@ function CreateChannel() {
 	return (
 		<div className='createChannel'>
 			<p>Create a new channel</p>
-				<TextField error={exist.data} helperText={exist.data ? 'This room already exists' : null} label="Room name" value={newRoomName} onChange={updateNewRoomName} />
+				<TextField error={exist} helperText={exist ? 'This room already exists' : null} label="Room name" value={newRoomName} onChange={updateNewRoomName} />
 				<FormControl>
 					<InputLabel>Access</InputLabel>
 					<Select name="roomAccess" onChange={changeAccess} defaultValue=''>
@@ -93,11 +93,11 @@ function CreateChannel() {
 					</Select>
 					<FormHelperText>Channel access</FormHelperText>
 				</FormControl>
-				<IconButton name='rooms' disabled={exist.data === true || newRoomName === ''} onClick={ createRoom } >
+				<IconButton name='rooms' disabled={exist === true || newRoomName === ''} onClick={ createRoom } >
 					<AddIcon/>
 				</IconButton>
 				{ showDialog === true ? <PasswordDialog open={showDialog} setOpen={setShowDialog} roomName={newRoomName} role="owner" createRoom={true} /> : null}
-				{ exist.data === true ? <p>This room already exist</p> : null}
+				{ exist === true ? <p>This room already exist</p> : null}
 		</div>
 	)
 }
