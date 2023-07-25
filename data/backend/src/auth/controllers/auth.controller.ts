@@ -21,6 +21,14 @@ export class AuthController {
    * to define the shape of the request body.
    * See the validation chapter <https://docs.nestjs.com/techniques/validation> for more information.
    */
+
+  @HttpCode(HttpStatus.OK)
+  @Post('signIn')
+  signIn(@Body() signInDto: Record<string, any>) {
+    console.log('SignIn back');
+    return this.authService.signIn(signInDto.username, signInDto.password);
+  }
+
   @HttpCode(HttpStatus.OK)
   @Post('login')
   logIn(@Body() signInDto: Record<string, any>) {
@@ -28,10 +36,10 @@ export class AuthController {
   }
 
   @HttpCode(HttpStatus.OK)
-  @Post('signIn')
-  signIn(@Body() signInDto: Record<string, any>) {
-    console.log('SignIn back');
-    return this.authService.signIn(signInDto.username, signInDto.password);
+  @Post('intra')
+  intraLogIn() {
+    console.log('Intra log in');
+    return this.authService.intraLogIn();
   }
 
   // /**

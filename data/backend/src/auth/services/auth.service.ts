@@ -45,8 +45,20 @@ export class AuthService {
     //   access_token: this.jwtService.sign(payload),
     // };
   }
-}
 
-/**
- * Don't forget to inject the JwtService provider into the AuthService.
- */
+  async intraLogIn(): Promise<any> {
+    const user = await fetch('https://api.intra.42.fr/oauth/authorize', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    console.log('intra user: ' + user);
+
+    const payload = { sub: user, username: 'example' };
+    console.log('payload2 ', payload);
+
+    return {
+      access_token: await this.jwtService.signAsync(payload),
+      user: user,
+    };
+  }
+}
