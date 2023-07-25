@@ -5,7 +5,6 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
 import { ChatModule } from './chatModule/chat.module';
-import { ChatGateway } from './gateway/chat.gateway'
 
 @Module({
   imports: [

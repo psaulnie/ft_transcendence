@@ -4,6 +4,7 @@ import { chatSocket } from '../../chatSocket';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { useGetBlockedUsersQuery } from '../../store/api';
+import { useGetUserRoomListQuery } from '../../store/api';
 import { addBlockedUser } from '../../store/user';
 
 import Room from './Room';
@@ -17,6 +18,7 @@ import Error from '../Global/Error';
 import { Skeleton, Box, Grid } from '@mui/material';
 
 import RoomTabs from './RoomTabs';
+import { addRoom, setRoomIndex } from '../../store/rooms';
 
 function Chat() {
 	const user = useSelector((state: any) => state.user);
@@ -29,28 +31,54 @@ function Chat() {
 	
 	const {
 		data: blockedUsers,
-		isLoading,
-		isSuccess,
-		isError,
-		error,
-		refetch
+		isLoading: blockedUsersLoading,
+		isSuccess: blockedUsersSuccess,
+		isError: blockedUsersError,
+		error: blockedUsersErrorData,
+		refetch: blockedUsersRefetch
 	} = useGetBlockedUsersQuery({username: user.username});
+
+	const {
+		data: userRoomList,
+		isLoading: userRoomListLoading,
+		isSuccess: userRoomListSuccess,
+		isError: userRoomListError,
+		error: userRoomListErrorData,
+		refetch: userRoomListRefetch
+	} = useGetUserRoomListQuery({username: user.username});
 	
 	useEffect(() => {
-		refetch();
-		if (isSuccess && blockedUsers)
+		blockedUsersRefetch();
+		if (blockedUsersSuccess && blockedUsers)
 		{
 			blockedUsers.forEach((element: any) => {
 				dispatch(addBlockedUser(element));
 			});
 		}
-	}, [user.username, isSuccess, blockedUsers, dispatch, refetch, rooms]);
+		userRoomListRefetch();
+		if (userRoomListSuccess && userRoomList)
+		{
+			userRoomList.forEach((element: any) => {
+				dispatch(addRoom({	name: element.roomName,
+									role: element.role,
+									hasPassword: element.hasPassword,
+									isDirectMsg: false,
+									isMuted: element.isMuted,
+									openTab: false
+								}));
+			});
+			if (userRoomList.length > 0)
+				dispatch(setRoomIndex(0));
+		}
+	}, [user.username, blockedUsersSuccess, blockedUsers, dispatch, blockedUsersRefetch, userRoomListSuccess, userRoomList, userRoomListRefetch]);
 	
 	if (!chatSocket.connected)
 		return (<p>Chat Socket error</p>);
-	if (isError)
-		return (<Error error={error} />)
-	else if (isLoading)
+	if (blockedUsersError)
+		return (<Error error={blockedUsersErrorData} />)
+	else if (userRoomListError)
+		return	(<Error error={userRoomListErrorData} />)
+	else if (blockedUsersLoading || userRoomListLoading)
 		return (
 			<div>
 				<Skeleton variant="text"/>

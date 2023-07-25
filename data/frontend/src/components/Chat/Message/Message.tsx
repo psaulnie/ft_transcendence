@@ -2,9 +2,10 @@ import { chatResponseArgs } from '../args.interface';
 
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
+
 import UserOptionsMenu from './UserOptionsMenu';
 
-import { useGetUserInfoInRoomQuery, useGetUsersInRoomQuery } from '../../../store/api';
+import { useGetUserInfoInRoomQuery } from '../../../store/api';
 
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';

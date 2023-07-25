@@ -22,7 +22,7 @@ export class RoomService {
 
 	async findAll(): Promise<Room[]>
 	{
-		return await (this.roomsRepository.find());
+		return await (this.roomsRepository.find({relations: ['usersID', 'usersID.user']}));
 	}
 
 	async createRoom(name: string, user: User, access: number): Promise<Room>
@@ -90,6 +90,8 @@ export class RoomService {
 		
 		if (rightUser && rightUser.isBanned)
 			return (-1);
+		else if (rightUser)
+			return (accessStatus.public);
 
 		const newEntry = new UsersList();
 
@@ -265,9 +267,6 @@ export class RoomService {
 	{
 		console.log('isuserinroom');
 		const room = await this.findOne(roomName);
-		room.usersID.forEach(element => {
-			console.log(userID + " " + element.user.id + " " + element.user.username);
-		});
 		if (!room || !room.usersID.find((obj: any) => obj.user.id == userID))
 			return (false);
 		else

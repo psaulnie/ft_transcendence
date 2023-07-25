@@ -21,11 +21,6 @@ export class UserService {
 		return await (this.usersRepository.findOne({where: { id: id }}));
 	}
 
-	async findOneByClientId(clientId: string): Promise<User>
-	{
-		return await (this.usersRepository.findOne({where: { clientId: clientId }}));
-	}
-
 	async findAll(): Promise<User[]>
 	{
 		return await (this.usersRepository.find());
@@ -42,9 +37,7 @@ export class UserService {
 		console.log("createuser");
 		const newUser = new User();
 
-		newUser.clientId = clientId;
 		newUser.avatar = "";
-		newUser.apiToken = "";
 		newUser.intraUsername = name; // TODO edit when authentification is done
 		newUser.username = name;
 		newUser.isConnected = true;
@@ -59,14 +52,6 @@ export class UserService {
 	{
 		console.log("removeuser");
 		return await (this.usersRepository.delete({username: name}));
-	}
-
-	async updateClientID(user: User, newID: string)
-	{
-		console.log("updateclientid");
-		user.clientId = newID;
-		user.status = userStatus.online;
-		this.usersRepository.save(user);
 	}
 
 	async blockUser(user: User, blockedUser: User)

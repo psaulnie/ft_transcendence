@@ -10,7 +10,6 @@ import {
 import { Socket, Server } from 'socket.io';
 import { RoomService } from 'src/chatModule/room.service';
 import { UserService } from 'src/chatModule/user.service';
-import { userStatus } from 'src/chatModule/userStatus';
 
 import { manageRoomsArgs, sendMsgArgs, actionArgs } from './args.interface';
 import { actionTypes, manageRoomsTypes, sendMsgTypes } from './args.types';
@@ -36,8 +35,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 			console.log("New user: " + payload);
 			await this.userService.createUser(payload, client.id);
 		}
-		else
-			this.userService.updateClientID(user, client.id);
 	}
 
 	@SubscribeMessage('sendMsg')
@@ -78,8 +75,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		let role = "none";
 		if (payload.room.length > 10)
 			payload.room = payload.room.slice(0, 10);
-		if (!user.clientId || client.id != user.clientId)
-			await this.userService.updateClientID(user, client.id);
 		if (payload.type == manageRoomsTypes.add)
 		{
 			if (await this.roomService.findOne(payload.room) == null)
@@ -164,7 +159,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
 	@SubscribeMessage('unblock')
 	async unblockUser(client: Socket, payload: actionArgs) {
-		const user = await this.userService.findOneByClientId(client.id);
+		const user = await this.userService.findOne(payload.source);
 		const blockedUser = await this.userService.findOne(payload.target);
 		
 		if (user == null || blockedUser == null)
@@ -238,15 +233,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
 	async handleDisconnect(client: Socket) {
 		console.log(`Client disconnected: ${client.id}`);
-		const user = await this.userService.findOneByClientId(client.id);
-		if (!user)
-			return ;
-		user.status = userStatus.offline;
-		const rooms = await this.roomService.findAll();
-		rooms.forEach(element => {
-			this.roomService.removeUser(element.roomName, user.id);
-			this.server.emit(element.roomName, { source: user.username, target: element.roomName, action: actionTypes.left })
-		});
 	}
 
 	async handleConnection(client: Socket, ...args: any[]) {

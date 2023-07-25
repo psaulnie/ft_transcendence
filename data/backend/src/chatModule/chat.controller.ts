@@ -64,6 +64,27 @@ export class ChatController {
 		return (usersList);
 	}
 
+	@Get('user/room/list')
+	async getUserRoomList(@Query() data: any): Promise<any[]> {
+		if (data.username == null)
+			throw new HttpException('Bad request', 400);
+		const rooms = await this.roomService.findAll();
+		if (!rooms)
+			throw new HttpException('Unprocessable Entity', 422);
+		let roomsList = [];
+		rooms.forEach((element) => {
+			let userInfo = element.usersID.find((obj) => obj.user.username == data.username);
+			if (element.usersID.find((obj) => obj.user.username == data.username))
+				roomsList.push({
+					roomName: element.roomName,
+					role: userInfo.role,
+					isMuted: userInfo.isMuted,
+					isBanned: userInfo.isBanned,
+					hasPassword: element.password !== '',});
+		});
+		return (roomsList);
+	}
+
 	@Get('rooms/exist')
 	async getIsRoomNameTaken(@Query() data: any): Promise<boolean> {
 		if (data.roomName == null)
@@ -102,8 +123,6 @@ export class ChatController {
 		let usersList: {}[] = [];
 
 		for (const element of users) {
-			console.log(element.username);
-			console.log(await this.roomService.isUserInRoom(data.roomName, element.id) );
 			if (element.username != data.username && (await this.roomService.isUserInRoom(data.roomName, element.id) == false && element.status == userStatus.online))
 				usersList.push({label: element.username})
 		}
