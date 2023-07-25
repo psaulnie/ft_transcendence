@@ -23,7 +23,6 @@ export default function Room({roomName, isDirectMessage}: {roomName: string, isD
 			setIsLoading(false);
 		});
 	}
-
 	function keyPress(event: KeyboardEvent<HTMLButtonElement>) {
 		event.preventDefault();
 		if (event.key ==='Enter' && value.data !== '')

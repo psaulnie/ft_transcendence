@@ -11,7 +11,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import Error from "../Global/Error";
 import UserOptionsMenu from "./Message/UserOptionsMenu";
 
-export default function UsersList({roomName, role}: {roomName: string, role: string}) {
+export default function UsersList({isDirectMessage, roomName, role}: {isDirectMessage: boolean, roomName: string, role: string}) {
 	const user = useSelector((state: any) => state.user);
 
 	const [contextMenu, setContextMenu] = useState<{
@@ -20,16 +20,23 @@ export default function UsersList({roomName, role}: {roomName: string, role: str
 	} | null>(null);
 
 	const {
-		data: usersList,
+		data: usersListData,
 		isLoading,
 		isError,
 		error,
 		refetch
-	} = useGetUsersInRoomQuery({roomName: roomName});
+	} = useGetUsersInRoomQuery({roomName: roomName}, {skip: isDirectMessage});
 
+	let usersList = [];
+	if (isDirectMessage == false)
+		usersList = usersListData;
+	else
+		usersList = [{username: user.username, role: "none", isMuted: false}, {username: roomName, role: "none", isMuted: false}]
+	
 	const handleContextMenu = (event: React.MouseEvent, username: string) => {
 		event.preventDefault();
-		refetch();
+		if (isDirectMessage == false)
+			refetch();
 		if (user.username !== username)
 			setContextMenu(
 				contextMenu === null
@@ -53,12 +60,13 @@ export default function UsersList({roomName, role}: {roomName: string, role: str
 
 	
 	useEffect(() => {
-		refetch();
-	}, [refetch]);
+		if (isDirectMessage == false)
+			refetch();
+	}, [isDirectMessage, refetch]);
 	
-	if (isError)
+	if (isError && isDirectMessage == false)
 		return (<Error error={error} />)
-	else if (isLoading)
+	else if (isLoading && isDirectMessage == false)
 		return (
 				<div>
 					<Skeleton variant="text"/>

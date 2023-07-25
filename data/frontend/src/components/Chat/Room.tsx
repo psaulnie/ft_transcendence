@@ -21,7 +21,6 @@ function Room({roomName}: {roomName: string}) {
 			setRole(cRole.role);
 	}, [setRole, rooms, roomName]);
 
-
 	return (
 		<Grid sx={{display: 'flex'}}>
 			<Grid item xs={8}>
@@ -31,13 +30,13 @@ function Room({roomName}: {roomName: string}) {
 					</Box>
 				</Grid>
 				<Grid item xs={12}>
-					<InputForm roomName={ roomName } isDirectMessage={rooms.room[roomIndex].isDirectMessage} />
+					<InputForm roomName={ roomName } isDirectMessage={rooms.room[roomIndex].isDirectMsg} />
 				</Grid>
 			</Grid>
 			<Grid item xs={4}>
 				<Box sx={{ backgroundColor: '#102b47', height: '100%', padding: '16px', borderRadius: '10px'}}>
 					<Typography>Users:</Typography>
-					<UsersList roomName={roomName} role={role} />
+					<UsersList isDirectMessage={rooms.room[roomIndex].isDirectMsg} roomName={roomName} role={role} />
 				</Box>
 			</Grid>
 		</Grid>
