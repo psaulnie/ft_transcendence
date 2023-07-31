@@ -18,3 +18,12 @@ function App() {
 }
 
 export default App;
+
+
+// ======================
+
+// import image from "./img/UpmostlyLogo.png"; 
+
+// function Component() {
+//   return (
+//     <div style={{ backgroundImage:`url(${image})`,backgroundRepeat:"no-repeat" }}>
