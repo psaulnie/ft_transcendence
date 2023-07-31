@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 
-import { chatSocket } from '../../chatSocket';
+import { webSocket } from '../../webSocket';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { useGetBlockedUsersQuery } from '../../store/api';
@@ -26,7 +26,7 @@ function Chat() {
 	const dispatch = useDispatch();
 
 	useEffect(() => {
-		chatSocket.emit("newUser", user.username);
+		webSocket.emit("newUser", user.username);
 	}, [user.username, dispatch]);
 	
 	const {
@@ -72,7 +72,7 @@ function Chat() {
 		}
 	}, [user.username, blockedUsersSuccess, blockedUsers, dispatch, blockedUsersRefetch, userRoomListSuccess, userRoomList, userRoomListRefetch]);
 	
-	if (!chatSocket.connected)
+	if (!webSocket.connected)
 		return (<p>Chat Socket error</p>);
 	if (blockedUsersError)
 		return (<Error error={blockedUsersErrorData} />)

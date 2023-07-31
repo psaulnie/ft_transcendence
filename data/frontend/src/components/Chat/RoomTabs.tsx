@@ -9,7 +9,7 @@ import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
 import { useDispatch, useSelector } from 'react-redux';
 import { useState } from "react";
 
-import { chatSocket } from "../../chatSocket";
+import { webSocket } from "../../webSocket";
 import { removeRoom, setRead, setRoomIndex } from "../../store/rooms";
 import { manageRoomsTypes } from "./args.types";
 import RoomOptionsMenu from "./RoomOptionsMenu";
@@ -44,7 +44,7 @@ export default function RoomTabs()
 
 	function quitRoom(roomName: string)
 	{
-		chatSocket.emit('manageRooms', { type: manageRoomsTypes.remove, source: user.username, room: roomName, access: 0});
+		webSocket.emit('manageRooms', { type: manageRoomsTypes.remove, source: user.username, room: roomName, access: 0});
 		dispatch(removeRoom(roomName));
 	}
 

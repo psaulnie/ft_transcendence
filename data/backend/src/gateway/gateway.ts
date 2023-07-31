@@ -17,9 +17,9 @@ import { accessStatus } from 'src/chatModule/accessStatus';
 
 @WebSocketGateway({
 	cors: { origin: '*' },
-	namespace: '/gateways/chat',
+	namespace: '/gateway',
 })
-export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
+export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
 	
 	constructor(
 		private roomService: RoomService,

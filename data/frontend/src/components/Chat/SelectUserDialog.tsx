@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { chatSocket } from "../../chatSocket";
+import { webSocket } from "../../webSocket";
 
 import { Dialog, DialogTitle, DialogActions, Button, Zoom, TextField, Autocomplete, Skeleton, DialogContent } from "@mui/material";
 import { TransitionProps } from "@mui/material/transitions";
@@ -43,7 +43,7 @@ export default function SelectUserDialog({open, setOpen, roomName}: arg) {
 
 	function confirmButton(e: any) {
 		e.preventDefault();
-		chatSocket.emit('inviteUser', {roomName: roomName, username: selectedUser});
+		webSocket.emit('inviteUser', {roomName: roomName, username: selectedUser});
 		setOpen(false);
 	}
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import { chatSocket } from '../../chatSocket';
+import { webSocket } from '../../webSocket';
 import { manageRoomsTypes } from './args.types';
 import { useSelector, useDispatch } from 'react-redux';
 import { useGetUsersListQuery } from '../../store/api';
@@ -32,7 +32,7 @@ function JoinDirectMessage() {
 		if (!rooms.room.find((obj: {name: string, role: string}) => obj.name === newUser))
 		{
 			dispatch(addRoom({name: newUser, role: "none", isDirectMsg: true, hasPassword: false, openTab: true, isMuted: false}));
-			chatSocket.emit('manageRooms', { type: manageRoomsTypes.addDirectMsg, source: user.username, room: newUser, access: 0});
+			webSocket.emit('manageRooms', { type: manageRoomsTypes.addDirectMsg, source: user.username, room: newUser, access: 0});
 		}
 		setNewUser('');
 	}

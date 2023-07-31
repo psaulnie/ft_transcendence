@@ -1,5 +1,5 @@
 import React, { KeyboardEvent, SyntheticEvent, useState } from 'react';
-import { chatSocket } from '../../../chatSocket';
+import { webSocket } from '../../../webSocket';
 import { sendMsgArgs } from '../args.interface';
 import { sendMsgTypes } from '../args.types';
 import { useSelector } from 'react-redux';
@@ -19,7 +19,7 @@ export default function Room({roomName, isDirectMessage}: {roomName: string, isD
 		setMessage('');
 		setValue({ type: sendMsgTypes.msg, source: user.username, target: roomName, data: '', isDirectMessage: isDirectMessage});
 		setIsLoading(true);
-		chatSocket.timeout(500).emit('sendMsg', value, () => {
+		webSocket.timeout(500).emit('sendMsg', value, () => {
 			setIsLoading(false);
 		});
 	}

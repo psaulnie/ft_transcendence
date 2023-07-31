@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { chatResponseArgs } from "../args.interface";
 import { addMsg, addRoom, setHasPassword, setRead } from "../../../store/rooms";
-import { chatSocket } from "../../../chatSocket";
+import { webSocket } from "../../../webSocket";
 import { actionTypes } from "../args.types";
 
 import { useGetUsersInRoomQuery } from "../../../store/api";
@@ -45,9 +45,9 @@ function MessageProvider({roomName}: {roomName: string}) {
 		
 		if (currentRoom.isDirectMessage === true)
 			listener = roomName + user.username;
-		chatSocket.on(listener, onMsgSent);
+		webSocket.on(listener, onMsgSent);
 		return () => {
-		  chatSocket.off(listener, onMsgSent);
+		  webSocket.off(listener, onMsgSent);
 		};
 	  }, [roomName, dispatch, rooms, user]);
 

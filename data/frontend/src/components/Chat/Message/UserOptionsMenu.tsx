@@ -1,4 +1,4 @@
-import { chatSocket } from '../../../chatSocket';
+import { webSocket } from '../../../webSocket';
 import { useDispatch, useSelector } from 'react-redux';
 import { addBlockedUser, removeBlockedUser } from '../../../store/user';
 import { Menu, MenuItem, Divider } from '@mui/material';
@@ -22,12 +22,12 @@ export default function UserOptionsMenu({ cUser, role, roomName, contextMenu, se
 	};
 
 	function blockUser(cUser: {username: string, role: string}) {
-		chatSocket.emit("block", { source: user.username, target: cUser.username, room: roomName });
+		webSocket.emit("block", { source: user.username, target: cUser.username, room: roomName });
 		dispatch(addBlockedUser(cUser.username));
 	}
 
 	function unblockUser(cUser: {username: string, role: string}) {
-		chatSocket.emit("unblock", { source: user.username, target: cUser.username, room: roomName });
+		webSocket.emit("unblock", { source: user.username, target: cUser.username, room: roomName });
 		dispatch(removeBlockedUser(cUser.username));
 	}
 
@@ -48,16 +48,16 @@ export default function UserOptionsMenu({ cUser, role, roomName, contextMenu, se
 				{
 					role !== "none" && user.username !== cUser.username && cUser.role === "none" && showAdminOpt ? (
 						<span>
-							<MenuItem onClick={ () => { chatSocket.emit("kick", { source: user.username, target: cUser.username, room: roomName }) } } >Kick</MenuItem>
-							<MenuItem onClick={ () => { chatSocket.emit("ban", { source: user.username, target: cUser.username, room: roomName })  } } >Ban</MenuItem>
+							<MenuItem onClick={ () => { webSocket.emit("kick", { source: user.username, target: cUser.username, room: roomName }) } } >Kick</MenuItem>
+							<MenuItem onClick={ () => { webSocket.emit("ban", { source: user.username, target: cUser.username, room: roomName })  } } >Ban</MenuItem>
 							{
 								!cUser.isMuted ?
-									<MenuItem onClick={ () => { chatSocket.emit("mute", { source: user.username, target: cUser.username, room: roomName }) } }>Mute</MenuItem>
+									<MenuItem onClick={ () => { webSocket.emit("mute", { source: user.username, target: cUser.username, room: roomName }) } }>Mute</MenuItem>
 								:
-									<MenuItem onClick={ () => { chatSocket.emit("unmute", { source: user.username, target: cUser.username, room: roomName }) } }>Unmute</MenuItem>
+									<MenuItem onClick={ () => { webSocket.emit("unmute", { source: user.username, target: cUser.username, room: roomName }) } }>Unmute</MenuItem>
 
 							}
-							<MenuItem onClick={ () => { chatSocket.emit("admin", { source: user.username, target: cUser.username, room: roomName }) } } >Set {cUser.username} as administrator</MenuItem>
+							<MenuItem onClick={ () => { webSocket.emit("admin", { source: user.username, target: cUser.username, room: roomName }) } } >Set {cUser.username} as administrator</MenuItem>
 							<Divider/>
 						</span>
 					) : null

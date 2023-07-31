@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { removeRoom, changeRole, addRoom, mute, unmute } from "../../store/rooms";
 
 import { chatResponseArgs } from "./args.interface";
-import { chatSocket } from "../../chatSocket";
+import { webSocket } from "../../webSocket";
 
 import { Snackbar, Alert, AlertColor, IconButton, Box } from "@mui/material";
 import CheckIcon from '@mui/icons-material/Check';
@@ -58,7 +58,7 @@ export default function ChatProcess() {
 			return ;
 		setOpenInvite(false);
 		dispatch(addRoom({name: room, role: 'none', isDirectMsg: false, hasPassword: hasPassword, openTab: true, isMuted: false}));
-		chatSocket.emit('joinPrivateRoom', { roomName: room, username: user.username });
+		webSocket.emit('joinPrivateRoom', { roomName: room, username: user.username });
 		setRoom('');
 		setHasPassword(false);
 	}
@@ -110,9 +110,9 @@ export default function ChatProcess() {
 			}
 		}
 
-		chatSocket.on(user.username + "OPTIONS", process);
+		webSocket.on(user.username + "OPTIONS", process);
 		return () => {
-			chatSocket.off(user.username + "OPTIONS", process);
+			webSocket.off(user.username + "OPTIONS", process);
 		};
 	}, [user.username, dispatch, rooms]);
 

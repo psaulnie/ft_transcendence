@@ -6,7 +6,7 @@ import { Menu, MenuItem, Divider } from "@mui/material";
 import PasswordDialog from "./PasswordDialog";
 import SelectUserDialog from "./SelectUserDialog";
 
-import { chatSocket } from "../../chatSocket";
+import { webSocket } from "../../webSocket";
 
 type arg = {
 	contextMenu: any,
@@ -34,7 +34,7 @@ export default function RoomOptionsMenu({contextMenu, setContextMenu, roomIndex,
 
 	function removePassword()
 	{
-		chatSocket.emit('removePasswordToRoom', roomName);
+		webSocket.emit('removePasswordToRoom', roomName);
 		setContextMenu(null)
 	}
 

@@ -13,7 +13,7 @@ import { ChatController } from './chat.controller';
 import { RoomService } from './room.service';
 import { UserService } from './user.service';
 
-import { ChatGateway } from 'src/gateway/chat.gateway';
+import { Gateway } from 'src/gateway/gateway';
 
 @Module({
 	imports: [TypeOrmModule.forFeature([
@@ -25,6 +25,6 @@ import { ChatGateway } from 'src/gateway/chat.gateway';
 		MatchHistory,
 		Achievements])],
 	controllers: [ChatController],
-	providers: [RoomService, UserService, ChatGateway],
+	providers: [RoomService, UserService, Gateway],
 })
 export class ChatModule {}

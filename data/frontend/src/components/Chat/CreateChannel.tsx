@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { chatSocket } from '../../chatSocket';
+import { webSocket } from '../../webSocket';
 import { manageRoomsTypes } from './args.types';
 import { accessStatus } from './accessStatus';
 import { useDispatch, useSelector } from 'react-redux';
@@ -71,7 +71,7 @@ function CreateChannel() {
 				return ;
 			}
 			dispatch(addRoom({name: newRoomName, role: "owner", isDirectMsg: false, hasPassword: hasPassword, openTab: true, isMuted: false}));
-			chatSocket.emit('manageRooms', { type: manageRoomsTypes.add, source: user.username, room: newRoomName, access: access});
+			webSocket.emit('manageRooms', { type: manageRoomsTypes.add, source: user.username, room: newRoomName, access: access});
 		}
 		else
 			alert("You are currently in this channel");

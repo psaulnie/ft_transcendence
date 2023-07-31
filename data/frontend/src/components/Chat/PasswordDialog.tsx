@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { chatSocket } from "../../chatSocket";
+import { webSocket } from "../../webSocket";
 
 import { Dialog, DialogTitle, DialogActions, Button, Zoom, TextField } from "@mui/material";
 import { TransitionProps } from "@mui/material/transitions";
@@ -48,12 +48,12 @@ export default function PasswordDialog({open, setOpen, roomName, role, createRoo
 			if (createRoom === true)
 			{
 				dispatch(addRoom({name: roomName, role: role, isDirectMsg: false, hasPassword: true, openTab: true, isMuted: false}));
-				chatSocket.emit('manageRooms', { type: manageRoomsTypes.add, source: user.username,
+				webSocket.emit('manageRooms', { type: manageRoomsTypes.add, source: user.username,
 								room: roomName, access: accessStatus.protected, password: password });
 			}
 			else
 			{
-				chatSocket.emit('setPasswordToRoom', {room: roomName, password: password});
+				webSocket.emit('setPasswordToRoom', {room: roomName, password: password});
 			}
 			setOpen(false);
 		}
