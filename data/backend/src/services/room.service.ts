@@ -4,7 +4,7 @@ import { Room } from 'src/entities/room.entity';
 import { User } from 'src/entities/user.entity';
 import { UsersList } from 'src/entities/usersList.entity';
 import { Repository } from 'typeorm';
-import { accessStatus } from './accessStatus';
+import { accessStatus } from '../chatModule/accessStatus';
 
 @Injectable()
 export class RoomService {

@@ -10,8 +10,8 @@ import { MatchHistory } from '../entities/matchHistory.entity';
 import { Achievements } from '../entities/achievements.entity';
 
 import { ChatController } from './chat.controller';
-import { RoomService } from './room.service';
-import { UserService } from './user.service';
+import { RoomService } from '../services/room.service';
+import { UserService } from '../services/user.service';
 
 import { Gateway } from 'src/gateway/gateway';
 

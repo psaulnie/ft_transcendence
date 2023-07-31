@@ -8,13 +8,12 @@ import {
    } from '@nestjs/websockets';
 
 import { Socket, Server } from 'socket.io';
-import { RoomService } from 'src/chatModule/room.service';
-import { UserService } from 'src/chatModule/user.service';
+import { RoomService } from 'src/services/room.service';
+import { UserService } from 'src/services/user.service';
 
 import { manageRoomsArgs, sendMsgArgs, actionArgs } from './args.interface';
 import { actionTypes, manageRoomsTypes, sendMsgTypes } from './args.types';
 import { accessStatus } from 'src/chatModule/accessStatus';
-import { subscribe } from 'diagnostics_channel';
 
 @WebSocketGateway({
 	cors: { origin: '*' },
@@ -226,6 +225,13 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
 			return ;
 		await this.roomService.addUser(payload.roomName, user, true);
 		this.server.emit(payload.roomName, { source: payload.username, target: payload.roomName, action: actionTypes.join })
+	}
+
+	@SubscribeMessage('game')
+	async handleGame(client: Socket, payload: {player: string, opponent: string, y: number})
+	{
+		console.log(payload);
+        console.log("receive");
 	}
 
 	async afterInit(server: Server) {

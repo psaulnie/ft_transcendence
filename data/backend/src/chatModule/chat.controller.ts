@@ -1,6 +1,6 @@
 import { Controller, Query, Get, HttpException } from '@nestjs/common';
-import { RoomService } from './room.service';
-import { UserService } from './user.service';
+import { RoomService } from '../services/room.service';
+import { UserService } from '../services/user.service';
 import { UsersList } from 'src/entities/usersList.entity';
 import { userStatus } from './userStatus';
 

@@ -9,9 +9,10 @@ import { Statistics } from '../entities/stats.entity';
 import { MatchHistory } from '../entities/matchHistory.entity';
 import { Achievements } from '../entities/achievements.entity';
 
+import { RoomService } from 'src/services/room.service';
+import { UserService } from 'src/services/user.service';
 
-import { Gateway } from 'src/gateway/gateway'
-import { GameGateway } from 'src/gateway/gameGateway';
+import { Gateway } from 'src/gateway/gateway';
 
 @Module({
 	imports: [TypeOrmModule.forFeature([
@@ -23,6 +24,6 @@ import { GameGateway } from 'src/gateway/gameGateway';
 		MatchHistory,
 		Achievements])],
 	controllers: [],
-	providers: [GameGateway],
+	providers: [RoomService, UserService, Gateway],
 })
 export class GameModule {}
