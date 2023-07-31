@@ -74,11 +74,7 @@ const Canvas: React.FC = () => {
   return (
     <div className='Game' id='Game'>
       <canvas ref={canvasRef} width={canvasSize.width} height={canvasSize.height}
-              style={{ display: 'block',
-              backgroundImage: 'url(https://i.postimg.cc/nhXKQ73Z/background-v1.png)',
-              // backgroundColor: "black",
-              border: "2px solid black",
-              }} />
+              style={{ display: 'block'}} />
     </div>
   );
 };
