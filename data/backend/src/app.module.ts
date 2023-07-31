@@ -4,15 +4,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
-import { UserModule } from './userModule/user.module';
-
-import { User } from './entities/user.entity';
-import { Room } from './entities/room.entity';
-import { Statistics } from './entities/stats.entity';
-import { MatchHistory } from './entities/matchHistory.entity';
-import { Achievements } from './entities/achievements.entity';
-
-import { ChatGateway } from './gateway/chat.gateway'
+import { ChatModule } from './chatModule/chat.module';
+import { GameModule } from './gameModule/game.module';
 
 @Module({
   imports: [
@@ -24,19 +17,14 @@ import { ChatGateway } from './gateway/chat.gateway'
 		username: process.env.POSTGRES_USER,
 		password: process.env.POSTGRES_PASSWORD,
 		database: process.env.POSTGRES_DB,
-		logging: true,
+		logging: false,
 		synchronize: true,
-		entities: [
-			User,
-			Room,
-			Statistics,
-			MatchHistory,
-			Achievements
-		],
+		autoLoadEntities: true,
 	}),
-	UserModule,
+	ChatModule,
+	GameModule
   ],
   controllers: [AppController],
-  providers: [AppService, ChatGateway],
+  providers: [AppService],
 })
 export class AppModule {}

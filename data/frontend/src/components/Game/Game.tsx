@@ -2,7 +2,7 @@ import { exit } from 'process';
 import React, { useState, useEffect, useRef } from 'react';
 // import Canvas from './Canvas';
 import './game.css'
-
+import { gameSocket } from '../../webSocket';
 
 const Canvas: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -11,6 +11,8 @@ const Canvas: React.FC = () => {
   const rectWidth = 5;
   const rectHeight = 50;
   const [divSize, setDivSize] = useState<{width: number; height: number}>({width:0, height: 0})
+  
+  
   useEffect(() => {
     const divID = "Game"
     const divElement = document.getElementById(divID);
@@ -46,6 +48,8 @@ const Canvas: React.FC = () => {
       // const mouseX = event.clientX - rect!.left;
       const mouseY = event.clientY - rect!.top;
       console.log(mouseY);
+      console.log(gameSocket.connected);
+      gameSocket.emit("game", {player: '', opponent: '', y: rectPosition.y - rectHeight / 2});
       setRectPosition({x:20, y: mouseY});
     };
 

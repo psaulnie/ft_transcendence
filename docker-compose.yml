@@ -7,10 +7,9 @@ services:
     image: postgres:latest
     volumes:
       - ./data/database:/data
-      - ./docker/database/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - ft_transcendence
-    restart: on-failure
+    # restart: on-failure
   frontend:
     container_name: frontend
     image: frontend
@@ -23,7 +22,7 @@ services:
       - ./data/frontend:/app
     networks:
       - ft_transcendence
-    restart: on-failure
+    # restart: on-failure
   backend:
     container_name: backend
     image: backend
@@ -38,8 +37,7 @@ services:
       - ./data/backend:/app
     networks:
       - ft_transcendence
-    restart: on-failure
-
+    # restart: on-failure
 networks:
   ft_transcendence:
     driver: bridge

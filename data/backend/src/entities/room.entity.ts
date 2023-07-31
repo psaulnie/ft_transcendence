@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, AfterLoad, JoinColumn } from "typeorm";
 
 import { UsersList } from './usersList.entity';
 
@@ -8,18 +8,27 @@ export class Room {
 	id: number
 
 	@Column()
+	roomName: string
+
+	@Column()
+	access: number
+
+	@Column()
 	password: string
 
 	@Column()
 	ownerID: number
 
-	@Column(() => UsersList)
-	usersID: UsersList
+	@Column()
+	usersNumber: number
 
-	@Column(() => UsersList)
-	adminsID: UsersList
+	@OneToMany(() => UsersList, usersList => usersList.room, { eager: true })
+	usersID: UsersList[]
 
-	@Column(() => UsersList)
-	blockedUsersID: UsersList
+	@AfterLoad()
+	async nullCheck() {
+		if (!this.usersID)
+			this.usersID = [];
+	}
 
 }

@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, AfterLoad, JoinColumn, ManyToMany, JoinTable } from 'typeorm';
+import { UsersList } from './usersList.entity';
 
 @Entity({ name: 'User' })
 export class User {
@@ -8,9 +9,6 @@ export class User {
 	@Column()
 	isConnected: boolean
 	
-	@Column()
-	apiToken: string
-
 	@Column()
 	intraUsername: string
 
@@ -24,4 +22,13 @@ export class User {
 	@Column()
 	avatar: string
 
+	@ManyToMany(() => User, blockedUsers => blockedUsers.blockedUsers)
+	@JoinTable()
+	blockedUsers: User[]
+
+	@AfterLoad()
+	async nullCheck() {
+		if (!this.blockedUsers)
+			this.blockedUsers = [];
+	}
 }

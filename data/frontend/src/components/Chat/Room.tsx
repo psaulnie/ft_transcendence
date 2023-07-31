@@ -1,47 +1,46 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
-import Messages from './Messages';
-import InputForm from './InputForm';
+import MessagesBox from './Message/MessagesBox';
+import InputForm from './Message/InputForm';
 
-import { chatSocket } from '../../chatSocket';
+import { useSelector } from 'react-redux';
 
-type arg = {
-	username: string
-	channelName: string
-}
+import { Grid, Box, Typography } from '@mui/material';
 
-function Room({ username, channelName }: arg) {
-	const [isConnected, setIsConnected] = useState(chatSocket.connected); { /* TODO check if need to be removed */}
-	const [messageSent, setMsg] = useState<string[]>([]);
-  
+import UsersList from './UsersList';
+
+function Room({roomName}: {roomName: string}) {
+	const rooms = useSelector((state: any) => state.rooms);
+
+	const [role, setRole] = useState('none');
+	const roomIndex = rooms.room.findIndex((obj: {name: string, role: string}) => obj.name === roomName);
+
 	useEffect(() => {
-	  function onConnect() {
-		setIsConnected(true);
-	  }
-  
-	  function onDisconnect() {
-		setIsConnected(false);
-	  }
-  
-	  function onMsgSent(value: string) {
-		setMsg(previous => [...previous, value]);
-	  }
-  
-	  chatSocket.on('connect', onConnect);
-	  chatSocket.on('disconnect', onDisconnect);
-	  chatSocket.on(channelName, onMsgSent);
-	  return () => {
-		chatSocket.off('connect', onConnect);
-		chatSocket.off('disconnect', onDisconnect);
-		chatSocket.off(channelName, onMsgSent);
-	  };
-	}, []);
+		const cRole = rooms.room.find((obj: {name: string, role: string}) => obj.name === roomName);
+		if (cRole)
+			setRole(cRole.role);
+	}, [setRole, rooms, roomName]);
+
 	return (
-		<div className="chat">
-			<Messages messages={ messageSent } />
-			<InputForm username={ username } channelName={ channelName } />
-		</div>
-	)
+		<Grid sx={{display: 'flex'}}>
+			<Grid item xs={8}>
+				<Grid item xs={12}>
+					<Box sx={{ height: '80vh', padding: '16px', overflow: 'auto' }}>
+						<MessagesBox messages={ rooms.room[roomIndex].messages } role={ role } roomName={ roomName } />
+					</Box>
+				</Grid>
+				<Grid item xs={12}>
+					<InputForm roomName={ roomName } isDirectMessage={rooms.room[roomIndex].isDirectMsg} />
+				</Grid>
+			</Grid>
+			<Grid item xs={4}>
+				<Box sx={{ backgroundColor: '#102b47', height: '100%', padding: '16px', borderRadius: '10px'}}>
+					<Typography>Users:</Typography>
+					<UsersList isDirectMessage={rooms.room[roomIndex].isDirectMsg} roomName={roomName} role={role} />
+				</Box>
+			</Grid>
+		</Grid>
+	);
 }
 
 export default Room;
