@@ -11,7 +11,7 @@ export default function UploadButton() {
 
 	const [selectedFile, setSelectedFile] = useState<File | undefined>(undefined);
 	const [fileUrl, setFileUrl] = useState('');
-	const [uploadAvatar, {isError, isSuccess, isLoading}] = useUploadAvatarMutation();
+	const [uploadAvatar] = useUploadAvatarMutation();
 
 
 	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
