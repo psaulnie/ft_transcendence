@@ -4,8 +4,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
+import { UserService } from './services/user.service';
+
 import { ChatModule } from './chatModule/chat.module';
 import { GameModule } from './gameModule/game.module';
+import { User } from './entities/user.entity';
 
 @Module({
   imports: [
@@ -22,9 +25,10 @@ import { GameModule } from './gameModule/game.module';
 		autoLoadEntities: true,
 	}),
 	ChatModule,
-	GameModule
+	GameModule,
+	TypeOrmModule.forFeature([User]),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [UserService, AppService],
 })
 export class AppModule {}

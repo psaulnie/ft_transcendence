@@ -1,5 +1,6 @@
 FROM node:latest
 
+RUN mkdir /avatars
 WORKDIR /app
 
 #check if needed

@@ -20,7 +20,7 @@ export class User {
 
 	// Check path to file
 	@Column()
-	avatar: string
+	urlAvatar: string
 
 	@ManyToMany(() => User, blockedUsers => blockedUsers.blockedUsers)
 	@JoinTable()

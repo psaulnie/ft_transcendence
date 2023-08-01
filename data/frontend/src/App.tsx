@@ -4,6 +4,7 @@ import { SyntheticEvent, useState } from 'react';
 
 import { useSelector, useDispatch } from 'react-redux';
 import { login, logout, setUsername } from './store/user';
+import { webSocket } from './webSocket';
 // Components
 import Navigation from './components/Navigation/Navigation';
 // import Chat from './components/Chat/Chat';
@@ -13,6 +14,7 @@ import Chat from './components/Chat/Chat';
 
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+import UploadButton from './components/Global/UploadButton';
 
 const darkTheme = createTheme({
   palette: {
@@ -51,7 +53,10 @@ function App() {
 	{
 		e.preventDefault();
 		if (user.username !== '')
+		{
 			dispatch(login());
+			webSocket.emit("newUser", user.username);
+		}
 	}
 
 	function logoutButton(e: SyntheticEvent)
@@ -77,8 +82,9 @@ function App() {
 					: null
 				}
 				{user.isLoggedIn ? <button onClick={logoutButton}>Logout</button> : null}
+				{user.isLoggedIn ? (<UploadButton />) : null}
 				{/* {user.isLoggedIn ? (<Chat />) : null} */}
-				{user.isLoggedIn ? (<Game />) : null}
+				{/* {user.isLoggedIn ? (<Game />) : null} */}
 			</div>
 	    </ThemeProvider>
 	</div>

@@ -37,7 +37,7 @@ export class UserService {
 		console.log("createuser");
 		const newUser = new User();
 
-		newUser.avatar = "";
+		newUser.urlAvatar = "";
 		newUser.intraUsername = name; // TODO edit when authentification is done
 		newUser.username = name;
 		newUser.isConnected = true;
@@ -65,6 +65,25 @@ export class UserService {
 	{
 		console.log("unblockuser");
 		user.blockedUsers = user.blockedUsers.filter((obj) => obj.username !== blockedUser.username);
+		await this.usersRepository.save(user);
+	}
+
+	async updateAvatar(user: User, avatar: string)
+	{
+		console.log("updateavatar");
+		if (user.urlAvatar !== "")
+		{
+			const fs = require('fs');
+			const path = require('path');
+			const filePath = path.resolve(__dirname, '/avatars', user.urlAvatar);
+			try {
+				fs.unlinkSync(filePath);
+			}
+			catch (err) {
+				console.error(err);
+			}
+		}
+		user.urlAvatar = avatar;
 		await this.usersRepository.save(user);
 	}
 }

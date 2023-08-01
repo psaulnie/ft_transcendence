@@ -24,10 +24,6 @@ function Chat() {
 	const user = useSelector((state: any) => state.user);
 	const rooms = useSelector((state: any) => state.rooms);
 	const dispatch = useDispatch();
-
-	useEffect(() => {
-		webSocket.emit("newUser", user.username);
-	}, [user.username, dispatch]);
 	
 	const {
 		data: blockedUsers,

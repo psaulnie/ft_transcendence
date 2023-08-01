@@ -67,7 +67,15 @@ export const apiSlice = createApi({
 				method: 'GET',
 				params: { roomName: roomName },
 			})
-		})
+		}),
+		uploadAvatar: builder.mutation({
+			query: (body: FormData) => ({
+				url: '/api/upload/avatar',
+				method: 'POST',
+				body: body,
+				formData: true
+			})
+		}),
 	})
 })
 
@@ -79,5 +87,6 @@ export const {	useGetRoleQuery,
 				useGetUsersListQuery,
 				useGetFilteredUserListQuery,
 				useGetUsersInRoomQuery,
-				useGetUserInfoInRoomQuery
+				useGetUserInfoInRoomQuery,
+				useUploadAvatarMutation,
 } = apiSlice

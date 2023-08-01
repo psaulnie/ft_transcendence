@@ -32,9 +32,10 @@ services:
     env_file:
       - .env
     ports:
-      - "5050:5000"
+      - "5000:5000"
     volumes:
       - ./data/backend:/app
+      - ./data/avatars:/avatars
     networks:
       - ft_transcendence
     # restart: on-failure
