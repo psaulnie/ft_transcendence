@@ -14,18 +14,26 @@ export default function UploadButton() {
 	const [fileUrl, setFileUrl] = useState('');
 	const [uploadAvatar] = useUploadAvatarMutation();
 
-
 	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		if (e.target.files?.[0] != undefined)
 		{
 			const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif'];
-			setSelectedFile(e.target.files[0]);
-			setFileUrl(URL.createObjectURL(e.target.files[0]));
 			if (!allowedTypes.includes(e.target.files[0].type))
 			{
 				alert('Only images are allowed');
 				setSelectedFile(undefined);
 				setFileUrl('');
+			}
+			else if (e.target.files[0].size > 1024 * 1024 * 5)
+			{
+				alert('Image is too large');
+				setSelectedFile(undefined);
+				setFileUrl('');
+			}
+			else
+			{
+				setSelectedFile(e.target.files[0]);
+				setFileUrl(URL.createObjectURL(e.target.files[0]));
 			}
 		}
 	};

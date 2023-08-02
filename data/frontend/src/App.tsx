@@ -82,7 +82,8 @@ function App() {
 					: null
 				}
 				{user.isLoggedIn ? <button onClick={logoutButton}>Logout</button> : null}
-				{user.isLoggedIn ? (<Chat />) : null}
+				{user.isLoggedIn ? (<UploadButton />) : null}
+				{/* {user.isLoggedIn ? (<Chat />) : null} */}
 				{/* {user.isLoggedIn ? (<Game />) : null} */}
 			</div>
 	    </ThemeProvider>

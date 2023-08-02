@@ -10,6 +10,9 @@ import { ChatModule } from './chatModule/chat.module';
 import { GameModule } from './gameModule/game.module';
 import { User } from './entities/user.entity';
 
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
+
 @Module({
   imports: [
 	ConfigModule.forRoot(),

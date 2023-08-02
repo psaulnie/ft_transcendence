@@ -1,8 +1,7 @@
-import { Controller, Body, Post, Query, UploadedFile, Get, StreamableFile, Header, Res } from '@nestjs/common';
+import { Controller, Body, Post, Query, UploadedFile, Get, StreamableFile, Header, Res, Param } from '@nestjs/common';
 import { UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { HttpException } from '@nestjs/common'; 
-import { FileTypeValidator } from '@nestjs/common';
+import { HttpException } from '@nestjs/common';
 
 import { createReadStream } from 'fs';
 import { join } from 'path';
@@ -17,9 +16,6 @@ import { Response } from 'express';
 
 const fileInterceptorOptions = {
 	fileFilter: (req, file, cb) => {
-		const validator = new FileTypeValidator({fileType: /\.(jpg|jpeg|png|gif)$/});
-
-		console.log(validator.isValid(file));
 		if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/jpg' || file.mimetype === 'image/png' || file.mimetype === 'image/gif')
 			cb(null, true);
 		else {
@@ -33,7 +29,11 @@ const fileInterceptorOptions = {
             const extension: string = Path.parse(file.originalname).ext;
             cb(null, `${filename}${extension}`)
 		}
-	})
+	}),
+	limits: {
+		fieldNameSize: 255,
+		fileSize: 1024 * 1024 * 5
+	}
 };
 
 @Controller('/api/avatar')
@@ -57,13 +57,13 @@ export class AppController {
 			throw new HttpException('Bad Request', 400);
 	}
 
-	@Get()
-	async getAvatar(@Query() query: any, @Res({ passthrough: true }) res: Response) : Promise<StreamableFile> { // TODO Need to handle URLs
-		if (query && query.username == null) {
+	@Get(':username')
+	async getAvatar(@Param('username') username: string, @Query() query: any, @Res({ passthrough: true }) res: Response) : Promise<StreamableFile> { // TODO Need to handle URLs
+		if (username == null) {
 			throw new HttpException('Bad Request', 400);
 		}
 		
-		const user = await this.userService.findOne(query.username);
+		const user = await this.userService.findOne(username);
 		if (user) {
 			const path = user.urlAvatar;
 			if (path == '')
@@ -97,7 +97,15 @@ export class AppController {
 					throw new HttpException('Internal Server Error', 500);
 			}
 		}
+		const file = createReadStream(join(process.cwd(), '../avatars/default.jpg'));
+		if (file)
+		{
+			res.set({
+				'Content-Type': 'image/jpg'
+			});
+			return new StreamableFile(file);
+		}
 		else
-			throw new HttpException('Unprocessable Entity', 422);
+			throw new HttpException('Internal Server Error', 500);
 	}
 }
