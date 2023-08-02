@@ -1,8 +1,11 @@
-import { Controller, Body, Post, Query, UploadedFile } from '@nestjs/common';
+import { Controller, Body, Post, Query, UploadedFile, Get, StreamableFile, Header, Res } from '@nestjs/common';
 import { UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { HttpException } from '@nestjs/common'; 
-import { ParseFilePipe, FileTypeValidator } from '@nestjs/common';
+import { FileTypeValidator } from '@nestjs/common';
+
+import { createReadStream } from 'fs';
+import { join } from 'path';
 
 import { diskStorage } from 'multer';
 import Path = require('path');
@@ -10,7 +13,7 @@ import { randomUUID } from 'crypto';
 
 import { UserService } from './services/user.service';
 import { AppService } from './app.service'; 
-
+import { Response } from 'express';
 
 const fileInterceptorOptions = {
 	fileFilter: (req, file, cb) => {
@@ -33,11 +36,11 @@ const fileInterceptorOptions = {
 	})
 };
 
-@Controller('/api/upload')
+@Controller('/api/avatar')
 export class AppController {
 	constructor(private readonly appService: AppService, private readonly userService: UserService) {}
 
-	@Post('/avatar')
+	@Post('/upload')
     @UseInterceptors(
 		FileInterceptor('file', fileInterceptorOptions))
 	async uploadAvatar(@Body() body: any, @UploadedFile() file: Express.Multer.File) { // TODO add access token
@@ -49,6 +52,50 @@ export class AppController {
 			}
 			else
 				throw new HttpException('Unprocessable Entity', 422);
+		}
+		else
+			throw new HttpException('Bad Request', 400);
+	}
+
+	@Get()
+	async getAvatar(@Query() query: any, @Res({ passthrough: true }) res: Response) : Promise<StreamableFile> { // TODO Need to handle URLs
+		if (query && query.username == null) {
+			throw new HttpException('Bad Request', 400);
+		}
+		
+		const user = await this.userService.findOne(query.username);
+		if (user) {
+			const path = user.urlAvatar;
+			if (path == '')
+			{
+				const file = createReadStream(join(process.cwd(), '../avatars/default.jpg'));
+				if (file)
+				{
+					res.set({
+						'Content-Type': 'image/jpg'
+					});
+					return new StreamableFile(file);
+				}
+				else
+					throw new HttpException('Internal Server Error', 500);
+			}
+			else if (path)
+			{
+				const file = createReadStream(join(process.cwd(), '..' + path));
+				if (file)
+				{
+					const mime = require('mime');
+					const mime_type = mime.getType(path);
+					if (!mime_type)
+						throw new HttpException('Internal Server Error', 500);
+					res.set({
+						'Content-Type': mime_type
+					});
+					return new StreamableFile(file);
+				}
+				else
+					throw new HttpException('Internal Server Error', 500);
+			}
 		}
 		else
 			throw new HttpException('Unprocessable Entity', 422);

@@ -70,7 +70,7 @@ export const apiSlice = createApi({
 		}),
 		uploadAvatar: builder.mutation({
 			query: (body: FormData) => ({
-				url: '/api/upload/avatar',
+				url: '/api/avatar/upload',
 				method: 'POST',
 				body: body,
 				formData: true

@@ -5,6 +5,7 @@ import { useUploadAvatarMutation } from "../../store/api";
 import { Button, Grid, Input } from "@mui/material";
 import UploadIcon from '@mui/icons-material/Upload';
 import { useSelector } from "react-redux";
+import CustomAvatar from "./CustomAvatar";
 
 export default function UploadButton() {
 	const user = useSelector((state: any) => state.user);
@@ -47,7 +48,6 @@ export default function UploadButton() {
 				<UploadIcon />
 			</Button>
 			{fileUrl != '' ? <img width="15%" src={fileUrl} /> : null}
-			
 		</Grid>
 	);
 }
