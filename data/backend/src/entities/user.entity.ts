@@ -1,42 +1,47 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany, AfterLoad } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  OneToMany,
+  AfterLoad,
+} from 'typeorm';
 import { UsersList } from './usersList.entity';
 
 @Entity({ name: 'User' })
 export class User {
-	@PrimaryGeneratedColumn()
-	id: number
+  @PrimaryGeneratedColumn()
+  id: number;
 
-	@Column()
-	clientId: string
+  @Column({ unique: true })
+  clientId: string;
 
-	@Column()
-	isConnected: boolean
+  // @Column()
+  // intraUsername: string;
 
-	@Column()
-	apiToken: string
+  @Column({ name: 'username' })
+  username: string;
 
-	@Column()
-	intraUsername: string
+  // @Column() // No password for the moment
+  // password: string;
 
-	@Column({ name: 'username' })
-	username: string
+  // @Column()
+  // status: number;
 
-	@Column()
-	password: string
+  // Check path to file
+  @Column({ nullable: true })
+  avatar: string;
 
-	@Column()
-	status: number
+  @Column({ name: 'access_token' })
+  accessToken: string;
 
-	// Check path to file
-	@Column()
-	avatar: string
+  @Column({ name: 'refresh_token' })
+  refreshToken: string;
 
-	@OneToMany(() => UsersList, usersList => usersList.room, { cascade: true })
-	blockedUsersID: UsersList[]
+  @OneToMany(() => UsersList, (usersList) => usersList.room, { cascade: true })
+  blockedUsersID: UsersList[];
 
-	@AfterLoad()
-	async nullCheck() {
-		if (!this.blockedUsersID)
-			this.blockedUsersID = [];
-	}
+  @AfterLoad()
+  async nullCheck() {
+    if (!this.blockedUsersID) this.blockedUsersID = [];
+  }
 }

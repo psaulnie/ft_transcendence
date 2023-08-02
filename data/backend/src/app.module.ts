@@ -1,18 +1,13 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 
 import { ChatModule } from './chatModule/chat.module';
-import { ChatGateway } from './gateway/chat.gateway';
-import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 
-import { SetMetadata } from '@nestjs/common';
-
-export const IS_PUBLIC_KEY = 'isPublic';
-export const Public = () => SetMetadata(IS_PUBLIC_KEY, true);
+import { AuthModule } from './auth/auth.module';
+import { PassportModule } from '@nestjs/passport';
+import { entities } from './entities';
 
 @Module({
   imports: [
@@ -20,19 +15,21 @@ export const Public = () => SetMetadata(IS_PUBLIC_KEY, true);
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'database',
-      port: 5432,
+      port: Number.parseInt(process.env.POSTGRES_PORT),
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DB,
+      entities,
       logging: false,
       synchronize: true,
       autoLoadEntities: true,
     }),
-    ChatModule,
     AuthModule,
+    PassportModule.register({ session: true }),
+    ChatModule,
     UsersModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}
