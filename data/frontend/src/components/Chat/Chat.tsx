@@ -8,6 +8,7 @@ import { useGetUserRoomListQuery } from '../../store/api';
 import { addBlockedUser } from '../../store/user';
 
 import Room from './Room';
+import Drawer from "@mui/material/Drawer";
 import CreateChannel from './CreateChannel';
 import JoinChannel from './JoinChannel';
 import JoinDirectMessage from './JoinDirectMessage';
@@ -15,7 +16,8 @@ import DirectMessageProvider from './DirectMessageProvider';
 import ChatProcess from './ChatProcess';
 import Error from '../Global/Error';
 
-import { Skeleton, Box, Grid } from '@mui/material';
+import { Skeleton, Box, Grid, Button } from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
 
 import RoomTabs from './RoomTabs';
 import { addRoom, setRoomIndex } from '../../store/rooms';
@@ -105,18 +107,67 @@ function Chat() {
 				</Grid>
 				<Grid item xs={7}>
 						<DirectMessageProvider/>
-						<Grid>
-							{ 
-								rooms.index !== -1 && rooms.room[rooms.index] ?
-									<Room key={rooms.room[rooms.index].name} roomName={rooms.room[rooms.index].name}/>
-								: null
-							}	
-						</Grid>
-						<Grid item sx={{ marginBottom: '70px' }}>
+						{/* <Grid item sx={{ marginBottom: '70px' }}>
 							<RoomTabs/>
-						</Grid>
+						</Grid> */}
 				</Grid>
 			</Grid>
+			<Box
+                sx={{
+                position: "fixed",
+                bgcolor: '#FFA500',
+                height: 500,
+                width: 500,
+                borderRadius: '2%',
+                opacity: 0.8,
+                border: 8,
+                borderColor: '#994000',
+                borderStyle: 'double',
+				marginTop: "auto",
+                bottom: 20,
+                right: 20,
+                zIndex: 2,
+                }}
+			>
+				<Grid container sx={{ height: '50%', width: '100%'}}>
+					<Grid item zIndex={999} xs={11} sx={{ height: '5%', width: '100%'}}>
+						<RoomTabs/>
+					</Grid>
+					{/* <Grid item xs={1} sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
+						<Button variant="text"
+							startIcon={<Box sx={{ fontSize: 30, color: "red"}}>
+							<MenuIcon />
+							</Box>}
+      						sx={{
+							padding: "0.7em",
+        					"& .MuiButton-startIcon": {
+        						marginRight: "0.25em", // Ajustez la marge droite de l'icône pour le centrer
+        					},
+        					"& .MuiButton-label": {
+        					  	display: "flex",
+        						alignItems: "center",
+        					},
+      						}}
+						></Button>
+      				</Grid> */}
+				</Grid>
+				<Grid
+					zIndex={0}
+					sx={{height: "95%",
+					width: "100%",
+					overflow: 'scroll', 
+					display: "flex",
+        			flexDirection: "column",
+					alignItems:"flex-end",
+				}}
+				>
+					{ 
+						rooms.index !== -1 && rooms.room[rooms.index] ?
+							<Room key={rooms.room[rooms.index].name} roomName={rooms.room[rooms.index].name}/>
+						: null
+					}	
+				</Grid>
+			</Box>
 		</div>
 	);
 }

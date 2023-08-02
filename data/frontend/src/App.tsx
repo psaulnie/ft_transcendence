@@ -8,6 +8,7 @@ import { login, logout, setUsername } from './store/user';
 import Navigation from './components/Navigation/Navigation';
 import NavDrawer from './components/Navigation/NavDrawer';
 import Chat from './components/Chat/Chat';
+import ChatBox from './components/Chat/ChatBox';
 
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -75,7 +76,7 @@ function App() {
 					: null
 				}
 				{user.isLoggedIn ? <button onClick={logoutButton}>Logout</button> : null}
-				{user.isLoggedIn ? (<Chat />) : null}
+				{user.isLoggedIn ? (<Chat/>) : null} 
 			</div>
 	    </ThemeProvider>
 	</div>
