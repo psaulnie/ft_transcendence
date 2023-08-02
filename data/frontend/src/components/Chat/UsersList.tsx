@@ -10,6 +10,7 @@ import PersonIcon from '@mui/icons-material/Person';
 
 import Error from "../Global/Error";
 import UserOptionsMenu from "./Message/UserOptionsMenu";
+import CustomAvatar from "../Global/CustomAvatar";
 
 export default function UsersList({isDirectMessage, roomName, role}: {isDirectMessage: boolean, roomName: string, role: string}) {
 	const user = useSelector((state: any) => state.user);
@@ -82,9 +83,7 @@ export default function UsersList({isDirectMessage, roomName, role}: {isDirectMe
 						<ListItem disablePadding dense key={key} >
 							<ListItemButton onClick={(e) => handleContextMenu(e, cUser.username)}>
 								<ListItemAvatar>
-									<Avatar>
-										{cUser.username[0]}
-									</Avatar>
+									<CustomAvatar username={cUser.username} />
 								</ListItemAvatar>
 								<ListItemText primary={<Typography display='block' fontWeight={cUser.username === user.username ? 'bold' : 'normal'}>{cUser.username}</Typography>} />
 								<ListItemIcon>

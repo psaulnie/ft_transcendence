@@ -3,14 +3,14 @@ import './App.css';
 import { SyntheticEvent, useState } from 'react';
 
 import { useSelector, useDispatch } from 'react-redux';
-import { login, logout, setUsername } from './store/user';
-import { webSocket } from './webSocket';
+import { logout } from './store/user';
+
 // Components
-import Navigation from './components/Navigation/Navigation';
-// import Chat from './components/Chat/Chat';
-import Game from './components/Game/Game';
-import NavDrawer from './components/Navigation/NavDrawer';
 import Chat from './components/Chat/Chat';
+// import Game from './components/Game/Game';
+import Login from './components/Global/Login';
+import Navigation from './components/Navigation/Navigation';
+import NavDrawer from './components/Navigation/NavDrawer';
 
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -30,34 +30,14 @@ function App() {
 	
 	const [drawerState, setDrawerState] = useState(false);
 
-	const toggleDrawer =
-	(open: boolean) =>
-	(event: React.KeyboardEvent | React.MouseEvent) => {
-		if (
-		event.type === 'keydown' &&
-		((event as React.KeyboardEvent).key === 'Tab' ||
-			(event as React.KeyboardEvent).key === 'Shift')
-		) {
+	const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
+		if (event.type === 'keydown' &&
+			((event as React.KeyboardEvent).key === 'Tab' ||
+			(event as React.KeyboardEvent).key === 'Shift')) {
 			return;
 		}
 		setDrawerState(open);
     };
-
-	function onChange(e: React.ChangeEvent<HTMLInputElement>)
-	{
-		e.preventDefault();
-		dispatch(setUsername(e.currentTarget.value));
-	}
-
-	function onSubmit(e: React.FormEvent)
-	{
-		e.preventDefault();
-		if (user.username !== '')
-		{
-			dispatch(login());
-			webSocket.emit("newUser", user.username);
-		}
-	}
 
 	function logoutButton(e: SyntheticEvent)
 	{
@@ -74,16 +54,12 @@ function App() {
 			<div className='main'>
 				{
 					user.isLoggedIn === false ?
-						<form onSubmit={onSubmit}>
-							<p>Username:</p>
-							<input name="username" value={user.username || ''} onChange={ onChange } />
-							<button>Login</button>
-						</form>
+						<Login />
 					: null
 				}
 				{user.isLoggedIn ? <button onClick={logoutButton}>Logout</button> : null}
 				{user.isLoggedIn ? (<UploadButton />) : null}
-				{/* {user.isLoggedIn ? (<Chat />) : null} */}
+				{user.isLoggedIn ? (<Chat />) : null}
 				{/* {user.isLoggedIn ? (<Game />) : null} */}
 			</div>
 	    </ThemeProvider>

@@ -11,8 +11,8 @@ import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
-import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
+import CustomAvatar from '../../Global/CustomAvatar';
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
 	backgroundColor: '#102b47',
@@ -75,15 +75,15 @@ export default function Message({ message, role, roomName }: arg) {
 			<Box sx={{ flexGrow: 1, overflow: 'hidden', px: 3}} >
 				<StyledPaper
 					sx={{
-					my: 1,
-					mx: 'auto',
-					p: 2,
+						my: 1,
+						mx: 'auto',
+						p: 2,
 					}}
 				>
 					<Grid container wrap="nowrap" spacing={2}>
 						{	user.username !== message.source ? 
 								<Grid item>
-									<Avatar>{message.source[0]}</Avatar>
+									<CustomAvatar username={message.source} />
 								</Grid>
 							: null
 						}
@@ -93,7 +93,7 @@ export default function Message({ message, role, roomName }: arg) {
 						{
 							user.username === message.source ? 
 								<Grid item>
-									<Avatar>{message.source[0]}</Avatar>
+									<CustomAvatar username={message.source} />
 								</Grid>
 							: null
 						}

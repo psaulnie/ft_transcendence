@@ -24,7 +24,7 @@ function Chat() {
 	const user = useSelector((state: any) => state.user);
 	const rooms = useSelector((state: any) => state.rooms);
 	const dispatch = useDispatch();
-	
+
 	const {
 		data: blockedUsers,
 		isLoading: blockedUsersLoading,
