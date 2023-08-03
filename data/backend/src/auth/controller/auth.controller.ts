@@ -1,4 +1,12 @@
-import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Header,
+  Redirect,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { Request, Response } from 'express';
 import {
   AuthenticatedGuard,
@@ -14,7 +22,6 @@ export class AuthController {
   @Get('login')
   @UseGuards(IntraAuthGuards)
   login() {
-    console.log('Coucou');
     return;
   }
 
@@ -25,7 +32,7 @@ export class AuthController {
   @Get('redirect')
   @UseGuards(IntraAuthGuards)
   redirect(@Res() res: Response) {
-    res.sendStatus(200);
+    res.redirect('http://localhost:3000/home');
   }
 
   /**
