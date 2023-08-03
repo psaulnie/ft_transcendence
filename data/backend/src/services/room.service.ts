@@ -66,7 +66,7 @@ export class RoomService {
 		room.password = password;
 		if (!room.usersID)
 			room.usersID = [];
-		room.usersID.push(await this.roomsRepository.save(usersList));
+		room.usersID.push(await this.usersListRepository.save(usersList));
 		return await (this.roomsRepository.save(room));
 	}
 
@@ -171,7 +171,7 @@ export class RoomService {
 		const room = await this.findOne(roomName);
 		const userInList = room.usersID.find((obj) => obj.user.id == user.id);
 		userInList.isBanned = true;
-		await this.roomsRepository.save(userInList);
+		await this.usersListRepository.save(userInList);
 		return await (this.roomsRepository.save(room));
 	}
 
