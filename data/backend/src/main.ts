@@ -24,6 +24,9 @@ async function bootstrap() {
   );
   app.use(passport.initialize());
   app.use(passport.session());
+  app.enableCors({
+    origin: '*',
+  });
   await app.listen(port, () => {
     console.log(`Running on port ${port}`);
   });

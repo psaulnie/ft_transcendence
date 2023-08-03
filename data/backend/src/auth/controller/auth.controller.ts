@@ -14,6 +14,7 @@ export class AuthController {
   @Get('login')
   @UseGuards(IntraAuthGuards)
   login() {
+    console.log('Coucou');
     return;
   }
 
@@ -43,7 +44,13 @@ export class AuthController {
    */
   @Get('logout')
   @UseGuards(AuthenticatedGuard)
-  logout(@Req() req: Request) {
-    // req.logOut();
+  logout(@Req() req: Request, res, next) {
+    // TODO test
+    req.logOut((err: any) => {
+      if (err) {
+        return next(err);
+      }
+      res.redirect('/');
+    });
   }
 }
