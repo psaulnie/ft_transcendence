@@ -4,14 +4,18 @@ import { SyntheticEvent, useState } from 'react';
 
 import { useSelector, useDispatch } from 'react-redux';
 import { login, logout, setUsername } from './store/user';
+
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
 // Components
 import Navigation from './components/Navigation/Navigation';
 import NavDrawer from './components/Navigation/NavDrawer';
 import Chat from './components/Chat/Chat';
-import ChatBox from './components/Chat/ChatBox';
+import Home from './components/Global/Home';
 
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+import Profile from './components/Global/Profile';
 
 const darkTheme = createTheme({
   palette: {
@@ -75,6 +79,13 @@ function App() {
 						</form>
 					: null
 				}
+			<BrowserRouter>
+				<Routes>
+					<Route path="/" element={<div/>}></Route>
+					<Route path="/profile" element={<Profile/>}></Route>
+					<Route path="/home" element={<Home/>}></Route>
+				</Routes>
+			</BrowserRouter>
 				{user.isLoggedIn ? <button onClick={logoutButton}>Logout</button> : null}
 				{user.isLoggedIn ? (<Chat/>) : null} 
 			</div>
