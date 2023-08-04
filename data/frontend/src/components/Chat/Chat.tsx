@@ -112,7 +112,11 @@ function Chat() {
 				<Grid container>
 					<DirectMessageProvider/>
 					<Grid item xs={1} sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
-						<UsersTab/>
+						{
+							rooms.index !== -1 && rooms.room[rooms.index] ?
+								<UsersTab roomName={rooms.room[rooms.index].name}/>
+							: null
+						}
       				</Grid>
 					<Grid item zIndex={99} xs={10} sx={{ height: '5%', width: '100%'}}>
 						<RoomTabs/>

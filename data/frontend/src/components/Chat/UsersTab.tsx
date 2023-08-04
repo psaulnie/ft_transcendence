@@ -20,14 +20,16 @@ import Drawer from "@mui/material/Drawer";
 import MenuIcon from '@mui/icons-material/Menu';
 import PersonIcon from '@mui/icons-material/Person';
 
-import RoomTabs from './RoomTabs';
-import { addRoom, setRoomIndex } from '../../store/rooms';
-import { Padding } from '@mui/icons-material';
+import UsersList from './UsersList';
+import Typography from '@mui/material';
 
-function UsersTab()
+function UsersTab({roomName} : {roomName: string})
 {
+	const rooms = useSelector((state: any) => state.rooms);
+
     const [isTabOpen, setIsTabOpen] = useState(false);
-  
+	const [role, setRole] = useState('none');
+
     const handleOpenTab = () => {
     	setIsTabOpen(true);
     };
@@ -35,7 +37,13 @@ function UsersTab()
     const handleCloseTab = () => {
     	setIsTabOpen(false);
     };
-  
+
+	useEffect(() => {
+		const cRole = rooms.room.find((obj: {name: string, role: string}) => obj.name === roomName);
+		if (cRole)
+			setRole(cRole.role);
+	}, [setRole, rooms, roomName]);
+
     return (
     	<>
 			<Button variant="text"
@@ -65,7 +73,9 @@ function UsersTab()
     					</h1>
   					</Box>
 					<Grid container sx={{ marginLeft: "5%"}}>
-						<JoinDirectMessage/>
+							{/* <Typography>Users:</Typography> */}
+							<UsersList roomName={roomName} role={role} />
+
 					</Grid>
     			</Box>
     		</Drawer>
