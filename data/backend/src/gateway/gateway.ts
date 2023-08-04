@@ -74,7 +74,7 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
 				throw new WsException("Room not found");
 			if (room.usersID.find((tmpUser) => tmpUser.user == user))
 				throw new WsException("User not in room");
-			let role = await this.roomService.getRole(payload.target, user.id);
+			let role = await this.roomService.getRole(room, user.id);
 			if (!role)
 				role = "none";
 			this.server.emit(payload.target, { 
@@ -166,7 +166,10 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
 		const admin = await this.userService.findOne(payload.source);
 		if (!admin)
 			throw new WsException("Source user not found");
-		if (await this.roomService.getRole(payload.room, admin.id) == "none")
+		const room = await this.roomService.findOne(payload.room);
+		if (!room)
+			throw new WsException("Room not found");
+		if (await this.roomService.getRole(room, admin.id) == "none")
 			throw new WsException("Source user is not admin of the room");
 		await this.roomService.removeUser(payload.room, user.id);
 		this.server.emit(payload.room, { source: payload.target, target: payload.room, action: actionTypes.left })
@@ -183,7 +186,10 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
 		const admin = await this.userService.findOne(payload.source);
 		if (!admin)
 			throw new WsException("Source user not found");
-		if (await this.roomService.getRole(payload.room, admin.id) == "none")
+		const room = await this.roomService.findOne(payload.room);
+		if (!room)
+			throw new WsException("Room not found");
+		if (await this.roomService.getRole(room, admin.id) == "none")
 			throw new WsException("Source user is not admin of the room");
 		await this.roomService.addToBanList(payload.room, user);
 		this.server.emit(payload.room, { source: payload.target, target: payload.room, action: actionTypes.left })
@@ -225,7 +231,10 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
 		const admin = await this.userService.findOne(payload.source);
 		if (!admin)
 			throw new WsException("Source user not found");
-		if (await this.roomService.getRole(payload.room, admin.id) == "none")
+		const room = await this.roomService.findOne(payload.room);
+		if (!room)
+			throw new WsException("Room not found");
+		if (await this.roomService.getRole(room, admin.id) == "none")
 			throw new WsException("Source user is not admin of the room");	
 		await this.roomService.addAdmin(payload.room, user);
 		this.server.emit(payload.target + "OPTIONS", { source: payload.room, target: payload.target, action: actionTypes.admin, role: "admin" })
@@ -241,7 +250,10 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
 		const admin = await this.userService.findOne(payload.source);
 		if (!admin)
 			throw new WsException("Source user not found");
-		if (await this.roomService.getRole(payload.room, admin.id) == "none")
+		const room = await this.roomService.findOne(payload.room);
+			if (!room)
+				throw new WsException("Room not found");
+		if (await this.roomService.getRole(room, admin.id) == "none")
 			throw new WsException("Source user is not admin of the room");
 		await this.roomService.addToMutedList(payload.room, user);
 		this.server.emit(payload.target + "OPTIONS", { source: payload.room, target: payload.target, action: actionTypes.mute, role: "none" })
@@ -258,7 +270,10 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
 		const admin = await this.userService.findOne(payload.source);
 		if (!admin)
 			throw new WsException("Source user not found");
-		if (await this.roomService.getRole(payload.room, admin.id) == "none")
+		const room = await this.roomService.findOne(payload.room);
+		if (!room)
+			throw new WsException("Room not found");
+		if (await this.roomService.getRole(room, admin.id) == "none")
 			throw new WsException("Source user is not admin of the room");
 		await this.roomService.removeFromMutedList(payload.room, user);
 		this.server.emit(payload.target + "OPTIONS", { source: payload.room, target: payload.target, action: actionTypes.unmute, role: "none" })
@@ -273,7 +288,10 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
 		const admin = await this.userService.findOne(payload.source);
 		if (!admin)
 			throw new WsException("Source user not found");
-		if (await this.roomService.getRole(payload.room, admin.id) == "none")
+		const room = await this.roomService.findOne(payload.room);
+		if (!room)
+			throw new WsException("Room not found");
+		if (await this.roomService.getRole(room, admin.id) == "none")
 			throw new WsException("Source user is not admin of the room");
 		this.roomService.setPasswordToRoom(payload.room, payload.password);
 		this.server.emit(payload.room, { source: payload.room, target: payload.room, action: actionTypes.hasPassword });

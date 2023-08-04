@@ -1,4 +1,4 @@
-import { Controller, Body, Post, Query, UploadedFile, Get, StreamableFile, Header, Res, Param } from '@nestjs/common';
+import { Controller, Body, Post, UploadedFile, Get, StreamableFile, Res, Param } from '@nestjs/common';
 import { UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { HttpException } from '@nestjs/common';
@@ -58,7 +58,7 @@ export class AppController {
 	}
 
 	@Get(':username')
-	async getAvatar(@Param('username') username: string, @Query() query: any, @Res({ passthrough: true }) res: Response) : Promise<StreamableFile> { // TODO Need to handle URLs
+	async getAvatar(@Param('username') username: string, @Res({ passthrough: true }) res: Response) : Promise<StreamableFile> { // TODO Need to handle URLs
 		if (username == null) {
 			throw new HttpException('Bad Request', 400);
 		}

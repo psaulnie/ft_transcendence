@@ -4,7 +4,7 @@ import { webSocket } from '../../webSocket';
 import { manageRoomsTypes } from './args.types';
 import { accessStatus } from './accessStatus';
 import { useDispatch, useSelector } from 'react-redux';
-import { useGetIsRoomNameTakenQuery } from '../../store/api';
+import { useGetIsRoomNameTakenQuery, useLazyGetIsRoomNameTakenQuery } from '../../store/api';
 import { addRoom } from '../../store/rooms';
 
 import Error from '../Global/Error';
@@ -22,17 +22,14 @@ function CreateChannel() {
 	const [access, setAccess] = useState(accessStatus.public);
 	const [showDialog, setShowDialog] = useState(false);
 
-	const {
-		data: exist,
-		isLoading,
-		isError,
-		error,
-		refetch
-	} = useGetIsRoomNameTakenQuery({roomName: newRoomName});
+	const [
+		trigger,
+		result
+	 ] = useLazyGetIsRoomNameTakenQuery();
 	
-	if (isError)
-		return (<Error error={error} />)
-	else if (isLoading)
+	if (result.isError)
+		return (<Error error={result.error} />)
+	else if (result.isLoading)
 		return (
 			<div>
 				<Skeleton variant="text"/>
@@ -42,9 +39,12 @@ function CreateChannel() {
 
 	function updateNewRoomName(e: any) 
 	{
-		refetch();
+		if (e.target.value.length > 0)
+			trigger({roomName: e.target.value});
 		if (e.target.value.length <= 10)
+		{
 			setNewRoomName(e.target.value);
+		}
 	}
 
 	function changeAccess(event: SelectChangeEvent)
@@ -83,7 +83,7 @@ function CreateChannel() {
 	return (
 		<div className='createChannel'>
 			<p>Create a new channel</p>
-				<TextField error={exist} helperText={exist ? 'This room already exists' : null} label="Room name" value={newRoomName} onChange={updateNewRoomName} />
+				<TextField error={result.data} helperText={result.data ? 'This room already exists' : null} label="Room name" value={newRoomName} onChange={updateNewRoomName} />
 				<FormControl>
 					<InputLabel>Access</InputLabel>
 					<Select name="roomAccess" onChange={changeAccess} defaultValue=''>
@@ -93,11 +93,11 @@ function CreateChannel() {
 					</Select>
 					<FormHelperText>Channel access</FormHelperText>
 				</FormControl>
-				<IconButton name='rooms' disabled={exist === true || newRoomName === ''} onClick={ createRoom } >
+				<IconButton name='rooms' disabled={result.data === true || newRoomName === ''} onClick={ createRoom } >
 					<AddIcon/>
 				</IconButton>
 				{ showDialog === true ? <PasswordDialog open={showDialog} setOpen={setShowDialog} roomName={newRoomName} role="owner" createRoom={true} /> : null}
-				{ exist === true ? <p>This room already exist</p> : null}
+				{ result.data === true ? <p>This room already exist</p> : null}
 		</div>
 	)
 }

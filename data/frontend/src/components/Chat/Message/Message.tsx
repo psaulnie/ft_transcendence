@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 
 import UserOptionsMenu from './UserOptionsMenu';
 
-import { useGetUserInfoInRoomQuery } from '../../../store/api';
+import { useGetUserStatusInRoomQuery } from '../../../store/api';
 
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -40,7 +40,7 @@ export default function Message({ message, role, roomName }: arg) {
 		data: cUser,
 		isSuccess,
 		refetch
-	} = useGetUserInfoInRoomQuery({username: message.source, roomName: roomName});
+	} = useGetUserStatusInRoomQuery({username: message.source, roomName: roomName});
 
 	const handleContextMenu = (event: React.MouseEvent) => {
 		event.preventDefault();
