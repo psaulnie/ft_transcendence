@@ -76,7 +76,8 @@ export default function RoomTabs()
 					opacity: "0.3",
 				  },
 				  "& .Mui-selected": {
-					color: "#fc4a4a",
+					backgroundColor: "red",
+					color: "black",
 				  },
 				  
 				}} value={rooms.index} onChange={changeSelectedRoom} variant="scrollable" scrollButtons="auto"

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { chatSocket } from '../../chatSocket';
 
@@ -8,7 +8,8 @@ import { useGetUserRoomListQuery } from '../../store/api';
 import { addBlockedUser } from '../../store/user';
 
 import Room from './Room';
-import Drawer from "@mui/material/Drawer";
+import Tab from './Tab';
+import UsersTab from './UsersTab';
 import CreateChannel from './CreateChannel';
 import JoinChannel from './JoinChannel';
 import JoinDirectMessage from './JoinDirectMessage';
@@ -91,27 +92,6 @@ function Chat() {
 	return (
 		<div className='chat'>
 			<ChatProcess/>
-			<Grid container sx={{ display: 'flex'}} justifyContent="space-evenly">
-				<Grid item xs={3}>
-						<Box sx={{ backgroundColor: '#102b47', height: '100%', padding: '16px', borderRadius: '10px'}}>
-							<Grid container>
-								<JoinDirectMessage/>
-							</Grid>
-							<Grid container>
-								<CreateChannel/>
-							</Grid>
-							<Grid container>
-								<JoinChannel/>
-							</Grid>
-						</Box>
-				</Grid>
-				<Grid item xs={7}>
-						<DirectMessageProvider/>
-						{/* <Grid item sx={{ marginBottom: '70px' }}>
-							<RoomTabs/>
-						</Grid> */}
-				</Grid>
-			</Grid>
 			<Box
                 sx={{
                 position: "fixed",
@@ -126,30 +106,20 @@ function Chat() {
 				marginTop: "auto",
                 bottom: 20,
                 right: 20,
-                zIndex: 2,
+                zIndex: 9,
                 }}
 			>
-				<Grid container sx={{ height: '50%', width: '100%'}}>
-					<Grid item zIndex={999} xs={11} sx={{ height: '5%', width: '100%'}}>
+				<Grid container>
+					<DirectMessageProvider/>
+					<Grid item xs={1} sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
+						<UsersTab/>
+      				</Grid>
+					<Grid item zIndex={99} xs={10} sx={{ height: '5%', width: '100%'}}>
 						<RoomTabs/>
 					</Grid>
-					{/* <Grid item xs={1} sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
-						<Button variant="text"
-							startIcon={<Box sx={{ fontSize: 30, color: "red"}}>
-							<MenuIcon />
-							</Box>}
-      						sx={{
-							padding: "0.7em",
-        					"& .MuiButton-startIcon": {
-        						marginRight: "0.25em", // Ajustez la marge droite de l'icône pour le centrer
-        					},
-        					"& .MuiButton-label": {
-        					  	display: "flex",
-        						alignItems: "center",
-        					},
-      						}}
-						></Button>
-      				</Grid> */}
+					<Grid item xs={1} sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
+						<Tab/>
+      				</Grid>
 				</Grid>
 				<Grid
 					zIndex={0}
