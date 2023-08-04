@@ -44,12 +44,6 @@ function Room({roomName}: {roomName: string}) {
 					<InputForm roomName={ roomName } isDirectMessage={rooms.room[roomIndex].isDirectMessage} />
 				</Grid>
 			</Grid>
-			{/* <Grid item xs={4}>
-				<Box sx={{ backgroundColor: '#102b47', height: '100%', padding: '16px', borderRadius: '10px'}}>
-					<Typography>Users:</Typography>
-					<UsersList roomName={roomName} role={role} />
-				</Box>
-			</Grid> */}
 		</Grid>
 	);
 }

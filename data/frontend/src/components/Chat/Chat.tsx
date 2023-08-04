@@ -113,7 +113,7 @@ function Chat() {
 					<DirectMessageProvider/>
 					<Grid item xs={1} sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
 						{
-							rooms.index !== -1 && rooms.room[rooms.index] ?
+							rooms.index !== -1 && rooms.room[rooms.index] ? // CONDITION'S HERE TO KNOW IF THE USER IS NOT IN A ROOM
 								<UsersTab roomName={rooms.room[rooms.index].name}/>
 							: null
 						}
