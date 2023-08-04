@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { CacheModule } from '@nestjs/cache-manager';
+
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -41,6 +43,7 @@ import { Gateway } from './gateway/gateway';
 		Stats,
 		UsersList
 	]),
+	CacheModule.register({ isGlobal: true }),
   ],
   controllers: [AppController, ChatController],
   providers: [UserService, AppService, RoomService, Gateway],

@@ -20,6 +20,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@nestjs/cache-manager": "^2.1.0",
     "@nestjs/common": "^9.0.0",
     "@nestjs/config": "^2.3.1",
     "@nestjs/core": "^9.0.0",
@@ -28,6 +29,7 @@
     "@nestjs/serve-static": "^4.0.0",
     "@nestjs/typeorm": "^9.0.1",
     "@types/multer": "^1.4.7",
+    "cache-manager": "^5.2.3",
     "http-proxy-middleware": "^2.0.6",
     "mime": "^3.0.0",
     "pg": "^8.10.0",

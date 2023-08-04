@@ -1,4 +1,5 @@
-import { Controller, Query, Get, HttpException, Param } from '@nestjs/common';
+import { Controller, Query, Get, HttpException, Param, UseInterceptors } from '@nestjs/common';
+import { CacheInterceptor } from '@nestjs/cache-manager';
 import { RoomService } from '../services/room.service';
 import { UserService } from '../services/user.service';
 import { UsersList } from 'src/entities/usersList.entity';
@@ -8,6 +9,7 @@ import { userStatus } from './userStatus';
 export class ChatController {
 	constructor(private readonly roomService: RoomService, private readonly userService: UserService) {}
 
+	@UseInterceptors(CacheInterceptor)
   	@Get('role/:username/:roomName')
   	async getRole(@Query() data: any, @Param('username') username: string, @Param('roomName') roomName: string): Promise<string> {
 		if (username == null || roomName == null)
@@ -21,6 +23,7 @@ export class ChatController {
 		return (await this.roomService.getRole(room, user.id));
 	}
 
+	@UseInterceptors(CacheInterceptor)
 	@Get(':username/blocked')
 	async getBlockedUser(@Query() data: any, @Param("username") username: string): Promise<string[]> { // TODO fix function
 		if (username == null)
@@ -37,6 +40,7 @@ export class ChatController {
 		return (usersList);
 	}
 
+	@UseInterceptors(CacheInterceptor)
 	@Get('rooms/list')
 	async getRoomsList(): Promise<{}[]> {
 		const rooms = await this.roomService.findAll();
@@ -51,6 +55,7 @@ export class ChatController {
 		return (roomsList);
 	}
 
+	@UseInterceptors(CacheInterceptor)
 	@Get(':roomName/users')
 	async getUsersInRoom(@Query() data: any, @Param('roomName') roomName: string): Promise<any[]> {
 		if (roomName == null)
@@ -67,6 +72,7 @@ export class ChatController {
 		return (usersList);
 	}
 
+	@UseInterceptors(CacheInterceptor)
 	@Get(':username/rooms/list')
 	async getUserRoomsList(@Query() data: any, @Param("username") username: string): Promise<any[]> {
 		if (username == null)
@@ -88,6 +94,7 @@ export class ChatController {
 		return (roomsList);
 	}
 
+	@UseInterceptors(CacheInterceptor)
 	@Get(':roomName/exist')
 	async getIsRoomNameTaken(@Query() data: any, @Param('roomName') roomName: string): Promise<boolean> {
 		if (roomName == null)
@@ -96,6 +103,7 @@ export class ChatController {
 		return (room != null);
 	}
 
+	@UseInterceptors(CacheInterceptor)
 	@Get('users/list')
 	async getUsersList(): Promise<string[]> {
 		const users = await this.userService.findAll();
@@ -105,6 +113,7 @@ export class ChatController {
 		return (usersList);
 	}
 
+	@UseInterceptors(CacheInterceptor)
 	@Get(':username/:roomName/status')
 	async getUserStatusInRoom(@Query() data: any, @Param('username') username: string, @Param('roomName') roomName: string): Promise<any> {
 		if (username == null || roomName == null)
@@ -118,6 +127,7 @@ export class ChatController {
 		return ({ isMuted: user.isMuted, role: user.role, status: user.user.status });
 	}
 
+	@UseInterceptors(CacheInterceptor)
 	@Get(':username/:roomName/invited')
 	async getInvitedUsersList(@Query() data: any, @Param('username') username: string, @Param('roomName') roomName: string): Promise<{}[]> {
 		if (username == null || roomName == null) // TODO handle error
