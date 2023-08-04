@@ -67,28 +67,28 @@ function App() {
 	<div className="App">
 		<ThemeProvider theme={darkTheme}>
      		<CssBaseline />
-			<Navigation setDrawerState={setDrawerState}/>
-			<NavDrawer state={drawerState} toggleDrawer={toggleDrawer}/>
-			<div className='main'>
-				{
-					user.isLoggedIn === false ?
-						<form onSubmit={onSubmit}>
-							<p>Username:</p>
-							<input name="username" value={user.username || ''} onChange={ onChange } />
-							<button>Login</button>
-						</form>
-					: null
-				}
 			<BrowserRouter>
-				<Routes>
-					<Route path="/" element={<div/>}></Route>
-					<Route path="/profile" element={<Profile/>}></Route>
-					<Route path="/home" element={<Home/>}></Route>
-				</Routes>
+				<Navigation setDrawerState={setDrawerState}/>
+				<NavDrawer state={drawerState} toggleDrawer={toggleDrawer}/>
+				<div className='main'>
+					{
+						user.isLoggedIn === false ?
+							<form onSubmit={onSubmit}>
+								<p>Username:</p>
+								<input name="username" value={user.username || ''} onChange={ onChange } />
+								<button>Login</button>
+							</form>
+						: null
+					}
+					<Routes>
+						<Route path="/" element={<div/>}></Route>
+						<Route path="/profile" element={<Profile/>}></Route>
+						<Route path="/home" element={<Home/>}></Route>
+					</Routes>
+					{user.isLoggedIn ? <button onClick={logoutButton}>Logout</button> : null}
+					{user.isLoggedIn ? (<Chat/>) : null} 
+				</div>
 			</BrowserRouter>
-				{user.isLoggedIn ? <button onClick={logoutButton}>Logout</button> : null}
-				{user.isLoggedIn ? (<Chat/>) : null} 
-			</div>
 	    </ThemeProvider>
 	</div>
 	);
