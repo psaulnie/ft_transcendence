@@ -5,6 +5,7 @@ import {
 	WebSocketServer,
 	OnGatewayConnection,
 	OnGatewayDisconnect,
+	WsException,
    } from '@nestjs/websockets';
 
 import { Socket, Server } from 'socket.io';
@@ -14,6 +15,8 @@ import { UserService } from 'src/services/user.service';
 import { manageRoomsArgs, sendMsgArgs, actionArgs } from './args.interface';
 import { actionTypes, manageRoomsTypes, sendMsgTypes } from './args.types';
 import { accessStatus } from 'src/chatModule/accessStatus';
+import { subscribe } from 'diagnostics_channel';
+import { match } from 'assert';
 
 @WebSocketGateway({
 	cors: { origin: '*' },
@@ -21,10 +24,14 @@ import { accessStatus } from 'src/chatModule/accessStatus';
 })
 export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
 	
+	private matchmakingQueue: (string)[];
+
 	constructor(
 		private roomService: RoomService,
 		private userService: UserService,
-	) { }
+	) {
+		this.matchmakingQueue = [];
+	}
 	@WebSocketServer() server: Server;
 
 	@SubscribeMessage('newUser')
@@ -227,11 +234,32 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
 		this.server.emit(payload.roomName, { source: payload.username, target: payload.roomName, action: actionTypes.join })
 	}
 
+	@SubscribeMessage('matchmaking')
+	async hangleMatchmaking(client: Socket, payload: {username: string}) {
+		// const user = await this.userService.findOne(payload.username);
+		// if (!user)
+		// throw new WsException("User not found");
+	if (this.matchmakingQueue.find((name:string) => name == payload.username))
+	throw new WsException("Already in Matchmaking");
+	this.matchmakingQueue.push(payload.username);
+	if (this.matchmakingQueue.length >= 2) {
+			console.log(payload.username);
+			const player1 = this.matchmakingQueue[0];
+			const player2 = this.matchmakingQueue[1];
+			this.server.emit("matchmaking" + player1, {opponent: player2});
+			this.server.emit("matchmaking" + player2, {opponent: player1});
+			this.matchmakingQueue.shift();
+			this.matchmakingQueue.shift();
+		}
+	}
+
 	@SubscribeMessage('game')
-	async handleGame(client: Socket, payload: {player: string, opponent: string, y: number})
+	async handleGame(client: Socket, payload: {/*player: string, opponent: string, */y: number})
 	{
 		console.log(payload);
         console.log("receive");
+		// this.userService.
+		// this.server.emit()
 	}
 
 	async afterInit(server: Server) {
