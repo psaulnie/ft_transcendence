@@ -25,9 +25,10 @@ type arg = {
 	message: chatResponseArgs,
 	role: string,
 	roomName: string,
+	isDirectMessage: boolean
 }
 
-export default function Message({ message, role, roomName }: arg) {
+export default function Message({ message, role, roomName, isDirectMessage }: arg) {
 	const user = useSelector((state: any) => state.user);
 	const [contextMenu, setContextMenu] = useState<{
 		mouseX: number;
@@ -40,10 +41,12 @@ export default function Message({ message, role, roomName }: arg) {
 		data: cUser,
 		isSuccess,
 		refetch
-	} = useGetUserStatusInRoomQuery({username: message.source, roomName: roomName});
+	} = useGetUserStatusInRoomQuery({username: message.source, roomName: roomName}, { skip: isDirectMessage }); // TODO forbid to fetch if direct msg
 
 	const handleContextMenu = (event: React.MouseEvent) => {
 		event.preventDefault();
+		if (isDirectMessage)
+			return ;
 		refetch();
 		if (isSuccess)
 		{
@@ -65,7 +68,7 @@ export default function Message({ message, role, roomName }: arg) {
 	return (
 		<div className='message' onContextMenu={handleContextMenu} >
 			{
-				user.username !== message.source ? 
+				user.username !== message.source && !isDirectMessage ? 
 					<UserOptionsMenu cUser={{username: message.source, role: message.role, isMuted: isMuted}} role={role}
 						roomName={roomName}
 						contextMenu={contextMenu} setContextMenu={setContextMenu}

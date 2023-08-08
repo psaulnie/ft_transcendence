@@ -5,16 +5,14 @@ import { addMsg, addRoom, setHasPassword, setRead } from "../../../store/rooms";
 import { webSocket } from "../../../webSocket";
 import { actionTypes } from "../args.types";
 
-import { useGetUsersInRoomQuery } from "../../../store/api";
+import { useLazyGetUsersInRoomQuery } from "../../../store/api";
 
 function MessageProvider({roomName}: {roomName: string}) {
 	const user = useSelector((state: any) => state.user);
 	const rooms = useSelector((state: any) => state.rooms);
 	const dispatch = useDispatch();
 
-	const {
-		refetch
-	} = useGetUsersInRoomQuery({roomName: roomName});
+	const [ trigger ] = useLazyGetUsersInRoomQuery();
 	
 	useEffect(() => {
 		function onMsgSent(value: chatResponseArgs) {
@@ -28,7 +26,7 @@ function MessageProvider({roomName}: {roomName: string}) {
 			{
 				if (value.action === actionTypes.join || value.action === actionTypes.left)
 				{
-					refetch();
+					trigger({roomName: roomName});
 				}
 				dispatch(addMsg({name: roomName, message: value}));
 				if (value.source === user.username || rooms.index === roomIndex)

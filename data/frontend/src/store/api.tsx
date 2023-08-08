@@ -89,5 +89,6 @@ export const {	useGetRoleQuery,
 				useGetUsersInRoomQuery,
 				useGetInvitedUsersListQuery,
 				useUploadAvatarMutation,
-				useLazyGetIsRoomNameTakenQuery
+				useLazyGetIsRoomNameTakenQuery,
+				useLazyGetUsersInRoomQuery
 } = apiSlice

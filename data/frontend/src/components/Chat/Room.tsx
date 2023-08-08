@@ -33,7 +33,7 @@ function Room({roomName}: {roomName: string}) {
 				<Grid item xs={12} sx={{ height: "100%", width: "100%", padding: '16px', overflow: 'auto', marginTop: "auto" }}>
 					<Box sx={{ height: "100%", width: "100%", padding: '2px', overflow: 'scroll'}}>
 						<div ref={messagesContainerRef}>
-							<MessagesBox messages={ rooms.room[roomIndex].messages } role={ role } roomName={ roomName } />
+							<MessagesBox messages={ rooms.room[roomIndex].messages } role={ role } roomName={ roomName } isDirectMessage={rooms.room[roomIndex].isDirectMsg} />
 						</div>
 					</Box>
 				</Grid>

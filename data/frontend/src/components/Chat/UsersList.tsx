@@ -1,4 +1,5 @@
 import { useGetUsersInRoomQuery } from "../../store/api";
+
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
@@ -26,7 +27,7 @@ export default function UsersList({isDirectMessage, roomName, role}: {isDirectMe
 		isError,
 		error,
 		refetch
-	} = useGetUsersInRoomQuery({roomName: roomName}, {skip: isDirectMessage});
+	} = useGetUsersInRoomQuery({roomName: roomName}, {skip: isDirectMessage}); // TODO skip if direct msg
 
 	let usersList = [];
 	if (isDirectMessage == false)
