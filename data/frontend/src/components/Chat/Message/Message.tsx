@@ -45,13 +45,16 @@ export default function Message({ message, role, roomName, isDirectMessage }: ar
 
 	const handleContextMenu = (event: React.MouseEvent) => {
 		event.preventDefault();
-		if (isDirectMessage)
-			return ;
-		refetch();
-		if (isSuccess)
+		if (!isDirectMessage)
 		{
-				setShowAdminOpt(true);
-				setIsMuted(cUser.isMuted);
+			refetch();
+			if (isSuccess)
+			{
+					setShowAdminOpt(true);
+					setIsMuted(cUser.isMuted);
+			}
+			else
+				setShowAdminOpt(false);
 		}
 		else
 			setShowAdminOpt(false);
@@ -68,7 +71,7 @@ export default function Message({ message, role, roomName, isDirectMessage }: ar
 	return (
 		<div className='message' onContextMenu={handleContextMenu} >
 			{
-				user.username !== message.source && !isDirectMessage ? 
+				user.username !== message.source ? 
 					<UserOptionsMenu cUser={{username: message.source, role: message.role, isMuted: isMuted}} role={role}
 						roomName={roomName}
 						contextMenu={contextMenu} setContextMenu={setContextMenu}
