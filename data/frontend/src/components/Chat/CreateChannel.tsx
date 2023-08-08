@@ -4,7 +4,7 @@ import { webSocket } from '../../webSocket';
 import { manageRoomsTypes } from './args.types';
 import { accessStatus } from './accessStatus';
 import { useDispatch, useSelector } from 'react-redux';
-import { useGetIsRoomNameTakenQuery, useLazyGetIsRoomNameTakenQuery } from '../../store/api';
+import { useLazyGetIsRoomNameTakenQuery } from '../../store/api';
 import { addRoom } from '../../store/rooms';
 
 import Error from '../Global/Error';

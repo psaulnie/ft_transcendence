@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 
 import { webSocket } from '../../webSocket';
 
@@ -10,15 +10,11 @@ import { addBlockedUser } from '../../store/user';
 import Room from './Room';
 import Tab from './Tab';
 import UsersTab from './UsersTab';
-import CreateChannel from './CreateChannel';
-import JoinChannel from './JoinChannel';
-import JoinDirectMessage from './JoinDirectMessage';
 import DirectMessageProvider from './DirectMessageProvider';
 import ChatProcess from './ChatProcess';
 import Error from '../Global/Error';
 
-import { Skeleton, Box, Grid, Button } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
+import { Skeleton, Box, Grid } from '@mui/material';
 
 import RoomTabs from './RoomTabs';
 import { addRoom, setRoomIndex } from '../../store/rooms';

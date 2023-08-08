@@ -47,7 +47,7 @@ function MessageProvider({roomName}: {roomName: string}) {
 		return () => {
 		  webSocket.off(listener, onMsgSent);
 		};
-	  }, [roomName, dispatch, rooms, user]);
+	  }, [roomName, dispatch, rooms, user, trigger]);
 
 	return (null);
 }

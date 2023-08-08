@@ -5,7 +5,6 @@ import { sendMsgTypes } from '../args.types';
 import { useSelector } from 'react-redux';
 
 import { Button, Grid, TextField } from '@mui/material';
-import PublishIcon from '@mui/icons-material/Publish';
 import { Publish } from '@mui/icons-material';
 
 export default function InputForm({roomName, isDirectMessage}: {roomName: string, isDirectMessage: boolean}) {

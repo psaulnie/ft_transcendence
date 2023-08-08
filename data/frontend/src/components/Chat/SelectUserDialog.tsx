@@ -4,7 +4,7 @@ import { webSocket } from "../../webSocket";
 import { Dialog, DialogTitle, DialogActions, Button, Zoom, TextField, Autocomplete, Skeleton, DialogContent } from "@mui/material";
 import { TransitionProps } from "@mui/material/transitions";
 
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
 import { useGetInvitedUsersListQuery } from "../../store/api";
 

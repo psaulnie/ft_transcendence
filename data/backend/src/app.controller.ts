@@ -66,20 +66,7 @@ export class AppController {
 		const user = await this.userService.findOne(username);
 		if (user) {
 			const path = user.urlAvatar;
-			if (path == '')
-			{
-				const file = createReadStream(join(process.cwd(), '../avatars/default.jpg'));
-				if (file)
-				{
-					res.set({
-						'Content-Type': 'image/jpg'
-					});
-					return new StreamableFile(file);
-				}
-				else
-					throw new HttpException('Internal Server Error', 500);
-			}
-			else if (path)
+			if (path)
 			{
 				const file = createReadStream(join(process.cwd(), '..' + path));
 				if (file)

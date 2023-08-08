@@ -1,4 +1,6 @@
-import { useState, useEffect, useRef, useLayoutEffect} from 'react';
+import { useState, useEffect, useRef } from 'react';
+
+import { useLayoutEffect } from 'react';
 
 import MessagesBox from './Message/MessagesBox';
 import InputForm from './Message/InputForm';
@@ -14,12 +16,14 @@ function Room({roomName}: {roomName: string}) {
 	const [role, setRole] = useState('none');
 	const roomIndex = rooms.room.findIndex((obj: {name: string, role: string}) => obj.name === roomName);
 
+	const messages = rooms.room[roomIndex].messages;
+
 	useLayoutEffect(() => {
 		const containerRef = messagesContainerRef.current;
 		if (containerRef) {
 			containerRef.scrollTop = containerRef.scrollHeight;
 		}
-	}, [rooms.room[roomIndex].messages]);
+	}, [messages]);
 	
 	useEffect(() => {
 		const cRole = rooms.room.find((obj: {name: string, role: string}) => obj.name === roomName);

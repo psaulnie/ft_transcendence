@@ -71,6 +71,8 @@ function JoinDirectMessage() {
 									return (
 										<MenuItem key={key} value={username}>{username}</MenuItem>
 									);
+								else
+									return null;
 							})
 						}
 					</Select>
