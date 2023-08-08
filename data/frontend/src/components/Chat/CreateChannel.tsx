@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 
 import { webSocket } from '../../webSocket';
-import { manageRoomsTypes } from './args.types';
 import { accessStatus } from './accessStatus';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLazyGetIsRoomNameTakenQuery } from '../../store/api';
@@ -71,7 +70,7 @@ function CreateChannel() {
 				return ;
 			}
 			dispatch(addRoom({name: newRoomName, role: "owner", isDirectMsg: false, hasPassword: hasPassword, openTab: true, isMuted: false}));
-			webSocket.emit('manageRooms', { type: manageRoomsTypes.add, source: user.username, room: newRoomName, access: access});
+			webSocket.emit('joinRoom', { source: user.username, room: newRoomName, access: access});
 		}
 		else
 			alert("You are currently in this channel");

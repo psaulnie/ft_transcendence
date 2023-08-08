@@ -11,15 +11,16 @@ export default function InputForm({roomName, isDirectMessage}: {roomName: string
 	const user = useSelector((state: any) => state.user);
 	const rooms = useSelector((state: any) => state.rooms);
 
-	const [value, setValue] = useState<sendMsgArgs>({ type: sendMsgTypes.msg, source: user.username, target: roomName, data: '', isDirectMessage: isDirectMessage});
+	const [value, setValue] = useState<sendMsgArgs>({ type: sendMsgTypes.msg, source: user.username, target: roomName, data: ''});
 	const [message, setMessage] = useState('');
 	const [isLoading, setIsLoading] = useState(false);	
 
 	function send() {
+		const msg = isDirectMessage ? 'sendDirectMsg' : 'sendMsg';
 		setMessage('');
-		setValue({ type: sendMsgTypes.msg, source: user.username, target: roomName, data: '', isDirectMessage: isDirectMessage});
+		setValue({ type: sendMsgTypes.msg, source: user.username, target: roomName, data: ''});
 		setIsLoading(true);
-		webSocket.timeout(500).emit('sendMsg', value, () => {
+		webSocket.timeout(500).emit(msg, value, () => {
 			setIsLoading(false);
 		});
 	}
@@ -39,7 +40,7 @@ export default function InputForm({roomName, isDirectMessage}: {roomName: string
 	{
 		if (e.target.value.length <= 50)
 		{
-			setValue({ type: sendMsgTypes.msg, source: user.username, target: roomName, data: e.target.value, isDirectMessage: isDirectMessage });
+			setValue({ type: sendMsgTypes.msg, source: user.username, target: roomName, data: e.target.value });
 			setMessage(e.target.value);	
 		}
 	}

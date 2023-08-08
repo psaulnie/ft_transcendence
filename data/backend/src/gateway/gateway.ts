@@ -12,8 +12,8 @@ import { Socket, Server } from 'socket.io';
 import { RoomService } from 'src/services/room.service';
 import { UserService } from 'src/services/user.service';
 
-import { manageRoomsArgs, sendMsgArgs, actionArgs } from './args.interface';
-import { actionTypes, manageRoomsTypes, sendMsgTypes } from './args.types';
+import { sendMsgArgs, actionArgs } from './args.interface';
+import { actionTypes } from './args.types';
 import { accessStatus } from 'src/chatModule/accessStatus';
 
 @WebSocketGateway({
@@ -42,9 +42,33 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
 			throw new WsException("User already exists");
 	}
 
+	@SubscribeMessage('sendPrivateMsg')
+	async sendPrivateMessage(client: Socket, payload: sendMsgArgs) {
+		if (payload.data == null || payload.source == null || payload.target == null || payload.type == null)
+			throw new WsException("Missing parameter");
+		if (payload.data.length > 50)
+			payload.data = payload.data.slice(0, 50);
+		const user = await this.userService.findOne(payload.source);
+		console.log("sendprivmsg");
+		if (!user)
+			throw new WsException("Source user not found");
+		const targetUser = await this.userService.findOne(payload.target);
+		if (!targetUser)
+			throw new WsException("Target user not found");
+		if (targetUser.blockedUsers.includes(user))
+			throw new WsException("Target user blocked source user");
+		this.server.emit(payload.target, { 
+			source: payload.source,
+			target: payload.target,
+			action: actionTypes.msg,
+			data: payload.data,
+			isDirectMessage: true,
+			role: "none" });
+	}
+
 	@SubscribeMessage('sendMsg')
-	async handleMessage(client: Socket, payload: sendMsgArgs) {
-		if (payload.data == null || payload.source == null || payload.target == null || payload.type == null || payload.isDirectMessage == null)
+	async sendMsg(client: Socket, payload: sendMsgArgs) {
+		if (payload.data == null || payload.source == null || payload.target == null || payload.type == null)
 			throw new WsException("Missing parameter");
 		if (payload.data.length > 50)
 			payload.data = payload.data.slice(0, 50);
@@ -52,44 +76,26 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
 		console.log("sendmsg");
 		if (!user)
 			throw new WsException("Source user not found");
-		if (payload.isDirectMessage == true)
-		{
-			const targetUser = await this.userService.findOne(payload.target);
-			if (!targetUser)
-				throw new WsException("Target user not found");
-			if (targetUser.blockedUsers.includes(user))
-				throw new WsException("Target user blocked source user");
-			this.server.emit(payload.target, { 
-				source: payload.source,
-				target: payload.target,
-				action: actionTypes.msg,
-				data: payload.data,
-				isDirectMessage: true,
-				role: "none" })
-		}
-		if (payload.type == sendMsgTypes.msg && (await this.roomService.isMuted(payload.target, user)) === false)
-		{
-			const room = await this.roomService.findOne(payload.target);
-			if (!room)
-				throw new WsException("Room not found");
-			if (room.usersID.find((tmpUser) => tmpUser.user == user))
-				throw new WsException("User not in room");
-			let role = await this.roomService.getRole(room, user.id);
-			if (!role)
-				role = "none";
-			this.server.emit(payload.target, { 
-				source: payload.source,
-				target: payload.target,
-				action: actionTypes.msg,
-				data: payload.data,
-				isDirectMessage: false,
-				role: role })
-		}
+		const room = await this.roomService.findOne(payload.target);
+		if (!room)
+			throw new WsException("Room not found");
+		if (room.usersID.find((tmpUser) => tmpUser.user == user))
+			throw new WsException("User not in room");
+		let role = await this.roomService.getRole(room, user.id);
+		if (!role)
+			role = "none";
+		this.server.emit(payload.target, { 
+			source: payload.source,
+			target: payload.target,
+			action: actionTypes.msg,
+			data: payload.data,
+			isDirectMessage: false,
+			role: role });
 	}
 
-	@SubscribeMessage('manageRooms') // TODO when frontend is refactored, split this function into multiple functions
-	async handleRoom(client: Socket, payload: manageRoomsArgs) {
-		if (payload.access == null || payload.room == null || payload.source == null || payload.type == null)
+	@SubscribeMessage('joinRoom')
+	async joinRoom(client: Socket, payload: any) {
+		if (payload.access == null || payload.room == null || payload.source == null)
 			throw new WsException("Missing parameter");
 		if (payload.access == accessStatus.protected && payload.password == null)
 			throw new WsException("Missing parameter");	
@@ -100,15 +106,12 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
 		let role = "none";
 		if (payload.room.length > 10)
 			payload.room = payload.room.slice(0, 10);
-		if (payload.type == manageRoomsTypes.add)
-		{
 			if (await this.roomService.findOne(payload.room) == null)
 			{
 				if (payload.access != accessStatus.protected)
 					await this.roomService.createRoom(payload.room, user, payload.access);
 				else
 				{
-					console.log(payload.room);
 					hasPassword = true;
 					await this.roomService.createPasswordProtectedRoom(payload.room, user, payload.access, payload.password);
 				}
@@ -144,18 +147,33 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
 				this.server.emit(payload.source + "OPTIONS", { source: payload.source, target: payload.room, action: actionTypes.mute})
 			if (hasPassword == true)
 				this.server.emit(payload.source + "OPTIONS", { source: payload.source, target: payload.room, action: actionTypes.rightpassword, role: role})
-		}
-		else if (payload.type == manageRoomsTypes.remove)
-		{
-			await this.roomService.removeUser(payload.room, user.id);
-			this.server.emit(payload.room, { source: payload.source, target: payload.room, action: actionTypes.left })
-		}
-		else if (payload.type == manageRoomsTypes.addDirectMsg)
-		{
-			this.server.emit(payload.room, { source: payload.source, target: payload.room, action: actionTypes.privmsg })
-		}
 	}
 
+	@SubscribeMessage('leaveRoom')
+	async leaveRoom(client: Socket, payload: any) {
+		if (payload.access == null || payload.room == null || payload.source == null)
+			throw new WsException("Missing parameter");
+		const user = await this.userService.findOne(payload.source);
+		if (!user)
+			throw new WsException("Source user not found");
+		await this.roomService.removeUser(payload.room, user.id);
+		this.server.emit(payload.room, { source: payload.source, target: payload.room, action: actionTypes.left })
+	}
+
+	@SubscribeMessage('openPrivateMessage')
+	async openPrivateMessage(client: Socket, payload: any) {
+		if (payload.access == null || payload.room == null || payload.source == null)
+			throw new WsException("Missing parameter");
+		if (payload.access == accessStatus.protected && payload.password == null)
+			throw new WsException("Missing parameter");	
+		const user = await this.userService.findOne(payload.source);
+		if (!user)
+			throw new WsException("Source user not found");
+		if (payload.room.length > 10)
+			payload.room = payload.room.slice(0, 10);
+		this.server.emit(payload.room, { source: payload.source, target: payload.room, action: actionTypes.privmsg })
+	}
+	
 	@SubscribeMessage('kick')
 	async kickUser(client: Socket, payload: actionArgs) {
 		if (payload.room == null || payload.source == null || payload.target == null)

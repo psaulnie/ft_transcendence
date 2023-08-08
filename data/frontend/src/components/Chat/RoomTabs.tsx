@@ -12,7 +12,6 @@ import { useState } from "react";
 
 import { webSocket } from "../../webSocket";
 import { removeRoom, setRead, setRoomIndex } from "../../store/rooms";
-import { manageRoomsTypes } from "./args.types";
 import RoomOptionsMenu from "./RoomOptionsMenu";
 
 export default function RoomTabs()
@@ -45,7 +44,7 @@ export default function RoomTabs()
 
 	function quitRoom(roomName: string)
 	{
-		webSocket.emit('manageRooms', { type: manageRoomsTypes.remove, source: user.username, room: roomName, access: 0});
+		webSocket.emit('leaveRoom', { source: user.username, room: roomName, access: 0});
 		dispatch(removeRoom(roomName));
 	}
 

@@ -4,7 +4,6 @@ import { webSocket } from "../../webSocket";
 import { Dialog, DialogTitle, DialogActions, Button, Zoom, TextField } from "@mui/material";
 import { TransitionProps } from "@mui/material/transitions";
 
-import { manageRoomsTypes } from "./args.types";
 import { useDispatch, useSelector } from "react-redux";
 import { accessStatus } from "./accessStatus";
 
@@ -48,8 +47,7 @@ export default function PasswordDialog({open, setOpen, roomName, role, createRoo
 			if (createRoom === true)
 			{
 				dispatch(addRoom({name: roomName, role: role, isDirectMsg: false, hasPassword: true, openTab: true, isMuted: false}));
-				webSocket.emit('manageRooms', { type: manageRoomsTypes.add, source: user.username,
-								room: roomName, access: accessStatus.protected, password: password });
+				webSocket.emit('joinRoom', { source: user.username, room: roomName, access: accessStatus.protected, password: password });
 			}
 			else
 			{
