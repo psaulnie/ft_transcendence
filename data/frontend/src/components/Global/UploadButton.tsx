@@ -5,7 +5,6 @@ import { useUploadAvatarMutation } from "../../store/api";
 import { Button, Grid, Input } from "@mui/material";
 import UploadIcon from '@mui/icons-material/Upload';
 import { useSelector } from "react-redux";
-import CustomAvatar from "./CustomAvatar";
 
 export default function UploadButton() {
 	const user = useSelector((state: any) => state.user);
@@ -15,7 +14,7 @@ export default function UploadButton() {
 	const [uploadAvatar] = useUploadAvatarMutation();
 
 	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		if (e.target.files?.[0] != undefined)
+		if (e.target.files?.[0] !== undefined)
 		{
 			const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif'];
 			if (!allowedTypes.includes(e.target.files[0].type))
@@ -23,6 +22,7 @@ export default function UploadButton() {
 				alert('Only images are allowed');
 				setSelectedFile(undefined);
 				setFileUrl('');
+
 			}
 			else if (e.target.files[0].size > 1024 * 1024 * 5)
 			{
@@ -40,7 +40,7 @@ export default function UploadButton() {
 
 	const handleUpload = () => {
 		const formData = new FormData();
-		if (selectedFile != undefined)
+		if (selectedFile !== undefined)
 		{
 			formData.append('username', user.username);
 			formData.append('file', selectedFile);
@@ -55,7 +55,7 @@ export default function UploadButton() {
 				Upload
 				<UploadIcon />
 			</Button>
-			{fileUrl != '' ? <img width="15%" src={fileUrl} /> : null}
+			{fileUrl !== '' ? <img width="15%" src={fileUrl} alt="avatar" /> : null}
 		</Grid>
 	);
 }
