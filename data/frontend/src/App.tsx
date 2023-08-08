@@ -5,6 +5,8 @@ import { SyntheticEvent, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from './store/user';
 
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
 // Components
 import Chat from './components/Chat/Chat';
 // import Game from './components/Game/Game';
@@ -12,9 +14,12 @@ import Login from './components/Global/Login';
 import Navigation from './components/Navigation/Navigation';
 import NavDrawer from './components/Navigation/NavDrawer';
 
+import UploadButton from './components/Global/UploadButton';
+import Home from './components/Global/Home';
+
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import UploadButton from './components/Global/UploadButton';
+import Profile from './components/Global/Profile';
 
 const darkTheme = createTheme({
   palette: {
@@ -49,31 +54,23 @@ function App() {
 	<div className="App">
 		<ThemeProvider theme={darkTheme}>
      		<CssBaseline />
-			<Navigation setDrawerState={setDrawerState}/>
-			<NavDrawer state={drawerState} toggleDrawer={toggleDrawer}/>
-			<div className='main'>
-				{
-					user.isLoggedIn === false ?
-						<Login />
-					: null
-				}
-				{user.isLoggedIn ? <button onClick={logoutButton}>Logout</button> : null}
-				{user.isLoggedIn ? (<UploadButton />) : null}
-				{user.isLoggedIn ? (<Chat />) : null}
-				{/* {user.isLoggedIn ? (<Game />) : null} */}
-			</div>
+			<BrowserRouter>
+				<Navigation setDrawerState={setDrawerState}/>
+				<NavDrawer state={drawerState} toggleDrawer={toggleDrawer}/>
+				<div className='main'>
+					<Routes>
+						<Route path="/" element={<Login/>}></Route>
+						<Route path="/profile" element={<Profile/>}></Route>
+						<Route path="/home" element={<Home/>}></Route>
+					</Routes>
+					{user.isLoggedIn ? (<UploadButton />) : null}
+					{user.isLoggedIn ? <button onClick={logoutButton}>Logout</button> : null}
+					{user.isLoggedIn ? (<Chat/>) : null} 
+				</div>
+			</BrowserRouter>
 	    </ThemeProvider>
 	</div>
 	);
 }
 
 export default App;
-
-
-// ======================
-
-// import image from "./img/UpmostlyLogo.png"; 
-
-// function Component() {
-//   return (
-//     <div style={{ backgroundImage:`url(${image})`,backgroundRepeat:"no-repeat" }}>

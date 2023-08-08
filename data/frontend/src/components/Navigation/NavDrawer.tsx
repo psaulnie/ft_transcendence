@@ -23,6 +23,7 @@ export default function NavDrawer({state, toggleDrawer}: {state: boolean, toggle
 			>
 				<Typography variant="h5">ft_transcendence</Typography>
 				<List>
+						<NavDrawerButton buttonText='Home'/>
 						<NavDrawerButton buttonText='Game'/>
 						<NavDrawerButton buttonText='Chat'/>
 						<NavDrawerButton buttonText='Profile'/>

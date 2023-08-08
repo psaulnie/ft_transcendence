@@ -5,7 +5,8 @@ import { sendMsgTypes } from '../args.types';
 import { useSelector } from 'react-redux';
 
 import { Button, Grid, TextField } from '@mui/material';
-import SendIcon from '@mui/icons-material/Send';
+import PublishIcon from '@mui/icons-material/Publish';
+import { Publish } from '@mui/icons-material';
 
 export default function Room({roomName, isDirectMessage}: {roomName: string, isDirectMessage: boolean}) {
 	const user = useSelector((state: any) => state.user);
@@ -46,14 +47,19 @@ export default function Room({roomName, isDirectMessage}: {roomName: string, isD
 
 	return (
 		<form onSubmit={onSubmit}>
-			<Grid container justifyContent='center' alignItems='center'>
-					<Grid item xs={10} >
+			<Grid container justifyContent='center' alignItems='center' spacing={2}>
+					<Grid item xs={8} >
 						<TextField fullWidth value={message} onChange={onChange} disabled={rooms.room.find((obj: any) => obj.name === roomName).isMuted}/>
 					</Grid>
 					<Grid item xs={2}>
 						<Button variant='contained' name='message' type="submit"
+								sx={{width: '80px', bgcolor: 'red'}}
 								disabled={ isLoading || rooms.room.find((obj: any) => obj.name === roomName).isMuted } onKeyDown={keyPress}
-								endIcon={<SendIcon />}>Send</Button>
+								endIcon={<Publish />}
+								centerRipple
+						>
+							send
+						</Button>
 					</Grid>
 			</Grid>
 		</form>

@@ -75,9 +75,10 @@ export default function Message({ message, role, roomName }: arg) {
 			<Box sx={{ flexGrow: 1, overflow: 'hidden', px: 3}} >
 				<StyledPaper
 					sx={{
-						my: 1,
-						mx: 'auto',
-						p: 2,
+					my: 1,
+					mx: 'auto',
+					p: 2,
+					bgcolor: '#ffd089',
 					}}
 				>
 					<Grid container wrap="nowrap" spacing={2}>
@@ -88,7 +89,7 @@ export default function Message({ message, role, roomName }: arg) {
 							: null
 						}
 						<Grid item xs style={{ flexWrap: 'wrap' } }>
-							<Typography style={ {color: 'white', overflowWrap: 'break-word', textAlign: user.username !== message.source ? 'start' : 'end'} } >{ message.data }</Typography>
+							<Typography style={ {color: 'black', overflowWrap: 'break-word', textAlign: user.username !== message.source ? 'start' : 'end'} } >{ message.data }</Typography>
 						</Grid>
 						{
 							user.username === message.source ? 
