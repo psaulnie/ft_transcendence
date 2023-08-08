@@ -43,7 +43,7 @@ export default function SelectUserDialog({open, setOpen, roomName}: arg) {
 
 	function confirmButton(e: any) {
 		e.preventDefault();
-		webSocket.emit('inviteUser', {roomName: roomName, username: selectedUser});
+		webSocket.emit('inviteUser', {roomName: roomName, username: selectedUser, source: user.username});
 		setOpen(false);
 	}
 

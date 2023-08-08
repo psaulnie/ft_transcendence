@@ -280,9 +280,8 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
 	}
 
 	@SubscribeMessage('setPasswordToRoom')
-	async setPasswordToRoom(client: Socket, payload: {room: string, password: string, source: string}) { // TODO add source parameter to payload in frontend + add source verification 
-		console.log(payload);
-		if (payload.room == null || payload.password == null)
+	async setPasswordToRoom(client: Socket, payload: {room: string, password: string, source: string}) {
+		if (payload.room == null || payload.password == null || payload.source == null)
 			throw new WsException("Missing parameter");
 		console.log("setPasswordToRoom");
 		const admin = await this.userService.findOne(payload.source);
@@ -298,22 +297,33 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
 	}
 
 	@SubscribeMessage('removePasswordToRoom')
-	async removePasswordToRoom(client: Socket, payload: string) { // TODO add source parameter to payload in frontend + add payload verification
-		// const admin = await this.userService.findOne(payload.source);
-		// if (!admin)
-		// 	throw new WsException("Source user not found");
-		// if (await this.roomService.getRole(payload.room, admin.id) == "none")
-		// 	throw new WsException("Source user is not admin of the room");
-		this.roomService.removePasswordToRoom(payload);
-		this.server.emit(payload, { source: payload, target: payload, action: actionTypes.noPassword });
+	async removePasswordToRoom(client: Socket, payload: { room: string, source: string }) {
+		if (payload.room == null || payload.source == null)
+			throw new WsException("Missing parameter");
+		const admin = await this.userService.findOne(payload.source);
+		if (!admin)
+			throw new WsException("Source user not found");
+		const room = await this.roomService.findOne(payload.room);
+		if (!room)
+			throw new WsException("Room not found");
+		if (await this.roomService.getRole(room, admin.id) == "none")
+			throw new WsException("Source user is not admin of the room");
+		this.roomService.removePasswordToRoom(payload.room);
+		this.server.emit(payload.room, { source: payload.source, target: payload.room, action: actionTypes.noPassword });
 	}
 
 	@SubscribeMessage('inviteUser')
-	async inviteUser(client: Socket, payload: {roomName: string, username: string, hasPassword: boolean}) { // TODO add hasPassword parameter in the emit of inviteUser and add verification
+	async inviteUser(client: Socket, payload: {roomName: string, username: string}) {
 		console.log(payload);
 		if (payload.roomName == null || payload.username == null)
 			throw new WsException("Missing parameters");
-		this.server.emit(payload.username + "OPTIONS", { source: payload.roomName, target: payload.username, action: actionTypes.invited, hasPassword: payload.hasPassword });
+		const user = await this.userService.findOne(payload.username);
+		if (!user)
+			throw new WsException("User not found");
+		const room = await this.roomService.findOne(payload.roomName);
+		if (!room)
+			throw new WsException("Room not found");
+		this.server.emit(payload.username + "OPTIONS", { source: payload.roomName, target: payload.username, action: actionTypes.invited, hasPassword: room.password != null });
 	}
 
 	@SubscribeMessage('joinPrivateRoom')

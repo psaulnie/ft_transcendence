@@ -53,7 +53,7 @@ export default function PasswordDialog({open, setOpen, roomName, role, createRoo
 			}
 			else
 			{
-				webSocket.emit('setPasswordToRoom', {room: roomName, password: password});
+				webSocket.emit('setPasswordToRoom', {room: roomName, password: password, source: user.username});
 			}
 			setOpen(false);
 		}

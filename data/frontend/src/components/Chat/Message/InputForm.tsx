@@ -8,7 +8,7 @@ import { Button, Grid, TextField } from '@mui/material';
 import PublishIcon from '@mui/icons-material/Publish';
 import { Publish } from '@mui/icons-material';
 
-export default function Room({roomName, isDirectMessage}: {roomName: string, isDirectMessage: boolean}) {
+export default function InputForm({roomName, isDirectMessage}: {roomName: string, isDirectMessage: boolean}) {
 	const user = useSelector((state: any) => state.user);
 	const rooms = useSelector((state: any) => state.rooms);
 
@@ -31,9 +31,9 @@ export default function Room({roomName, isDirectMessage}: {roomName: string, isD
 	}
 
 	function onSubmit(event: SyntheticEvent) {
-	event.preventDefault();
-	if (value.data !== '')
-		send();
+		event.preventDefault();
+		if (value.data !== '')
+			send();
 	}
 
 	function onChange(e: any)
