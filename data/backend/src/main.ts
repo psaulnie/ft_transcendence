@@ -14,7 +14,9 @@ async function bootstrap() {
   app.use(
     session({
       cookie: {
-        maxAge: 86400000, // 1 day,
+        maxAge: 86400000, // 1 day
+        httpOnly: true,
+        secure: true,
       },
       secret: 'random_string',
       resave: false,
@@ -25,7 +27,8 @@ async function bootstrap() {
   app.use(passport.initialize());
   app.use(passport.session());
   app.enableCors({
-    origin: '*',
+    origin: 'http://localhost:3000',
+    credentials: true, // Allow cookies
   });
   await app.listen(port, () => {
     console.log(`Running on port ${port}`);

@@ -1,17 +1,10 @@
-import {
-  Controller,
-  Get,
-  Header,
-  Redirect,
-  Req,
-  Res,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { Request, Response } from 'express';
 import {
   AuthenticatedGuard,
   IntraAuthGuards,
 } from '../guards/intra-auth.guards';
+import { User } from '../../entities';
 
 @Controller('auth')
 export class AuthController {
@@ -31,8 +24,15 @@ export class AuthController {
    */
   @Get('redirect')
   @UseGuards(IntraAuthGuards)
-  redirect(@Res() res: Response) {
+  redirect(@Res() res: Response, @Req() req: Request) {
+    const user = req.user as User;
+    console.log('redirect controller, accessToken : ', user.accessToken);
+    res.cookie('accessToken', user.accessToken, {
+      httpOnly: true,
+      secure: true,
+    }); // Set accessToken in cookie
     res.redirect('http://localhost:3000/home');
+    // res.sendStatus(200);
   }
 
   /**

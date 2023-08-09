@@ -9,11 +9,18 @@ import { Repository } from 'typeorm';
 export class AuthService implements AuthProvider {
   constructor(@InjectRepository(User) private userRepo: Repository<User>) {}
   async validateUser(details: UserDetails) {
-    const { clientId } = details;
+    const { clientId, accessToken, refreshToken } = details;
+    console.log('details in validateUser : ', details);
     const user = await this.userRepo.findOneBy({ clientId });
     console.log('Found user in db', user);
     console.log('-----');
-    if (user) return user;
+    if (user) {
+      user.accessToken = accessToken;
+      user.refreshToken = refreshToken;
+      await this.userRepo.save(user); //Update accessToken
+      console.log('user after update : ', user);
+      return user;
+    }
     return this.createUser(details);
   }
 
