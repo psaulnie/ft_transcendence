@@ -6,6 +6,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { logout } from './store/user';
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 
 // Components
 import Chat from './components/Chat/Chat';
@@ -48,6 +49,7 @@ function App() {
 	{
 		e.preventDefault();
 		dispatch(logout());
+		window.location.href = "/";
 	}
 
 	return (
