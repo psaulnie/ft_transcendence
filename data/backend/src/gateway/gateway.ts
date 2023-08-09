@@ -240,7 +240,7 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
 		// if (!user)
 		// throw new WsException("User not found");
 	if (this.matchmakingQueue.find((name:string) => name == payload.username))
-	throw new WsException("Already in Matchmaking");
+		throw new WsException("Already in Matchmaking");
 	this.matchmakingQueue.push(payload.username);
 	if (this.matchmakingQueue.length >= 2) {
 			console.log(payload.username);
@@ -248,9 +248,19 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
 			const player2 = this.matchmakingQueue[1];
 			this.server.emit("matchmaking" + player1, {opponent: player2});
 			this.server.emit("matchmaking" + player2, {opponent: player1});
-			this.matchmakingQueue.shift();
-			this.matchmakingQueue.shift();
+			this.matchmakingQueue.splice(this.matchmakingQueue.indexOf(player1), 1);
+			this.matchmakingQueue.splice(this.matchmakingQueue.indexOf(player2), 1);
 		}
+	}
+
+	@SubscribeMessage('cancelMatchmaking')
+	async cancelMatchmaking(client: Socket, payload: {username: string}) {
+		// const user = await this.userService.findOne(payload.username);
+		// if (!user)
+		// throw new WsException("User not found");
+	if (this.matchmakingQueue.find((name:string) => name != payload.username))
+		throw new WsException("Player not in Matchmaking");
+	this.matchmakingQueue.splice(this.matchmakingQueue.indexOf(payload.username), 1);
 	}
 
 	@SubscribeMessage('game')

@@ -8,11 +8,17 @@ import { useSelector } from 'react-redux';
 
 export default function Matchmaking({setFoundUser, setOpponent}: {setFoundUser: any, setOpponent: any}) {
   const user = useSelector((state: any) => state.user);
+  const [bouttonClick, setButtonClick] = useState(false);
 
   function startMatchmaking() {
+    setButtonClick(true);
     webSocket.emit("matchmaking", {username: user.username});
   }
   
+  function cancelMatchmaking() {
+    setButtonClick(false);
+    webSocket.emit("cancelMatchmaking", {username: user.username});
+  }
 
 	useEffect(() => {
 
@@ -29,6 +35,6 @@ export default function Matchmaking({setFoundUser, setOpponent}: {setFoundUser: 
 	}, [user.username]);
 
   return (
-    <Button onClick={startMatchmaking}>Play</Button>
-  )
+      !bouttonClick ? <Button onClick={startMatchmaking}>play</Button> : <Button onClick={cancelMatchmaking}>cancel</Button>
+  );
 };
