@@ -52,6 +52,7 @@ export const roomsSlice = createSlice({
 									messages: [], unread: false, hasPassword: action.payload.hasPassword, usersList: [], isMuted: false});
 				if (action.payload.openTab || state.index === -1)
 					state.index++;
+
 			}
 			else if (roomIndex !== -1)
 				state.index = roomIndex;
@@ -81,7 +82,10 @@ export const roomsSlice = createSlice({
 			if (roomIndex !== -1)
 			{
 				state.room[roomIndex].messages.push(action.payload.message);
-				state.room[roomIndex].unread = true;
+				if (roomIndex !== state.index)
+					state.room[roomIndex].unread = true;
+				else
+					state.room[roomIndex].unread = false;
 			}
 			else
 			{
@@ -90,7 +94,7 @@ export const roomsSlice = createSlice({
 					role: "none",
 					isDirectMsg: true,
 					messages: [action.payload.message],
-					unread: true,
+					unread: false,
 					hasPassword: false,
 					usersList: [],
 					isMuted: false

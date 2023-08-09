@@ -16,7 +16,7 @@ export default function InputForm({roomName, isDirectMessage}: {roomName: string
 	const [isLoading, setIsLoading] = useState(false);	
 
 	function send() {
-		const msg = isDirectMessage ? 'sendDirectMsg' : 'sendMsg';
+		const msg = isDirectMessage ? 'sendPrivateMsg' : 'sendMsg';
 		setMessage('');
 		setValue({ type: sendMsgTypes.msg, source: user.username, target: roomName, data: ''});
 		setIsLoading(true);

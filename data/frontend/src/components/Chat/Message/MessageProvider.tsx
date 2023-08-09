@@ -42,7 +42,7 @@ function MessageProvider({roomName}: {roomName: string}) {
 		let listener = roomName;
 		
 		if (currentRoom.isDirectMessage === true)
-			listener = roomName + user.username;
+			listener += user.username;
 		webSocket.on(listener, onMsgSent);
 		return () => {
 		  webSocket.off(listener, onMsgSent);
