@@ -48,11 +48,19 @@ function UsersTab({roomName} : {roomName: string})
     	<>
 			<Button variant="text"
 				onClick={handleOpenTab}
+				disableRipple
 				endIcon={<Box sx={{ fontSize: 15, color: "black"}}>
-					<PersonIcon style={{ fontSize: '30px',}}/>
+					<PersonIcon style={{ fontSize: '30px',}}
+						sx={{'@media (max-width: 600px) or (max-height: 700px)': {
+							marginLeft: '1em'
+						},}}
+					/>
 				</Box>}
       			sx={{
 				padding: "0.5em",
+				'&:hover': {
+					backgroundColor: 'rgba(255, 255, 255, 0)',
+				},
 				width: 'auto',
         		"& .MuiButton-label": {
         		  	display: "flex",

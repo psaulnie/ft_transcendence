@@ -40,10 +40,13 @@ function Tab()
 			<Button variant="text"
 				onClick={handleOpenTab}
 				startIcon={<Box sx={{ fontSize: 30, color: "red"}}>
-					<MenuIcon />
+					<MenuIcon sx={{marginLeft: '1.8em', width: 'auto',}}/>
 				</Box>}
       			sx={{
 				padding: "0.7em",
+				'&:hover': {
+					backgroundColor: 'rgba(255, 255, 255, 0)',
+				},
         		"& .MuiButton-startIcon": {
         			marginRight: "0.25em", // Ajustez la marge droite de l'icône pour le centrer
         		},

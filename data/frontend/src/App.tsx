@@ -16,6 +16,7 @@ import Home from './components/Global/Home';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Profile from './components/Global/Profile';
+import { Skeleton, Box, Grid, Button, Typography, Avatar, Slide} from '@mui/material';
 
 const theme = createTheme({
 	palette: {
