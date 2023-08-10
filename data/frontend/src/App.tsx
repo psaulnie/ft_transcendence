@@ -17,14 +17,17 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Profile from './components/Global/Profile';
 
-const darkTheme = createTheme({
-  palette: {
-    mode: 'dark',
-	background: {
-		default: '#0A1929'
-	}
-  },
-});
+const theme = createTheme({
+	palette: {
+		mode: 'dark',
+	  	primary: {
+			main: '#000000', // Red color
+	  	},
+	  	secondary: {
+			main: '#ff9900', // Orange color
+	  	},
+	},
+  });
 function App() {
 	const user = useSelector((state: any) => state.user);
 	const dispatch = useDispatch();
@@ -65,7 +68,7 @@ function App() {
 
 	return (
 	<div className="App">
-		<ThemeProvider theme={darkTheme}>
+		<ThemeProvider theme={theme}>
      		<CssBaseline />
 			<BrowserRouter>
 				<Navigation setDrawerState={setDrawerState}/>

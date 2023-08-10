@@ -49,13 +49,15 @@ function UsersTab({roomName} : {roomName: string})
 			<Button variant="text"
 				onClick={handleOpenTab}
 				endIcon={<Box sx={{ fontSize: 15, color: "black"}}>
-					<PersonIcon />
+					<PersonIcon style={{ fontSize: '30px',}}/>
 				</Box>}
       			sx={{
 				padding: "0.5em",
+				width: 'auto',
         		"& .MuiButton-label": {
         		  	display: "flex",
         			alignItems: "right",
+					marginLeft: 'auto',
         		},
       			}}
 			></Button>

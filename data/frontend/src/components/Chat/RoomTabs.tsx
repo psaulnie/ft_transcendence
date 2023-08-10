@@ -55,7 +55,7 @@ export default function RoomTabs()
 				position: 'fixed', bottom:"100",
 				"& .MuiTabs-flexContainer": {
 					// Adjust the width of the tabs
-					maxWidth: "22em",
+					maxWidth: "19em",
 					maxHeight: "100%", // You can adjust the value here
 					marginTop: "0px",
 				  },

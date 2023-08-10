@@ -14,10 +14,11 @@ import CreateChannel from './CreateChannel';
 import JoinChannel from './JoinChannel';
 import JoinDirectMessage from './JoinDirectMessage';
 import DirectMessageProvider from './DirectMessageProvider';
+import PersonIcon from '@mui/icons-material/Person';
 import ChatProcess from './ChatProcess';
 import Error from '../Global/Error';
 
-import { Skeleton, Box, Grid, Button } from '@mui/material';
+import { Skeleton, Box, Grid, Button, Typography, Avatar} from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 
 import RoomTabs from './RoomTabs';
@@ -92,6 +93,109 @@ function Chat() {
 	return (
 		<div className='chat'>
 			<ChatProcess/>
+
+
+			
+			{/* <Box
+    		  	sx={{
+    		  	  	display: 'flex',
+    		  	  	justifyContent: 'center',
+    		  	  	alignItems: 'center',
+    		  	  	height: '50vh',
+    		  	}}
+    		>	
+    		  	<Grid container direction="column" spacing={2} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+    		  	  	<Grid item sx={{ marginBottom: '2em' }}>
+    		  	  	  	<Button
+    		  	  	  	  	variant="contained"
+    		  	  	  	  	color="primary"
+    		  	  	  	  	sx={{ textTransform: 'none', fontWeight: 'bold', fontSize: '36px', width: '8em',
+								height: '2em',
+								backgroundColor: 'rgba(255, 255, 255, 0.9)',
+								borderColor: 'red',
+								color: 'black',
+								'&:hover': {
+									backgroundColor: 'red',
+									borderColor: 'red',
+								},
+							}}
+    		  	  	  	>
+    		  	  	  	  	Jouer
+    		  	  	  	</Button>
+    		  	  	</Grid>
+    		  	  	<Grid item>
+    		  	  	  	<Button
+    		  	  	    	variant="outlined"
+    		  	  	    	color="primary"
+							endIcon={<Box sx={{ fontSize: '40px', color: "black"}}>
+								<PersonIcon style={{
+        							fontSize: '36px',
+									verticalAlign: 'middle',
+        							color: 'black',
+      							}}/>
+							</Box>}
+    		  	  	    	sx={{ textTransform: 'none', fontWeight: 'bold', fontSize: '36px', width: '6.25em', height: '2em',
+								color: 'black', backgroundColor: 'rgba(255, 255, 255, 0.6)', borderColor: 'red',
+								'&:hover': {
+									borderColor: 'red',
+								},
+							}}
+    		  	  		>
+    		  	  	    	Profil
+    		  	  	  	</Button>
+    		  	  	</Grid>
+    		  	</Grid>
+    		</Box> */}
+
+
+
+
+			<Box
+    		  	sx={{
+					width: '40em',
+    		  	  	display: 'flex',
+    		  	  	justifyContent: 'center',
+    		  	  	alignItems: 'center',
+    		  	  	height: '50vh',
+    		  	}}
+    		>	
+				<Grid container spacing={1} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}
+					columns={{ xs: 12 }}>
+    			  	<Grid item xs={3} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+    			  	  	<Avatar src="falonso.jpg" alt="User Avatar" />
+    			  	</Grid>
+    			  	<Grid item xs={9}>
+    			  	  	<Box>
+    			  	  	  	<Typography variant="h6">John Doe</Typography>
+    			  	  	  	<Typography variant="body2">Web Developer</Typography>
+    			  	  	</Box>
+    			  	</Grid>
+    			  	<Grid item xs={4}>
+    			  	  	<Typography variant="body1">33</Typography>
+    			  	</Grid>
+    			  	<Grid item xs={4}>
+    			  	  	<Typography variant="body1">44</Typography>
+    			  	</Grid>
+    			  	<Grid item xs={4}>
+    			  	  	<Typography variant="body1">55</Typography>
+    			  	</Grid>
+    			  	<Grid item xs={4}>
+    			  	  	<Typography variant="body1">66</Typography>
+    			  	</Grid>
+    			  	<Grid item xs={4}>
+    			  	  	<Typography variant="body1">77</Typography>
+    			  	</Grid>
+    			  	<Grid item xs={4}>
+    			  	  	<Typography variant="body1">88</Typography>
+    			  	</Grid>
+    			</Grid>
+			</Box>
+
+
+
+
+
+			
 			<Box
                 sx={{
                 position: "fixed",
@@ -111,17 +215,17 @@ function Chat() {
 			>
 				<Grid container>
 					<DirectMessageProvider/>
-					<Grid item xs={1} sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
+					<Grid item xs={1} sx={{ display: "flex", justifyContent: "flex-end", alignItems: "right", marginLeft: '0.4em' }}>
 						{
 							rooms.index !== -1 && rooms.room[rooms.index] ? // CONDITION'S HERE TO KNOW IF THE USER IS NOT IN A ROOM
 								<UsersTab roomName={rooms.room[rooms.index].name}/>
 							: null
 						}
       				</Grid>
-					<Grid item zIndex={99} xs={10} sx={{ height: '5%', width: '100%'}}>
+					<Grid item zIndex={99} xs={9} sx={{ height: '5%', width: '70%'}}>
 						<RoomTabs/>
 					</Grid>
-					<Grid item xs={1} sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
+					<Grid item xs={1} sx={{ display: "flex", justifyContent: "flex-end", alignItems: "right", marginLeft: '2.1em'}}>
 						<Tab/>
       				</Grid>
 				</Grid>
