@@ -28,8 +28,8 @@ export class AuthController {
     const user = req.user as User;
     console.log('redirect controller, accessToken : ', user.accessToken);
     res.cookie('accessToken', user.accessToken, {
-      httpOnly: true,
-      secure: true,
+      httpOnly: false,
+      secure: false,
     }); // Set accessToken in cookie
     res.redirect('http://localhost:3000/home');
     // res.sendStatus(200);
