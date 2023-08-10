@@ -1,6 +1,6 @@
 import './App.css';
 
-import { SyntheticEvent, useState } from 'react';
+import React, { SyntheticEvent, useState } from 'react';
 
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from './store/user';
@@ -11,12 +11,12 @@ import { useNavigate } from 'react-router-dom';
 // Components
 import Chat from './components/Chat/Chat';
 // import Game from './components/Game/Game';
-import Login from './components/Global/Login';
+import Login from './components/Login/Login';
 import Navigation from './components/Navigation/Navigation';
 import NavDrawer from './components/Navigation/NavDrawer';
 
 import UploadButton from './components/Global/UploadButton';
-import Home from './components/Global/Home';
+import Home from './components/Home/Home';
 
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -33,7 +33,7 @@ const darkTheme = createTheme({
 function App() {
 	const user = useSelector((state: any) => state.user);
 	const dispatch = useDispatch();
-	
+
 	const [drawerState, setDrawerState] = useState(false);
 
 	const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
@@ -67,7 +67,7 @@ function App() {
 					</Routes>
 					{user.isLoggedIn ? (<UploadButton />) : null}
 					{user.isLoggedIn ? <button onClick={logoutButton}>Logout</button> : null}
-					{user.isLoggedIn ? (<Chat/>) : null} 
+					{user.isLoggedIn ? (<Chat/>) : null}
 				</div>
 			</BrowserRouter>
 	    </ThemeProvider>

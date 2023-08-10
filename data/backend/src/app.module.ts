@@ -4,11 +4,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CacheModule } from '@nestjs/cache-manager';
 
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { AppService } from './services/app.service';
 
-import { UserService } from './services/user.service';
+import { AuthModule } from './auth/auth.module';
+import { PassportModule } from '@nestjs/passport';
+import { entities } from './entities';
 
-import { User } from './entities/user.entity';
+import { User } from './entities';
 
 import { ChatController } from './chatModule/chat.controller';
 import { RoomService } from './services/room.service';
@@ -19,33 +21,37 @@ import { Password } from './entities/password.entity';
 import { Stats } from 'fs';
 import { UsersList } from './entities/usersList.entity';
 import { Gateway } from './gateway/gateway';
+import { UsersService } from './users/users.service';
 
 @Module({
   imports: [
-	ConfigModule.forRoot(),
-	TypeOrmModule.forRoot({
-		type: 'postgres',
-		host: 'database',
-		port: 5432,
-		username: process.env.POSTGRES_USER,
-		password: process.env.POSTGRES_PASSWORD,
-		database: process.env.POSTGRES_DB,
-		logging: false,
-		synchronize: true,
-		autoLoadEntities: true,
-	}),
-	TypeOrmModule.forFeature([
-		User,
-		Room,
-		Achievements,
-		MatchHistory,
-		Password,
-		Stats,
-		UsersList
-	]),
-	CacheModule.register({ isGlobal: true }),
+    ConfigModule.forRoot(),
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      host: 'database',
+      port: Number.parseInt(process.env.POSTGRES_PORT),
+      username: process.env.POSTGRES_USER,
+      password: process.env.POSTGRES_PASSWORD,
+      database: process.env.POSTGRES_DB,
+      entities,
+      logging: false,
+      synchronize: true,
+      autoLoadEntities: true,
+    }),
+    AuthModule,
+    PassportModule.register({ session: true }),
+    TypeOrmModule.forFeature([
+      User,
+      Room,
+      Achievements,
+      MatchHistory,
+      Password,
+      Stats,
+      UsersList,
+    ]),
+    CacheModule.register({ isGlobal: true }),
   ],
   controllers: [AppController, ChatController],
-  providers: [UserService, AppService, RoomService, Gateway],
+  providers: [UsersService, AppService, RoomService, Gateway],
 })
 export class AppModule {}
