@@ -31,6 +31,10 @@ export class AuthController {
       httpOnly: false,
       secure: false,
     }); // Set accessToken in cookie
+    res.cookie('username', user.username, {
+      httpOnly: false,
+      secure: false,
+    }); // Set accessToken in cookie
     res.redirect('http://localhost:3000/home');
     // res.sendStatus(200);
   }
