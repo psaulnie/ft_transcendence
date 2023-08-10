@@ -102,122 +102,22 @@ function Chat() {
 		<div className='chat'>
 			<ChatProcess/>
 
-
-			
-			{/* <Box
-    		  	sx={{
-    		  	  	display: 'flex',
-    		  	  	justifyContent: 'center',
-    		  	  	alignItems: 'center',
-    		  	  	height: '50vh',
-    		  	}}
-    		>	
-    		  	<Grid container direction="column" spacing={2} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-    		  	  	<Grid item sx={{ marginBottom: '2em' }}>
-    		  	  	  	<Button
-    		  	  	  	  	variant="contained"
-    		  	  	  	  	color="primary"
-    		  	  	  	  	sx={{ textTransform: 'none', fontWeight: 'bold', fontSize: '36px', width: '8em',
-								height: '2em',
-								backgroundColor: 'rgba(255, 255, 255, 0.9)',
-								borderColor: 'red',
-								color: 'black',
-								'&:hover': {
-									backgroundColor: 'red',
-									borderColor: 'red',
-								},
-							}}
-    		  	  	  	>
-    		  	  	  	  	Jouer
-    		  	  	  	</Button>
-    		  	  	</Grid>
-    		  	  	<Grid item>
-    		  	  	  	<Button
-    		  	  	    	variant="outlined"
-    		  	  	    	color="primary"
-							endIcon={<Box sx={{ fontSize: '40px', color: "black"}}>
-								<PersonIcon style={{
-        							fontSize: '36px',
-									verticalAlign: 'middle',
-        							color: 'black',
-      							}}/>
-							</Box>}
-    		  	  	    	sx={{ textTransform: 'none', fontWeight: 'bold', fontSize: '36px', width: '6.25em', height: '2em',
-								color: 'black', backgroundColor: 'rgba(255, 255, 255, 0.6)', borderColor: 'red',
-								'&:hover': {
-									borderColor: 'red',
-								},
-							}}
-    		  	  		>
-    		  	  	    	Profil
-    		  	  	  	</Button>
-    		  	  	</Grid>
-    		  	</Grid>
-    		</Box> */}
-
-
-
-
-			<Box
-    		  	sx={{
-					width: '40em',
-    		  	  	display: 'flex',
-    		  	  	justifyContent: 'center',
-    		  	  	alignItems: 'center',
-    		  	  	height: '50vh',
-    		  	}}
-    		>	
-				<Grid container spacing={1} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}
-					columns={{ xs: 12 }}>
-    			  	<Grid item xs={3} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-    			  	  	<Avatar src="falonso.jpg" alt="User Avatar" />
-    			  	</Grid>
-    			  	<Grid item xs={9}>
-    			  	  	<Box>
-    			  	  	  	<Typography variant="h6">John Doe</Typography>
-    			  	  	  	<Typography variant="body2">Web Developer</Typography>
-    			  	  	</Box>
-    			  	</Grid>
-    			  	<Grid item xs={4}>
-    			  	  	<Typography variant="body1">33</Typography>
-    			  	</Grid>
-    			  	<Grid item xs={4}>
-    			  	  	<Typography variant="body1">44</Typography>
-    			  	</Grid>
-    			  	<Grid item xs={4}>
-    			  	  	<Typography variant="body1">55</Typography>
-    			  	</Grid>
-    			  	<Grid item xs={4}>
-    			  	  	<Typography variant="body1">66</Typography>
-    			  	</Grid>
-    			  	<Grid item xs={4}>
-    			  	  	<Typography variant="body1">77</Typography>
-    			  	</Grid>
-    			  	<Grid item xs={4}>
-    			  	  	<Typography variant="body1">88</Typography>
-    			  	</Grid>
-    			</Grid>
-			</Box>
-
-
-
-
 			<div style={{ display: 'flex', alignItems: 'flex-start' }}>
         		<Button
         		  	onClick={toggleBox}
         		  	sx={{
 						position: 'fixed',
-						bottom: isOpen ? '35.9em' : '0em', // Position du bouton
+						bottom: isOpen ? '35.9em' : '0em',
 
         		  	  	right: 20,
-        		  	  	width: '35.55em', // Largeur du bouton
+        		  	  	width: '35.55em',
 						backgroundColor: '#ff8700',
 						'&:hover': {
 							backgroundColor: '#ffab4c',
 							borderColor: 'red',
 						},
 						'@media (max-width: 600px) or (max-height: 700px)': {
-							width: '22.82em', // Adjusted size for larger screens
+							width: '22.82em',
 							bottom: isOpen ? '35.9em' : '0em',
 						},
         		  	}}
@@ -241,7 +141,7 @@ function Chat() {
             		    right: 20,
             		    zIndex: 9,
 						'@media (max-width: 600px) or (max-height: 700px)': {
-							width: '20em', // Adjusted size for larger screens
+							width: '20em',
 							height: '30.28em',
 						},
             		    }}

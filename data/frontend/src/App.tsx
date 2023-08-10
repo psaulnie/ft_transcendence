@@ -86,10 +86,11 @@ function App() {
 					}
 					<Routes>
 						<Route path="/" element={<div/>}></Route>
-						<Route path="/profile" element={<Profile/>}></Route>
+						{/* <Route path="/profile" element={<Profile/>}></Route> */}
 						<Route path="/home" element={<Home/>}></Route>
 					</Routes>
 					{user.isLoggedIn ? <button onClick={logoutButton}>Logout</button> : null}
+					{user.isLoggedIn ? (<Home/>) : null} 
 					{user.isLoggedIn ? (<Chat/>) : null} 
 				</div>
 			</BrowserRouter>
