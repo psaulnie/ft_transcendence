@@ -1,5 +1,6 @@
 import { Tabs, Tab, IconButton } from "@mui/material"
 
+
 import MessageProvider from './Message/MessageProvider';
 
 import CloseIcon from '@mui/icons-material/Close';
@@ -11,7 +12,6 @@ import { useState } from "react";
 
 import { webSocket } from "../../webSocket";
 import { removeRoom, setRead, setRoomIndex } from "../../store/rooms";
-import { manageRoomsTypes } from "./args.types";
 import RoomOptionsMenu from "./RoomOptionsMenu";
 
 export default function RoomTabs()
@@ -44,13 +44,43 @@ export default function RoomTabs()
 
 	function quitRoom(roomName: string)
 	{
-		webSocket.emit('manageRooms', { type: manageRoomsTypes.remove, source: user.username, room: roomName, access: 0});
+		webSocket.emit('leaveRoom', { source: user.username, room: roomName, access: 0});
 		dispatch(removeRoom(roomName));
 	}
 
 	if (rooms.index !== -1)
 		return (
-			<Tabs sx={{position: 'fixed', bottom:"0", width:"100%"}} value={rooms.index} onChange={changeSelectedRoom} variant="scrollable" scrollButtons="auto">
+			<Tabs sx={{
+				position: 'fixed', bottom:"100",
+				"& .MuiTabs-flexContainer": {
+					// Adjust the width of the tabs
+					maxWidth: "22em",
+					maxHeight: "100%", // You can adjust the value here
+					marginTop: "0px",
+				  },
+				  "& .MuiTab-root": {
+					// Adjust the font size and padding of the tabs
+					fontSize: "10px", // You can adjust the value here
+					padding: "6px", // You can adjust the value here
+					minHeight: "4em",
+					minWidth: "1em",
+				  },
+				  "& .MuiTabs-indicator": {
+					// Adjust the position of the indicator bar
+					top: "0", // You can adjust the value here to move it higher
+					marginTop: "2px",
+					backgroundColor: "red",
+				  },
+				  "& .MuiTabs-scrollButtons.Mui-disabled": {
+					opacity: "0.3",
+				  },
+				  "& .Mui-selected": {
+					backgroundColor: "red",
+					color: "black",
+				  },
+				  
+				}} value={rooms.index} onChange={changeSelectedRoom} variant="scrollable" scrollButtons="auto"
+			>
 				{rooms.room.map((room: {name: string, role: string, unread: boolean}, key: number) =>
 					<Tab onClick={() => dispatch(setRead(key)) } value={key} tabIndex={key} key={key} onContextMenu={(event) => handleContextMenu(event, key)} label={
 						<span>

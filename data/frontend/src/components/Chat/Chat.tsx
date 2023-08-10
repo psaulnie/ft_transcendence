@@ -8,9 +8,8 @@ import { useGetUserRoomListQuery } from '../../store/api';
 import { addBlockedUser } from '../../store/user';
 
 import Room from './Room';
-import CreateChannel from './CreateChannel';
-import JoinChannel from './JoinChannel';
-import JoinDirectMessage from './JoinDirectMessage';
+import Tab from './Tab';
+import UsersTab from './UsersTab';
 import DirectMessageProvider from './DirectMessageProvider';
 import ChatProcess from './ChatProcess';
 import Error from '../Global/Error';
@@ -24,7 +23,7 @@ function Chat() {
 	const user = useSelector((state: any) => state.user);
 	const rooms = useSelector((state: any) => state.rooms);
 	const dispatch = useDispatch();
-	
+
 	const {
 		data: blockedUsers,
 		isLoading: blockedUsersLoading,
@@ -85,34 +84,56 @@ function Chat() {
 	return (
 		<div className='chat'>
 			<ChatProcess/>
-			<Grid container sx={{ display: 'flex'}} justifyContent="space-evenly">
-				<Grid item xs={3}>
-						<Box sx={{ backgroundColor: '#102b47', height: '100%', padding: '16px', borderRadius: '10px'}}>
-							<Grid container>
-								<JoinDirectMessage/>
-							</Grid>
-							<Grid container>
-								<CreateChannel/>
-							</Grid>
-							<Grid container>
-								<JoinChannel/>
-							</Grid>
-						</Box>
+			<Box
+                sx={{
+                position: "fixed",
+                bgcolor: '#FFA500',
+                height: 500,
+                width: 500,
+                borderRadius: '2%',
+                opacity: 0.8,
+                border: 8,
+                borderColor: '#994000',
+                borderStyle: 'double',
+				marginTop: "auto",
+                bottom: 20,
+                right: 20,
+                zIndex: 9,
+                }}
+			>
+				<Grid container>
+					<DirectMessageProvider/>
+					<Grid item xs={1} sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
+						{
+							rooms.index !== -1 && rooms.room[rooms.index] ? // CONDITION'S HERE TO KNOW IF THE USER IS NOT IN A ROOM
+								<UsersTab roomName={rooms.room[rooms.index].name}/>
+							: null
+						}
+      				</Grid>
+					<Grid item zIndex={99} xs={10} sx={{ height: '5%', width: '100%'}}>
+						<RoomTabs/>
+					</Grid>
+					<Grid item xs={1} sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
+						<Tab/>
+      				</Grid>
 				</Grid>
-				<Grid item xs={7}>
-						<DirectMessageProvider/>
-						<Grid>
-							{ 
-								rooms.index !== -1 && rooms.room[rooms.index] ?
-									<Room key={rooms.room[rooms.index].name} roomName={rooms.room[rooms.index].name}/>
-								: null
-							}	
-						</Grid>
-						<Grid item sx={{ marginBottom: '70px' }}>
-							<RoomTabs/>
-						</Grid>
+				<Grid
+					zIndex={0}
+					sx={{height: "95%",
+					width: "100%",
+					overflow: 'scroll', 
+					display: "flex",
+        			flexDirection: "column",
+					alignItems:"flex-end",
+				}}
+				>
+					{ 
+						rooms.index !== -1 && rooms.room[rooms.index] ?
+							<Room key={rooms.room[rooms.index].name} roomName={rooms.room[rooms.index].name}/>
+						: null
+					}	
 				</Grid>
-			</Grid>
+			</Box>
 		</div>
 	);
 }

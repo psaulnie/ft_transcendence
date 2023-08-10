@@ -10,10 +10,11 @@ import { useRef, useEffect } from 'react';
 type arg = {
 	messages: chatResponseArgs[],
 	role: string,
-	roomName: string
+	roomName: string,
+	isDirectMessage: boolean
 }
 
-export default function MessagesBox({ messages, role, roomName }: arg) {
+export default function MessagesBox({ messages, role, roomName, isDirectMessage }: arg) {
 	const user = useSelector((state: any) => state.user);
 	const bottomRef = useRef<HTMLDivElement | null>(null);
 
@@ -35,7 +36,7 @@ export default function MessagesBox({ messages, role, roomName }: arg) {
 				else if (message.action === actionTypes.left)
 					return (<LeftMessage key={index} message={message} />);
 				else if (message.action === actionTypes.msg)
-					return (<Message key={index} message={message} role={role} roomName={roomName} />);
+					return (<Message key={index} message={message} role={role} roomName={roomName} isDirectMessage={isDirectMessage} />);
 				return (null);
 			}
 		)

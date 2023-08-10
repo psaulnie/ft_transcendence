@@ -4,9 +4,9 @@ import { webSocket } from "../../webSocket";
 import { Dialog, DialogTitle, DialogActions, Button, Zoom, TextField, Autocomplete, Skeleton, DialogContent } from "@mui/material";
 import { TransitionProps } from "@mui/material/transitions";
 
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
-import { useGetFilteredUserListQuery } from "../../store/api";
+import { useGetInvitedUsersListQuery } from "../../store/api";
 
 import Error from "../Global/Error";
 
@@ -43,7 +43,7 @@ export default function SelectUserDialog({open, setOpen, roomName}: arg) {
 
 	function confirmButton(e: any) {
 		e.preventDefault();
-		webSocket.emit('inviteUser', {roomName: roomName, username: selectedUser});
+		webSocket.emit('inviteUser', {roomName: roomName, username: selectedUser, source: user.username});
 		setOpen(false);
 	}
 
@@ -53,7 +53,7 @@ export default function SelectUserDialog({open, setOpen, roomName}: arg) {
 		isError,
 		error,
 		refetch
-	} = useGetFilteredUserListQuery({username: user.username, roomName: roomName});
+	} = useGetInvitedUsersListQuery({username: user.username, roomName: roomName});
 
 	useEffect(() => {
 		refetch();

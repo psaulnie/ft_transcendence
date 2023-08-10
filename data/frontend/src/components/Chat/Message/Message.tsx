@@ -5,14 +5,14 @@ import { useSelector } from 'react-redux';
 
 import UserOptionsMenu from './UserOptionsMenu';
 
-import { useGetUserInfoInRoomQuery } from '../../../store/api';
+import { useGetUserStatusInRoomQuery } from '../../../store/api';
 
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
-import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
+import CustomAvatar from '../../Global/CustomAvatar';
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
 	backgroundColor: '#102b47',
@@ -25,9 +25,10 @@ type arg = {
 	message: chatResponseArgs,
 	role: string,
 	roomName: string,
+	isDirectMessage: boolean
 }
 
-export default function Message({ message, role, roomName }: arg) {
+export default function Message({ message, role, roomName, isDirectMessage }: arg) {
 	const user = useSelector((state: any) => state.user);
 	const [contextMenu, setContextMenu] = useState<{
 		mouseX: number;
@@ -40,15 +41,20 @@ export default function Message({ message, role, roomName }: arg) {
 		data: cUser,
 		isSuccess,
 		refetch
-	} = useGetUserInfoInRoomQuery({username: message.source, roomName: roomName});
+	} = useGetUserStatusInRoomQuery({username: message.source, roomName: roomName}, { skip: isDirectMessage }); // TODO forbid to fetch if direct msg
 
 	const handleContextMenu = (event: React.MouseEvent) => {
 		event.preventDefault();
-		refetch();
-		if (isSuccess)
+		if (!isDirectMessage)
 		{
-				setShowAdminOpt(true);
-				setIsMuted(cUser.isMuted);
+			refetch();
+			if (isSuccess)
+			{
+					setShowAdminOpt(true);
+					setIsMuted(cUser.isMuted);
+			}
+			else
+				setShowAdminOpt(false);
 		}
 		else
 			setShowAdminOpt(false);
@@ -78,22 +84,23 @@ export default function Message({ message, role, roomName }: arg) {
 					my: 1,
 					mx: 'auto',
 					p: 2,
+					bgcolor: '#ffd089',
 					}}
 				>
 					<Grid container wrap="nowrap" spacing={2}>
 						{	user.username !== message.source ? 
 								<Grid item>
-									<Avatar>{message.source[0]}</Avatar>
+									<CustomAvatar username={message.source} />
 								</Grid>
 							: null
 						}
 						<Grid item xs style={{ flexWrap: 'wrap' } }>
-							<Typography style={ {color: 'white', overflowWrap: 'break-word', textAlign: user.username !== message.source ? 'start' : 'end'} } >{ message.data }</Typography>
+							<Typography style={ {color: 'black', overflowWrap: 'break-word', textAlign: user.username !== message.source ? 'start' : 'end'} } >{ message.data }</Typography>
 						</Grid>
 						{
 							user.username === message.source ? 
 								<Grid item>
-									<Avatar>{message.source[0]}</Avatar>
+									<CustomAvatar username={message.source} />
 								</Grid>
 							: null
 						}

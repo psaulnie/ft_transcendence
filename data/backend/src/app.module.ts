@@ -1,17 +1,24 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { CacheModule } from '@nestjs/cache-manager';
+
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
 import { UserService } from './services/user.service';
 
-import { ChatModule } from './chatModule/chat.module';
-import { GameModule } from './gameModule/game.module';
 import { User } from './entities/user.entity';
 
-import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
+import { ChatController } from './chatModule/chat.controller';
+import { RoomService } from './services/room.service';
+import { Room } from './entities/room.entity';
+import { Achievements } from './entities/achievements.entity';
+import { MatchHistory } from './entities/matchHistory.entity';
+import { Password } from './entities/password.entity';
+import { Stats } from 'fs';
+import { UsersList } from './entities/usersList.entity';
+import { Gateway } from './gateway/gateway';
 
 @Module({
   imports: [
@@ -27,11 +34,18 @@ import { join } from 'path';
 		synchronize: true,
 		autoLoadEntities: true,
 	}),
-	ChatModule,
-	GameModule,
-	TypeOrmModule.forFeature([User]),
+	TypeOrmModule.forFeature([
+		User,
+		Room,
+		Achievements,
+		MatchHistory,
+		Password,
+		Stats,
+		UsersList
+	]),
+	CacheModule.register({ isGlobal: true }),
   ],
-  controllers: [AppController],
-  providers: [UserService, AppService],
+  controllers: [AppController, ChatController],
+  providers: [UserService, AppService, RoomService, Gateway],
 })
 export class AppModule {}

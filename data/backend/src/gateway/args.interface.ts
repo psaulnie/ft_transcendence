@@ -1,5 +1,4 @@
 export interface manageRoomsArgs {
-	type: number,
 	source: string,
 	room: string,
 	access: number,
@@ -10,8 +9,7 @@ export interface sendMsgArgs {
 	type: number,
 	source: string,
 	target: string,
-	data: string,
-	isDirectMessage: boolean
+	data: string
 }
 
 export interface actionArgs {

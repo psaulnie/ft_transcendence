@@ -1,7 +1,4 @@
-import { useState } from "react";
-
-import { Avatar, Skeleton } from "@mui/material";
-import Error from "./Error";
+import { Avatar } from "@mui/material";
 
 export default function CustomAvatar({username}: {username: string}) {
 

@@ -20,7 +20,9 @@ export default function RoomOptionsMenu({contextMenu, setContextMenu, roomIndex,
 	const [showPasswordDialog, setShowPasswordDialog] = useState(false);
 	const [showUserDialog, setShowUserDialog] = useState(false);
 
+	const user = useSelector((state: any) => state.user);
 	const rooms = useSelector((state: any) => state.rooms);
+
 	const handleClose = () => {
 		setContextMenu(null);
 	};
@@ -31,10 +33,9 @@ export default function RoomOptionsMenu({contextMenu, setContextMenu, roomIndex,
 		setContextMenu(null);
 	}
 
-
 	function removePassword()
 	{
-		webSocket.emit('removePasswordToRoom', roomName);
+		webSocket.emit('removePasswordToRoom', { room: roomName, source: user.username });
 		setContextMenu(null)
 	}
 
@@ -43,6 +44,7 @@ export default function RoomOptionsMenu({contextMenu, setContextMenu, roomIndex,
 		setShowUserDialog(true);
 		setContextMenu(null);
 	}
+
 	if (rooms.index !== roomIndex)
 		return (null);
 	return (

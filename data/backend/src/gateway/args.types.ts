@@ -1,10 +1,7 @@
-export enum manageRoomsTypes {
-	add = 0,
-	remove,
-	addDirectMsg
-}
+
 export enum sendMsgTypes {
 	msg = 0,
+	invite
 }
 
 export enum actionTypes {

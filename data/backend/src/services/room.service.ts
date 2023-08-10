@@ -66,7 +66,7 @@ export class RoomService {
 		room.password = password;
 		if (!room.usersID)
 			room.usersID = [];
-		room.usersID.push(await this.roomsRepository.save(usersList));
+		room.usersID.push(await this.usersListRepository.save(usersList));
 		return await (this.roomsRepository.save(room));
 	}
 
@@ -143,14 +143,13 @@ export class RoomService {
 		});
 	}
 
-	async getRole(roomName: string, userId: number): Promise<string>
+	async getRole(room: Room, userId: number): Promise<string>
 	{
 		console.log('getrole');
 
 		let	isAdmin = false;
-		const room = await this.findOne(roomName);
-		if (room == null)
-			return (null); // TODO handle error (maybe working)
+		if (!room)
+			throw new Error("Room not found");
 		if (room.ownerID == userId)
 			return ("owner");
 		room.usersID.forEach(user => {
@@ -171,7 +170,7 @@ export class RoomService {
 		const room = await this.findOne(roomName);
 		const userInList = room.usersID.find((obj) => obj.user.id == user.id);
 		userInList.isBanned = true;
-		await this.roomsRepository.save(userInList);
+		await this.usersListRepository.save(userInList);
 		return await (this.roomsRepository.save(room));
 	}
 

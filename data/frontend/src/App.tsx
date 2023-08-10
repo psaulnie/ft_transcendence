@@ -3,18 +3,24 @@ import './App.css';
 import { SyntheticEvent, useState } from 'react';
 
 import { useSelector, useDispatch } from 'react-redux';
-import { login, logout, setUsername } from './store/user';
-import { webSocket } from './webSocket';
+import { logout } from './store/user';
+
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
+
 // Components
-import Navigation from './components/Navigation/Navigation';
-// import Chat from './components/Chat/Chat';
-import Game from './components/Game/Game';
-import NavDrawer from './components/Navigation/NavDrawer';
 import Chat from './components/Chat/Chat';
+// import Game from './components/Game/Game';
+import Login from './components/Global/Login';
+import Navigation from './components/Navigation/Navigation';
+import NavDrawer from './components/Navigation/NavDrawer';
+
+import UploadButton from './components/Global/UploadButton';
+import Home from './components/Global/Home';
 
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import UploadButton from './components/Global/UploadButton';
+import Profile from './components/Global/Profile';
 
 const darkTheme = createTheme({
   palette: {
@@ -30,74 +36,43 @@ function App() {
 	
 	const [drawerState, setDrawerState] = useState(false);
 
-	const toggleDrawer =
-	(open: boolean) =>
-	(event: React.KeyboardEvent | React.MouseEvent) => {
-		if (
-		event.type === 'keydown' &&
-		((event as React.KeyboardEvent).key === 'Tab' ||
-			(event as React.KeyboardEvent).key === 'Shift')
-		) {
+	const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
+		if (event.type === 'keydown' &&
+			((event as React.KeyboardEvent).key === 'Tab' ||
+			(event as React.KeyboardEvent).key === 'Shift')) {
 			return;
 		}
 		setDrawerState(open);
     };
 
-	function onChange(e: React.ChangeEvent<HTMLInputElement>)
-	{
-		e.preventDefault();
-		dispatch(setUsername(e.currentTarget.value));
-	}
-
-	function onSubmit(e: React.FormEvent)
-	{
-		e.preventDefault();
-		if (user.username !== '')
-		{
-			dispatch(login());
-			webSocket.emit("newUser", user.username);
-		}
-	}
-
 	function logoutButton(e: SyntheticEvent)
 	{
 		e.preventDefault();
 		dispatch(logout());
+		window.location.href = "/";
 	}
 
 	return (
 	<div className="App">
 		<ThemeProvider theme={darkTheme}>
      		<CssBaseline />
-			<Navigation setDrawerState={setDrawerState}/>
-			<NavDrawer state={drawerState} toggleDrawer={toggleDrawer}/>
-			<div className='main'>
-				{
-					user.isLoggedIn === false ?
-						<form onSubmit={onSubmit}>
-							<p>Username:</p>
-							<input name="username" value={user.username || ''} onChange={ onChange } />
-							<button>Login</button>
-						</form>
-					: null
-				}
-				{user.isLoggedIn ? <button onClick={logoutButton}>Logout</button> : null}
-				{user.isLoggedIn ? (<UploadButton />) : null}
-				{/* {user.isLoggedIn ? (<Chat />) : null} */}
-				{/* {user.isLoggedIn ? (<Game />) : null} */}
-			</div>
+			<BrowserRouter>
+				<Navigation setDrawerState={setDrawerState}/>
+				<NavDrawer state={drawerState} toggleDrawer={toggleDrawer}/>
+				<div className='main'>
+					<Routes>
+						<Route path="/" element={<Login/>}></Route>
+						<Route path="/profile" element={<Profile/>}></Route>
+						<Route path="/home" element={<Home/>}></Route>
+					</Routes>
+					{user.isLoggedIn ? (<UploadButton />) : null}
+					{user.isLoggedIn ? <button onClick={logoutButton}>Logout</button> : null}
+					{user.isLoggedIn ? (<Chat/>) : null} 
+				</div>
+			</BrowserRouter>
 	    </ThemeProvider>
 	</div>
 	);
 }
 
 export default App;
-
-
-// ======================
-
-// import image from "./img/UpmostlyLogo.png"; 
-
-// function Component() {
-//   return (
-//     <div style={{ backgroundImage:`url(${image})`,backgroundRepeat:"no-repeat" }}>

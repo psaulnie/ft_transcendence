@@ -6,16 +6,16 @@ export const apiSlice = createApi({
 	endpoints: builder => ({
 		getRole: builder.query({
 			query: ({username = null, roomName = null}) => ({
-				url: '/api/chat/role',
+				url: '/api/chat/role/' + username + '/' + roomName,
 				method: 'GET',
-				params: { username: username, roomName: roomName },
+				// params: { username: username, roomName: roomName },
 			}),
 		}),
 		getBlockedUsers: builder.query({
 			query: ({username = null}) => ({
-				url: '/api/chat/user/blocked',
+				url: '/api/chat/' + username + '/blocked',
 				method: 'GET',
-				params: { username: username },
+				// params: { username: username },
 			})
 		}),
 		getRoomsList: builder.query({
@@ -26,17 +26,17 @@ export const apiSlice = createApi({
 		}),
 		getUsersInRoom: builder.query({
 			query: ({roomName = null}) => ({
-				url: '/api/chat/room/users',
+				url: '/api/chat/' + roomName + '/users',
 				method: 'GET',
-				params: { roomName: roomName },
+				// params: { roomName: roomName },
 
 			})
 		}),
 		getUserRoomList: builder.query({
 			query: ({username = null}) => ({
-				url: '/api/chat/user/room/list',
+				url: '/api/chat/' + username + '/rooms/list',
 				method: 'GET',
-				params: { username: username },
+				// params: { username: username },
 
 			})
 		}),
@@ -46,26 +46,26 @@ export const apiSlice = createApi({
 				method: 'GET'
 			})
 		}),
-		getFilteredUserList: builder.query({
+		getUserStatusInRoom: builder.query({
 			query: ({username = null, roomName = null}) => ({
-				url: '/api/chat/users/list/filtered',
+				url: '/api/chat/' + username + '/' + roomName + '/status',
 				method: 'GET',
-				params: { username: username, roomName: roomName },
+				// params: { username: username, roomName: roomName },
 
 			})
 		}),
-		getUserInfoInRoom: builder.query({
+		getInvitedUsersList: builder.query({
 			query: ({username = null, roomName = null}) => ({
-				url: '/api/chat/user/room/info',
+				url: '/api/chat/' + username + '/' + roomName + '/invited',
 				method: 'GET',
-				params: { username: username, roomName: roomName },
+				// params: { username: username, roomName: roomName },
 			}),
 		}),
 		getIsRoomNameTaken: builder.query({
 			query: ({roomName = null}) => ({
-				url: '/api/chat/rooms/exist',
+				url: '/api/chat/' + roomName + '/exist',
 				method: 'GET',
-				params: { roomName: roomName },
+				// params: { roomName: roomName },
 			})
 		}),
 		uploadAvatar: builder.mutation({
@@ -85,8 +85,10 @@ export const {	useGetRoleQuery,
 				useGetUserRoomListQuery,
 				useGetIsRoomNameTakenQuery,
 				useGetUsersListQuery,
-				useGetFilteredUserListQuery,
+				useGetUserStatusInRoomQuery,
 				useGetUsersInRoomQuery,
-				useGetUserInfoInRoomQuery,
+				useGetInvitedUsersListQuery,
 				useUploadAvatarMutation,
+				useLazyGetIsRoomNameTakenQuery,
+				useLazyGetUsersInRoomQuery
 } = apiSlice
