@@ -1,49 +1,52 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
-import Messages from './Messages';
-import InputForm from './InputForm';
+import { useLayoutEffect } from 'react';
 
-import { chatSocket } from '../../chatSocket';
+import MessagesBox from './Message/MessagesBox';
+import InputForm from './Message/InputForm';
 
-type arg = {
-	username: string
-	channelName: string
-}
+import { useSelector } from 'react-redux';
 
-function Room({ username, channelName }: arg) {
-	const [messageSent, setMsg] = useState<string[]>([]);
+import { Grid, Box } from '@mui/material';
+
+function Room({roomName}: {roomName: string}) {
+	const messagesContainerRef = useRef<HTMLDivElement>(null);
+	const rooms = useSelector((state: any) => state.rooms);
+
 	const [role, setRole] = useState('none');
+	const roomIndex = rooms.room.findIndex((obj: {name: string, role: string}) => obj.name === roomName);
 
-	useEffect(() => {
-		function onMsgSent(value: string) {
-			setMsg(previous => [...previous, value]);
+	const messages = rooms.room[roomIndex].messages;
+
+	useLayoutEffect(() => {
+		const containerRef = messagesContainerRef.current;
+		if (containerRef) {
+			containerRef.scrollTop = containerRef.scrollHeight;
 		}
-
-		chatSocket.on(channelName, onMsgSent);
-		return () => {
-			chatSocket.off(channelName, onMsgSent);
-		};
-	}, []);
-
-	const fetchUserData = () => {
-		fetch("http://localhost:5000/api/chat/role?username=" + username + "&roomName=" + channelName)
-			.then(response => {
-				return response.text()
-			})
-			.then(data => {
-				setRole(data)
-			})
-	}
-
+	}, [messages]);
+	
 	useEffect(() => {
-		fetchUserData()
-	}, []);
+		const cRole = rooms.room.find((obj: {name: string, role: string}) => obj.name === roomName);
+		if (cRole)
+			setRole(cRole.role);
+	}, [setRole, rooms, roomName]);
+
 	return (
-		<div className="chat">
-			<Messages messages={messageSent} role={role} channelName={channelName} />
-			<InputForm username={username} channelName={channelName} />
-		</div>
-	)
+		<Grid sx={{height: "100%", width: "100%", display: 'flex'}}>
+			<Grid item xs={8} spacing={0} sx={{ height: "100%", width: "100%", overflow: 'hidden', display: "flex", flexDirection: "column"}}>
+				<Grid item xs={12} sx={{ height: "100%", width: "100%", padding: '16px', overflow: 'auto', marginTop: "auto" }}>
+					<Box sx={{ height: "100%", width: "100%", padding: '2px', overflow: 'scroll'}}>
+						<div ref={messagesContainerRef}>
+							<MessagesBox messages={ rooms.room[roomIndex].messages } role={ role } roomName={ roomName } isDirectMessage={rooms.room[roomIndex].isDirectMsg} />
+						</div>
+					</Box>
+				</Grid>
+				<Grid item xs={12} sx={{ marginTop: "auto", marginBottom: "9%" }}>
+					<InputForm roomName={ roomName } isDirectMessage={rooms.room[roomIndex].isDirectMsg} />
+				</Grid>
+			</Grid>
+		</Grid>
+	);
 }
 
 export default Room;

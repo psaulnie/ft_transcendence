@@ -5,7 +5,7 @@ function Home() {
     const cookies = Cookies.get();
     console.log('cookies : ', cookies); // Display cookies
     return (
-      <Navigation />
+      <p>You are in Home</p>
     );
 }
 

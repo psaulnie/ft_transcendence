@@ -1,8 +1,8 @@
 export interface manageRoomsArgs {
-	type: number,
 	source: string,
 	room: string,
-	access: number
+	access: number,
+	password: string
 }
 
 export interface sendMsgArgs {
@@ -12,14 +12,17 @@ export interface sendMsgArgs {
 	data: string
 }
 
-export interface kickArgs {
+export interface actionArgs {
 	source: string,
 	target: string,
 	room: string
 }
 
-export interface banArgs {
+export interface chatResponseArgs {
 	source: string,
 	target: string,
-	room: string
+	action: number,
+	data: string,
+	role: string,
+	isMuted: boolean,
 }

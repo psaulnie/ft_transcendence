@@ -1,9 +1,10 @@
 import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  OneToMany,
-  AfterLoad,
+  	Entity,
+  	Column,
+  	PrimaryGeneratedColumn,
+  	AfterLoad,
+	ManyToMany,
+	JoinTable
 } from 'typeorm';
 import { UsersList } from './usersList.entity';
 
@@ -29,7 +30,7 @@ export class User {
 
   // Check path to file
   @Column({ nullable: true })
-  avatar: string;
+  urlAvatar: string;
 
   @Column({ name: 'access_token' })
   accessToken: string;
@@ -37,11 +38,13 @@ export class User {
   @Column({ name: 'refresh_token' })
   refreshToken: string;
 
-  @OneToMany(() => UsersList, (usersList) => usersList.room, { cascade: true })
-  blockedUsersID: UsersList[];
+  @ManyToMany(() => User, blockedUsers => blockedUsers.blockedUsers)
+  @JoinTable()
+  blockedUsers: User[];
 
   @AfterLoad()
   async nullCheck() {
-    if (!this.blockedUsersID) this.blockedUsersID = [];
-  }
+	  if (!this.blockedUsers)
+		  this.blockedUsers = [];
+	}
 }
