@@ -1,4 +1,4 @@
-import { Route, Navigate, Outlet } from "react-router";
+import { Navigate, Outlet } from "react-router";
 import { useEffect, useState } from "react";
 import Cookies from 'js-cookie';
 

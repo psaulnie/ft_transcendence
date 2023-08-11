@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout, login, setUsername } from './store/user';
 
-import { BrowserRouter, Routes, Route, redirect, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Cookies from 'js-cookie';
 
 // Components
@@ -51,8 +51,6 @@ function App() {
 		setDrawerState(open);
     };
 	
-	// const {isLoading, isError, isSuccess, error} = useIsAuthentifiedQuery({});
-
 	function logoutButton(e: SyntheticEvent)
 	{
 		e.preventDefault();

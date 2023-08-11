@@ -5,11 +5,14 @@ import {
   HttpException,
   Param,
   UseInterceptors,
+  UseGuards
 } from '@nestjs/common';
 import { CacheInterceptor } from '@nestjs/cache-manager';
 import { RoomService } from '../services/room.service';
 import { UsersService } from '../users/users.service';
 import { UsersList } from 'src/entities/usersList.entity';
+
+import { AuthenticatedGuard } from 'src/auth/guards/intra-auth.guards';
 
 @Controller('/api/chat/')
 export class ChatController {
@@ -19,6 +22,7 @@ export class ChatController {
   ) {}
 
   @UseInterceptors(CacheInterceptor)
+  @UseGuards(AuthenticatedGuard)
   @Get('role/:username/:roomName')
   async getRole(
     @Query() data: any,
@@ -35,6 +39,7 @@ export class ChatController {
   }
 
   @UseInterceptors(CacheInterceptor)
+  @UseGuards(AuthenticatedGuard)
   @Get(':username/blocked')
   async getBlockedUser(
     @Query() data: any,
@@ -53,6 +58,7 @@ export class ChatController {
   }
 
   @UseInterceptors(CacheInterceptor)
+  @UseGuards(AuthenticatedGuard)
   @Get('rooms/list')
   async getRoomsList(): Promise<{}[]> {
     const rooms = await this.roomService.findAll();
@@ -69,6 +75,7 @@ export class ChatController {
   }
 
   @UseInterceptors(CacheInterceptor)
+  @UseGuards(AuthenticatedGuard)
   @Get(':roomName/users')
   async getUsersInRoom(
     @Query() data: any,
@@ -91,6 +98,7 @@ export class ChatController {
   }
 
   @UseInterceptors(CacheInterceptor)
+  @UseGuards(AuthenticatedGuard)
   @Get(':username/rooms/list')
   async getUserRoomsList(
     @Query() data: any,
@@ -117,6 +125,7 @@ export class ChatController {
   }
 
   @UseInterceptors(CacheInterceptor)
+  @UseGuards(AuthenticatedGuard)
   @Get(':roomName/exist')
   async getIsRoomNameTaken(
     @Query() data: any,
@@ -128,6 +137,7 @@ export class ChatController {
   }
 
   @UseInterceptors(CacheInterceptor)
+  @UseGuards(AuthenticatedGuard)
   @Get('users/list')
   async getUsersList(): Promise<string[]> {
     const users = await this.userService.findAll();
@@ -138,6 +148,7 @@ export class ChatController {
   }
 
   @UseInterceptors(CacheInterceptor)
+  @UseGuards(AuthenticatedGuard)
   @Get(':username/:roomName/status')
   async getUserStatusInRoom(
     @Query() data: any,
@@ -154,6 +165,7 @@ export class ChatController {
   }
 
   @UseInterceptors(CacheInterceptor)
+  @UseGuards(AuthenticatedGuard)
   @Get(':username/:roomName/invited')
   async getInvitedUsersList(
     @Query() data: any,
