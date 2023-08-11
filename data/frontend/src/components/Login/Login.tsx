@@ -1,4 +1,7 @@
 import { SyntheticEvent } from "react";
+import { Navigate } from "react-router";
+
+import Cookies from "js-cookie"; 
 
 function Login() {
 
@@ -16,6 +19,8 @@ function Login() {
         apiIntraLogIn();
     }
 
+    if (Cookies.get('accessToken'))
+        return (<Navigate to="/home" />);
     return (
         <div className='main'>
             <p>Coucou from Login</p>

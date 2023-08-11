@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import Cookies from 'js-cookie'
 
 interface UserState {
 	username: string
@@ -39,6 +40,8 @@ export const userSlice = createSlice({
 	logout: (state) => {
 		state.username = "";
 		state.isLoggedIn = false;
+		Cookies.remove('accessToken');
+		Cookies.remove('username');
 		localStorage.removeItem('user');
 	},
 	setUsername: (state, action: PayloadAction<string>) => {

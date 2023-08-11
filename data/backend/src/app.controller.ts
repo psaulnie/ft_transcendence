@@ -23,6 +23,10 @@ import { UsersService } from './users/users.service';
 import { Response } from 'express';
 import { AppService } from './services/app.service';
 
+import { ExecutionContext } from '@nestjs/common';
+import { AuthenticatedGuard } from './auth/guards/intra-auth.guards';
+import { UseGuards } from '@nestjs/common';
+
 const fileInterceptorOptions = {
   fileFilter: (req, file, cb) => {
     if (
@@ -108,13 +112,6 @@ export class AppController {
       });
       return new StreamableFile(file);
     } else throw new HttpException('Internal Server Error', 500);
-  }
-
-  @Post(':username/authentified')
-  async isAuthentified(@Param('username') username: string, @Body() accessToken: string): Promise<boolean> {
-    const user = await this.userService.findOne(username);
-    if (!user) throw new HttpException('Unprocessable Entity', 422);
-    return (accessToken === user.accessToken);
   }
 }
 

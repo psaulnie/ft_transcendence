@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import Cookies from 'js-cookie'
 
 export const apiSlice = createApi({
 	reducerPath: 'api',
@@ -76,13 +77,6 @@ export const apiSlice = createApi({
 				formData: true
 			})
 		}),
-		isAuthentified: builder.mutation({
-			query: (body: string) => ({
-				url: '/api/avatar/upload',
-				method: 'POST',
-				body: body
-			})
-		}),
 	})
 })
 
@@ -98,5 +92,4 @@ export const {	useGetRoleQuery,
 				useUploadAvatarMutation,
 				useLazyGetIsRoomNameTakenQuery,
 				useLazyGetUsersInRoomQuery,
-				useIsAuthentifiedMutation
 } = apiSlice
