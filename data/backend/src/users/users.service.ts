@@ -98,7 +98,7 @@ export class UsersService {
 
   async updateAvatar(user: User, avatar: string) {
     console.log('updateavatar');
-    if (user.urlAvatar !== '') {
+    if (user.urlAvatar !== '' && user.urlAvatar !== null) {
       const fs = require('fs');
       const path = require('path');
       const filePath = path.resolve(__dirname, '/avatars', user.urlAvatar);

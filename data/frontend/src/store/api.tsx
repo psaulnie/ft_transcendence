@@ -76,6 +76,13 @@ export const apiSlice = createApi({
 				formData: true
 			})
 		}),
+		isAuthentified: builder.mutation({
+			query: (body: string) => ({
+				url: '/api/avatar/upload',
+				method: 'POST',
+				body: body
+			})
+		}),
 	})
 })
 
@@ -90,5 +97,6 @@ export const {	useGetRoleQuery,
 				useGetInvitedUsersListQuery,
 				useUploadAvatarMutation,
 				useLazyGetIsRoomNameTakenQuery,
-				useLazyGetUsersInRoomQuery
+				useLazyGetUsersInRoomQuery,
+				useIsAuthentifiedMutation
 } = apiSlice

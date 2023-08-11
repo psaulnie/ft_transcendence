@@ -3,6 +3,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 interface UserState {
 	username: string
 	isLoggedIn: boolean
+	accessToken: string
 	isUserBlocked: boolean
 	blockedUsers: string[]
 };
@@ -10,6 +11,7 @@ interface UserState {
 const initialUser: UserState = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user') || '{}') : { 
 	username: "",
 	isLoggedIn: false,
+	accessToken: "",
 	isUserBlocked: false,
 	blockedUsers: [],
 	isMuted: false,
@@ -21,15 +23,17 @@ const initialState: UserState = {
 	isLoggedIn: initialUser.isLoggedIn,
 	isUserBlocked: initialUser.isUserBlocked,
 	blockedUsers: initialUser.blockedUsers,
+	accessToken: initialUser.accessToken,
 };
 
 export const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-	login: (state) => {
+	login: (state, action: PayloadAction<string>) => {
 		state.isLoggedIn = true;
 		state.blockedUsers = [];
+		state.accessToken = action.payload;
 		localStorage.setItem('user', JSON.stringify(state))
 	},
 	logout: (state) => {

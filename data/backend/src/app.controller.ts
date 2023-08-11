@@ -50,14 +50,14 @@ const fileInterceptorOptions = {
   },
 };
 
-@Controller('/api/avatar')
+@Controller('/api')
 export class AppController {
   constructor(
     private readonly appService: AppService,
     private readonly userService: UsersService,
   ) {}
 
-  @Post('/upload')
+  @Post('/avatar/upload')
   @UseInterceptors(FileInterceptor('file', fileInterceptorOptions))
   async uploadAvatar(
     @Body() body: any,
@@ -73,7 +73,7 @@ export class AppController {
     } else throw new HttpException('Bad Request', 400);
   }
 
-  @Get(':username')
+  @Get('/avatar/:username')
   async getAvatar(
     @Param('username') username: string,
     @Res({ passthrough: true }) res: Response,
@@ -109,4 +109,12 @@ export class AppController {
       return new StreamableFile(file);
     } else throw new HttpException('Internal Server Error', 500);
   }
+
+  @Post(':username/authentified')
+  async isAuthentified(@Param('username') username: string, @Body() accessToken: string): Promise<boolean> {
+    const user = await this.userService.findOne(username);
+    if (!user) throw new HttpException('Unprocessable Entity', 422);
+    return (accessToken === user.accessToken);
+  }
 }
+

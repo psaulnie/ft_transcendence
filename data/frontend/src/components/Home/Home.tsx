@@ -9,13 +9,15 @@ function Home() {
     const cookies = Cookies.get();
     console.log('cookies : ', cookies); // Display cookies
 
-    // useEffect(() => {
-    //     const username = Cookies.get('username');
-    //     if (!username)
-    //         return; // TODO
-    //     dispatch(setUsername(username));
-    //     dispatch(login())
-    // });
+    useEffect(() => {
+        const username = Cookies.get('username');
+        const accessToken = Cookies.get('accessToken');
+        if (!username || !accessToken)
+            return; // TODO
+        dispatch(setUsername(username));
+        dispatch(login(accessToken));
+    }, [dispatch]);
+
     return (
       <p>You are in Home</p>
     );

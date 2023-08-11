@@ -21,6 +21,7 @@ import Home from './components/Home/Home';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Profile from './components/Global/Profile';
+import { useIsAuthentifiedMutation } from './store/api';
 
 const darkTheme = createTheme({
   palette: {
@@ -45,6 +46,9 @@ function App() {
 		setDrawerState(open);
     };
 
+	// const [isAuthentified, isError ] = useIsAuthentifiedMutation(user.accessToken);
+	// if (!isError)
+	// 	return (<p>error</p>)
 	function logoutButton(e: SyntheticEvent)
 	{
 		e.preventDefault();
@@ -65,7 +69,6 @@ function App() {
 						<Route path="/profile" element={<Profile/>}></Route>
 						<Route path="/home" element={<Home/>}></Route>
 					</Routes>
-					{user.isLoggedIn ? (<UploadButton />) : null}
 					{user.isLoggedIn ? <button onClick={logoutButton}>Logout</button> : null}
 					{user.isLoggedIn ? (<Chat/>) : null}
 				</div>
