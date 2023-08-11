@@ -54,32 +54,38 @@ export default function RoomTabs()
 				position: 'fixed', bottom:"100",
 				"& .MuiTabs-flexContainer": {
 					// Adjust the width of the tabs
-					maxWidth: "22em",
+					maxWidth: "19em",
 					maxHeight: "100%", // You can adjust the value here
 					marginTop: "0px",
-				  },
-				  "& .MuiTab-root": {
-					// Adjust the font size and padding of the tabs
-					fontSize: "10px", // You can adjust the value here
-					padding: "6px", // You can adjust the value here
+				},
+				'@media (max-width: 600px) or (max-height: 700px)': {
+					"& .MuiTabs-flexContainer": {
+						// Adjust the width of the tabs
+						maxWidth: "10em",
+						maxHeight: "100%", // You can adjust the value here
+						marginTop: "0px",
+					},
+				},
+				"& .MuiTab-root": {
+					fontSize: "10px", 
+					padding: "6px",
 					minHeight: "4em",
 					minWidth: "1em",
-				  },
-				  "& .MuiTabs-indicator": {
-					// Adjust the position of the indicator bar
-					top: "0", // You can adjust the value here to move it higher
+				},
+				"& .MuiTabs-indicator": {
+					top: "0",
 					marginTop: "2px",
 					backgroundColor: "red",
-				  },
-				  "& .MuiTabs-scrollButtons.Mui-disabled": {
+				},
+				"& .MuiTabs-scrollButtons.Mui-disabled": {
 					opacity: "0.3",
-				  },
-				  "& .Mui-selected": {
+				},
+				"& .Mui-selected": {
 					backgroundColor: "red",
 					color: "black",
-				  },
+				},
 				  
-				}} value={rooms.index} onChange={changeSelectedRoom} variant="scrollable" scrollButtons="auto"
+				}} value={rooms.index} onChange={changeSelectedRoom} variant="scrollable" scrollButtons="auto" allowScrollButtonsMobile
 			>
 				{rooms.room.map((room: {name: string, role: string, unread: boolean}, key: number) =>
 					<Tab onClick={() => dispatch(setRead(key)) } value={key} tabIndex={key} key={key} onContextMenu={(event) => handleContextMenu(event, key)} label={
@@ -87,7 +93,7 @@ export default function RoomTabs()
 							{room.name}
 							{
 								rooms.index === key ? 
-									<IconButton size="small" component="span" onClick={() => quitRoom(room.name) }>
+									<IconButton size="small" component="span" onClick={() => quitRoom(room.name)}>
 										<CloseIcon/>
 									</IconButton>
 								: null

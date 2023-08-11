@@ -5,11 +5,14 @@ import { sendMsgTypes } from '../args.types';
 import { useSelector } from 'react-redux';
 
 import { Button, Grid, TextField } from '@mui/material';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import PublishIcon from '@mui/icons-material/Publish';
 import { Publish } from '@mui/icons-material';
 
 export default function InputForm({roomName, isDirectMessage}: {roomName: string, isDirectMessage: boolean}) {
 	const user = useSelector((state: any) => state.user);
 	const rooms = useSelector((state: any) => state.rooms);
+	const isWideScreen = useMediaQuery('(max-width:600px) or (max-height:700px)');
 
 	const [value, setValue] = useState<sendMsgArgs>({ type: sendMsgTypes.msg, source: user.username, target: roomName, data: ''});
 	const [message, setMessage] = useState('');
@@ -47,15 +50,20 @@ export default function InputForm({roomName, isDirectMessage}: {roomName: string
 
 	return (
 		<form onSubmit={onSubmit}>
-			<Grid container justifyContent='center' alignItems='center' spacing={2}>
+			<Grid container justifyContent='center' alignItems='center' spacing={isWideScreen ? 1 : 2}>
 					<Grid item xs={8} >
 						<TextField fullWidth value={message} onChange={onChange} disabled={rooms.room.find((obj: any) => obj.name === roomName).isMuted}/>
 					</Grid>
 					<Grid item xs={2}>
 						<Button variant='contained' name='message' type="submit"
-								sx={{width: '80px', bgcolor: 'red'}}
+								sx={{width: '80px',
+								'@media (max-width: 600px) or (max-height: 700px)': {
+									width: '45px',
+									marginRight: '0.8em'
+								},
+								bgcolor: 'red'}}
 								disabled={ isLoading || rooms.room.find((obj: any) => obj.name === roomName).isMuted } onKeyDown={keyPress}
-								endIcon={<Publish />}
+								endIcon={isWideScreen ? null : <Publish />}
 								centerRipple
 						>
 							send

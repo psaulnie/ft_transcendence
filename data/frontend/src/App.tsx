@@ -22,15 +22,19 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Profile from './components/Global/Profile';
 import { useIsAuthentifiedMutation } from './store/api';
+import { Skeleton, Box, Grid, Button, Typography, Avatar, Slide} from '@mui/material';
 
-const darkTheme = createTheme({
-  palette: {
-    mode: 'dark',
-	background: {
-		default: '#0A1929'
-	}
-  },
-});
+const theme = createTheme({
+	palette: {
+		mode: 'dark',
+	  	primary: {
+			main: '#000000', // Red color
+	  	},
+	  	secondary: {
+			main: '#ff9900', // Orange color
+	  	},
+	},
+  });
 function App() {
 	const user = useSelector((state: any) => state.user);
 	const dispatch = useDispatch();
@@ -58,7 +62,7 @@ function App() {
 
 	return (
 	<div className="App">
-		<ThemeProvider theme={darkTheme}>
+		<ThemeProvider theme={theme}>
      		<CssBaseline />
 			<BrowserRouter>
 				<Navigation setDrawerState={setDrawerState}/>
@@ -66,7 +70,7 @@ function App() {
 				<div className='main'>
 					<Routes>
 						<Route path="/" element={<Login/>}></Route>
-						<Route path="/profile" element={<Profile/>}></Route>
+						{/* <Route path="/profile" element={<Profile/>}></Route> */}
 						<Route path="/home" element={<Home/>}></Route>
 					</Routes>
 					{user.isLoggedIn ? <button onClick={logoutButton}>Logout</button> : null}
