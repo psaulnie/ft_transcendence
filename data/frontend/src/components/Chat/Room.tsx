@@ -41,7 +41,7 @@ function Room({roomName}: {roomName: string}) {
 						</div>
 					</Box>
 				</Grid>
-				<Grid item xs={12} sx={{ marginTop: "auto", marginBottom: "9%" }}>
+				<Grid item xs={12} sx={{ marginTop: "auto", marginBottom: "9%" }}>ggg
 					<InputForm roomName={ roomName } isDirectMessage={rooms.room[roomIndex].isDirectMsg} />
 				</Grid>
 			</Grid>

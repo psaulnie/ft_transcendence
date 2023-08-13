@@ -33,7 +33,7 @@ function Tab()
 					backgroundColor: 'rgba(255, 255, 255, 0)',
 				},
         		"& .MuiButton-startIcon": {
-        			marginRight: "0.25em", // Ajustez la marge droite de l'icône pour le centrer
+        			marginRight: "0.25em",
         		},
         		"& .MuiButton-label": {
         		  	display: "flex",
@@ -44,7 +44,7 @@ function Tab()
 		
     		{/* Drawer for the tab */}
     		<Drawer
-    			anchor="right" // Slide in from the right
+    			anchor="right"
     			open={isTabOpen}
     			onClose={handleCloseTab}
     		>

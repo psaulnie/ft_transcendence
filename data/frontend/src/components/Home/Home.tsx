@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from 'react';
 
+import Cookies from 'js-cookie';
+import { useDispatch } from 'react-redux';
+import { setUsername, login } from '../../store/user';
+
 import PersonIcon from '@mui/icons-material/Person';
 
 import { Box, Grid, Button, } from '@mui/material';
@@ -8,7 +12,7 @@ import Profile from '../Global/Profile';
 import Game from '../Global/Game';
 
 export default function Home() {
-
+    const dispatch = useDispatch();
 	const [isProfilOpen, setIsProfilOpen] = useState(false);
 
   	const toggleProfil = () => {
@@ -20,6 +24,15 @@ export default function Home() {
   	const toggleGame = () => {
   	  setIsGameOpen(!isGameOpen);
   	};
+
+    useEffect(() => {
+        const username = Cookies.get('username');
+        const accessToken = Cookies.get('accessToken');
+        if (!username || !accessToken)
+            return; // TODO
+        dispatch(setUsername(username));
+        dispatch(login(accessToken));
+    }, [dispatch]);
 
 	return (
 		<div>

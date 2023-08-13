@@ -53,16 +53,14 @@ export default function RoomTabs()
 			<Tabs sx={{
 				position: 'fixed', bottom:"100",
 				"& .MuiTabs-flexContainer": {
-					// Adjust the width of the tabs
 					maxWidth: "19em",
-					maxHeight: "100%", // You can adjust the value here
+					maxHeight: "100%",
 					marginTop: "0px",
 				},
 				'@media (max-width: 600px) or (max-height: 700px)': {
 					"& .MuiTabs-flexContainer": {
-						// Adjust the width of the tabs
 						maxWidth: "10em",
-						maxHeight: "100%", // You can adjust the value here
+						maxHeight: "100%",
 						marginTop: "0px",
 					},
 				},

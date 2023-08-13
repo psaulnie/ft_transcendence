@@ -1,7 +1,6 @@
 import UploadButton from "./UploadButton";
 import React, { useEffect, useState } from 'react';
 
-import PersonIcon from '@mui/icons-material/Person';
 import falonsoImage from './falonso.jpg';
 
 import { Box, Grid, Button, Avatar, Typography, } from '@mui/material';

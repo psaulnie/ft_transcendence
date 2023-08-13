@@ -58,7 +58,7 @@ function UsersTab({roomName} : {roomName: string})
 		
     		{/* Drawer for the tab */}
     		<Drawer
-    			anchor="right" // Slide in from the right
+    			anchor="right"
     			open={isTabOpen}
     			onClose={handleCloseTab}
     		>
@@ -69,7 +69,6 @@ function UsersTab({roomName} : {roomName: string})
     					</h1>
   					</Box>
 					<Grid container sx={{ marginLeft: "5%"}}>
-							{/* <Typography>Users:</Typography> */}
 							<UsersList roomName={roomName} role={role} isDirectMessage={rooms.room[roomIndex].isDirectMsg} />
 
 					</Grid>
