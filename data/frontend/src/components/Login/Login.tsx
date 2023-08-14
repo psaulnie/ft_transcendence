@@ -1,6 +1,10 @@
 import { SyntheticEvent } from "react";
+import { useLocation } from "react-router";
 
 function Login() {
+    const location = useLocation();
+    const params = new URLSearchParams(location.search);
+    const refused = params.get('login-refused');
 
     async function apiIntraLogIn() {
         try {
@@ -22,6 +26,11 @@ function Login() {
             <form>
                 <button type="button" onClick={logIn}>LogIn</button>
             </form>
+            {refused === 'true' && (
+              <div className="alert alert-warning">
+                  La connexion avec Intra42 a été refusée. Veuillez réessayer.
+              </div>
+            )}
         </div>
     )
 }

@@ -4,10 +4,16 @@ import { AuthGuard } from '@nestjs/passport';
 @Injectable()
 export class IntraAuthGuards extends AuthGuard('42') {
   async canActivate(context: ExecutionContext) {
-    const activate = (await super.canActivate(context)) as boolean;
-    const request = context.switchToHttp().getRequest();
-    await super.logIn(request);
-    return activate;
+    try {
+      const activate = (await super.canActivate(context)) as boolean;
+      const request = context.switchToHttp().getRequest();
+      await super.logIn(request);
+      return activate;
+    } catch (error) {
+      const response = context.switchToHttp().getResponse();
+      response.redirect('http://localhost:3000/?login-refused=true');
+      return false;
+    }
   }
 }
 
