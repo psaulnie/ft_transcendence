@@ -1,10 +1,10 @@
 import {
-  	Entity,
-  	Column,
-  	PrimaryGeneratedColumn,
-  	AfterLoad,
-	ManyToMany,
-	JoinTable
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  AfterLoad,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 import { UsersList } from './usersList.entity';
 
@@ -38,13 +38,12 @@ export class User {
   @Column({ name: 'refresh_token' })
   refreshToken: string;
 
-  @ManyToMany(() => User, blockedUsers => blockedUsers.blockedUsers)
+  @ManyToMany(() => User, (blockedUsers) => blockedUsers.blockedUsers)
   @JoinTable()
   blockedUsers: User[];
 
   @AfterLoad()
   async nullCheck() {
-	  if (!this.blockedUsers)
-		  this.blockedUsers = [];
-	}
+    if (!this.blockedUsers) this.blockedUsers = [];
+  }
 }
