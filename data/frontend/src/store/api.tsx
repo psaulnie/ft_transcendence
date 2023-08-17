@@ -10,7 +10,7 @@ export const apiSlice = createApi({
 				url: '/api/chat/role/' + username + '/' + roomName,
 				method: 'GET',
 				headers: {
-					'Autorization': 'Bearer ' + Cookies.get('accessToken'),
+					'Authorization': 'Bearer ' + Cookies.get('accessToken'),
 				}			
 			}),
 		}),
@@ -19,7 +19,7 @@ export const apiSlice = createApi({
 				url: '/api/chat/' + username + '/blocked',
 				method: 'GET',
 				headers: {
-					'Autorization': 'Bearer ' + Cookies.get('accessToken'),
+					'Authorization': 'Bearer ' + Cookies.get('accessToken'),
 				}			
 			})
 		}),
@@ -28,7 +28,7 @@ export const apiSlice = createApi({
 				url: '/api/chat/rooms/list',
 				method: 'GET',
 				headers: {
-					'Autorization': 'Bearer ' + Cookies.get('accessToken'),
+					'Authorization': 'Bearer ' + Cookies.get('accessToken'),
 				}
 			})
 		}),
@@ -37,7 +37,7 @@ export const apiSlice = createApi({
 				url: '/api/chat/' + roomName + '/users',
 				method: 'GET',
 				headers: {
-					'Autorization': 'Bearer ' + Cookies.get('accessToken'),
+					'Authorization': 'Bearer ' + Cookies.get('accessToken'),
 				}
 			})
 		}),
@@ -46,7 +46,7 @@ export const apiSlice = createApi({
 				url: '/api/chat/' + username + '/rooms/list',
 				method: 'GET',
 				headers: {
-					'Autorization': 'Bearer ' + Cookies.get('accessToken'),
+					'Authorization': 'Bearer ' + Cookies.get('accessToken'),
 				}
 			})
 		}),
@@ -55,7 +55,7 @@ export const apiSlice = createApi({
 				url: '/api/chat/users/list',
 				method: 'GET',
 				headers: {
-					'Autorization': 'Bearer ' + Cookies.get('accessToken'),
+					'Authorization': 'Bearer ' + Cookies.get('accessToken'),
 				}
 			})
 		}),
@@ -64,7 +64,7 @@ export const apiSlice = createApi({
 				url: '/api/chat/' + username + '/' + roomName + '/status',
 				method: 'GET',
 				headers: {
-					'Autorization': 'Bearer ' + Cookies.get('accessToken'),
+					'Authorization': 'Bearer ' + Cookies.get('accessToken'),
 				}
 			})
 		}),
@@ -73,7 +73,7 @@ export const apiSlice = createApi({
 				url: '/api/chat/' + username + '/' + roomName + '/invited',
 				method: 'GET',
 				headers: {
-					'Autorization': 'Bearer ' + Cookies.get('accessToken'),
+					'Authorization': 'Bearer ' + Cookies.get('accessToken'),
 				}
 			}),
 		}),
@@ -82,7 +82,7 @@ export const apiSlice = createApi({
 				url: '/api/chat/' + roomName + '/exist',
 				method: 'GET',
 				headers: {
-					'Autorization': 'Bearer ' + Cookies.get('accessToken'),
+					'Authorization': 'Bearer ' + Cookies.get('accessToken'),
 				}
 			})
 		}),
@@ -93,7 +93,7 @@ export const apiSlice = createApi({
 				body: body,
 				formData: true,
 				headers: {
-					'Autorization': 'Bearer ' + Cookies.get('accessToken'),
+					'Authorization': 'Bearer ' + Cookies.get('accessToken'),
 				}
 			})
 		}),

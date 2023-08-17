@@ -23,7 +23,7 @@ import { UsersService } from './users/users.service';
 import { Response } from 'express';
 import { AppService } from './services/app.service';
 
-import { AuthenticatedGuard } from './auth/guards/intra-auth.guards';
+import { AuthenticatedGuard, IsAuthGuard } from './auth/guards/intra-auth.guards';
 import { UseGuards } from '@nestjs/common';
 
 const fileInterceptorOptions = {
@@ -61,7 +61,7 @@ export class AppController {
   ) {}
 
   @Post('/avatar/upload')
-  @UseGuards(AuthenticatedGuard)
+  @UseGuards(IsAuthGuard)
   @UseInterceptors(FileInterceptor('file', fileInterceptorOptions))
   async uploadAvatar(
     @Body() body: any,
@@ -78,7 +78,6 @@ export class AppController {
   }
 
   @Get('/avatar/:username')
-  @UseGuards(AuthenticatedGuard)
   async getAvatar(
     @Param('username') username: string,
     @Res({ passthrough: true }) res: Response,

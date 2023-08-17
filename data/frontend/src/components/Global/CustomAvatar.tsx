@@ -1,4 +1,5 @@
 import { Avatar } from "@mui/material";
+import Cookies from "js-cookie";
 
 export default function CustomAvatar({username}: {username: string}) {
 

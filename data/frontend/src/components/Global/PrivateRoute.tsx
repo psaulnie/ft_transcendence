@@ -4,31 +4,27 @@ import Cookies from 'js-cookie';
 
 export default function PrivateRoute() {
 
-	const [data, setData] = useState({expires_in_seconds: 0});
 	const [isLoading, setIsLoading] = useState(true);
-
+	const [isOk, setIsOk] = useState(false);
 	const fetchData = () => {
-		fetch("https://api.intra.42.fr/oauth/token/info", {
+		fetch("http://localhost:5000/auth/connected", {
 			headers: {
 				'Authorization': 'Bearer ' + Cookies.get('accessToken'),
 			}
 		})
 		  .then(response => {
-			return response.json()
-		  })
-		  .then(retrievedData => {
-			console.log(retrievedData);
-			setData(retrievedData);
+			setIsOk(response.ok);
 			setIsLoading(false);
-		  })	
+		})
 	}
 
 	useEffect(() => {
 		fetchData();
 	}, []);
+
 	if (isLoading)
 		return (<div>Loading...</div>);
-	if (data && 'expires_in_seconds' in data && data.expires_in_seconds > 0)
+	if (isOk)
 	{
 		return (<Outlet />);
 	}

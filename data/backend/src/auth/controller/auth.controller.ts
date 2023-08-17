@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import {
   AuthenticatedGuard,
   IntraAuthGuards,
+  IsAuthGuard,
 } from '../guards/intra-auth.guards';
 import { User } from '../../entities';
 
@@ -63,5 +64,15 @@ export class AuthController {
       }
       res.redirect('/');
     });
+  }
+
+  /**
+   * GET /api/auth/connected
+   * Check the access token to see if the user is connected
+   */
+  @Get('connected')
+  @UseGuards(IsAuthGuard)
+  connected(@Req() req: Request) {
+    return req.user;
   }
 }

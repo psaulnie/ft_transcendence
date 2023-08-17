@@ -12,7 +12,7 @@ import { RoomService } from '../services/room.service';
 import { UsersService } from '../users/users.service';
 import { UsersList } from 'src/entities/usersList.entity';
 
-import { AuthenticatedGuard } from 'src/auth/guards/intra-auth.guards';
+import { AuthenticatedGuard, IsAuthGuard } from 'src/auth/guards/intra-auth.guards';
 
 @Controller('/api/chat/')
 export class ChatController {
@@ -22,7 +22,7 @@ export class ChatController {
   ) {}
 
   @UseInterceptors(CacheInterceptor)
-  @UseGuards(AuthenticatedGuard)
+  @UseGuards(IsAuthGuard)
   @Get('role/:username/:roomName')
   async getRole(
     @Query() data: any,
@@ -39,7 +39,7 @@ export class ChatController {
   }
 
   @UseInterceptors(CacheInterceptor)
-  @UseGuards(AuthenticatedGuard)
+  @UseGuards(IsAuthGuard)
   @Get(':username/blocked')
   async getBlockedUser(
     @Query() data: any,
@@ -58,7 +58,7 @@ export class ChatController {
   }
 
   @UseInterceptors(CacheInterceptor)
-  @UseGuards(AuthenticatedGuard)
+  @UseGuards(IsAuthGuard)
   @Get('rooms/list')
   async getRoomsList(): Promise<{}[]> {
     const rooms = await this.roomService.findAll();
@@ -75,7 +75,7 @@ export class ChatController {
   }
 
   @UseInterceptors(CacheInterceptor)
-  @UseGuards(AuthenticatedGuard)
+  @UseGuards(IsAuthGuard)
   @Get(':roomName/users')
   async getUsersInRoom(
     @Query() data: any,
@@ -98,7 +98,7 @@ export class ChatController {
   }
 
   @UseInterceptors(CacheInterceptor)
-  @UseGuards(AuthenticatedGuard)
+  @UseGuards(IsAuthGuard)
   @Get(':username/rooms/list')
   async getUserRoomsList(
     @Query() data: any,
@@ -125,7 +125,7 @@ export class ChatController {
   }
 
   @UseInterceptors(CacheInterceptor)
-  @UseGuards(AuthenticatedGuard)
+  @UseGuards(IsAuthGuard)
   @Get(':roomName/exist')
   async getIsRoomNameTaken(
     @Query() data: any,
@@ -137,7 +137,7 @@ export class ChatController {
   }
 
   @UseInterceptors(CacheInterceptor)
-  @UseGuards(AuthenticatedGuard)
+  @UseGuards(IsAuthGuard)
   @Get('users/list')
   async getUsersList(): Promise<string[]> {
     const users = await this.userService.findAll();
@@ -148,7 +148,7 @@ export class ChatController {
   }
 
   @UseInterceptors(CacheInterceptor)
-  @UseGuards(AuthenticatedGuard)
+  @UseGuards(IsAuthGuard)
   @Get(':username/:roomName/status')
   async getUserStatusInRoom(
     @Query() data: any,
@@ -165,7 +165,7 @@ export class ChatController {
   }
 
   @UseInterceptors(CacheInterceptor)
-  @UseGuards(AuthenticatedGuard)
+  @UseGuards(IsAuthGuard)
   @Get(':username/:roomName/invited')
   async getInvitedUsersList(
     @Query() data: any,

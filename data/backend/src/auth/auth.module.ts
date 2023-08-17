@@ -5,6 +5,7 @@ import { IntraStrategy } from './strategies/intra-auth.strategies';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../entities';
 import { SessionSerializer } from './session/Serializer';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   controllers: [AuthController],
@@ -16,6 +17,9 @@ import { SessionSerializer } from './session/Serializer';
       useClass: AuthService,
     },
   ],
-  imports: [TypeOrmModule.forFeature([User])],
+  imports: [
+    TypeOrmModule.forFeature([User]),
+    HttpModule.register({})
+  ],
 })
 export class AuthModule {}
