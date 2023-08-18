@@ -53,12 +53,15 @@ export class UsersService {
     return await this.usersRepository.save(user);
   }
 
-  async createUser(name: string, pass: string) {
+  async createUser(name: string) {
     console.log('createuser');
     const newUser = new User();
 
     newUser.urlAvatar = '';
     newUser.username = name;
+    newUser.clientId = '';
+    newUser.accessToken = '';
+    newUser.refreshToken = '';
     if (!newUser.blockedUsers) newUser.blockedUsers = [];
 
     await this.usersRepository.save(newUser);

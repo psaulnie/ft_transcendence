@@ -20,6 +20,10 @@ function Login() {
     apiIntraLogIn();
   }
 
+  function testlogin() {
+    window.location.href = "http://localhost:5000/auth/testlogin";
+  }
+
   const fetchData = () => {
     fetch("http://localhost:5000/auth/connected", {
       headers: {
@@ -49,6 +53,7 @@ function Login() {
           LogIn
         </button>
       </form>
+      <button type="button" onClick={testlogin}>Log as user test</button>
     </div>
   );
 }

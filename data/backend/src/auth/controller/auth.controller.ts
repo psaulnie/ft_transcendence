@@ -18,10 +18,11 @@ import { HttpService as NestHttpService } from '@nestjs/axios';
 
 import { AxiosError } from 'axios';
 import { catchError, firstValueFrom } from 'rxjs';
+import { UsersService } from 'src/users/users.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly httpService: NestHttpService) {}
+  constructor(private readonly httpService: NestHttpService, private readonly usersService: UsersService) {}
 
   /**
    * GET /api/auth/login
@@ -45,10 +46,12 @@ export class AuthController {
     res.cookie('accessToken', user.accessToken, {
       httpOnly: false,
       secure: false,
+      sameSite: 'none',
     }); // Set accessToken in cookie
     res.cookie('username', user.username, {
       httpOnly: false,
       secure: false,
+      sameSite: 'none',
     }); // Set accessToken in cookie
     res.redirect('http://localhost:3000/home');
     // res.sendStatus(200);
@@ -92,6 +95,8 @@ export class AuthController {
       if (type !== 'Bearer') {
         token = undefined;
       }
+      if (token === 'test')
+        return true;
       if (!token) {
         return false;
       }
@@ -115,4 +120,20 @@ export class AuthController {
       return false;
     }
   }
+
+  @Get('testlogin')
+  async testlogin(@Res() res: Response, @Req() req: Request) {
+    this.usersService.createUser('testUser');
+    res.cookie('accessToken', 'test', {
+      httpOnly: false,
+      secure: false,
+      sameSite: 'none',
+    }); // Set accessToken in cookie
+    res.cookie('username', 'testUser', {
+      httpOnly: false,
+      secure: false,
+      sameSite: 'none',
+    }); // Set username in cookie
+    res.redirect('http://localhost:3000/home');
+  };
 }

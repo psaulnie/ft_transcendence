@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../entities';
 import { SessionSerializer } from './session/Serializer';
 import { HttpModule } from '@nestjs/axios';
+import { UsersService } from 'src/users/users.service';
 
 @Module({
   controllers: [AuthController],
@@ -16,6 +17,7 @@ import { HttpModule } from '@nestjs/axios';
       provide: 'AUTH_SERVICE',
       useClass: AuthService,
     },
+    UsersService
   ],
   imports: [
     TypeOrmModule.forFeature([User]),
