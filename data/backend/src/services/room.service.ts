@@ -5,7 +5,6 @@ import { User } from 'src/entities/user.entity';
 import { UsersList } from 'src/entities/usersList.entity';
 import { Repository } from 'typeorm';
 import { accessStatus } from '../chatModule/accessStatus';
-import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class RoomService {
@@ -50,6 +49,9 @@ export class RoomService {
     return await this.roomsRepository.save(room);
   }
 
+  // TODO: check if it is possible to merge functions
+  //  'createRoom' and 'createPasswordProtectedRoom'
+  //  because there are a lot of duplicated lines
   async createPasswordProtectedRoom(
     name: string,
     user: User,
@@ -69,32 +71,12 @@ export class RoomService {
     room.ownerID = user.id;
     room.usersNumber = 1;
     room.access = access;
-    room.password = await this.hashPassword(password);
+    room.password = password;
     console.log('hash: ', room.password);
     if (!room.usersID) room.usersID = [];
     room.usersID.push(await this.usersListRepository.save(usersList));
     return await this.roomsRepository.save(room);
   }
-
-  async hashPassword(password: string) {
-    try {
-      const salt = await bcrypt.genSalt(10);
-      return await bcrypt.hash(password, salt);
-    } catch (err) {
-      console.error(err);
-      return null;
-    }
-  }
-
-  // IF NEEDED LATER
-  // async comparePassword(hash: string) {
-  //   try {
-  //     const res = await bcrypt.compare('un autre mot de passe', hash);
-  //     // res == false
-  //   } catch (err) {
-  //     console.error(err);
-  //   }
-  // }
 
   async addRoom(room: Room): Promise<Room> {
     console.log('addroom');
@@ -230,9 +212,7 @@ export class RoomService {
 
   async getPassword(roomName: string): Promise<string> {
     console.log('getpassword');
-
     const room = await this.findOne(roomName);
-
     return room.password;
   }
 

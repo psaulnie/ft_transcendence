@@ -56,7 +56,7 @@ export class AuthController {
   @Get('logout')
   @UseGuards(AuthenticatedGuard)
   logout(@Req() req: Request, res, next) {
-    // TODO test
+    // TODO: to test
     req.logOut((err: any) => {
       if (err) {
         return next(err);
