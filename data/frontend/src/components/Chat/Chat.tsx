@@ -16,13 +16,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ChatProcess from "./ChatProcess";
 import Error from "../Global/Error";
 
-import {
-  Skeleton,
-  Box,
-  Grid,
-  Button,
-  Slide,
-} from "@mui/material";
+import { Skeleton, Box, Grid, Button, Slide } from "@mui/material";
 
 import RoomTabs from "./RoomTabs";
 import { addRoom, setRoomIndex } from "../../store/rooms";
@@ -38,19 +32,28 @@ function Chat() {
     setIsOpen(!isOpen);
   };
 
-  const [ fetchUserRoomList, userRoomList ] = useLazyGetUserRoomListQuery();
-  const [ fetchBlockedUsers, blockedUsers ] = useLazyGetBlockedUsersQuery();
+  const [fetchUserRoomList, userRoomList] = useLazyGetUserRoomListQuery();
+  const [fetchBlockedUsers, blockedUsers] = useLazyGetBlockedUsersQuery();
 
   useEffect(() => {
-    if (!user.isLoggedIn)
-      return ;
-    fetchBlockedUsers({ username: user.username });
+    if (!user.isLoggedIn) {
+      return;
+    }
+
+    if (blockedUsers.status === "uninitialized") {
+      fetchBlockedUsers({ username: user.username });
+    }
+
     if (blockedUsers.isSuccess && blockedUsers.data) {
       blockedUsers.data.forEach((element: any) => {
         dispatch(addBlockedUser(element));
       });
     }
-    fetchUserRoomList({ username: user.username });
+
+    if (userRoomList.status === "uninitialized") {
+      fetchUserRoomList({ username: user.username });
+    }
+
     if (userRoomList.isSuccess && userRoomList.data) {
       userRoomList.data.forEach((element: any) => {
         dispatch(
@@ -64,9 +67,20 @@ function Chat() {
           })
         );
       });
-      if (userRoomList.data.length > 0) dispatch(setRoomIndex(0));
+
+      if (userRoomList.data.length > 0) {
+        dispatch(setRoomIndex(0));
+      }
     }
-  }, [blockedUsers, dispatch, fetchBlockedUsers, fetchUserRoomList, user.username, userRoomList]);
+  }, [
+    blockedUsers,
+    userRoomList,
+    user.isLoggedIn,
+    user.username,
+    dispatch,
+    fetchBlockedUsers,
+    fetchUserRoomList,
+  ]);
 
   if (!webSocket.connected) return <p>Chat Socket error</p>;
   if (blockedUsers.isError) return <Error error={blockedUsers.error} />;

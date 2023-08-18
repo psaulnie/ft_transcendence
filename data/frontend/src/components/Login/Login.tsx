@@ -39,6 +39,7 @@ function Login() {
     fetchData();
   }, []);
 
+  if (isLoading) return (<div>Loading...</div>) // TODO : add a loading component
   if (isOk) return <Navigate to="/home" />;
   return (
     <div className="main">
