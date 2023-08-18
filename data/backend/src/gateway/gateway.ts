@@ -62,7 +62,6 @@ export class Gateway
   @UseGuards(WsIsAuthGuard)
   @SubscribeMessage('sendMsg')
   async sendMsg(client: Socket, payload: sendMsgArgs) {
-    console.log("sakut");
     if (
       payload.data == null ||
       payload.source == null ||
@@ -496,6 +495,5 @@ export class Gateway
   @UseGuards(WsIsAuthGuard)
   async handleConnection(client: Socket, ...args: any[]) {
     console.log(`Client connected: ${client.id}`);
-    
   }
 }
