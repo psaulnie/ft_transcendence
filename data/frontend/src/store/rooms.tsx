@@ -24,7 +24,7 @@ interface RoomsState {
 	index: number
 };
 
-const initialUser: RoomsState = localStorage.getItem('rooms') ? JSON.parse(localStorage.getItem('rooms') || '{ room: [], index: -1 }') : { room: [], index: -1 }; // TODO maybe add to localstorage
+const initialUser: RoomsState = localStorage.getItem('rooms') ? JSON.parse(localStorage.getItem('rooms') || '{ room: [], index: -1 }') : { room: [], index: -1 };
 
 const initialState: RoomsState = {
 	room: initialUser.room,

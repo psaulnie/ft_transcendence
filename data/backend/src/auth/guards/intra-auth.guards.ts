@@ -4,6 +4,7 @@ import { HttpService as NestHttpService } from '@nestjs/axios';
 
 import { AxiosError } from 'axios';
 import { catchError, firstValueFrom } from 'rxjs';
+import { WsException } from '@nestjs/websockets';
 
 @Injectable()
 export class IntraAuthGuards extends AuthGuard('42') {
@@ -58,3 +59,30 @@ export class IsAuthGuard implements CanActivate {
 	}
 }
 
+@Injectable()
+export class WsIsAuthGuard implements CanActivate {
+	constructor(private readonly httpService: NestHttpService) {}
+
+	async canActivate(context: any): Promise<boolean> {
+		const token = context.args[0].handshake.auth.token
+		if (!token) {
+			throw new WsException('Unauthorized');
+		}
+		try {
+			await firstValueFrom(
+				this.httpService.get('https://api.intra.42.fr/oauth/token/info', {
+						headers: { 
+							Authorization: `Bearer ${token}`,
+						},
+					}).pipe(
+						catchError((error: AxiosError) => {
+							throw new WsException('Unauthorized');
+						}),
+					),
+				);
+			return (true);
+		} catch {
+			throw new WsException('Unauthorized');
+		}
+	}
+}

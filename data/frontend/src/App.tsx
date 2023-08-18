@@ -21,6 +21,7 @@ import Home from './components/Home/Home';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import PrivateRoute from './components/Global/PrivateRoute';
+import Base from './Base';
 
 const theme = createTheme({
 	palette: {
@@ -73,19 +74,12 @@ function App() {
 			<ThemeProvider theme={theme}>
 				<CssBaseline />
 				<BrowserRouter>
-					<Navigation setDrawerState={setDrawerState}/>
-					<NavDrawer state={drawerState} toggleDrawer={toggleDrawer}/>
-					<div className='main'>
-						<Routes>
-							<Route path="/" element={<Login/>}></Route>
-							{/* <Route path="/profile" element={<Profile/>}></Route> */}
-							<Route path="/home" element={<PrivateRoute />}>
-								<Route path="/home" element={<Home/>}></Route>
-							</Route>
-						</Routes>
-						{user.isLoggedIn ? <button onClick={logoutButton}>Logout</button> : null}
-						{user.isLoggedIn ? (<Chat/>) : null}
-					</div>
+					<Routes>
+						<Route path="/login" element={<Login/>}></Route>
+						<Route path="*" element={<PrivateRoute/>}>
+							<Route path='*' element={<Base/>}/>
+						</Route>
+					</Routes>
 				</BrowserRouter>
 			</ThemeProvider>
 		</div>

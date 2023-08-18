@@ -173,7 +173,6 @@ export class ChatController {
     @Param('roomName') roomName: string,
   ): Promise<{}[]> {
     if (username == null || roomName == null)
-      // TODO handle error
       throw new HttpException('Bad request', 400);
     const users = await this.userService.findAll();
     const usersList: {}[] = [];

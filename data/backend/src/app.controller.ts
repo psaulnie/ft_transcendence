@@ -23,7 +23,7 @@ import { UsersService } from './users/users.service';
 import { Response } from 'express';
 import { AppService } from './services/app.service';
 
-import { AuthenticatedGuard, IsAuthGuard } from './auth/guards/intra-auth.guards';
+import { IsAuthGuard } from './auth/guards/intra-auth.guards';
 import { UseGuards } from '@nestjs/common';
 
 const fileInterceptorOptions = {
@@ -67,7 +67,6 @@ export class AppController {
     @Body() body: any,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    // TODO add access token
     if (body && file && body.username) {
       const user = await this.userService.findOne(body.username);
       if (user) {
@@ -82,7 +81,6 @@ export class AppController {
     @Param('username') username: string,
     @Res({ passthrough: true }) res: Response,
   ): Promise<StreamableFile> {
-    // TODO Need to handle URLs
     if (username == null) {
       throw new HttpException('Bad Request', 400);
     }

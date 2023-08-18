@@ -28,8 +28,6 @@ import { IntraStrategy } from './auth/strategies/intra-auth.strategies';
 import { AuthService } from './auth/service/auth.service';
 import { HttpModule } from '@nestjs/axios';
 
-import { APP_GUARD } from '@nestjs/core';
-import { IsAuthGuard } from './auth/guards/intra-auth.guards';
 @Module({
   imports: [
     ConfigModule.forRoot(),
