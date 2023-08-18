@@ -3,8 +3,8 @@ import React, { useEffect, useState } from "react";
 import { webSocket } from "../../webSocket";
 
 import { useDispatch, useSelector } from "react-redux";
-import { useGetBlockedUsersQuery } from "../../store/api";
-import { useGetUserRoomListQuery } from "../../store/api";
+import { useLazyGetBlockedUsersQuery } from "../../store/api";
+import { useLazyGetUserRoomListQuery } from "../../store/api";
 import { addBlockedUser } from "../../store/user";
 
 import Room from "./Room";
@@ -38,34 +38,21 @@ function Chat() {
     setIsOpen(!isOpen);
   };
 
-  const {
-    data: blockedUsers,
-    isLoading: blockedUsersLoading,
-    isSuccess: blockedUsersSuccess,
-    isError: blockedUsersError,
-    error: blockedUsersErrorData,
-    refetch: blockedUsersRefetch,
-  } = useGetBlockedUsersQuery({ username: user.username });
-
-  const {
-    data: userRoomList,
-    isLoading: userRoomListLoading,
-    isSuccess: userRoomListSuccess,
-    isError: userRoomListError,
-    error: userRoomListErrorData,
-    refetch: userRoomListRefetch,
-  } = useGetUserRoomListQuery({ username: user.username });
+  const [ fetchUserRoomList, userRoomList ] = useLazyGetUserRoomListQuery();
+  const [ fetchBlockedUsers, blockedUsers ] = useLazyGetBlockedUsersQuery();
 
   useEffect(() => {
-    blockedUsersRefetch();
-    if (blockedUsersSuccess && blockedUsers) {
-      blockedUsers.forEach((element: any) => {
+    if (!user.isLoggedIn)
+      return ;
+    fetchBlockedUsers({ username: user.username });
+    if (blockedUsers.isSuccess && blockedUsers.data) {
+      blockedUsers.data.forEach((element: any) => {
         dispatch(addBlockedUser(element));
       });
     }
-    userRoomListRefetch();
-    if (userRoomListSuccess && userRoomList) {
-      userRoomList.forEach((element: any) => {
+    fetchUserRoomList({ username: user.username });
+    if (userRoomList.isSuccess && userRoomList.data) {
+      userRoomList.data.forEach((element: any) => {
         dispatch(
           addRoom({
             name: element.roomName,
@@ -77,23 +64,14 @@ function Chat() {
           })
         );
       });
-      if (userRoomList.length > 0) dispatch(setRoomIndex(0));
+      if (userRoomList.data.length > 0) dispatch(setRoomIndex(0));
     }
-  }, [
-    user.username,
-    blockedUsersSuccess,
-    blockedUsers,
-    dispatch,
-    blockedUsersRefetch,
-    userRoomListSuccess,
-    userRoomList,
-    userRoomListRefetch,
-  ]);
+  }, [blockedUsers, dispatch, fetchBlockedUsers, fetchUserRoomList, user.username, userRoomList]);
 
   if (!webSocket.connected) return <p>Chat Socket error</p>;
-  if (blockedUsersError) return <Error error={blockedUsersErrorData} />;
-  else if (userRoomListError) return <Error error={userRoomListErrorData} />;
-  else if (blockedUsersLoading || userRoomListLoading)
+  if (blockedUsers.isError) return <Error error={blockedUsers.error} />;
+  else if (userRoomList.isError) return <Error error={userRoomList.error} />;
+  else if (blockedUsers.isLoading || userRoomList.isLoading)
     return (
       <div>
         <Skeleton variant="text" />

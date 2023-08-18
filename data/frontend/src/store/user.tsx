@@ -40,6 +40,7 @@ export const userSlice = createSlice({
       localStorage.setItem("user", JSON.stringify(state));
     },
     logout: (state) => {
+      window.location.href = "/login";
       state.username = "";
       state.isLoggedIn = false;
       Cookies.remove("accessToken");

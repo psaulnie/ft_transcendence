@@ -39,7 +39,6 @@ function Room({ roomName }: { roomName: string }) {
       <Grid
         item
         xs={8}
-        spacing={0}
         sx={{
           height: "100%",
           width: "100%",

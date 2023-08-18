@@ -30,8 +30,6 @@ export default function Base() {
   function logoutButton(e: SyntheticEvent) {
     e.preventDefault();
     dispatch(logout());
-    // redirect('/');
-    window.location.href = "/login";
   }
 
   return (

@@ -113,4 +113,6 @@ export const {
   useUploadAvatarMutation,
   useLazyGetIsRoomNameTakenQuery,
   useLazyGetUsersInRoomQuery,
+  useLazyGetBlockedUsersQuery,
+  useLazyGetUserRoomListQuery
 } = apiSlice;
