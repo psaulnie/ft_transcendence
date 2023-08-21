@@ -1,78 +1,59 @@
-import './App.css';
+import "./App.css";
 
-import { SyntheticEvent, useState } from 'react';
+import { useEffect } from "react";
 
-import { useSelector, useDispatch } from 'react-redux';
-import { logout } from './store/user';
+import { useDispatch } from "react-redux";
+import { login, setUsername } from "./store/user";
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { useNavigate } from 'react-router-dom';
+import Cookies from "js-cookie";
 
 // Components
-import Chat from './components/Chat/Chat';
-// import Game from './components/Game/Game';
-import Login from './components/Global/Login';
-import Navigation from './components/Navigation/Navigation';
-import NavDrawer from './components/Navigation/NavDrawer';
+import Login from "./components/Login/Login";
+import Base from "./Base";
 
-import UploadButton from './components/Global/UploadButton';
-import Home from './components/Global/Home';
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
+import PrivateRoute from "./components/Global/PrivateRoute";
 
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import Profile from './components/Global/Profile';
-
-const darkTheme = createTheme({
+const theme = createTheme({
   palette: {
-    mode: 'dark',
-	background: {
-		default: '#0A1929'
-	}
+    mode: "dark",
+    primary: {
+      main: "#000000", // Red color
+    },
+    secondary: {
+      main: "#ff9900", // Orange color
+    },
   },
 });
+
 function App() {
-	const user = useSelector((state: any) => state.user);
-	const dispatch = useDispatch();
-	
-	const [drawerState, setDrawerState] = useState(false);
+  const dispatch = useDispatch();
 
-	const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
-		if (event.type === 'keydown' &&
-			((event as React.KeyboardEvent).key === 'Tab' ||
-			(event as React.KeyboardEvent).key === 'Shift')) {
-			return;
-		}
-		setDrawerState(open);
-    };
+  useEffect(() => {
+    const username = Cookies.get("username");
+    const accessToken = Cookies.get("accessToken");
+    if (!username || !accessToken) return; // TODO
+    dispatch(setUsername(username));
+    dispatch(login(accessToken));
+  }, [dispatch]);
 
-	function logoutButton(e: SyntheticEvent)
-	{
-		e.preventDefault();
-		dispatch(logout());
-		window.location.href = "/";
-	}
-
-	return (
-	<div className="App">
-		<ThemeProvider theme={darkTheme}>
-     		<CssBaseline />
-			<BrowserRouter>
-				<Navigation setDrawerState={setDrawerState}/>
-				<NavDrawer state={drawerState} toggleDrawer={toggleDrawer}/>
-				<div className='main'>
-					<Routes>
-						<Route path="/" element={<Login/>}></Route>
-						<Route path="/profile" element={<Profile/>}></Route>
-						<Route path="/home" element={<Home/>}></Route>
-					</Routes>
-					{user.isLoggedIn ? (<UploadButton />) : null}
-					{user.isLoggedIn ? <button onClick={logoutButton}>Logout</button> : null}
-					{user.isLoggedIn ? (<Chat/>) : null} 
-				</div>
-			</BrowserRouter>
-	    </ThemeProvider>
-	</div>
-	);
+  return (
+    <div className="App">
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/login" element={<Login />}></Route>
+            <Route path="*" element={<PrivateRoute />}>
+              <Route path="*" element={<Base />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </ThemeProvider>
+    </div>
+  );
 }
 
 export default App;

@@ -1,34 +1,50 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany, AfterLoad, JoinColumn, ManyToMany, JoinTable } from 'typeorm';
+import {
+  	Entity,
+  	Column,
+  	PrimaryGeneratedColumn,
+  	AfterLoad,
+	ManyToMany,
+	JoinTable
+} from 'typeorm';
 import { UsersList } from './usersList.entity';
 
 @Entity({ name: 'User' })
 export class User {
-	@PrimaryGeneratedColumn()
-	id: number
+  @PrimaryGeneratedColumn()
+  id: number;
 
-	@Column()
-	isConnected: boolean
-	
-	@Column()
-	intraUsername: string
+  @Column()
+  clientId: string;
 
-	@Column({name: 'username'})
-	username: string
+  // @Column()
+  // intraUsername: string;
 
-	@Column()
-	status: number
+  @Column({ name: 'username' })
+  username: string;
 
-	// Check path to file
-	@Column()
-	urlAvatar: string
+  // @Column() // No password for the moment
+  // password: string;
 
-	@ManyToMany(() => User, blockedUsers => blockedUsers.blockedUsers)
-	@JoinTable()
-	blockedUsers: User[]
+  // @Column()
+  // status: number;
 
-	@AfterLoad()
-	async nullCheck() {
-		if (!this.blockedUsers)
-			this.blockedUsers = [];
+  // Check path to file
+  @Column({ nullable: true })
+  urlAvatar: string;
+
+  @Column({ name: 'access_token' })
+  accessToken: string;
+
+  @Column({ name: 'refresh_token' })
+  refreshToken: string;
+
+  @ManyToMany(() => User, blockedUsers => blockedUsers.blockedUsers)
+  @JoinTable()
+  blockedUsers: User[];
+
+  @AfterLoad()
+  async nullCheck() {
+	  if (!this.blockedUsers)
+		  this.blockedUsers = [];
 	}
 }

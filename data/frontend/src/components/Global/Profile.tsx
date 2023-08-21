@@ -1,10 +1,130 @@
+import UploadButton from "./UploadButton";
+import falonsoImage from "./falonso.jpg";
 
+import { Box, Grid, Button, Avatar, Typography } from "@mui/material";
 
-export default function Profile() {
+interface ProfileProps {
+  toggleProfil: () => void;
+}
 
-	return (
-		<div>
-			<h1>Profile</h1>
-		</div>
-	)
-};
+function Profile({ toggleProfil }: ProfileProps) {
+  const handleButtonClick = () => {
+    toggleProfil();
+  };
+
+  return (
+    <div>
+      <h1>Profile</h1>
+      <UploadButton />
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleButtonClick}
+        sx={{
+          textTransform: "none",
+          fontWeight: "bold",
+          fontSize: "36px",
+          width: "4em",
+          height: "1.4em",
+          backgroundColor: "rgba(220, 220, 220, 0.9)",
+          borderColor: "red",
+          color: "black",
+          "&:hover": {
+            backgroundColor: "grey",
+            borderColor: "red",
+          },
+        }}
+      >
+        Back
+      </Button>
+      <Box
+        sx={{
+          position: "fixed",
+          top: "56%",
+          left: "30%",
+          transform: "translate(-50%, -50%)",
+          width: "30em",
+          height: "30em",
+          padding: "2em",
+          borderRadius: "3em",
+          background: "linear-gradient(to right, #ECECEC, #d6d4d4)",
+          border: "2px solid #000000",
+          boxShadow: "0 0 10px rgba(0, 0, 0, 0.3)",
+        }}
+      >
+        <Grid
+          container
+          spacing={1}
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+          columns={{ xs: 12 }}
+        >
+          <Grid
+            item
+            xs={5}
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Avatar
+              src={falonsoImage}
+              alt="User Avatar"
+              sx={{ width: "8em", height: "8em", marginLeft: "2em" }}
+            />
+          </Grid>
+          <Grid item xs={7}>
+            <Box>
+              <Typography
+                variant="h6"
+                sx={{
+                  fontSize: 28,
+                  fontWeight: "bold",
+                  color: "black",
+                  marginLeft: "1em",
+                }}
+              >
+                Falonso
+              </Typography>
+              <Typography
+                variant="body2"
+                sx={{
+                  fontSize: 28,
+                  fontWeight: "bold",
+                  color: "black",
+                  marginLeft: "1em",
+                }}
+              >
+                Status: Auth
+              </Typography>
+            </Box>
+          </Grid>
+          <Grid item xs={4}>
+            <Typography variant="body1">33</Typography>
+          </Grid>
+          <Grid item xs={4}>
+            <Typography variant="body1">44</Typography>
+          </Grid>
+          <Grid item xs={4}>
+            <Typography variant="body1">55</Typography>
+          </Grid>
+          <Grid item xs={4}>
+            <Typography variant="body1">66</Typography>
+          </Grid>
+          <Grid item xs={4}>
+            <Typography variant="body1">77</Typography>
+          </Grid>
+          <Grid item xs={4}>
+            <Typography variant="body1">88</Typography>
+          </Grid>
+        </Grid>
+      </Box>
+    </div>
+  );
+}
+
+export default Profile;
