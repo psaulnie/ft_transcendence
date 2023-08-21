@@ -16,10 +16,16 @@ import { WsException } from '@nestjs/websockets';
 @Injectable()
 export class IntraAuthGuards extends AuthGuard('42') {
   async canActivate(context: ExecutionContext) {
-    const activate = (await super.canActivate(context)) as boolean;
-    const request = context.switchToHttp().getRequest();
-    await super.logIn(request);
-    return activate;
+    try {
+      const activate = (await super.canActivate(context)) as boolean;
+      const request = context.switchToHttp().getRequest();
+      await super.logIn(request);
+      return activate;
+    } catch (error) {
+      const response = context.switchToHttp().getResponse();
+      response.redirect('http://localhost:3000/?login-refused=true');
+      return false;
+    }
   }
 }
 
@@ -38,8 +44,7 @@ export class IsAuthGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
-    if (token === 'test')
-      return true;
+    if (token === 'test') return true;
     if (!token) {
       throw new UnauthorizedException();
     }
@@ -75,8 +80,7 @@ export class WsIsAuthGuard implements CanActivate {
 
   async canActivate(context: any): Promise<boolean> {
     const token = context.args[0]?.handshake?.auth?.token;
-    if (token === 'test')
-      return true;
+    if (token === 'test') return true;
     if (!token) {
       throw new WsException('Unauthorized');
     }

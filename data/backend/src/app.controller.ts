@@ -112,4 +112,3 @@ export class AppController {
     } else throw new HttpException('Internal Server Error', 500);
   }
 }
-

@@ -55,16 +55,20 @@ import { HttpModule } from '@nestjs/axios';
       UsersList,
     ]),
     CacheModule.register({ isGlobal: true }),
-    HttpModule.register({})
+    HttpModule.register({}),
   ],
   controllers: [AppController, ChatController],
-  providers: [UsersService, AppService, RoomService, Gateway,
+  providers: [
+    UsersService,
+    AppService,
+    RoomService,
+    Gateway,
     IntraStrategy,
     SessionSerializer,
     {
       provide: 'AUTH_SERVICE',
       useClass: AuthService,
     },
-    ],
+  ],
 })
 export class AppModule {}

@@ -17,11 +17,8 @@ import { UsersService } from 'src/users/users.service';
       provide: 'AUTH_SERVICE',
       useClass: AuthService,
     },
-    UsersService
+    UsersService,
   ],
-  imports: [
-    TypeOrmModule.forFeature([User]),
-    HttpModule.register({})
-  ],
+  imports: [TypeOrmModule.forFeature([User]), HttpModule.register({})],
 })
 export class AuthModule {}

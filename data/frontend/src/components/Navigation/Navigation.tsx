@@ -29,6 +29,7 @@ function Navigation({ setDrawerState }: { setDrawerState: any }) {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             ft_transcendence
           </Typography>
+          {user.isLoggedIn ? <p>{user.username}</p> : null}
           {user.isLoggedIn ? <CustomAvatar username={user.username} /> : null}
         </Toolbar>
       </AppBar>

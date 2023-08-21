@@ -17,6 +17,7 @@ import { actionTypes } from './args.types';
 import { accessStatus } from 'src/chatModule/accessStatus';
 import { UseGuards } from '@nestjs/common';
 import { WsIsAuthGuard } from 'src/auth/guards/intra-auth.guards';
+import { hashPassword, comparePassword } from './hashPasswords';
 
 @WebSocketGateway({
   cors: { origin: '*' },
@@ -105,23 +106,27 @@ export class Gateway
     let hasPassword = false;
     let role = 'none';
     if (payload.room.length > 10) payload.room = payload.room.slice(0, 10);
+
+    // If room doesn't exist
     if ((await this.roomService.findOne(payload.room)) == null) {
       if (payload.access != accessStatus.protected)
         await this.roomService.createRoom(payload.room, user, payload.access);
       else {
         hasPassword = true;
+        const hashedPassword = await hashPassword(payload.password);
         await this.roomService.createPasswordProtectedRoom(
           payload.room,
           user,
           payload.access,
-          payload.password,
+          hashedPassword,
         );
       }
       role = 'owner';
     } else {
+      // If room exists
       if (payload.access == accessStatus.protected) {
         const roomPassword = await this.roomService.getPassword(payload.room);
-        if (roomPassword != payload.password) {
+        if (!(await comparePassword(payload.password, roomPassword))) {
           this.server.emit(payload.source + 'OPTIONS', {
             source: payload.source,
             target: payload.room,
@@ -405,7 +410,10 @@ export class Gateway
     if (!room) throw new WsException('Room not found');
     if ((await this.roomService.getRole(room, admin.id)) == 'none')
       throw new WsException('Source user is not admin of the room');
-    this.roomService.setPasswordToRoom(payload.room, payload.password);
+    await this.roomService.setPasswordToRoom(
+      payload.room,
+      await hashPassword(payload.password),
+    );
     this.server.emit(payload.room, {
       source: payload.room,
       target: payload.room,
@@ -427,7 +435,7 @@ export class Gateway
     if (!room) throw new WsException('Room not found');
     if ((await this.roomService.getRole(room, admin.id)) == 'none')
       throw new WsException('Source user is not admin of the room');
-    this.roomService.removePasswordToRoom(payload.room);
+    await this.roomService.removePasswordToRoom(payload.room);
     this.server.emit(payload.room, {
       source: payload.source,
       target: payload.room,

@@ -5,14 +5,17 @@ import {
   HttpException,
   Param,
   UseInterceptors,
-  UseGuards
+  UseGuards,
 } from '@nestjs/common';
 import { CacheInterceptor } from '@nestjs/cache-manager';
 import { RoomService } from '../services/room.service';
 import { UsersService } from '../users/users.service';
 import { UsersList } from 'src/entities/usersList.entity';
 
-import { AuthenticatedGuard, IsAuthGuard } from 'src/auth/guards/intra-auth.guards';
+import {
+  AuthenticatedGuard,
+  IsAuthGuard,
+} from 'src/auth/guards/intra-auth.guards';
 
 @Controller('/api/chat/')
 export class ChatController {

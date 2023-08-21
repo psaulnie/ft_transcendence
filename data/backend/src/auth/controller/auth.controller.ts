@@ -22,7 +22,10 @@ import { UsersService } from 'src/users/users.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly httpService: NestHttpService, private readonly usersService: UsersService) {}
+  constructor(
+    private readonly httpService: NestHttpService,
+    private readonly usersService: UsersService,
+  ) {}
 
   /**
    * GET /api/auth/login
@@ -46,12 +49,10 @@ export class AuthController {
     res.cookie('accessToken', user.accessToken, {
       httpOnly: false,
       secure: false,
-      sameSite: 'none',
     }); // Set accessToken in cookie
     res.cookie('username', user.username, {
       httpOnly: false,
       secure: false,
-      sameSite: 'none',
     }); // Set accessToken in cookie
     res.redirect('http://localhost:3000/home');
     // res.sendStatus(200);
@@ -74,7 +75,7 @@ export class AuthController {
   @Get('logout')
   @UseGuards(AuthenticatedGuard)
   logout(@Req() req: Request, res, next) {
-    // TODO test
+    // TODO: to test
     req.logOut((err: any) => {
       if (err) {
         return next(err);
@@ -95,8 +96,7 @@ export class AuthController {
       if (type !== 'Bearer') {
         token = undefined;
       }
-      if (token === 'test')
-        return true;
+      if (token === 'test') return true;
       if (!token) {
         return false;
       }
@@ -135,5 +135,5 @@ export class AuthController {
       sameSite: 'none',
     }); // Set username in cookie
     res.redirect('http://localhost:3000/home');
-  };
+  }
 }

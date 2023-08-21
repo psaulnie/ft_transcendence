@@ -1,9 +1,13 @@
+import { useLocation } from "react-router";
 import { SyntheticEvent, useEffect, useState } from "react";
 import { Navigate } from "react-router";
 
 import Cookies from "js-cookie";
 
 function Login() {
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const refused = params.get('login-refused');
   const [isLoading, setIsLoading] = useState(true);
   const [isOk, setIsOk] = useState(false);
 
@@ -54,6 +58,11 @@ function Login() {
         </button>
       </form>
       <button type="button" onClick={testlogin}>Log as user test</button>
+      {refused === 'true' && (
+            <div className="alert alert-warning">
+                La connexion avec Intra42 a été refusée. Veuillez réessayer.
+            </div>
+      )}
     </div>
   );
 }
