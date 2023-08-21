@@ -17,6 +17,7 @@ import { actionTypes, manageRoomsTypes, sendMsgTypes } from './args.types';
 import { accessStatus } from 'src/chatModule/accessStatus';
 import { subscribe } from 'diagnostics_channel';
 import { match } from 'assert';
+import { SELF_DECLARED_DEPS_METADATA } from '@nestjs/common/constants';
 
 @WebSocketGateway({
 	cors: { origin: '*' },
@@ -239,17 +240,16 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
 		// const user = await this.userService.findOne(payload.username);
 		// if (!user)
 		// throw new WsException("User not found");
-	if (this.matchmakingQueue.find((name:string) => name == payload.username))
-		throw new WsException("Already in Matchmaking");
-	this.matchmakingQueue.push(payload.username);
-	if (this.matchmakingQueue.length >= 2) {
-			console.log(payload.username);
-			const player1 = this.matchmakingQueue[0];
-			const player2 = this.matchmakingQueue[1];
-			this.server.emit("matchmaking" + player1, {opponent: player2});
-			this.server.emit("matchmaking" + player2, {opponent: player1});
-			this.matchmakingQueue.splice(this.matchmakingQueue.indexOf(player1), 1);
-			this.matchmakingQueue.splice(this.matchmakingQueue.indexOf(player2), 1);
+		if (this.matchmakingQueue.find((name:string) => name == payload.username))
+			throw new WsException("Already in Matchmaking");
+		this.matchmakingQueue.push(payload.username);
+		while (this.matchmakingQueue.length >= 2) {
+				const player1 = this.matchmakingQueue[0];
+				const player2 = this.matchmakingQueue[1];
+				this.server.emit("matchmaking" + player1, {opponent: player2});
+				this.server.emit("matchmaking" + player2, {opponent: player1});
+				this.matchmakingQueue.splice(this.matchmakingQueue.indexOf(player1), 1);
+				this.matchmakingQueue.splice(this.matchmakingQueue.indexOf(player2), 1);
 		}
 	}
 
@@ -258,18 +258,25 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
 		// const user = await this.userService.findOne(payload.username);
 		// if (!user)
 		// throw new WsException("User not found");
-	if (this.matchmakingQueue.find((name:string) => name != payload.username))
-		throw new WsException("Player not in Matchmaking");
-	this.matchmakingQueue.splice(this.matchmakingQueue.indexOf(payload.username), 1);
+		if (this.matchmakingQueue.find((name:string) => name != payload.username))
+			throw new WsException("Player not in Matchmaking");
+		this.matchmakingQueue.splice(this.matchmakingQueue.indexOf(payload.username), 1);
 	}
 
 	@SubscribeMessage('game')
-	async handleGame(client: Socket, payload: {/*player: string, opponent: string, */y: number})
+	async handleGame(client: Socket, payload: {player: string, opponent: string, y: number})
 	{
 		console.log(payload);
         console.log("receive");
-		// this.userService.
-		// this.server.emit()
+		// if (payload.player > payload.opponent) {
+		// 	this.server.emit(payload.player + payload.opponent, {mouseY: payload.y});
+		// 	console.log(payload.player + payload.opponent);
+		// }
+		// else {
+		// 	this.server.emit(payload.opponent + payload.player, {mouseY: payload.y});
+		// 	console.log(payload.opponent + payload.player);
+		// }
+		this.server.emit(payload.opponent, {mouseY: payload.y})
 	}
 
 	async afterInit(server: Server) {

@@ -6,7 +6,7 @@ import { match } from 'assert';
 import { Button } from '@mui/material';
 import { useSelector } from 'react-redux';
 
-export default function Matchmaking({setFoundUser, setOpponent}: {setFoundUser: any, setOpponent: any}) {
+export default function Matchmaking({setFoundUser, setPlayers}: {setFoundUser: any, setPlayers: any}) {
   const user = useSelector((state: any) => state.user);
   const [bouttonClick, setButtonClick] = useState(false);
 
@@ -24,7 +24,7 @@ export default function Matchmaking({setFoundUser, setOpponent}: {setFoundUser: 
 
 		function process(value: any) {
       setFoundUser(true);
-      setOpponent(value.opponent);
+      setPlayers({1: user.username, 2: value.opponent});
       console.log(value);
 		}
 

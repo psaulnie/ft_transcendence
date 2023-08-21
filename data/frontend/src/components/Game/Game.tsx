@@ -13,13 +13,13 @@ import Canvas from './Canvas';
 export default function Game() {
 
   const [foundUser, setFoundUser] = useState(false);
-  const [opponent, setOpponent] = useState('');
+  const [players, setPlayers] = useState<{1: string; 2: string }>({ 1: '', 2: '' });
 
 
   return (
     <div>
       {
-        !foundUser ?  <Matchmaking setFoundUser={setFoundUser} setOpponent={setOpponent} /> : <Canvas opponent={opponent}/>
+        !foundUser ?  <Matchmaking setFoundUser={setFoundUser} setPlayers={setPlayers} /> : <Canvas players={players}/>
       }     
     </div>
   );
