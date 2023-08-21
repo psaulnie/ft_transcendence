@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { userStatus } from '../users/userStatus';
 import path from 'path';
 import fs from 'fs';
+import { isUrl } from 'src/app.controller';
 
 @Injectable()
 export class UsersService {
@@ -99,9 +100,9 @@ export class UsersService {
     await this.usersRepository.save(user);
   }
 
-  async updateAvatar(user: User, avatar: string) {
+  async updateAvatar(user: User, avatar: string, isUrl: boolean) {
     console.log('updateavatar');
-    if (user.urlAvatar !== '' && user.urlAvatar !== null) {
+    if (isUrl == false && user.urlAvatar !== '' && user.urlAvatar !== null) {
       const fs = require('fs');
       const path = require('path');
       const filePath = path.resolve(__dirname, '/avatars', user.urlAvatar);

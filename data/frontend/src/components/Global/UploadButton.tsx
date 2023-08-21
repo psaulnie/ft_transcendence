@@ -5,12 +5,14 @@ import { useUploadAvatarMutation } from "../../store/api";
 import { Button, Grid, Input } from "@mui/material";
 import UploadIcon from "@mui/icons-material/Upload";
 import { useSelector } from "react-redux";
+import Cookies from "js-cookie";
 
 export default function UploadButton() {
   const user = useSelector((state: any) => state.user);
 
   const [selectedFile, setSelectedFile] = useState<File | undefined>(undefined);
   const [fileUrl, setFileUrl] = useState("");
+	const [isLoading, setIsLoading] = useState(false);	
   const [uploadAvatar] = useUploadAvatarMutation();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -45,6 +47,21 @@ export default function UploadButton() {
     }
   };
 
+  const handleRemovePicture = () => {
+
+    setIsLoading(true);
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+    fetch("http://localhost:5000/api/avatar/remove?username=" + user.username, {
+      headers: {
+        Authorization: "Bearer " + Cookies.get("accessToken"),
+      },
+    }).catch(() => {
+      // TODO : handle error
+    });
+  };
+
   return (
     <Grid>
       <Input onChange={handleFileChange} type="file" />
@@ -53,6 +70,7 @@ export default function UploadButton() {
         <UploadIcon />
       </Button>
       {fileUrl !== "" ? <img width="15%" src={fileUrl} alt="avatar" /> : null}
+      <Button onClick={handleRemovePicture} disabled={isLoading}>Remove</Button>
     </Grid>
   );
 }
