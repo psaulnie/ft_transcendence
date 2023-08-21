@@ -30,6 +30,9 @@ function Navigation({setDrawerState}: {setDrawerState: any}) {
 						ft_transcendence
 					</Typography>
 					{
+						user.isLoggedIn ? <p>{user.username}</p> : null
+					}
+					{
 						user.isLoggedIn ? <CustomAvatar username={user.username} /> : null
 					}
 				</Toolbar>
