@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  Next,
   Req,
   Res,
   UnauthorizedException,
@@ -74,13 +75,12 @@ export class AuthController {
    */
   @Get('logout')
   @UseGuards(AuthenticatedGuard)
-  logout(@Req() req: Request, res, next) {
-    // TODO: to test
+  logout(@Req() req: Request, @Res() res: Response, @Next() next: any) {
     req.logOut((err: any) => {
       if (err) {
         return next(err);
       }
-      res.redirect('/');
+      res.redirect('http://localhost:3000/login');
     });
   }
 
