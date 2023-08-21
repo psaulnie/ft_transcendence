@@ -103,7 +103,6 @@ export class AppController {
         })
         .pipe(
           catchError((error: any) => {
-            console.log("a")
             throw new UnauthorizedException();
           }),
         ),

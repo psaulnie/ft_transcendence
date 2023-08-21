@@ -50,20 +50,6 @@ export class AuthService implements AuthProvider {
     console.log(details);
     console.log('-----');
 
-    const url = await firstValueFrom(
-      this.httpService
-        .get('https://api.intra.42.fr/v2/me', {
-          headers: {
-            Authorization: `Bearer ${details.accessToken}`,
-          },
-        })
-        .pipe(
-          catchError((error: any) => {
-            throw new UnauthorizedException();
-          }),
-        ),
-    );
-    details.urlAvatar = url.data.image.versions.small;
     const user = this.userRepo.create(details);
     return this.userRepo.save(user);
   }
