@@ -62,7 +62,7 @@ export class UsersService {
     newUser.clientId = '';
     newUser.accessToken = '';
     newUser.refreshToken = '';
-    if (!newUser.blockedUsers) newUser.blockedUsers = [];
+    newUser.blockedUsers = [];
 
     await this.usersRepository.save(newUser);
 
