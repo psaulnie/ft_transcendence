@@ -23,6 +23,11 @@ import { UsersList } from './entities/usersList.entity';
 import { Gateway } from './gateway/gateway';
 import { UsersService } from './users/users.service';
 
+import { SessionSerializer } from './auth/session/Serializer';
+import { IntraStrategy } from './auth/strategies/intra-auth.strategies';
+import { AuthService } from './auth/service/auth.service';
+import { HttpModule } from '@nestjs/axios';
+
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -50,8 +55,20 @@ import { UsersService } from './users/users.service';
       UsersList,
     ]),
     CacheModule.register({ isGlobal: true }),
+    HttpModule.register({}),
   ],
   controllers: [AppController, ChatController],
-  providers: [UsersService, AppService, RoomService, Gateway],
+  providers: [
+    UsersService,
+    AppService,
+    RoomService,
+    Gateway,
+    IntraStrategy,
+    SessionSerializer,
+    {
+      provide: 'AUTH_SERVICE',
+      useClass: AuthService,
+    },
+  ],
 })
 export class AppModule {}

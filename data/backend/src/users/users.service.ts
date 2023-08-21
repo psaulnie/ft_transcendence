@@ -53,13 +53,16 @@ export class UsersService {
     return await this.usersRepository.save(user);
   }
 
-  async createUser(name: string, pass: string) {
+  async createUser(name: string) {
     console.log('createuser');
     const newUser = new User();
 
     newUser.urlAvatar = '';
     newUser.username = name;
-    if (!newUser.blockedUsers) newUser.blockedUsers = [];
+    newUser.clientId = '';
+    newUser.accessToken = '';
+    newUser.refreshToken = '';
+    newUser.blockedUsers = [];
 
     await this.usersRepository.save(newUser);
 
@@ -98,7 +101,7 @@ export class UsersService {
 
   async updateAvatar(user: User, avatar: string) {
     console.log('updateavatar');
-    if (user.urlAvatar !== '') {
+    if (user.urlAvatar !== '' && user.urlAvatar !== null) {
       const fs = require('fs');
       const path = require('path');
       const filePath = path.resolve(__dirname, '/avatars', user.urlAvatar);

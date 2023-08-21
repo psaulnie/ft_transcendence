@@ -1,13 +1,32 @@
-import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Req,
+  Res,
+  UnauthorizedException,
+  UseGuards,
+} from '@nestjs/common';
 import { Request, Response } from 'express';
 import {
   AuthenticatedGuard,
   IntraAuthGuards,
+  IsAuthGuard,
 } from '../guards/intra-auth.guards';
 import { User } from '../../entities';
 
+import { HttpService as NestHttpService } from '@nestjs/axios';
+
+import { AxiosError } from 'axios';
+import { catchError, firstValueFrom } from 'rxjs';
+import { UsersService } from 'src/users/users.service';
+
 @Controller('auth')
 export class AuthController {
+  constructor(
+    private readonly httpService: NestHttpService,
+    private readonly usersService: UsersService,
+  ) {}
+
   /**
    * GET /api/auth/login
    * This is the route the user will visit to authenticate
@@ -63,5 +82,58 @@ export class AuthController {
       }
       res.redirect('/');
     });
+  }
+
+  /**
+   * GET /api/auth/connected
+   * Check the access token to see if the user is connected
+   */
+  @Get('connected')
+  async connected(@Req() req: Request) {
+    try {
+      let result = true;
+      let [type, token] = req.headers['authorization']?.split(' ') ?? [];
+      if (type !== 'Bearer') {
+        token = undefined;
+      }
+      if (token === 'test') return true;
+      if (!token) {
+        return false;
+      }
+
+      await firstValueFrom(
+        this.httpService
+          .get('https://api.intra.42.fr/oauth/token/info', {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          })
+          .pipe(
+            catchError((error: any) => {
+              result = false;
+              throw new UnauthorizedException();
+            }),
+          ),
+      );
+      return result;
+    } catch {
+      return false;
+    }
+  }
+
+  @Get('testlogin')
+  async testlogin(@Res() res: Response, @Req() req: Request) {
+    this.usersService.createUser('testUser');
+    res.cookie('accessToken', 'test', {
+      httpOnly: false,
+      secure: false,
+      sameSite: 'none',
+    }); // Set accessToken in cookie
+    res.cookie('username', 'testUser', {
+      httpOnly: false,
+      secure: false,
+      sameSite: 'none',
+    }); // Set username in cookie
+    res.redirect('http://localhost:3000/home');
   }
 }

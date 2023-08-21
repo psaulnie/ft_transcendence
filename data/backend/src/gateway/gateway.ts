@@ -15,6 +15,8 @@ import { UsersService } from 'src/users/users.service';
 import { sendMsgArgs, actionArgs } from './args.interface';
 import { actionTypes } from './args.types';
 import { accessStatus } from 'src/chatModule/accessStatus';
+import { UseGuards } from '@nestjs/common';
+import { WsIsAuthGuard } from 'src/auth/guards/intra-auth.guards';
 import { hashPassword, comparePassword } from './hashPasswords';
 
 @WebSocketGateway({
@@ -30,16 +32,7 @@ export class Gateway
   ) {}
   @WebSocketServer() server: Server;
 
-  @SubscribeMessage('newUser')
-  async createUser(client: Socket, payload: string) {
-    if (!payload) throw new WsException('Missing parameter');
-    const user = await this.userService.findOne(payload);
-    if (user == null) {
-      console.log('New user: ' + payload);
-      await this.userService.createUser(payload, client.id);
-    } else throw new WsException('User already exists');
-  }
-
+  @UseGuards(WsIsAuthGuard)
   @SubscribeMessage('sendPrivateMsg')
   async sendPrivateMessage(client: Socket, payload: sendMsgArgs) {
     if (
@@ -67,6 +60,7 @@ export class Gateway
     });
   }
 
+  @UseGuards(WsIsAuthGuard)
   @SubscribeMessage('sendMsg')
   async sendMsg(client: Socket, payload: sendMsgArgs) {
     if (
@@ -96,6 +90,7 @@ export class Gateway
     });
   }
 
+  @UseGuards(WsIsAuthGuard)
   @SubscribeMessage('joinRoom')
   async joinRoom(client: Socket, payload: any) {
     if (
@@ -180,6 +175,7 @@ export class Gateway
       });
   }
 
+  @UseGuards(WsIsAuthGuard)
   @SubscribeMessage('leaveRoom')
   async leaveRoom(client: Socket, payload: any) {
     if (
@@ -198,6 +194,7 @@ export class Gateway
     });
   }
 
+  @UseGuards(WsIsAuthGuard)
   @SubscribeMessage('openPrivateMessage')
   async openPrivateMessage(client: Socket, payload: any) {
     if (
@@ -218,6 +215,7 @@ export class Gateway
     });
   }
 
+  @UseGuards(WsIsAuthGuard)
   @SubscribeMessage('kick')
   async kickUser(client: Socket, payload: actionArgs) {
     if (
@@ -248,6 +246,7 @@ export class Gateway
     });
   }
 
+  @UseGuards(WsIsAuthGuard)
   @SubscribeMessage('ban')
   async banUser(client: Socket, payload: actionArgs) {
     if (
@@ -278,6 +277,7 @@ export class Gateway
     });
   }
 
+  @UseGuards(WsIsAuthGuard)
   @SubscribeMessage('block')
   async blockUser(client: Socket, payload: actionArgs) {
     if (
@@ -295,6 +295,7 @@ export class Gateway
     console.log(await this.userService.findOne(payload.source));
   }
 
+  @UseGuards(WsIsAuthGuard)
   @SubscribeMessage('unblock')
   async unblockUser(client: Socket, payload: actionArgs) {
     if (
@@ -311,6 +312,7 @@ export class Gateway
     await this.userService.unblockUser(user, blockedUser);
   }
 
+  @UseGuards(WsIsAuthGuard)
   @SubscribeMessage('admin')
   async addAdmin(client: Socket, payload: actionArgs) {
     if (
@@ -336,6 +338,7 @@ export class Gateway
     });
   }
 
+  @UseGuards(WsIsAuthGuard)
   @SubscribeMessage('mute')
   async muteUser(client: Socket, payload: actionArgs) {
     if (
@@ -361,6 +364,7 @@ export class Gateway
     });
   }
 
+  @UseGuards(WsIsAuthGuard)
   @SubscribeMessage('unmute')
   async unmuteUser(client: Socket, payload: actionArgs) {
     if (
@@ -387,6 +391,7 @@ export class Gateway
     });
   }
 
+  @UseGuards(WsIsAuthGuard)
   @SubscribeMessage('setPasswordToRoom')
   async setPasswordToRoom(
     client: Socket,
@@ -405,7 +410,7 @@ export class Gateway
     if (!room) throw new WsException('Room not found');
     if ((await this.roomService.getRole(room, admin.id)) == 'none')
       throw new WsException('Source user is not admin of the room');
-    this.roomService.setPasswordToRoom(
+    await this.roomService.setPasswordToRoom(
       payload.room,
       await hashPassword(payload.password),
     );
@@ -416,6 +421,7 @@ export class Gateway
     });
   }
 
+  @UseGuards(WsIsAuthGuard)
   @SubscribeMessage('removePasswordToRoom')
   async removePasswordToRoom(
     client: Socket,
@@ -429,7 +435,7 @@ export class Gateway
     if (!room) throw new WsException('Room not found');
     if ((await this.roomService.getRole(room, admin.id)) == 'none')
       throw new WsException('Source user is not admin of the room');
-    this.roomService.removePasswordToRoom(payload.room);
+    await this.roomService.removePasswordToRoom(payload.room);
     this.server.emit(payload.room, {
       source: payload.source,
       target: payload.room,
@@ -437,6 +443,7 @@ export class Gateway
     });
   }
 
+  @UseGuards(WsIsAuthGuard)
   @SubscribeMessage('inviteUser')
   async inviteUser(
     client: Socket,
@@ -457,6 +464,7 @@ export class Gateway
     });
   }
 
+  @UseGuards(WsIsAuthGuard)
   @SubscribeMessage('joinPrivateRoom')
   async joinPrivateRoom(
     client: Socket,
@@ -474,6 +482,7 @@ export class Gateway
     });
   }
 
+  @UseGuards(WsIsAuthGuard)
   @SubscribeMessage('game')
   async handleGame(
     client: Socket,
@@ -491,6 +500,7 @@ export class Gateway
     console.log(`Client disconnected: ${client.id}`);
   }
 
+  @UseGuards(WsIsAuthGuard)
   async handleConnection(client: Socket, ...args: any[]) {
     console.log(`Client connected: ${client.id}`);
   }
