@@ -18,6 +18,8 @@ import { accessStatus } from 'src/chatModule/accessStatus';
 import { UseGuards } from '@nestjs/common';
 import { WsIsAuthGuard } from 'src/auth/guards/intra-auth.guards';
 import { hashPassword, comparePassword } from './hashPasswords';
+import { UsersStatusService } from 'src/services/users.status.service';
+import { userStatus } from 'src/users/userStatus';
 
 @WebSocketGateway({
   cors: { origin: '*' },
@@ -29,6 +31,7 @@ export class Gateway
   constructor(
     private roomService: RoomService,
     private userService: UsersService,
+    private usersStatusService: UsersStatusService
   ) {}
   @WebSocketServer() server: Server;
 
@@ -498,10 +501,16 @@ export class Gateway
 
   async handleDisconnect(client: Socket) {
     console.log(`Client disconnected: ${client.id}`);
+    await this.usersStatusService.setUserStatus(client.id, userStatus.offline);
   }
 
   @UseGuards(WsIsAuthGuard)
   async handleConnection(client: Socket, ...args: any[]) {
     console.log(`Client connected: ${client.id}`);
+    const user = await this.userService.findOneByAccessToken(client.handshake.auth.token);
+    if (!user)
+      return ; // TODO handle error
+    await this.usersStatusService.addUser(client.id, client.handshake.auth.token, user.username, userStatus.online);
+    console
   }
 }
