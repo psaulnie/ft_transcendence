@@ -27,6 +27,7 @@ import { SessionSerializer } from './auth/session/Serializer';
 import { IntraStrategy } from './auth/strategies/intra-auth.strategies';
 import { AuthService } from './auth/service/auth.service';
 import { HttpModule } from '@nestjs/axios';
+import { UsersStatusService } from './services/users.status.service';
 
 @Module({
   imports: [
@@ -60,6 +61,7 @@ import { HttpModule } from '@nestjs/axios';
   controllers: [AppController, ChatController],
   providers: [
     UsersService,
+    UsersStatusService,
     AppService,
     RoomService,
     Gateway,

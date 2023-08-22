@@ -46,6 +46,12 @@ export class UsersService {
     });
   }
 
+  async findOneByAccessToken(accessToken: string): Promise<User> {
+    return await this.usersRepository.findOne({
+      where: { accessToken: accessToken },
+    });
+  }
+
   async findAll(): Promise<User[]> {
     return await this.usersRepository.find();
   }
