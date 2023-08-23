@@ -13,6 +13,7 @@ import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import CustomAvatar from '../../Global/CustomAvatar';
+import { userRole } from '../chatEnums';
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
 	backgroundColor: '#102b47',
@@ -23,7 +24,7 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
 
 type arg = {
 	message: chatResponseArgs,
-	role: string,
+	role: userRole,
 	roomName: string,
 	isDirectMessage: boolean
 }

@@ -7,15 +7,16 @@ import Drawer from "@mui/material/Drawer";
 import PersonIcon from "@mui/icons-material/Person";
 
 import UsersList from "./UsersList";
+import { userRole } from "./chatEnums";
 
 function UsersTab({ roomName }: { roomName: string }) {
   const rooms = useSelector((state: any) => state.rooms);
   const roomIndex = rooms.room.findIndex(
-    (obj: { name: string; role: string }) => obj.name === roomName
+    (obj: { name: string; role: userRole }) => obj.name === roomName
   );
 
   const [isTabOpen, setIsTabOpen] = useState(false);
-  const [role, setRole] = useState("none");
+  const [role, setRole] = useState(userRole.none);
 
   const handleOpenTab = () => {
     setIsTabOpen(true);
@@ -27,7 +28,7 @@ function UsersTab({ roomName }: { roomName: string }) {
 
   useEffect(() => {
     const cRole = rooms.room.find(
-      (obj: { name: string; role: string }) => obj.name === roomName
+      (obj: { name: string; role: userRole }) => obj.name === roomName
     );
     if (cRole) setRole(cRole.role);
   }, [setRole, rooms, roomName]);

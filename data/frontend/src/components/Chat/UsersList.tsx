@@ -22,6 +22,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import Error from "../Global/Error";
 import UserOptionsMenu from "./Message/UserOptionsMenu";
 import CustomAvatar from "../Global/CustomAvatar";
+import { userRole } from "./chatEnums";
 
 export default function UsersList({
   isDirectMessage,
@@ -30,7 +31,7 @@ export default function UsersList({
 }: {
   isDirectMessage: boolean;
   roomName: string;
-  role: string;
+  role: userRole;
 }) {
   const user = useSelector((state: any) => state.user);
 
@@ -51,8 +52,8 @@ export default function UsersList({
   if (isDirectMessage === false) usersList = usersListData;
   else
     usersList = [
-      { username: user.username, role: "none", isMuted: false },
-      { username: roomName, role: "none", isMuted: false },
+      { username: user.username, role: userRole.none,  isMuted: false },
+      { username: roomName, role: userRole.none, isMuted: false },
     ];
 
   const handleContextMenu = (event: React.MouseEvent, username: string) => {
@@ -69,9 +70,9 @@ export default function UsersList({
       );
   };
 
-  function getRoleIcon(role: string) {
-    if (role === "owner") return <StarIcon />;
-    else if (role === "admin") return <StarOutlineIcon />;
+  function getRoleIcon(role: userRole) {
+    if (role === userRole.owner) return <StarIcon />;
+    else if (role === userRole.admin) return <StarOutlineIcon />;
     else return <PersonIcon />;
   }
 

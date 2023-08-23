@@ -16,6 +16,8 @@ import {
   AuthenticatedGuard,
   IsAuthGuard,
 } from 'src/auth/guards/intra-auth.guards';
+import { User } from 'src/entities';
+import { userRole } from './chatEnums';
 
 @Controller('/api/chat/')
 export class ChatController {
@@ -28,24 +30,22 @@ export class ChatController {
   @UseGuards(IsAuthGuard)
   @Get('role/:username/:roomName')
   async getRole(
-    @Query() data: any,
     @Param('username') username: string,
     @Param('roomName') roomName: string,
-  ): Promise<string> {
+  ): Promise<userRole> {
     if (username == null || roomName == null)
       throw new HttpException('Bad request', 400);
     const user = await this.userService.findOne(username);
     if (!user) throw new HttpException('Unprocessable Entity', 422);
     const room = await this.roomService.findOne(roomName);
     if (!room) throw new HttpException('Unprocessable Entity', 422);
-    return await this.roomService.getRole(room, user.id);
+    return await this.roomService.getRole(room, user.uid);
   }
 
   @UseInterceptors(CacheInterceptor)
   @UseGuards(IsAuthGuard)
   @Get(':username/blocked')
   async getBlockedUser(
-    @Query() data: any,
     @Param('username') username: string,
   ): Promise<string[]> {
     // TODO fix function
@@ -53,11 +53,18 @@ export class ChatController {
     const user = await this.userService.findOne(username);
     if (!user) throw new HttpException('Unprocessable Entity', 422);
     const usersList = [];
-    const blockedUsers = user.blockedUsers;
-    blockedUsers.forEach((element) => {
-      if (element.username) usersList.push(element.username);
+    const blockedUsers = user.blockedUsers
+    let userBlocked: User;
+    blockedUsers.forEach(async (element) => {
+      if (element)
+      {
+        userBlocked = await this.userService.findOneById(element.blockedUser.uid);
+        if (!userBlocked) return ;
+        usersList.push(userBlocked.username);
+      }
     });
     return usersList;
+    // return ([]);
   }
 
   @UseInterceptors(CacheInterceptor)
@@ -88,15 +95,31 @@ export class ChatController {
     const room = await this.roomService.findOne(roomName);
     if (!room) throw new HttpException('Unprocessable Entity', 422);
     const usersList = [];
-
-    room.usersID.forEach((element: UsersList) => {
-      if (element.user && element.user.username)
-        usersList.push({
-          username: element.user.username,
-          role: element.role,
-          isMuted: element.isMuted,
-        });
-    });
+    let user: User;
+    for (const element of room.usersList) {
+      if (!element.user.uid)
+        continue ;
+      user = await this.userService.findOneById(element.user.uid);
+      if (!user)
+        continue ;
+      usersList.push({
+        username: user.username,
+        role: element.role,
+        isMuted: element.isMuted,
+      });
+      
+    }
+    // room.usersList.forEach(async (element: UsersList) => {
+    //   if (element.uid)
+    //     console.log(element.uid);
+    //     user = await this.userService.findOneById(element.uid);
+    //     console.log(user);
+    //     usersList.push({
+    //       username: user.username,
+    //       role: element.role,
+    //       isMuted: element.isMuted,
+    //     });
+    // });
     return usersList;
   }
 
@@ -110,12 +133,14 @@ export class ChatController {
     if (username == null) throw new HttpException('Bad request', 400);
     const rooms = await this.roomService.findAll();
     if (!rooms) throw new HttpException('Unprocessable Entity', 422);
+    const user = await this.userService.findOne(username);
+    if (!user) throw new HttpException('Unprocessable Entity', 422);
     const roomsList = [];
     rooms.forEach((element) => {
-      const userInfo = element.usersID.find(
-        (obj) => obj.user.username == username,
+      const userInfo = element.usersList.find(
+        (obj) => user.uid == obj.user.uid,
       );
-      if (element.usersID.find((obj) => obj.user.username == username))
+      if (element.usersList.find((obj) => user.uid == obj.id))
         roomsList.push({
           roomName: element.roomName,
           role: userInfo.role,
@@ -154,7 +179,6 @@ export class ChatController {
   @UseGuards(IsAuthGuard)
   @Get(':username/:roomName/status')
   async getUserStatusInRoom(
-    @Query() data: any,
     @Param('username') username: string,
     @Param('roomName') roomName: string,
   ): Promise<any> {
@@ -162,16 +186,17 @@ export class ChatController {
       throw new HttpException('Bad request', 400);
     const room = await this.roomService.findOne(roomName);
     if (!room) throw new HttpException('Unprocessable Entity', 422);
-    const user = room.usersID.find((obj) => obj.user.username == username);
+    const user = await this.userService.findOne(username);
     if (!user) throw new HttpException('Unprocessable Entity', 422);
-    return { isMuted: user.isMuted, role: user.role };
+    const userInRoom = room.usersList.find((obj) => obj.user.uid == user.uid);
+    if (!userInRoom) throw new HttpException('Unprocessable Entity', 422);
+    return { isMuted: userInRoom.isMuted, role: userInRoom.role };
   }
 
   @UseInterceptors(CacheInterceptor)
   @UseGuards(IsAuthGuard)
   @Get(':username/:roomName/invited')
   async getInvitedUsersList(
-    @Query() data: any,
     @Param('username') username: string,
     @Param('roomName') roomName: string,
   ): Promise<{}[]> {
@@ -183,7 +208,7 @@ export class ChatController {
     for (const element of users) {
       if (
         element.username != username &&
-        (await this.roomService.isUserInRoom(roomName, element.id)) == false
+        (await this.roomService.isUserInRoom(roomName, element.uid)) == false
       )
         usersList.push({ label: element.username });
     }

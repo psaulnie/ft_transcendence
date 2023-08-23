@@ -4,6 +4,7 @@ import { chatResponseArgs } from "./args.interface";
 import { addMsg, addRoom, setRead } from "../../store/rooms";
 import { webSocket } from "../../webSocket";
 import { actionTypes } from "./args.types";
+import { userRole } from "./chatEnums";
 
 export default function DirectMessageProvider() {
   const user = useSelector((state: any) => state.user);
@@ -16,7 +17,7 @@ export default function DirectMessageProvider() {
         dispatch(
           addRoom({
             name: value.source,
-            role: "none",
+            role: userRole.none,
             isDirectMsg: true,
             hasPassword: false,
             openTab: false,

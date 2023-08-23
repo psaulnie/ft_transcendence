@@ -17,8 +17,6 @@ import { RoomService } from './services/room.service';
 import { Room } from './entities/room.entity';
 import { Achievements } from './entities/achievements.entity';
 import { MatchHistory } from './entities/matchHistory.entity';
-import { Password } from './entities/password.entity';
-import { Stats } from 'fs';
 import { UsersList } from './entities/usersList.entity';
 import { Gateway } from './gateway/gateway';
 import { UsersService } from './users/users.service';
@@ -28,6 +26,9 @@ import { IntraStrategy } from './auth/strategies/intra-auth.strategies';
 import { AuthService } from './auth/service/auth.service';
 import { HttpModule } from '@nestjs/axios';
 import { UsersStatusService } from './services/users.status.service';
+import { FriendList } from './entities/friend.list.entity';
+import { BlockedList } from './entities/blocked.list.entity';
+import { Statistics } from './entities/stats.entity';
 
 @Module({
   imports: [
@@ -51,8 +52,9 @@ import { UsersStatusService } from './services/users.status.service';
       Room,
       Achievements,
       MatchHistory,
-      Password,
-      Stats,
+      Statistics,
+      FriendList,
+      BlockedList,
       UsersList,
     ]),
     CacheModule.register({ isGlobal: true }),

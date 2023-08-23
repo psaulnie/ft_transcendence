@@ -6,6 +6,7 @@ import { webSocket } from "../../../webSocket";
 import { actionTypes } from "../args.types";
 
 import { useLazyGetUsersInRoomQuery } from "../../../store/api";
+import { userRole } from "../chatEnums";
 
 function MessageProvider({roomName}: {roomName: string}) {
 	const user = useSelector((state: any) => state.user);
@@ -34,7 +35,7 @@ function MessageProvider({roomName}: {roomName: string}) {
 					dispatch(setRead(roomIndex));
 				}
 				if (rooms.room[roomIndex] && rooms.room[roomIndex].isDirectMessage === true)
-					dispatch(addRoom({name: value.source, role: "none",  isDirectMsg: true, hasPassword: false, openTab: false, isMuted: false}));
+					dispatch(addRoom({name: value.source, role: userRole.none,  isDirectMsg: true, hasPassword: false, openTab: false, isMuted: false}));
 			}
 		}
 		
