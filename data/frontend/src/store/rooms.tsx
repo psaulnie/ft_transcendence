@@ -1,16 +1,17 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { chatResponseArgs } from "../components/Chat/args.interface";
+import { userRole } from "../components/Chat/chatEnums";
 
 export interface roomType {
   name: string;
-  role: string;
+  role: userRole;
   isDirectMsg: boolean;
   hasPassword: boolean;
 }
 
 interface roomInterface {
   name: string;
-  role: string;
+  role: userRole;
   isDirectMsg: boolean;
   messages: chatResponseArgs[];
   unread: boolean;
@@ -41,7 +42,7 @@ export const roomsSlice = createSlice({
       state,
       action: PayloadAction<{
         name: string;
-        role: string;
+        role: userRole;
         isDirectMsg: boolean;
         hasPassword: boolean;
         openTab: boolean;
@@ -103,7 +104,7 @@ export const roomsSlice = createSlice({
       } else {
         state.room.push({
           name: action.payload.name,
-          role: "none",
+          role: userRole.none,
           isDirectMsg: true,
           messages: [action.payload.message],
           unread: false,

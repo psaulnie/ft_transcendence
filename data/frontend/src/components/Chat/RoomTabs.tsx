@@ -12,6 +12,7 @@ import { useState } from "react";
 import { webSocket } from "../../webSocket";
 import { removeRoom, setRead, setRoomIndex } from "../../store/rooms";
 import RoomOptionsMenu from "./RoomOptionsMenu";
+import { userRole } from "./chatEnums";
 
 export default function RoomTabs() {
   const user = useSelector((state: any) => state.user);
@@ -95,7 +96,7 @@ export default function RoomTabs() {
       >
         {rooms.room.map(
           (
-            room: { name: string; role: string; unread: boolean },
+            room: { name: string; role: userRole; unread: boolean },
             key: number
           ) => (
             <Tab

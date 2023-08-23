@@ -12,7 +12,7 @@ import {
 import { TransitionProps } from "@mui/material/transitions";
 
 import { useDispatch, useSelector } from "react-redux";
-import { accessStatus } from "./accessStatus";
+import { accessStatus, userRole } from "./chatEnums";
 
 import { addRoom } from "../../store/rooms";
 
@@ -20,7 +20,7 @@ type arg = {
   open: boolean;
   setOpen: any;
   roomName: string;
-  role: string;
+  role: userRole;
   createRoom: boolean;
 };
 

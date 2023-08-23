@@ -6,10 +6,11 @@ import LeftMessage from './LeftMessage';
 import Message from './Message';
 
 import { useRef, useEffect } from 'react';
+import { userRole } from '../chatEnums';
 
 type arg = {
 	messages: chatResponseArgs[],
-	role: string,
+	role: userRole,
 	roomName: string,
 	isDirectMessage: boolean
 }

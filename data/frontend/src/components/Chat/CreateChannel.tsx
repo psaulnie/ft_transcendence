@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 import { webSocket } from "../../webSocket";
-import { accessStatus } from "./accessStatus";
+import { accessStatus, userRole } from "./chatEnums";
 import { useDispatch, useSelector } from "react-redux";
 import { useLazyGetIsRoomNameTakenQuery } from "../../store/api";
 import { addRoom } from "../../store/rooms";
@@ -61,7 +61,7 @@ function CreateChannel() {
     event.preventDefault();
     if (
       !rooms.room.find(
-        (obj: { name: string; role: string }) => obj.name === newRoomName
+        (obj: { name: string; role: userRole }) => obj.name === newRoomName
       )
     ) {
       let hasPassword = false;
@@ -73,7 +73,7 @@ function CreateChannel() {
       dispatch(
         addRoom({
           name: newRoomName,
-          role: "owner",
+          role: userRole.owner,
           isDirectMsg: false,
           hasPassword: hasPassword,
           openTab: true,
@@ -122,7 +122,7 @@ function CreateChannel() {
           open={showDialog}
           setOpen={setShowDialog}
           roomName={newRoomName}
-          role="owner"
+          role={userRole.owner}
           createRoom={true}
         />
       ) : null}

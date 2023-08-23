@@ -1,17 +1,23 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from "typeorm";
 import { Room } from "./room.entity";
 import { User } from "./user.entity";
+import { userRole } from "src/chatModule/chatEnums";
+
 
 @Entity({ name: 'UsersList' })
 export class UsersList {
 	@PrimaryGeneratedColumn()
 	id: number
 
-	@Column()
-	role: string
+	@Column({
+		type: 'enum',
+		enum: userRole,
+		default: userRole.none,
+	})
+	role: userRole
 
-	@ManyToOne(() => User, user => user.id)
-	@JoinColumn()
+	@ManyToOne(() => User, user => user.uid)
+	@JoinColumn({ name: 'uid' })
 	user: User
 
 	@Column()
@@ -20,7 +26,7 @@ export class UsersList {
 	@Column()
 	isMuted: boolean
 
-	@ManyToOne(() => Room, room => room.usersID, { onDelete: 'CASCADE' })
-	@JoinColumn()
-	room: Room
+	@ManyToOne(() => Room, room => room.id, { onDelete: 'CASCADE' })
+	@JoinColumn({ name: 'roomId' })
+	roomId: number
 }

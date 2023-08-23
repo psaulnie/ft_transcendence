@@ -1,3 +1,5 @@
+import { userRole } from "src/chatModule/chatEnums"
+
 export interface manageRoomsArgs {
 	source: string,
 	room: string,
@@ -23,6 +25,6 @@ export interface chatResponseArgs {
 	target: string,
 	action: number,
 	data: string,
-	role: string,
+	role: userRole,
 	isMuted: boolean,
 }

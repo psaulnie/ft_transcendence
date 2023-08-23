@@ -18,6 +18,7 @@ import {
   Skeleton,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
+import { userRole } from "./chatEnums";
 
 function JoinDirectMessage() {
   const user = useSelector((state: any) => state.user);
@@ -42,7 +43,7 @@ function JoinDirectMessage() {
       dispatch(
         addRoom({
           name: newUser,
-          role: "none",
+          role: userRole.none,
           isDirectMsg: true,
           hasPassword: false,
           openTab: true,

@@ -17,6 +17,7 @@ import { Snackbar, Alert, AlertColor, IconButton, Box } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
+import { userRole } from "./chatEnums";
 
 export default function ChatProcess() {
   const user = useSelector((state: any) => state.user);
@@ -68,7 +69,7 @@ export default function ChatProcess() {
     dispatch(
       addRoom({
         name: room,
-        role: "none",
+        role: userRole.none,
         isDirectMsg: false,
         hasPassword: hasPassword,
         openTab: true,
@@ -107,7 +108,7 @@ export default function ChatProcess() {
         dispatch(
           changeRole({
             name: value.source,
-            role: "admin",
+            role: userRole.admin,
             isDirectMsg: false,
             hasPassword: false,
           })

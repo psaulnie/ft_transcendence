@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { webSocket } from "../../webSocket";
 import { useSelector, useDispatch } from "react-redux";
 import { useGetRoomsListQuery } from "../../store/api";
-import { accessStatus } from "./accessStatus";
+import { accessStatus, userRole } from "./chatEnums";
 import { addRoom } from "../../store/rooms";
 
 import PasswordDialog from "./PasswordDialog";
@@ -43,7 +43,7 @@ function JoinChannel() {
     if (newRoomName === "") return;
     if (
       !rooms.room.find(
-        (obj: { name: string; role: string }) => obj.name === newRoomName
+        (obj: { name: string; role: userRole }) => obj.name === newRoomName
       )
     ) {
       if (access === accessStatus.protected) {
@@ -53,7 +53,7 @@ function JoinChannel() {
       dispatch(
         addRoom({
           name: newRoomName,
-          role: "none",
+          role: userRole.none,
           isDirectMsg: false,
           hasPassword: access === accessStatus.protected,
           openTab: true,
@@ -106,7 +106,7 @@ function JoinChannel() {
           {roomsList.map((room: any) => {
             if (
               !rooms.room.find(
-                (obj: { name: string; role: string; hasPassword: boolean }) =>
+                (obj: { name: string; role: userRole; hasPassword: boolean }) =>
                   obj.name === room.roomName
               ) &&
               room.access !== accessStatus.private
@@ -142,7 +142,7 @@ function JoinChannel() {
           open={showDialog}
           setOpen={setShowDialog}
           roomName={newRoomName}
-          role="none"
+          role={userRole.none}
           createRoom={true}
         />
       ) : null}

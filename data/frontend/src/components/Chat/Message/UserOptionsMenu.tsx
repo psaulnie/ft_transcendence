@@ -3,10 +3,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addBlockedUser, removeBlockedUser } from '../../../store/user';
 import { Menu, MenuItem, Divider } from '@mui/material';
 import { addRoom } from '../../../store/rooms';
+import { userRole } from '../chatEnums';
 
 type arg = {
-	cUser: {username: string, role: string, isMuted: boolean},
-	role: string,
+	cUser: {username: string, role: userRole, isMuted: boolean},
+	role: userRole,
 	roomName: string,
 	contextMenu: any,
 	setContextMenu: any,
@@ -21,18 +22,18 @@ export default function UserOptionsMenu({ cUser, role, roomName, contextMenu, se
 		setContextMenu(null);
 	};
 
-	function blockUser(cUser: {username: string, role: string}) {
+	function blockUser(cUser: {username: string, role: userRole}) { // TODO is role useful
 		webSocket.emit("block", { source: user.username, target: cUser.username, room: roomName });
 		dispatch(addBlockedUser(cUser.username));
 	}
 
-	function unblockUser(cUser: {username: string, role: string}) {
+	function unblockUser(cUser: {username: string, role: userRole}) {
 		webSocket.emit("unblock", { source: user.username, target: cUser.username, room: roomName });
 		dispatch(removeBlockedUser(cUser.username));
 	}
 
 	function sendMessage() {
-		dispatch(addRoom({name: cUser.username, role: 'none', hasPassword: false, isDirectMsg: true, openTab: true, isMuted: false}));
+		dispatch(addRoom({name: cUser.username, role: userRole.none, hasPassword: false, isDirectMsg: true, openTab: true, isMuted: false}));
 	}
 
 	return (
@@ -46,7 +47,7 @@ export default function UserOptionsMenu({ cUser, role, roomName, contextMenu, se
 					: undefined}
 			>
 				{
-					role !== "none" && user.username !== cUser.username && cUser.role === "none" && showAdminOpt ? (
+					role !== userRole.none && user.username !== cUser.username && cUser.role === userRole.none && showAdminOpt ? (
 						<span>
 							<MenuItem onClick={ () => { webSocket.emit("kick", { source: user.username, target: cUser.username, room: roomName }) } } >Kick</MenuItem>
 							<MenuItem onClick={ () => { webSocket.emit("ban", { source: user.username, target: cUser.username, room: roomName })  } } >Ban</MenuItem>

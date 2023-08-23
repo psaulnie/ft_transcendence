@@ -1,6 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, AfterLoad, JoinColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, AfterLoad, JoinColumn, OneToOne } from "typeorm";
 
 import { UsersList } from './usersList.entity';
+import { User } from "./user.entity";
+import { accessStatus } from "src/gateway/accessStatus";
 
 @Entity({ name: 'Room' })
 export class Room {
@@ -10,25 +12,31 @@ export class Room {
 	@Column()
 	roomName: string
 
-	@Column()
-	access: number
+	@Column({
+        type: "enum",
+        enum: accessStatus,
+        default: accessStatus.public,
+    })
+	access: accessStatus
 
 	@Column()
 	password: string
 
-	@Column()
-	ownerID: number
+	@OneToOne(() => User, user => user.uid)
+	@JoinColumn({ name: 'owner' })
+	// @Column()
+	owner: User
 
 	@Column()
 	usersNumber: number
 
-	@OneToMany(() => UsersList, usersList => usersList.room, { eager: true })
-	usersID: UsersList[]
+	@OneToMany(() => UsersList, usersList => usersList.roomId, { eager: true })
+	usersList: UsersList[]
 
 	@AfterLoad()
 	async nullCheck() {
-		if (!this.usersID)
-			this.usersID = [];
+		if (!this.usersList)
+			this.usersList = [];
 	}
 
 }

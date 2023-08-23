@@ -1,9 +1,27 @@
-import { Entity, Column, PrimaryColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToOne } from 'typeorm';
+import { User } from './user.entity';
 
 @Entity({ name: 'Achievements' })
 export class Achievements {
-	@PrimaryColumn()
-	userId: number
+	@PrimaryGeneratedColumn()
+	id: number
 
-	// Need to insert all of the achievements with boolean and title
+	@OneToOne(() => User, user => user.uid)
+	@JoinColumn({ name: 'uid' })
+	uid: number
+
+	@Column()
+	achievement1: boolean
+
+	@Column()
+	achievement2: boolean
+
+	@Column()
+	achievement3: boolean
+
+	@Column()
+	achievement4: boolean
+
+	@Column()
+	achievement5: boolean
 }

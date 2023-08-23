@@ -18,14 +18,14 @@ export class IntraStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(accessToken: string, refreshToken: string, profile: Profile) {
-    const { id: clientId, username } = profile;
+    const { id: intraId, username } = profile;
     console.log(`intra-auth.strategies.ts: validate: 
-- id: ${clientId},
+- id: ${intraId},
 - username: ${username},
 - accessToken: ${accessToken},
 - refreshToken: ${refreshToken},
 -----`);
-    const details = { clientId, username, accessToken, refreshToken, urlAvatar: '' };
+    const details = { intraId, username, accessToken, refreshToken, urlAvatar: '', intraUsername: username };
     return this.authService.validateUser(details);
   }
 }

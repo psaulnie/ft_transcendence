@@ -8,14 +8,15 @@ import InputForm from "./Message/InputForm";
 import { useSelector } from "react-redux";
 
 import { Grid, Box } from "@mui/material";
+import { userRole } from "./chatEnums";
 
 function Room({ roomName }: { roomName: string }) {
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const rooms = useSelector((state: any) => state.rooms);
 
-  const [role, setRole] = useState("none");
+  const [role, setRole] = useState(userRole.none);
   const roomIndex = rooms.room.findIndex(
-    (obj: { name: string; role: string }) => obj.name === roomName
+    (obj: { name: string; role: userRole }) => obj.name === roomName
   );
 
   const messages = rooms.room[roomIndex].messages;
@@ -29,7 +30,7 @@ function Room({ roomName }: { roomName: string }) {
 
   useEffect(() => {
     const cRole = rooms.room.find(
-      (obj: { name: string; role: string }) => obj.name === roomName
+      (obj: { name: string; role: userRole }) => obj.name === roomName
     );
     if (cRole) setRole(cRole.role);
   }, [setRole, rooms, roomName]);

@@ -7,13 +7,14 @@ import PasswordDialog from "./PasswordDialog";
 import SelectUserDialog from "./SelectUserDialog";
 
 import { webSocket } from "../../webSocket";
+import { userRole } from "./chatEnums";
 
 type arg = {
   contextMenu: any;
   setContextMenu: any;
   roomIndex: number;
   roomName: string;
-  role: string;
+  role: userRole;
 };
 
 export default function RoomOptionsMenu({
@@ -65,7 +66,7 @@ export default function RoomOptionsMenu({
         }
       >
         <div>
-          {role === "owner" ? (
+          {role === userRole.owner ? (
             <div>
               <MenuItem
                 disabled={rooms.room[roomIndex].hasPassword !== false}
@@ -98,7 +99,7 @@ export default function RoomOptionsMenu({
           open={showPasswordDialog}
           setOpen={setShowPasswordDialog}
           roomName={roomName}
-          role="none"
+          role={userRole.none}
           createRoom={false}
         />
       ) : null}

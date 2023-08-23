@@ -14,9 +14,9 @@ export class AuthService implements AuthProvider {
   constructor(@InjectRepository(User) private userRepo: Repository<User>,
     private readonly httpService: HttpService) {}
   async validateUser(details: UserDetails) {
-    const { clientId, accessToken, refreshToken } = details;
+    const { intraId, accessToken, refreshToken } = details;
     console.log('details in validateUser : ', details);
-    const user = await this.userRepo.findOneBy({ clientId });
+    const user = await this.userRepo.findOneBy({ intraId });
     console.log('Found user in db', user);
     console.log('-----');
     if (user) {
@@ -54,7 +54,7 @@ export class AuthService implements AuthProvider {
     return this.userRepo.save(user);
   }
 
-  findUser(clientId: string): Promise<User> | undefined {
-    return this.userRepo.findOneBy({ clientId });
+  findUser(intraId: string): Promise<User> | undefined {
+    return this.userRepo.findOneBy({ intraId });
   }
 }
