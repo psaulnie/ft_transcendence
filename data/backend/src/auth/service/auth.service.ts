@@ -20,7 +20,7 @@ export class AuthService implements AuthProvider {
     console.log('Found user in db', user);
     console.log('-----');
     if (user) {
-      if (user.urlAvatar === '') {
+      if (user.urlAvatar === '' || user.urlAvatar === null) {
       const url = await firstValueFrom(
           this.httpService
             .get('https://api.intra.42.fr/v2/me', {
