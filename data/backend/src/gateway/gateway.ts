@@ -260,32 +260,22 @@ export class Gateway
       payload.target == null
     )
       throw new WsException('Missing parameter');
-      console.log("0");
-
     const user = await this.userService.findOne(payload.target);
     if (!user) throw new WsException('Target user not found');
-    console.log("1");
     const admin = await this.userService.findOne(payload.source);
     if (!admin) throw new WsException('Source user not found');
-    console.log("2");
-
     const room = await this.roomService.findOne(payload.room);
     if (!room) throw new WsException('Room not found');
-    console.log("3");
     const isInRoom = room.usersList.find((tmpUser) => tmpUser.user.uid === user.uid);
     if (!isInRoom) throw new WsException('User not in room');
     if ((await this.roomService.getRole(room, admin.uid)) == userRole.none)
       throw new WsException('Source user is not admin of the room');
-      console.log("4");
-
     await this.roomService.addToBanList(payload.room, user);
     this.server.emit(payload.room, {
       source: payload.target,
       target: payload.room,
       action: actionTypes.left,
     });
-    console.log("5");
-
     this.server.emit(payload.target + 'OPTIONS', {
       source: payload.source,
       target: payload.room,
