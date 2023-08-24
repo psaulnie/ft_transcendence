@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, AfterLoad, JoinColumn, OneToOne } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, AfterLoad, JoinColumn, OneToOne, ManyToOne } from "typeorm";
 
 import { UsersList } from './usersList.entity';
 import { User } from "./user.entity";
@@ -22,7 +22,7 @@ export class Room {
 	@Column()
 	password: string
 
-	@OneToOne(() => User, user => user.uid)
+	@ManyToOne(() => User, user => user.uid)
 	@JoinColumn({ name: 'owner' })
 	// @Column()
 	owner: User
@@ -30,7 +30,7 @@ export class Room {
 	@Column()
 	usersNumber: number
 
-	@OneToMany(() => UsersList, usersList => usersList.roomId, { eager: true })
+	@OneToMany(() => UsersList, usersList => usersList.room, { eager: true })
 	usersList: UsersList[]
 
 	@AfterLoad()
