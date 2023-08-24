@@ -1,8 +1,8 @@
-import { exit } from 'process';
-import React, { useState, useEffect, useRef } from 'react';
+// import { exit } from 'process';
+import React, { useState, useEffect} from 'react';
 import { webSocket } from '../../webSocket';
-import { WidthFull } from '@mui/icons-material';
-import { match } from 'assert';
+// import { WidthFull } from '@mui/icons-material';
+// import { match } from 'assert';
 import { Button } from '@mui/material';
 import { useSelector } from 'react-redux';
 
@@ -32,7 +32,7 @@ export default function Matchmaking({setFoundUser, setPlayers}: {setFoundUser: a
 		return () => {
 			webSocket.off("matchmaking" + user.username, process);
 		};
-	}, [user.username]);
+	}, [user.username, setFoundUser, setPlayers]);
 
   return (
       !bouttonClick ? <Button onClick={startMatchmaking}>play</Button> : <Button onClick={cancelMatchmaking}>cancel</Button>

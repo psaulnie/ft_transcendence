@@ -268,14 +268,6 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
 	{
 		console.log(payload);
         console.log("receive");
-		// if (payload.player > payload.opponent) {
-		// 	this.server.emit(payload.player + payload.opponent, {mouseY: payload.y});
-		// 	console.log(payload.player + payload.opponent);
-		// }
-		// else {
-		// 	this.server.emit(payload.opponent + payload.player, {mouseY: payload.y});
-		// 	console.log(payload.opponent + payload.player);
-		// }
 		this.server.emit(payload.opponent, {mouseY: payload.y})
 	}
 
