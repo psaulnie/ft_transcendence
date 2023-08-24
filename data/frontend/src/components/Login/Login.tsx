@@ -40,7 +40,7 @@ function Login() {
       setIsLoading(false);
     }).catch((error) => {
       setIsLoading(false);
-      // TODO : handle error
+      // TODO : handle fetch error
     });
   };
   useEffect(() => {

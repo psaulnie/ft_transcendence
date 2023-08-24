@@ -17,13 +17,12 @@ export class UsersStatusService {
 	  async addUser(clientId: string, accessToken: string, username: string, status: userStatus) {
 		const user = await this.userRepository.findOne({where: {username: username}});
 		if (!user)
-			return ; // TODO handle error
+			return ;
 		const userStatusIndex = this.usersStatus.findIndex((user) => user.username === username);
 		if (userStatusIndex != -1)
 			this.usersStatus[userStatusIndex] = {clientId, accessToken, username, status};
 		else
 			this.usersStatus.push({clientId, accessToken, username, status});
-		// console.log(this.usersStatus);
 	  }
 
 	  async removeUser(clientId: string) {
@@ -37,7 +36,7 @@ export class UsersStatusService {
 	  async setUserStatus(clientId: string, status: userStatus) {
 		const user = this.usersStatus.find((user) => user.clientId === clientId);
 		if (!user)
-			return ; // TODO handle error
+			return ;
 		user.status = status;
 	  }
 }

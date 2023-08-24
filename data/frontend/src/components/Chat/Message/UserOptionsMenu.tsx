@@ -22,7 +22,7 @@ export default function UserOptionsMenu({ cUser, role, roomName, contextMenu, se
 		setContextMenu(null);
 	};
 
-	function blockUser(cUser: {username: string, role: userRole}) { // TODO is role useful
+	function blockUser(cUser: {username: string, role: userRole}) {
 		webSocket.emit("block", { source: user.username, target: cUser.username, room: roomName });
 		dispatch(addBlockedUser(cUser.username));
 	}

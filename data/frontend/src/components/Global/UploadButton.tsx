@@ -58,7 +58,7 @@ export default function UploadButton() {
         Authorization: "Bearer " + Cookies.get("accessToken"),
       },
     }).catch(() => {
-      // TODO : handle error
+      // TODO : handle fetch error
     });
   };
 

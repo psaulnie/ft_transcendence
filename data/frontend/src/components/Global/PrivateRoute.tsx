@@ -18,7 +18,7 @@ export default function PrivateRoute() {
       setIsLoading(false);
     }).catch(() => {
       setIsLoading(false);
-      // TODO : handle error
+      // TODO : handle fetch error
     });
   };
 

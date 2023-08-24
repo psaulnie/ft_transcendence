@@ -121,11 +121,11 @@ export class Gateway
     // If room doesn't exist
     if ((await this.roomService.findOne(payload.room)) == null) {
       if (payload.access != accessStatus.protected)
-        await this.roomService.createRoom(payload.room, user, payload.access);
+        await this.roomService.createRoom(payload.room, user, payload.access, '');
       else {
         hasPassword = true;
         const hashedPassword = await hashPassword(payload.password);
-        await this.roomService.createPasswordProtectedRoom(
+        await this.roomService.createRoom(
           payload.room,
           user,
           payload.access,
@@ -520,7 +520,7 @@ export class Gateway
     console.log(`Client connected: ${client.id}`);
     const user = await this.userService.findOneByAccessToken(client.handshake.auth.token);
     if (!user)
-      return ; // TODO handle error
+      throw new WsException('User not found');
     await this.usersStatusService.addUser(client.id, client.handshake.auth.token, user.username, userStatus.online);
   }
 }
