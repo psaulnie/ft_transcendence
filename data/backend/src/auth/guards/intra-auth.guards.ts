@@ -23,7 +23,7 @@ export class IntraAuthGuards extends AuthGuard('42') {
       return activate;
     } catch (error) {
       const response = context.switchToHttp().getResponse();
-      response.redirect('http://localhost:3000/?login-refused=true');
+      response.redirect(`http://${process.env.IP}:3000/?login-refused=true`);
       return false;
     }
   }

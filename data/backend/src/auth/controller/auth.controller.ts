@@ -55,7 +55,7 @@ export class AuthController {
       httpOnly: false,
       secure: false,
     }); // Set accessToken in cookie
-    res.redirect('http://localhost:3000/home');
+    res.redirect(`http://${process.env.IP}:3000/home`);
     // res.sendStatus(200);
   }
 
@@ -80,7 +80,7 @@ export class AuthController {
       if (err) {
         return next(err);
       }
-      res.redirect('http://localhost:3000/login');
+      res.redirect(`http://${process.env.IP}:3000/login`);
     });
   }
 
@@ -134,6 +134,6 @@ export class AuthController {
       secure: false,
       sameSite: 'none',
     }); // Set username in cookie
-    res.redirect('http://localhost:3000/home');
+    res.redirect(`http://${process.env.IP}:3000/home`);
   }
 }
