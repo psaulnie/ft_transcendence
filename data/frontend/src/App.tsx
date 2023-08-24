@@ -39,7 +39,6 @@ function App() {
     dispatch(login(accessToken));
   }, [dispatch]);
 
-  console.log(process.env);
   return (
     <div className="App">
       <ThemeProvider theme={theme}>
