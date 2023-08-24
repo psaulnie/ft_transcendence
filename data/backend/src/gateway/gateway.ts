@@ -233,6 +233,8 @@ export class Gateway
     if (!admin) throw new WsException('Source user not found');
     const room = await this.roomService.findOne(payload.room);
     if (!room) throw new WsException('Room not found');
+    const isInRoom = room.usersList.find((tmpUser) => tmpUser.user.uid === user.uid);
+    if (!isInRoom) throw new WsException('User not in room');
     if ((await this.roomService.getRole(room, admin.uid)) == userRole.none)
       throw new WsException('Source user is not admin of the room');
     await this.roomService.removeUser(payload.room, user.uid);
@@ -264,6 +266,8 @@ export class Gateway
     if (!admin) throw new WsException('Source user not found');
     const room = await this.roomService.findOne(payload.room);
     if (!room) throw new WsException('Room not found');
+    const isInRoom = room.usersList.find((tmpUser) => tmpUser.user.uid === user.uid);
+    if (!isInRoom) throw new WsException('User not in room');
     if ((await this.roomService.getRole(room, admin.uid)) == userRole.none)
       throw new WsException('Source user is not admin of the room');
     await this.roomService.addToBanList(payload.room, user);

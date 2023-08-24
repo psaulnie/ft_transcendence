@@ -48,23 +48,23 @@ export class ChatController {
   async getBlockedUser(
     @Param('username') username: string,
   ): Promise<string[]> {
-    // TODO fix function
+    console.log("getBlockedUser");
     if (username == null) throw new HttpException('Bad request', 400);
     const user = await this.userService.findOne(username);
     if (!user) throw new HttpException('Unprocessable Entity', 422);
     const usersList = [];
-    const blockedUsers = user.blockedUsers
+    const blockedUsers = user.blockedUsers;
     let userBlocked: User;
-    blockedUsers.forEach(async (element) => {
+    for (const element of blockedUsers)
+    {
       if (element)
       {
         userBlocked = await this.userService.findOneById(element.blockedUser.uid);
         if (!userBlocked) return ;
         usersList.push(userBlocked.username);
       }
-    });
+    }
     return usersList;
-    // return ([]);
   }
 
   @UseInterceptors(CacheInterceptor)
@@ -97,7 +97,7 @@ export class ChatController {
     const usersList = [];
     let user: User;
     for (const element of room.usersList) {
-      if (!element.user.uid)
+      if (!element.user.uid || element.isBanned === true)
         continue ;
       user = await this.userService.findOneById(element.user.uid);
       if (!user)
@@ -107,19 +107,7 @@ export class ChatController {
         role: element.role,
         isMuted: element.isMuted,
       });
-      
     }
-    // room.usersList.forEach(async (element: UsersList) => {
-    //   if (element.uid)
-    //     console.log(element.uid);
-    //     user = await this.userService.findOneById(element.uid);
-    //     console.log(user);
-    //     usersList.push({
-    //       username: user.username,
-    //       role: element.role,
-    //       isMuted: element.isMuted,
-    //     });
-    // });
     return usersList;
   }
 
@@ -136,11 +124,11 @@ export class ChatController {
     const user = await this.userService.findOne(username);
     if (!user) throw new HttpException('Unprocessable Entity', 422);
     const roomsList = [];
-    rooms.forEach((element) => {
+    for (const element of rooms) {
       const userInfo = element.usersList.find(
         (obj) => user.uid == obj.user.uid,
       );
-      if (element.usersList.find((obj) => user.uid == obj.id))
+      if (element.usersList.find((obj) => user.uid == obj.user.uid))
         roomsList.push({
           roomName: element.roomName,
           role: userInfo.role,
@@ -148,7 +136,7 @@ export class ChatController {
           isBanned: userInfo.isBanned,
           hasPassword: element.password !== '',
         });
-    });
+    }
     return roomsList;
   }
 

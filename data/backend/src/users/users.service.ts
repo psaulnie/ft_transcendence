@@ -97,6 +97,9 @@ export class UsersService {
   async blockUser(user: User, blockedUser: User) {
     console.log('blockuser');
     const block = new BlockedList();
+    if (user.blockedUsers.find((obj) => obj.blockedUser.uid === blockedUser.uid)) {
+      return ;
+    }
     block.user = user;
     block.blockedUser = blockedUser;
     user.blockedUsers.push(block);

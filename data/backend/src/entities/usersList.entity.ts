@@ -28,5 +28,5 @@ export class UsersList {
 
 	@ManyToOne(() => Room, room => room.id, { onDelete: 'CASCADE' })
 	@JoinColumn({ name: 'roomId' })
-	roomId: number
+	room: Room
 }
