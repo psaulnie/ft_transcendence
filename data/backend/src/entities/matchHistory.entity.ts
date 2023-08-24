@@ -7,12 +7,12 @@ export class MatchHistory {
 	id: number
 
 	@OneToMany(() => User, user => user.uid)
-	@JoinColumn({ name: 'uid1' })
-	uid1: number
+	@JoinColumn({ name: 'user1' })
+	user1: User
 
 	@OneToMany(() => User, user => user.uid)
-	@JoinColumn({ name: 'uid2' })
-	uid2: number
+	@JoinColumn({ name: 'user2' })
+	user2: User
 
 	@Column()
 	uid1Score: number

@@ -7,8 +7,8 @@ export class Achievements {
 	id: number
 
 	@OneToOne(() => User, user => user.uid)
-	@JoinColumn({ name: 'uid' })
-	uid: number
+	@JoinColumn({ name: 'user' })
+	user: User
 
 	@Column()
 	achievement1: boolean
