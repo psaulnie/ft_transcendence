@@ -23,7 +23,7 @@ export class UsersStatusService {
 			this.usersStatus[userStatusIndex] = {clientId, accessToken, username, status};
 		else
 			this.usersStatus.push({clientId, accessToken, username, status});
-		console.log(this.usersStatus);
+		// console.log(this.usersStatus);
 	  }
 
 	  async removeUser(clientId: string) {
