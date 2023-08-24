@@ -47,6 +47,7 @@ export class RoomService {
     // room.usersID.push(usersList);
     room.usersList.push(await this.usersListRepository.save(usersList));
     return await this.roomsRepository.save(room);
+
   }
 
   // TODO: check if it is possible to merge functions

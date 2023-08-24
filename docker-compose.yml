@@ -11,13 +11,17 @@ services:
       - ft_transcendence
     # restart: on-failure
   frontend:
+    env_file:
+      - .env
     container_name: frontend
     image: frontend
     build:
+      args:
+        - IP=${IP}
       context: ./docker/frontend
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - "3000:5000"
     volumes:
       - ./data/frontend:/app
     networks:

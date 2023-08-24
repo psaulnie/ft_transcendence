@@ -7,7 +7,7 @@ export default function PrivateRoute() {
   const [isOk, setIsOk] = useState(false);
 
   const fetchData = () => {
-    fetch("http://localhost:5000/auth/connected", {
+    fetch(`http://${process.env.REACT_APP_IP}:5000/auth/connected`, {
       headers: {
         Authorization: "Bearer " + Cookies.get("accessToken"),
       },

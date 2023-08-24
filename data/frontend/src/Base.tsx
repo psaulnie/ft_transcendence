@@ -30,7 +30,7 @@ export default function Base() {
   function logoutButton(e: SyntheticEvent) {
     e.preventDefault();
     dispatch(logout());
-    window.location.href = "http://localhost:5000/auth/logout";
+    window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/logout`;
   }
 
   return (

@@ -53,7 +53,7 @@ export default function UploadButton() {
     setTimeout(() => {
       setIsLoading(false);
     }, 1000);
-    fetch("http://localhost:5000/api/avatar/remove?username=" + user.username, {
+    fetch(`http://${process.env.REACT_APP_IP}:5000/api/avatar/remove?username=${user.username}`, {
       headers: {
         Authorization: "Bearer " + Cookies.get("accessToken"),
       },

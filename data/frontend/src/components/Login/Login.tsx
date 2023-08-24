@@ -13,7 +13,7 @@ function Login() {
 
   async function apiIntraLogIn() {
     try {
-      window.location.href = "http://localhost:5000/auth/login";
+      window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/login`;
     } catch (e) {
       console.log("Error from apiIntraLogIn(): ", e);
     }
@@ -25,11 +25,11 @@ function Login() {
   }
 
   function testlogin() {
-    window.location.href = "http://localhost:5000/auth/testlogin";
+    window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/testlogin`;
   }
 
   const fetchData = () => {
-    fetch("http://localhost:5000/auth/connected", {
+    fetch(`http://${process.env.REACT_APP_IP}:5000/auth/connected`, {
       headers: {
         Authorization: "Bearer " + Cookies.get("accessToken"),
       },

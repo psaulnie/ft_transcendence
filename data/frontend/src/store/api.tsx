@@ -3,7 +3,7 @@ import Cookies from "js-cookie";
 
 export const apiSlice = createApi({
   reducerPath: "api",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5000" }),
+  baseQuery: fetchBaseQuery({ baseUrl: `http://${process.env.REACT_APP_IP}:5000` }),
   endpoints: (builder) => ({
     getRole: builder.query({
       query: ({ username = null, roomName = null }) => ({
