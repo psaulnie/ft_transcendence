@@ -50,12 +50,12 @@ export class User {
   @ManyToOne(() => MatchHistory, matchHistory => matchHistory.id, { nullable: true })
   matchHistory: MatchHistory;
 
-  @OneToOne(() => Statistics, statistics => statistics.uid, { nullable: true })
-  @JoinColumn({ name: 'statistics_uid', referencedColumnName: 'uid' })
+  @OneToOne(() => Statistics, statistics => statistics.user, { nullable: true })
+  @JoinColumn({ name: 'statistics_user', referencedColumnName: 'user' })
   statistics: Statistics;
 
-  @OneToOne(() => Achievements, achievements => achievements.uid, { nullable: true })
-  @JoinColumn({ name: 'achievements_uid', referencedColumnName: 'uid' })
+  @OneToOne(() => Achievements, achievements => achievements.user, { nullable: true })
+  @JoinColumn({ name: 'achievements_user', referencedColumnName: 'user' })
   achievements: Achievements;
 
   @AfterLoad()
