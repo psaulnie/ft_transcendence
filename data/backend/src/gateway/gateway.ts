@@ -51,8 +51,16 @@ export class Gateway
     if (!user) throw new WsException('Source user not found');
     const targetUser = await this.userService.findOne(payload.target);
     if (!targetUser) throw new WsException('Target user not found');
-    if (targetUser.blockedUsers.some(blockedUser => blockedUser.blockedUser.uid === user.uid)) // TODO if error maybe this line
+    if (targetUser.blockedUsers.some(blockedUser => blockedUser.blockedUser.uid === user.uid))
+    {
+      this.server.emit(payload.source + 'OPTIONS', {
+        source: payload.source,
+        target: payload.target,
+        action: actionTypes.blockedmsg,
+
+      })
       throw new WsException('Target user blocked source user');
+    }
     this.server.emit(payload.target, {
       source: payload.source,
       target: payload.target,
@@ -514,6 +522,5 @@ export class Gateway
     if (!user)
       return ; // TODO handle error
     await this.usersStatusService.addUser(client.id, client.handshake.auth.token, user.username, userStatus.online);
-    console
   }
 }

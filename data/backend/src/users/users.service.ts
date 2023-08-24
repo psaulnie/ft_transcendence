@@ -42,11 +42,12 @@ export class UsersService {
   async findOneByAccessToken(accessToken: string): Promise<User> {
     return await this.usersRepository.findOne({
       where: { accessToken: accessToken },
+      relations: ['blockedUsers', 'friendList', 'achievements', 'blockedUsers.blockedUser', 'blockedUsers.user']
     });
   }
 
   async findAll(): Promise<User[]> {
-    return await this.usersRepository.find();
+    return await this.usersRepository.find({relations: ['blockedUsers', 'friendList', 'achievements', 'blockedUsers.blockedUser', 'blockedUsers.user']});
   }
 
   async addUser(user: User): Promise<User> {
@@ -61,7 +62,7 @@ export class UsersService {
     const newUser = new User();
     newUser.urlAvatar = '';
     newUser.username = name;
-    newUser.accessToken = '';
+    newUser.accessToken = 'test';
     newUser.refreshToken = '';
     newUser.blockedUsers = [];
     newUser.intraId = '';

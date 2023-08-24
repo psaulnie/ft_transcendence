@@ -55,7 +55,7 @@ export const roomsSlice = createSlice({
       const roomIndex = state.room.findIndex(
         (obj: roomType) => obj.name === action.payload.name
       );
-
+      console.log(state.index);
       if (!room) {
         state.room.push({
           name: action.payload.name,
@@ -68,7 +68,7 @@ export const roomsSlice = createSlice({
           isMuted: false,
         });
         if (action.payload.openTab || state.index === -1) state.index++;
-      } else if (roomIndex !== -1) state.index = roomIndex;
+      } else if (roomIndex !== -1 && action.payload.openTab) state.index = roomIndex;
     },
     removeRoom: (state, action: PayloadAction<string>) => {
       state.room = state.room.filter(

@@ -133,6 +133,8 @@ export default function ChatProcess() {
         );
         if (value.hasPassword) setHasPassword(true);
         setRoom(value.source);
+      } else if (value.action === actionTypes.blockedMsg) {
+        setSnackbar("This user blocked you", "error");
       }
     }
 
