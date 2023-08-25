@@ -55,7 +55,6 @@ export const roomsSlice = createSlice({
       const roomIndex = state.room.findIndex(
         (obj: roomType) => obj.name === action.payload.name
       );
-      console.log(state.index);
       if (!room) {
         state.room.push({
           name: action.payload.name,

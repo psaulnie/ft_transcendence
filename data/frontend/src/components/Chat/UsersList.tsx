@@ -46,7 +46,7 @@ export default function UsersList({
     isError,
     error,
     refetch,
-  } = useGetUsersInRoomQuery({ roomName: roomName }, { skip: isDirectMessage }); // TODO skip if direct msg
+  } = useGetUsersInRoomQuery({ roomName: roomName }, { skip: isDirectMessage });
 
   let usersList = [];
   if (isDirectMessage === false) usersList = usersListData;

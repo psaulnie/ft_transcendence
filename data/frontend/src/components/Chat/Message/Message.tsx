@@ -42,7 +42,7 @@ export default function Message({ message, role, roomName, isDirectMessage }: ar
 		data: cUser,
 		isSuccess,
 		refetch
-	} = useGetUserStatusInRoomQuery({username: message.source, roomName: roomName}, { skip: isDirectMessage }); // TODO forbid to fetch if direct msg
+	} = useGetUserStatusInRoomQuery({username: message.source, roomName: roomName}, { skip: isDirectMessage });
 
 	const handleContextMenu = (event: React.MouseEvent) => {
 		event.preventDefault();
