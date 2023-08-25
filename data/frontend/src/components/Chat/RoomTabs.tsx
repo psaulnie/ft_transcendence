@@ -73,13 +73,13 @@ export default function RoomTabs()
 				"& .MuiTabs-indicator": {
 					top: "0",
 					marginTop: "2px",
-					backgroundColor: "red",
+					backgroundColor: "transparent",
 				},
 				"& .MuiTabs-scrollButtons.Mui-disabled": {
 					opacity: "0.3",
 				},
 				"& .Mui-selected": {
-					backgroundColor: "red",
+					backgroundColor: "#FC7D07",
 					color: "black",
 				},
 				  

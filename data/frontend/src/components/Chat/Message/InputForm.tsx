@@ -60,7 +60,9 @@ export default function InputForm({roomName, isDirectMessage}: {roomName: string
 									width: '45px',
 									marginRight: '0.8em'
 								},
-								bgcolor: 'red'}}
+								
+								bgcolor: '#D9D9D9',
+								color: 'black'}}
 								disabled={ isLoading || rooms.room.find((obj: any) => obj.name === roomName).isMuted } onKeyDown={keyPress}
 								endIcon={isWideScreen ? null : <Publish />}
 								centerRipple

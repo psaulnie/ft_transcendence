@@ -73,7 +73,7 @@ function App() {
 						{/* <Route path="/profile" element={<Profile/>}></Route> */}
 						<Route path="/home" element={<Home/>}></Route>
 					</Routes>
-					{user.isLoggedIn ? <button onClick={logoutButton}>Logout</button> : null}
+					{/* {user.isLoggedIn ? <button onClick={logoutButton}>Logout</button> : null} */}
 					{user.isLoggedIn ? (<Chat/>) : null}
 				</div>
 			</BrowserRouter>

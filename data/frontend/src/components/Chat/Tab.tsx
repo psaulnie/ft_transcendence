@@ -24,7 +24,7 @@ function Tab()
     	<>
 			<Button variant="text"
 				onClick={handleOpenTab}
-				startIcon={<Box sx={{ fontSize: 30, color: "red"}}>
+				startIcon={<Box sx={{ fontSize: 30, color: "black"}}>
 					<MenuIcon sx={{marginLeft: '1.8em', width: 'auto',}}/>
 				</Box>}
       			sx={{
