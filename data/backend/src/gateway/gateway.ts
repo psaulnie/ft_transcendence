@@ -16,7 +16,7 @@ import { sendMsgArgs, actionArgs } from './args.interface';
 import { actionTypes } from './args.types';
 import { accessStatus, userRole } from 'src/chatModule/chatEnums';
 import { UseGuards } from '@nestjs/common';
-import { WsIsAuthGuard } from 'src/auth/guards/intra-auth.guards';
+import { WsIsAuthGuard } from 'src/auth/guards/intra-auth-guard.service';
 import { hashPassword, comparePassword } from './hashPasswords';
 import { UsersStatusService } from 'src/services/users.status.service';
 import { userStatus } from 'src/users/userStatus';
@@ -31,7 +31,7 @@ export class Gateway
   constructor(
     private roomService: RoomService,
     private userService: UsersService,
-    private usersStatusService: UsersStatusService
+    private usersStatusService: UsersStatusService,
   ) {}
   @WebSocketServer() server: Server;
 
@@ -51,7 +51,12 @@ export class Gateway
     if (!user) throw new WsException('Source user not found');
     const targetUser = await this.userService.findOne(payload.target);
     if (!targetUser) throw new WsException('Target user not found');
-    if (targetUser.blockedUsers.some(blockedUser => blockedUser.blockedUser.uid === user.uid)) // TODO if error maybe this line
+    if (
+      targetUser.blockedUsers.some(
+        (blockedUser) => blockedUser.blockedUser.uid === user.uid,
+      )
+    )
+      // TODO if error maybe this line
       throw new WsException('Target user blocked source user');
     this.server.emit(payload.target, {
       source: payload.source,
@@ -233,7 +238,9 @@ export class Gateway
     if (!admin) throw new WsException('Source user not found');
     const room = await this.roomService.findOne(payload.room);
     if (!room) throw new WsException('Room not found');
-    const isInRoom = room.usersList.find((tmpUser) => tmpUser.user.uid === user.uid);
+    const isInRoom = room.usersList.find(
+      (tmpUser) => tmpUser.user.uid === user.uid,
+    );
     if (!isInRoom) throw new WsException('User not in room');
     if ((await this.roomService.getRole(room, admin.uid)) == userRole.none)
       throw new WsException('Source user is not admin of the room');
@@ -266,7 +273,9 @@ export class Gateway
     if (!admin) throw new WsException('Source user not found');
     const room = await this.roomService.findOne(payload.room);
     if (!room) throw new WsException('Room not found');
-    const isInRoom = room.usersList.find((tmpUser) => tmpUser.user.uid === user.uid);
+    const isInRoom = room.usersList.find(
+      (tmpUser) => tmpUser.user.uid === user.uid,
+    );
     if (!isInRoom) throw new WsException('User not in room');
     if ((await this.roomService.getRole(room, admin.uid)) == userRole.none)
       throw new WsException('Source user is not admin of the room');
@@ -509,11 +518,18 @@ export class Gateway
 
   @UseGuards(WsIsAuthGuard)
   async handleConnection(client: Socket, ...args: any[]) {
+    if (!client.handshake.auth.token) return;
     console.log(`Client connected: ${client.id}`);
-    const user = await this.userService.findOneByAccessToken(client.handshake.auth.token);
-    if (!user)
-      return ; // TODO handle error
-    await this.usersStatusService.addUser(client.id, client.handshake.auth.token, user.username, userStatus.online);
-    console
+    const user = await this.userService.findOneByAccessToken(
+      client.handshake.auth.token,
+    );
+    if (!user) return; // TODO handle error
+    await this.usersStatusService.addUser(
+      client.id,
+      client.handshake.auth.token,
+      user.username,
+      userStatus.online,
+    );
+    console;
   }
 }

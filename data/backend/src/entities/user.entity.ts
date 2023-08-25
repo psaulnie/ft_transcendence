@@ -3,17 +3,14 @@ import {
   Column,
   PrimaryGeneratedColumn,
   AfterLoad,
-  ManyToMany,
-  JoinTable,
   OneToMany,
   ManyToOne,
   JoinColumn,
-  OneToOne
+  OneToOne,
 } from 'typeorm';
 
 import { FriendList } from './friend.list.entity';
 import { BlockedList } from './blocked.list.entity';
-import { Room } from './room.entity';
 import { Achievements } from './achievements.entity';
 import { MatchHistory } from './matchHistory.entity';
 import { Statistics } from './stats.entity';
@@ -41,20 +38,29 @@ export class User {
   @Column({ name: 'refresh_token' })
   refreshToken: string;
 
+  @Column({ nullable: true })
+  public twoFactorAuthSecret?: string;
+
   @OneToMany(() => BlockedList, (user) => user.user)
   blockedUsers: BlockedList[];
 
-  @OneToMany(() => FriendList, friendList => friendList.uid1)
+  @OneToMany(() => FriendList, (friendList) => friendList.uid1)
   friendList: FriendList[];
 
-  @ManyToOne(() => MatchHistory, matchHistory => matchHistory.id, { nullable: true })
+  @ManyToOne(() => MatchHistory, (matchHistory) => matchHistory.id, {
+    nullable: true,
+  })
   matchHistory: MatchHistory;
 
-  @OneToOne(() => Statistics, statistics => statistics.uid, { nullable: true })
+  @OneToOne(() => Statistics, (statistics) => statistics.uid, {
+    nullable: true,
+  })
   @JoinColumn({ name: 'statistics_uid', referencedColumnName: 'uid' })
   statistics: Statistics;
 
-  @OneToOne(() => Achievements, achievements => achievements.uid, { nullable: true })
+  @OneToOne(() => Achievements, (achievements) => achievements.uid, {
+    nullable: true,
+  })
   @JoinColumn({ name: 'achievements_uid', referencedColumnName: 'uid' })
   achievements: Achievements;
 

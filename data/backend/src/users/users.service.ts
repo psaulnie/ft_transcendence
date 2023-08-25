@@ -13,21 +13,16 @@ export class UsersService {
     private blockedUserRepository: Repository<BlockedList>,
   ) {}
 
-  // For testing only, TO REMOVE-----------------------------------------------------------
-  private index = 0;
-  private users = [];
-
-  // async findOne(
-  //   username: string,
-  // ): Promise<{ id: number; username: string; password: string } | undefined> {
-  //   return this.users.find((user) => user.username === username);
-  // }
-  // //----------------------------------------------------------------------------------------
-
   async findOne(name: string): Promise<User> {
     return await this.usersRepository.findOne({
       where: { username: name },
-      relations: ['blockedUsers', 'friendList', 'achievements', 'blockedUsers.blockedUser', 'blockedUsers.user'],
+      relations: [
+        'blockedUsers',
+        'friendList',
+        'achievements',
+        'blockedUsers.blockedUser',
+        'blockedUsers.user',
+      ],
     });
   }
 
@@ -56,7 +51,7 @@ export class UsersService {
   async createUser(name: string) {
     console.log('createuser');
     if (await this.findOneByUsername(name)) {
-      return ;
+      return;
     }
     const newUser = new User();
     newUser.urlAvatar = '';
@@ -70,24 +65,10 @@ export class UsersService {
     newUser.matchHistory = null;
     newUser.statistics = null;
     newUser.achievements = null;
-    
-    console.log("before");
-    await this.usersRepository.save(newUser);
-    console.log("finish");
 
-    // For testing ----
-    // const newUser = {
-    //   id: this.index--,
-    //   username: name,
-    //   password: pass,
-    //   avatar:
-    //     'https://marketplace.canva.com/MAB6vzmEQlA/1/thumbnail_large/canva-robot-electric-avatar-icon-MAB6vzmEQlA.png',
-    // };
-    // this.users.push(newUser);
-    // // End of testing ----
-    // console.log('users in createUser ', this.users);
-    // console.log(`${newUser.username} successfully registered`);
-    // return newUser;
+    console.log('before');
+    await this.usersRepository.save(newUser);
+    console.log('finish');
   }
 
   async removeUser(name: string) {
@@ -97,8 +78,10 @@ export class UsersService {
   async blockUser(user: User, blockedUser: User) {
     console.log('blockuser');
     const block = new BlockedList();
-    if (user.blockedUsers.find((obj) => obj.blockedUser.uid === blockedUser.uid)) {
-      return ;
+    if (
+      user.blockedUsers.find((obj) => obj.blockedUser.uid === blockedUser.uid)
+    ) {
+      return;
     }
     block.user = user;
     block.blockedUser = blockedUser;
@@ -110,7 +93,8 @@ export class UsersService {
   async unblockUser(user: User, blockedUser: User) {
     console.log('unblockuser');
     user.blockedUsers = user.blockedUsers.filter(
-      (obj) => obj.user.uid !== user.uid && obj.blockedUser.uid !== blockedUser.uid,
+      (obj) =>
+        obj.user.uid !== user.uid && obj.blockedUser.uid !== blockedUser.uid,
     );
     await this.usersRepository.save(user);
   }
@@ -129,5 +113,11 @@ export class UsersService {
     }
     user.urlAvatar = avatar;
     await this.usersRepository.save(user);
+  }
+
+  async setTwoFactorAuthenticationSecret(secret: string, userId: number) {
+    return this.usersRepository.update(userId, {
+      twoFactorAuthSecret: secret,
+    });
   }
 }

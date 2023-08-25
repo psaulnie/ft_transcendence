@@ -10,12 +10,8 @@ import {
 import { CacheInterceptor } from '@nestjs/cache-manager';
 import { RoomService } from '../services/room.service';
 import { UsersService } from '../users/users.service';
-import { UsersList } from 'src/entities/usersList.entity';
 
-import {
-  AuthenticatedGuard,
-  IsAuthGuard,
-} from 'src/auth/guards/intra-auth.guards';
+import { IsAuthGuard } from 'src/auth/guards/intra-auth-guard.service';
 import { User } from 'src/entities';
 import { userRole } from './chatEnums';
 
@@ -45,22 +41,20 @@ export class ChatController {
   @UseInterceptors(CacheInterceptor)
   @UseGuards(IsAuthGuard)
   @Get(':username/blocked')
-  async getBlockedUser(
-    @Param('username') username: string,
-  ): Promise<string[]> {
-    console.log("getBlockedUser");
+  async getBlockedUser(@Param('username') username: string): Promise<string[]> {
+    console.log('getBlockedUser');
     if (username == null) throw new HttpException('Bad request', 400);
     const user = await this.userService.findOne(username);
     if (!user) throw new HttpException('Unprocessable Entity', 422);
     const usersList = [];
     const blockedUsers = user.blockedUsers;
     let userBlocked: User;
-    for (const element of blockedUsers)
-    {
-      if (element)
-      {
-        userBlocked = await this.userService.findOneById(element.blockedUser.uid);
-        if (!userBlocked) return ;
+    for (const element of blockedUsers) {
+      if (element) {
+        userBlocked = await this.userService.findOneById(
+          element.blockedUser.uid,
+        );
+        if (!userBlocked) return;
         usersList.push(userBlocked.username);
       }
     }
@@ -97,11 +91,9 @@ export class ChatController {
     const usersList = [];
     let user: User;
     for (const element of room.usersList) {
-      if (!element.user.uid || element.isBanned === true)
-        continue ;
+      if (!element.user.uid || element.isBanned === true) continue;
       user = await this.userService.findOneById(element.user.uid);
-      if (!user)
-        continue ;
+      if (!user) continue;
       usersList.push({
         username: user.username,
         role: element.role,

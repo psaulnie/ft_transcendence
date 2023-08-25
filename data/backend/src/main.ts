@@ -6,11 +6,13 @@ import * as passport from 'passport';
 import { TypeormSession } from './entities';
 import { TypeormStore } from 'connect-typeorm';
 import { DataSource } from 'typeorm';
+import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const port = process.env.PORT;
   const sessionRepo = app.get(DataSource).getRepository(TypeormSession);
+  app.use(cookieParser());
   app.use(
     session({
       cookie: {

@@ -25,7 +25,7 @@ import { UsersService } from './users/users.service';
 import { Response } from 'express';
 import { AppService } from './services/app.service';
 
-import { IsAuthGuard } from './auth/guards/intra-auth.guards';
+import { IsAuthGuard } from './auth/guards/intra-auth-guard.service';
 import { UseGuards } from '@nestjs/common';
 
 import { catchError, firstValueFrom } from 'rxjs';
@@ -89,8 +89,7 @@ export class AppController {
   @Get('/avatar/remove')
   @UseGuards(IsAuthGuard)
   async removeAvatar(@Req() context: any, @Query('username') username: string) {
-    if (!username)
-      return new HttpException('Bad Request', 400);
+    if (!username) return new HttpException('Bad Request', 400);
     const user = await this.userService.findOne(username);
     if (context.headers.authorization != 'Bearer ' + user.accessToken)
       return new HttpException('Unauthorized', 401);
@@ -102,12 +101,16 @@ export class AppController {
           },
         })
         .pipe(
-          catchError((error: any) => {
+          catchError(() => {
             throw new UnauthorizedException();
           }),
         ),
     );
-    await this.userService.updateAvatar(user, url.data.image.versions.small, true);
+    await this.userService.updateAvatar(
+      user,
+      url.data.image.versions.small,
+      true,
+    );
   }
   @Get('/avatar/:username')
   async getAvatar(
@@ -150,10 +153,8 @@ export class AppController {
   }
 }
 
-export function isUrl(path: string) : boolean {
-  if (path.startsWith('http:/') || path.startsWith('https:/'))
-    return (true);
-  else if (path.startsWith('www.'))
-    return (true);
-  return (false);
+export function isUrl(path: string): boolean {
+  if (path.startsWith('http:/') || path.startsWith('https:/')) return true;
+  else if (path.startsWith('www.')) return true;
+  return false;
 }

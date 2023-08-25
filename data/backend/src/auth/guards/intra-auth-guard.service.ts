@@ -3,20 +3,18 @@ import {
   Injectable,
   CanActivate,
   UnauthorizedException,
-  Inject,
-  HttpException,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { HttpService as NestHttpService } from '@nestjs/axios';
 
-import { AxiosError } from 'axios';
 import { catchError, firstValueFrom } from 'rxjs';
 import { WsException } from '@nestjs/websockets';
 
 @Injectable()
-export class IntraAuthGuards extends AuthGuard('42') {
+export class IntraAuthGuard extends AuthGuard('42') {
   async canActivate(context: ExecutionContext) {
     try {
+      console.log('INTRA AUTH GUARD');
       const activate = (await super.canActivate(context)) as boolean;
       const request = context.switchToHttp().getRequest();
       await super.logIn(request);
@@ -29,11 +27,17 @@ export class IntraAuthGuards extends AuthGuard('42') {
   }
 }
 
+/**
+ * Send connect.id (session cookie) in header of your request to use this guard.
+ */
 @Injectable()
 export class AuthenticatedGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    console.log('AUTHENTICATED GUARD');
     const req = context.switchToHttp().getRequest();
-    console.log(req.isAuthenticated());
+    console.log('‣ Session:', req.session);
+    console.log('‣ Cookies received:', req.cookies);
+    console.log('‣ isAuthenticated: ', req.isAuthenticated());
     return req.isAuthenticated();
   }
 }
@@ -58,7 +62,7 @@ export class IsAuthGuard implements CanActivate {
             },
           })
           .pipe(
-            catchError((error: AxiosError) => {
+            catchError(() => {
               throw new UnauthorizedException();
             }),
           ),
@@ -94,7 +98,7 @@ export class WsIsAuthGuard implements CanActivate {
             },
           })
           .pipe(
-            catchError((error: AxiosError) => {
+            catchError(() => {
               throw new WsException('Unauthorized');
             }),
           ),
