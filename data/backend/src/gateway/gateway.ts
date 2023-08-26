@@ -518,9 +518,10 @@ export class Gateway
   @UseGuards(WsIsAuthGuard)
   async handleConnection(client: Socket, ...args: any[]) {
     console.log(`Client connected: ${client.id}`);
-    const user = await this.userService.findOneByAccessToken(client.handshake.auth.token);
-    if (!user)
-      throw new WsException('User not found');
-    await this.usersStatusService.addUser(client.id, client.handshake.auth.token, user.username, userStatus.online);
+    // const user = await this.userService.findOneByAccessToken(client.handshake.auth.token);
+    // if (!user)
+    //   return ;
+    //   // throw new WsException('User not found');
+    // await this.usersStatusService.addUser(client.id, client.handshake.auth.token, user.username, userStatus.online);
   }
 }

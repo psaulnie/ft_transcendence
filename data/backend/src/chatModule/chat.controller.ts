@@ -12,6 +12,7 @@ import { CacheInterceptor } from '@nestjs/cache-manager';
 import { RoomService } from '../services/room.service';
 import { UsersService } from '../users/users.service';
 import { IsAuthGuard } from 'src/auth/guards/intra-auth.guards';
+import { AuthenticatedGuard } from 'src/auth/guards/intra-auth.guards';
 import { User } from 'src/entities';
 import { userRole } from './chatEnums';
 
@@ -23,7 +24,7 @@ export class ChatController {
   ) {}
 
   @UseInterceptors(CacheInterceptor)
-  @UseGuards(IsAuthGuard)
+  @UseGuards(AuthenticatedGuard)
   @Get('role/:username/:roomName')
   async getRole(
     @Param('username') username: string,
@@ -39,7 +40,7 @@ export class ChatController {
   }
 
   @UseInterceptors(CacheInterceptor)
-  @UseGuards(IsAuthGuard)
+  @UseGuards(AuthenticatedGuard)
   @Get(':username/blocked')
   async getBlockedUser(@Param('username') username: string): Promise<string[]> {
     console.log('getBlockedUser');
@@ -62,7 +63,7 @@ export class ChatController {
   }
 
   @UseInterceptors(CacheInterceptor)
-  @UseGuards(IsAuthGuard)
+  @UseGuards(AuthenticatedGuard)
   @Get('rooms/list')
   async getRoomsList(): Promise<{}[]> {
     const rooms = await this.roomService.findAll();
@@ -79,7 +80,7 @@ export class ChatController {
   }
 
   @UseInterceptors(CacheInterceptor)
-  @UseGuards(IsAuthGuard)
+  @UseGuards(AuthenticatedGuard)
   @Get(':roomName/users')
   async getUsersInRoom(
     @Query() data: any,
@@ -104,7 +105,7 @@ export class ChatController {
   }
 
   @UseInterceptors(CacheInterceptor)
-  @UseGuards(IsAuthGuard)
+  @UseGuards(AuthenticatedGuard)
   @Get(':username/rooms/list')
   async getUserRoomsList(
     @Query() data: any,
@@ -133,7 +134,7 @@ export class ChatController {
   }
 
   @UseInterceptors(CacheInterceptor)
-  @UseGuards(IsAuthGuard)
+  @UseGuards(AuthenticatedGuard)
   @Get(':roomName/exist')
   async getIsRoomNameTaken(
     @Query() data: any,
@@ -145,7 +146,7 @@ export class ChatController {
   }
 
   @UseInterceptors(CacheInterceptor)
-  @UseGuards(IsAuthGuard)
+  @UseGuards(AuthenticatedGuard)
   @Get('users/list')
   async getUsersList(@Req() req: Request): Promise<string[]> {
     let [type, token] = req.headers['authorization']?.split(' ') ?? [];
@@ -172,7 +173,7 @@ export class ChatController {
   }
 
   @UseInterceptors(CacheInterceptor)
-  @UseGuards(IsAuthGuard)
+  @UseGuards(AuthenticatedGuard)
   @Get(':username/:roomName/status')
   async getUserStatusInRoom(
     @Param('username') username: string,
@@ -190,7 +191,7 @@ export class ChatController {
   }
 
   @UseInterceptors(CacheInterceptor)
-  @UseGuards(IsAuthGuard)
+  @UseGuards(AuthenticatedGuard)
   @Get(':username/:roomName/invited')
   async getInvitedUsersList(
     @Param('username') username: string,

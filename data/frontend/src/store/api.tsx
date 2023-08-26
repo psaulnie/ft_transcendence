@@ -3,7 +3,10 @@ import Cookies from "js-cookie";
 
 export const apiSlice = createApi({
   reducerPath: "api",
-  baseQuery: fetchBaseQuery({ baseUrl: `http://${process.env.REACT_APP_IP}:5000` }),
+  baseQuery: fetchBaseQuery({
+    baseUrl: `http://${process.env.REACT_APP_IP}:5000`,
+    credentials: 'include',
+  }),
   endpoints: (builder) => ({
     getRole: builder.query({
       query: ({ username = null, roomName = null }) => ({
@@ -114,5 +117,5 @@ export const {
   useLazyGetIsRoomNameTakenQuery,
   useLazyGetUsersInRoomQuery,
   useLazyGetBlockedUsersQuery,
-  useLazyGetUserRoomListQuery
+  useLazyGetUserRoomListQuery,
 } = apiSlice;

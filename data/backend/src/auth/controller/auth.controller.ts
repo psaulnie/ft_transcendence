@@ -75,21 +75,37 @@ export class AuthController {
    */
   @Get('logout')
   @UseGuards(AuthenticatedGuard)
-  logout(@Req() req: Request, @Res() res: Response, @Next() next: any) {
-    req.logOut((err: any) => {
-      if (err) {
-        return next(err);
-      }
-      res.redirect(`http://${process.env.IP}:3000/login`);
-    });
-  }
+  async logout(@Req() req: Request, @Res() res: Response) {
+    console.log('LOGOUT CONTROLLER');
 
+    await new Promise<void>((resolve, reject) => {
+      req.logOut((err: any) => {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
+
+    await new Promise<void>((resolve, reject) => {
+      req.session.destroy((err) => {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
+
+    // Delete cookie 'connect.sid' on client side
+    res.clearCookie('connect.sid');
+
+    // Redirect on login page
+    res.redirect('http://localhost:3000/login');
+  }
   /**
    * GET /api/auth/connected
    * Check the access token to see if the user is connected
    */
   @Get('connected')
+  @UseGuards(AuthenticatedGuard)
   async connected(@Req() req: Request) {
+    return req.user;
     try {
       let result = true;
       let [type, token] = req.headers['authorization']?.split(' ') ?? [];
