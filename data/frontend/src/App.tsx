@@ -21,6 +21,7 @@ import Home from './components/Home/Home';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Profile from './components/Global/Profile';
+import Game from './components/Game/Game';
 import { useIsAuthentifiedMutation } from './store/api';
 import { Skeleton, Box, Grid, Button, Typography, Avatar, Slide} from '@mui/material';
 
@@ -36,6 +37,7 @@ const theme = createTheme({
 	},
   });
 function App() {
+	const [isProfilOpen, setIsProfilOpen] = useState(false);
 	const user = useSelector((state: any) => state.user);
 	const dispatch = useDispatch();
 
@@ -49,6 +51,10 @@ function App() {
 		}
 		setDrawerState(open);
     };
+
+	const toggleProfil = () => {
+  	  setIsProfilOpen(!isProfilOpen);
+  	};
 
 	// const [isAuthentified, isError ] = useIsAuthentifiedMutation(user.accessToken);
 	// if (!isError)
@@ -70,8 +76,9 @@ function App() {
 				<div className='main'>
 					<Routes>
 						<Route path="/" element={<Login/>}></Route>
-						{/* <Route path="/profile" element={<Profile/>}></Route> */}
+						<Route path="/profile" element={<Profile toggleProfil={toggleProfil}/>}></Route>
 						<Route path="/home" element={<Home/>}></Route>
+						<Route path="/game" element={<Game/>}></Route>
 					</Routes>
 					{/* {user.isLoggedIn ? <button onClick={logoutButton}>Logout</button> : null} */}
 					{user.isLoggedIn ? (<Chat/>) : null}

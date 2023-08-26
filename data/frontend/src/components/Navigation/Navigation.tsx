@@ -15,7 +15,7 @@ function Navigation({setDrawerState}: {setDrawerState: any}) {
 	const user = useSelector((state: any) => state.user);
 	return (
 		<Box sx={{ flexGrow: 1 }}>
-			<AppBar position="static" sx={ {backgroundColor: '#FC7D07'}}>
+			<AppBar position="static" sx={ {backgroundColor: '#FC7D07', height: '3.5em'}}>
 				<Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
 					<IconButton
 						size="large"
@@ -28,6 +28,7 @@ function Navigation({setDrawerState}: {setDrawerState: any}) {
 					</IconButton>
     			  			<Grid item xs={9} sx={{
 									marginLeft: 'auto',
+									color: 'black',
 									marginRight: '1em',
 									display: 'flex',
 									flexDirection: 'column',

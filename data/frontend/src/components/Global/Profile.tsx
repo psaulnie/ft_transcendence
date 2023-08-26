@@ -18,7 +18,7 @@ function Profile({ toggleProfil } : ProfileProps) {
 	return (
 		<div>
 			<h1>Profile</h1>
-			<UploadButton />
+			{/* <UploadButton /> */}
 			<Button
           	  	variant="contained"
           	  	color="primary"
@@ -39,11 +39,10 @@ function Profile({ toggleProfil } : ProfileProps) {
 			<Box
     		  	sx={{
 					position: 'fixed',
-        			top: '56%',
-        			left: '30%',
-        			transform: 'translate(-50%, -50%)',
-        			width: '30em',
-        			height: '30em',
+        			transform: 'translate(5%, 0%)',
+					top: '12%',
+        			width: '90%',
+        			height: '60%',
 					padding: '2em',
 					borderRadius: '3em',
 					background: 'linear-gradient(to right, #ECECEC, #d6d4d4)',
@@ -51,10 +50,9 @@ function Profile({ toggleProfil } : ProfileProps) {
 					boxShadow: '0 0 10px rgba(0, 0, 0, 0.3)',
     		  	}}
     		>	
-				<Grid container spacing={1} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}
-					columns={{ xs: 12 }}>
+				<Grid container spacing={1} sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: 'auto'}}>
     			  	<Grid item xs={5} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-    			  	  	<Avatar src={falonsoImage} alt="User Avatar" sx={{ width: '8em', height: '8em', marginLeft: '2em', }}/>
+    			  	  	<Avatar src={falonsoImage} alt="User Avatar" sx={{ width: '4em', height: 'auto', marginLeft: '2em', }}/>
     			  	</Grid>
     			  	<Grid item xs={7}>
     			  	  	<Box>
