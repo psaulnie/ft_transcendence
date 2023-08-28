@@ -11,7 +11,6 @@ import { Request, Response } from 'express';
 import {
   AuthenticatedGuard,
   IntraAuthGuards,
-  IsAuthGuard,
 } from '../guards/intra-auth.guards';
 import { User } from '../../entities';
 
@@ -64,9 +63,8 @@ export class AuthController {
    * Retrieve the auth status
    */
   @Get('status')
-  @UseGuards(AuthenticatedGuard)
   status(@Req() req: Request) {
-    return req.user;
+    return (req.isAuthenticated());
   }
 
   /**
@@ -102,40 +100,40 @@ export class AuthController {
    * GET /api/auth/connected
    * Check the access token to see if the user is connected
    */
-  @Get('connected')
-  @UseGuards(AuthenticatedGuard)
-  async connected(@Req() req: Request) {
-    return req.user;
-    try {
-      let result = true;
-      let [type, token] = req.headers['authorization']?.split(' ') ?? [];
-      if (type !== 'Bearer') {
-        token = undefined;
-      }
-      if (token === 'test') return true;
-      if (!token) {
-        return false;
-      }
 
-      await firstValueFrom(
-        this.httpService
-          .get('https://api.intra.42.fr/oauth/token/info', {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          })
-          .pipe(
-            catchError((error: any) => {
-              result = false;
-              throw new UnauthorizedException();
-            }),
-          ),
-      );
-      return result;
-    } catch {
-      return false;
-    }
-  }
+  // @Get('connected')
+  // @UseGuards(AuthenticatedGuard)
+  // async connected(@Req() req: Request) {
+  //   try {
+  //     let result = true;
+  //     let [type, token] = req.headers['authorization']?.split(' ') ?? [];
+  //     if (type !== 'Bearer') {
+  //       token = undefined;
+  //     }
+  //     if (token === 'test') return true;
+  //     if (!token) {
+  //       return false;
+  //     }
+
+  //     await firstValueFrom(
+  //       this.httpService
+  //         .get('https://api.intra.42.fr/oauth/token/info', {
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         })
+  //         .pipe(
+  //           catchError((error: any) => {
+  //             result = false;
+  //             throw new UnauthorizedException();
+  //           }),
+  //         ),
+  //     );
+  //     return result;
+  //   } catch {
+  //     return false;
+  //   }
+  // }
 
   @Get('testlogin')
   async testlogin(@Res() res: Response, @Req() req: Request) {
