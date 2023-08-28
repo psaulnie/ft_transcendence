@@ -41,6 +41,9 @@ export class User {
   @Column({ nullable: true })
   public twoFactorAuthSecret?: string;
 
+  @Column({ default: false })
+  public isTwoFactorAuthEnabled: boolean;
+
   @OneToMany(() => BlockedList, (user) => user.user)
   blockedUsers: BlockedList[];
 

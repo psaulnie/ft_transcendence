@@ -23,7 +23,7 @@ export class TwoFactorAuthService {
       secret,
     );
 
-    await this.usersService.setTwoFactorAuthenticationSecret(secret, user.uid);
+    await this.usersService.setTwoFactorAuthSecret(secret, user.uid);
 
     return {
       secret,
@@ -34,5 +34,12 @@ export class TwoFactorAuthService {
   public async pipeQrCodeStream(stream: e.Response, otpAuthUrl: string) {
     console.log('PIPE QRCODE STREAM SERVICE');
     return toFileStream(stream, otpAuthUrl);
+  }
+
+  public isTwoFactorAuthCodeValid(twoFactorAuthCode: string, user: User) {
+    return authenticator.verify({
+      token: twoFactorAuthCode,
+      secret: user.twoFactorAuthSecret,
+    });
   }
 }
