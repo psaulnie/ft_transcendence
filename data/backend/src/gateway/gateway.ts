@@ -16,7 +16,6 @@ import { sendMsgArgs, actionArgs } from './args.interface';
 import { actionTypes } from './args.types';
 import { accessStatus, userRole } from 'src/chatModule/chatEnums';
 import { UseGuards } from '@nestjs/common';
-import { WsIsAuthGuard } from 'src/auth/guards/intra-auth.guards';
 import { hashPassword, comparePassword } from './hashPasswords';
 import { UsersStatusService } from 'src/services/users.status.service';
 import { userStatus } from 'src/users/userStatus';
@@ -35,7 +34,6 @@ export class Gateway
   ) {}
   @WebSocketServer() server: Server;
 
-  @UseGuards(WsIsAuthGuard)
   @SubscribeMessage('sendPrivateMsg')
   async sendPrivateMessage(client: Socket, payload: sendMsgArgs) {
     if (
@@ -71,7 +69,7 @@ export class Gateway
     });
   }
 
-  @UseGuards(WsIsAuthGuard)
+  
   @SubscribeMessage('sendMsg')
   async sendMsg(client: Socket, payload: sendMsgArgs) {
     if (
@@ -101,7 +99,7 @@ export class Gateway
     });
   }
 
-  @UseGuards(WsIsAuthGuard)
+  
   @SubscribeMessage('joinRoom')
   async joinRoom(client: Socket, payload: any) {
     if (
@@ -186,7 +184,7 @@ export class Gateway
       });
   }
 
-  @UseGuards(WsIsAuthGuard)
+  
   @SubscribeMessage('leaveRoom')
   async leaveRoom(client: Socket, payload: any) {
     if (
@@ -205,7 +203,7 @@ export class Gateway
     });
   }
 
-  @UseGuards(WsIsAuthGuard)
+  
   @SubscribeMessage('openPrivateMessage')
   async openPrivateMessage(client: Socket, payload: any) {
     if (
@@ -226,7 +224,7 @@ export class Gateway
     });
   }
 
-  @UseGuards(WsIsAuthGuard)
+  
   @SubscribeMessage('kick')
   async kickUser(client: Socket, payload: actionArgs) {
     if (
@@ -259,7 +257,7 @@ export class Gateway
     });
   }
 
-  @UseGuards(WsIsAuthGuard)
+  
   @SubscribeMessage('ban')
   async banUser(client: Socket, payload: actionArgs) {
     if (
@@ -292,7 +290,7 @@ export class Gateway
     });
   }
 
-  @UseGuards(WsIsAuthGuard)
+  
   @SubscribeMessage('block')
   async blockUser(client: Socket, payload: actionArgs) {
     if (
@@ -309,7 +307,7 @@ export class Gateway
     await this.userService.blockUser(user, blockedUser);
   }
 
-  @UseGuards(WsIsAuthGuard)
+  
   @SubscribeMessage('unblock')
   async unblockUser(client: Socket, payload: actionArgs) {
     if (
@@ -326,7 +324,7 @@ export class Gateway
     await this.userService.unblockUser(user, blockedUser);
   }
 
-  @UseGuards(WsIsAuthGuard)
+  
   @SubscribeMessage('admin')
   async addAdmin(client: Socket, payload: actionArgs) {
     if (
@@ -352,7 +350,7 @@ export class Gateway
     });
   }
 
-  @UseGuards(WsIsAuthGuard)
+  
   @SubscribeMessage('mute')
   async muteUser(client: Socket, payload: actionArgs) {
     if (
@@ -378,7 +376,7 @@ export class Gateway
     });
   }
 
-  @UseGuards(WsIsAuthGuard)
+  
   @SubscribeMessage('unmute')
   async unmuteUser(client: Socket, payload: actionArgs) {
     if (
@@ -405,7 +403,7 @@ export class Gateway
     });
   }
 
-  @UseGuards(WsIsAuthGuard)
+  
   @SubscribeMessage('setPasswordToRoom')
   async setPasswordToRoom(
     client: Socket,
@@ -435,7 +433,7 @@ export class Gateway
     });
   }
 
-  @UseGuards(WsIsAuthGuard)
+  
   @SubscribeMessage('removePasswordToRoom')
   async removePasswordToRoom(
     client: Socket,
@@ -457,7 +455,7 @@ export class Gateway
     });
   }
 
-  @UseGuards(WsIsAuthGuard)
+  
   @SubscribeMessage('inviteUser')
   async inviteUser(
     client: Socket,
@@ -478,7 +476,7 @@ export class Gateway
     });
   }
 
-  @UseGuards(WsIsAuthGuard)
+  
   @SubscribeMessage('joinPrivateRoom')
   async joinPrivateRoom(
     client: Socket,
@@ -496,7 +494,7 @@ export class Gateway
     });
   }
 
-  @UseGuards(WsIsAuthGuard)
+  
   @SubscribeMessage('game')
   async handleGame(
     client: Socket,
@@ -515,12 +513,12 @@ export class Gateway
     await this.usersStatusService.setUserStatus(client.id, userStatus.offline);
   }
 
-  @UseGuards(WsIsAuthGuard)
   async handleConnection(client: Socket, ...args: any[]) {
     console.log(`Client connected: ${client.id}`);
-    const user = await this.userService.findOneByAccessToken(client.handshake.auth.token);
-    if (!user)
-      throw new WsException('User not found');
-    await this.usersStatusService.addUser(client.id, client.handshake.auth.token, user.username, userStatus.online);
+    // const user = await this.userService.findOneByAccessToken(client.handshake.auth.token);
+    // if (!user)
+    //   return ;
+    //   // throw new WsException('User not found');
+    // await this.usersStatusService.addUser(client.id, client.handshake.auth.token, user.username, userStatus.online);
   }
 }

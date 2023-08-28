@@ -29,16 +29,18 @@ function Login() {
   }
 
   const fetchData = () => {
-    fetch(`http://${process.env.REACT_APP_IP}:5000/auth/connected`, {
-      headers: {
-        Authorization: "Bearer " + Cookies.get("accessToken"),
-      },
+    fetch(`http://${process.env.REACT_APP_IP}:5000/auth/status`, {
+      credentials: 'include',
     }).then((response) => {
       return response.json();
     }).then((data) => {
-      setIsOk(data);
+      if (data.statusCode === 403)
+        setIsOk(false)
+      else
+        setIsOk(data);
       setIsLoading(false);
     }).catch((error) => {
+      setIsOk(false);
       setIsLoading(false);
       // TODO : handle fetch error
     });

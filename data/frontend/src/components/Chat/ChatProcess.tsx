@@ -137,7 +137,6 @@ export default function ChatProcess() {
         setSnackbar("This user blocked you", "error");
       }
     }
-
     webSocket.on(user.username + "OPTIONS", process);
     return () => {
       webSocket.off(user.username + "OPTIONS", process);

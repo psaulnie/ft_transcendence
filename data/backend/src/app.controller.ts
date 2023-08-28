@@ -25,7 +25,7 @@ import { UsersService } from './users/users.service';
 import { Response } from 'express';
 import { AppService } from './services/app.service';
 
-import { IsAuthGuard } from './auth/guards/intra-auth.guards';
+import { AuthenticatedGuard } from './auth/guards/intra-auth.guards';
 import { UseGuards } from '@nestjs/common';
 
 import { catchError, firstValueFrom } from 'rxjs';
@@ -68,7 +68,7 @@ export class AppController {
   ) {}
 
   @Post('/avatar/upload')
-  @UseGuards(IsAuthGuard)
+  @UseGuards(AuthenticatedGuard)
   @UseInterceptors(FileInterceptor('file', fileInterceptorOptions))
   async uploadAvatar(
     @Body() body: any,
@@ -87,7 +87,7 @@ export class AppController {
   }
 
   @Get('/avatar/remove')
-  @UseGuards(IsAuthGuard)
+  @UseGuards(AuthenticatedGuard)
   async removeAvatar(@Req() context: any, @Query('username') username: string) {
     if (!username)
       return new HttpException('Bad Request', 400);

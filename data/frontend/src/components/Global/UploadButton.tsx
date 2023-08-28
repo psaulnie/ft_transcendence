@@ -54,9 +54,10 @@ export default function UploadButton() {
       setIsLoading(false);
     }, 1000);
     fetch(`http://${process.env.REACT_APP_IP}:5000/api/avatar/remove?username=${user.username}`, {
+      credentials: 'include',
       headers: {
-        Authorization: "Bearer " + Cookies.get("accessToken"),
-      },
+        authorization: 'Bearer ' + Cookies.get('accessToken')
+      }
     }).catch(() => {
       // TODO : handle fetch error
     });
