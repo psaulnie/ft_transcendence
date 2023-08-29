@@ -494,6 +494,70 @@ export class Gateway
     });
   }
 
+  @SubscribeMessage('askBeingFriend')
+  async askBeingFriend(
+    client: Socket,
+    payload: { source: string; target: string },
+  ) {
+    if (payload.source == null || payload.target == null)
+      throw new WsException('Missing parameters');
+    const sourceUser = await this.userService.findOne(payload.source);
+    if (!sourceUser) throw new WsException('Source user not found');
+    const targetUser = await this.userService.findOne(payload.target);
+    if (!targetUser) throw new WsException('Target user not found');
+    if (sourceUser.friendList.some(friend => friend.user2.uid === targetUser.uid))
+      throw new WsException('Already friends');
+    if (targetUser.blockedUsers.some(blockedUser => blockedUser.blockedUser.uid === sourceUser.uid))
+      throw new WsException('Target user blocked source user');
+    if (sourceUser.blockedUsers.some(blockedUser => blockedUser.blockedUser.uid === targetUser.uid))
+      throw new WsException('Source user blocked target user');
+    this.server.emit(payload.target + 'OPTIONS', {
+      source: payload.source,
+      target: payload.target,
+      action: actionTypes.askBeingFriend,
+    });
+  }
+
+  @SubscribeMessage('acceptBeingFriend')
+  async acceptBeingFriend(
+    client: Socket,
+    payload: { source: string; target: string },
+  ) {
+    if (payload.source == null || payload.target == null)
+      throw new WsException('Missing parameters');
+    const sourceUser = await this.userService.findOne(payload.source);
+    if (!sourceUser) throw new WsException('Source user not found');
+    const targetUser = await this.userService.findOne(payload.target);
+    if (!targetUser) throw new WsException('Target user not found');
+    if (sourceUser.friendList.some(friend => friend.user2.uid === targetUser.uid))
+      throw new WsException('Already friends');
+    if (targetUser.blockedUsers.some(blockedUser => blockedUser.blockedUser.uid === sourceUser.uid))
+      throw new WsException('Target user blocked source user');
+    if (sourceUser.blockedUsers.some(blockedUser => blockedUser.blockedUser.uid === targetUser.uid))
+      throw new WsException('Source user blocked target user');
+    await this.userService.addFriend(sourceUser, targetUser);
+    this.server.emit(payload.target + 'OPTIONS', {
+      source: payload.source,
+      target: payload.target,
+      action: actionTypes.acceptBeingFriend,
+    });
+  }
+
+  @SubscribeMessage('removeFriend')
+  async removeFriend(
+    client: Socket,
+    payload: { source: string; target: string },
+  ) {
+    if (payload.source == null || payload.target == null)
+      throw new WsException('Missing parameters');
+    const sourceUser = await this.userService.findOne(payload.source);
+    if (!sourceUser) throw new WsException('Source user not found');
+    const targetUser = await this.userService.findOne(payload.target);
+    if (!targetUser) throw new WsException('Target user not found');
+    if (!sourceUser.friendList.some(friend => friend.user2.uid === targetUser.uid))
+      throw new WsException('Not friends');
+    await this.userService.removeFriend(sourceUser, targetUser);
+  }
   
   @SubscribeMessage('game')
   async handleGame(

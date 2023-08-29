@@ -89,6 +89,15 @@ export const apiSlice = createApi({
         },
       }),
     }),
+    getUserFriendsList: builder.query({
+      query: ({ username = null }) => ({
+        url: "/api/chat/" + username + "/friends",
+        method: "GET",
+        headers: {
+          Authorization: "Bearer " + Cookies.get("accessToken"),
+        },
+      }),
+    }),
     uploadAvatar: builder.mutation({
       query: (body: FormData) => ({
         url: "/api/avatar/upload",
@@ -113,6 +122,7 @@ export const {
   useGetUserStatusInRoomQuery,
   useGetUsersInRoomQuery,
   useGetInvitedUsersListQuery,
+  useGetUserFriendsListQuery,
   useUploadAvatarMutation,
   useLazyGetIsRoomNameTakenQuery,
   useLazyGetUsersInRoomQuery,

@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
 import { BlockedList } from 'src/entities/blocked.list.entity';
+import { FriendList } from 'src/entities/friend.list.entity';
 
 @Injectable()
 export class UsersService {
@@ -11,6 +12,8 @@ export class UsersService {
     private usersRepository: Repository<User>,
     @InjectRepository(BlockedList)
     private blockedUserRepository: Repository<BlockedList>,
+    @InjectRepository(FriendList)
+    private friendListRepository: Repository<FriendList>,
   ) {}
 
   // For testing only, TO REMOVE-----------------------------------------------------------
@@ -27,7 +30,15 @@ export class UsersService {
   async findOne(name: string): Promise<User> {
     return await this.usersRepository.findOne({
       where: { username: name },
-      relations: ['blockedUsers', 'friendList', 'achievements', 'blockedUsers.blockedUser', 'blockedUsers.user'],
+      relations: [
+        'blockedUsers',
+        'friendList',
+        'achievements',
+        'blockedUsers.blockedUser',
+        'blockedUsers.user',
+        'friendList.user1',
+        'friendList.user2',
+      ],
     });
   }
 
@@ -42,12 +53,26 @@ export class UsersService {
   async findOneByAccessToken(accessToken: string): Promise<User> {
     return await this.usersRepository.findOne({
       where: { accessToken: accessToken },
-      relations: ['blockedUsers', 'friendList', 'achievements', 'blockedUsers.blockedUser', 'blockedUsers.user']
+      relations: [
+        'blockedUsers',
+        'friendList',
+        'achievements',
+        'blockedUsers.blockedUser',
+        'blockedUsers.user',
+      ],
     });
   }
 
   async findAll(): Promise<User[]> {
-    return await this.usersRepository.find({relations: ['blockedUsers', 'friendList', 'achievements', 'blockedUsers.blockedUser', 'blockedUsers.user']});
+    return await this.usersRepository.find({
+      relations: [
+        'blockedUsers',
+        'friendList',
+        'achievements',
+        'blockedUsers.blockedUser',
+        'blockedUsers.user',
+      ],
+    });
   }
 
   async addUser(user: User): Promise<User> {
@@ -57,7 +82,7 @@ export class UsersService {
   async createUser(name: string) {
     console.log('createuser');
     if (await this.findOneByUsername(name)) {
-      return ;
+      return;
     }
     const newUser = new User();
     newUser.urlAvatar = '';
@@ -71,10 +96,10 @@ export class UsersService {
     newUser.matchHistory = null;
     newUser.statistics = null;
     newUser.achievements = null;
-    
-    console.log("before");
+
+    console.log('before');
     await this.usersRepository.save(newUser);
-    console.log("finish");
+    console.log('finish');
 
     // For testing ----
     // const newUser = {
@@ -98,8 +123,10 @@ export class UsersService {
   async blockUser(user: User, blockedUser: User) {
     console.log('blockuser');
     const block = new BlockedList();
-    if (user.blockedUsers.find((obj) => obj.blockedUser.uid === blockedUser.uid)) {
-      return ;
+    if (
+      user.blockedUsers.find((obj) => obj.blockedUser.uid === blockedUser.uid)
+    ) {
+      return;
     }
     block.user = user;
     block.blockedUser = blockedUser;
@@ -111,9 +138,60 @@ export class UsersService {
   async unblockUser(user: User, blockedUser: User) {
     console.log('unblockuser');
     user.blockedUsers = user.blockedUsers.filter(
-      (obj) => obj.user.uid !== user.uid && obj.blockedUser.uid !== blockedUser.uid,
+      (obj) =>
+        obj.user.uid !== user.uid && obj.blockedUser.uid !== blockedUser.uid,
     );
     await this.usersRepository.save(user);
+  }
+
+  async addFriend(user: User, friend: User) {
+    console.log('addfriend');
+    const newFriend = new FriendList();
+    newFriend.user1 = user;
+    newFriend.user2 = friend;
+    user.friendList.push(newFriend);
+    // friend.friendList.push(newFriend);
+    await this.friendListRepository.save(newFriend);
+    await this.usersRepository.save(user);
+    // await this.usersRepository.save(friend);
+    console.log(user);
+    console.log(friend);
+  }
+
+  async removeFriend(user: User, friend: User) {
+    console.log('removefriend');
+    user.friendList = user.friendList.filter(
+      (obj) =>
+        !(
+          (obj.user1.uid === user.uid && obj.user2.uid === friend.uid) ||
+          (obj.user1.uid === friend.uid && obj.user2.uid === user.uid)
+        ),
+    );
+    await this.usersRepository.save(user);
+    const friendEntry = await this.friendListRepository.findOne({ // Find friend entry where user1 is user and user2 is friend or vice versa
+      relations: ['user1', 'user2'],
+      where: [
+        {
+          user1: {
+            uid: user.uid,
+          },
+          user2: {
+            uid: friend.uid,
+          },
+        },
+        {
+          user1: {
+            uid: friend.uid,
+          },
+          user2: {
+            uid: user.uid,
+          },
+        },
+      ],
+    });
+    if (friendEntry) {
+      await this.friendListRepository.remove(friendEntry);
+    }
   }
 
   async updateAvatar(user: User, avatar: string, isUrl: boolean) {

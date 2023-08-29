@@ -44,7 +44,7 @@ export class User {
   @OneToMany(() => BlockedList, (user) => user.user)
   blockedUsers: BlockedList[];
 
-  @OneToMany(() => FriendList, friendList => friendList.uid1)
+  @OneToMany(() => FriendList, friendList => friendList.user1)
   friendList: FriendList[];
 
   @ManyToOne(() => MatchHistory, matchHistory => matchHistory.id, { nullable: true })

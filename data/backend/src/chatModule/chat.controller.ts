@@ -210,4 +210,26 @@ export class ChatController {
     }
     return usersList;
   }
+
+  @UseInterceptors(CacheInterceptor)
+  @UseGuards(AuthenticatedGuard)
+  @Get(':username/friends')
+  async getUserFriendsList(
+    @Param('username') username: string,
+  ): Promise<{}[]> {
+    if (username == null)
+      throw new HttpException('Bad request', 400);
+    const user = await this.userService.findOne(username);
+    if (!user) throw new HttpException('Unprocessable Entity', 422);
+    const friendList = [];
+    for (const element of user.friendList) {
+      if (element) {
+        if (element.user1.username != username)
+          friendList.push(element.user1.username);
+        else if (element.user2.username != username)
+          friendList.push(element.user2.username);
+      }
+    }
+    return friendList;
+  }
 }
