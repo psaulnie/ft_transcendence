@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { AuthController } from './controller/auth.controller';
 import { TwoFactorAuthController } from './controller/twoFactorAuth.controller';
 import { AuthService } from './service/auth.service';
-import { IntraStrategy } from './strategies/intra-auth.strategies';
+import { IntraStrategy } from './strategies/intraAuth.strategy';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../entities';
 import { SessionSerializer } from './session/Serializer';

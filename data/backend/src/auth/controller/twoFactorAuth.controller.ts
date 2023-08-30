@@ -13,7 +13,10 @@ import {
 import { TwoFactorAuthService } from '../service/twoFactorAuth.service';
 import { Response } from 'express';
 import RequestWithUser from '../service/requestWithUser.interface';
-import { AuthenticatedGuard } from '../guards/intra-auth-guard.service';
+import {
+  IntraAuthGuard,
+  AuthenticatedGuard,
+} from '../guards/intraAuthGuard.service';
 import { UsersService } from '../../users/users.service';
 import { TwoFactorAuthCodeDto } from '../dto/twoFactorAuthCode.dto';
 
@@ -60,5 +63,30 @@ export class TwoFactorAuthController {
       );
 
     return this.twoFactorAuthService.pipeQrCodeStream(response, otpAuthUrl);
+  }
+
+  @Post('authenticate')
+  @HttpCode(200)
+  @UseGuards(IntraAuthGuard)
+  async authenticate(
+    @Req() request: RequestWithUser,
+    @Body() { twoFactorAuthCode }: TwoFactorAuthCodeDto,
+  ) {
+    const isCodeValid = this.twoFactorAuthService.isTwoFactorAuthCodeValid(
+      twoFactorAuthCode,
+      request.user,
+    );
+    if (!isCodeValid) {
+      throw new UnauthorizedException('Wrong authentication code');
+    }
+
+    // const accessTokenCookie = AuthService.getCookieWithJwtAccessToken(
+    //   request.user.uid,
+    //   true,
+    // );
+    //
+    // request.res.setHeader('Set-Cookie', [accessTokenCookie]);
+
+    return request.user;
   }
 }

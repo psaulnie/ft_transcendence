@@ -10,7 +10,7 @@ import { Request, Response } from 'express';
 import {
   AuthenticatedGuard,
   IntraAuthGuard,
-} from '../guards/intra-auth-guard.service';
+} from '../guards/intraAuthGuard.service';
 import { User } from '../../entities';
 
 import { HttpService as NestHttpService } from '@nestjs/axios';

@@ -16,7 +16,7 @@ import { sendMsgArgs, actionArgs } from './args.interface';
 import { actionTypes } from './args.types';
 import { accessStatus, userRole } from 'src/chatModule/chatEnums';
 import { UseGuards } from '@nestjs/common';
-import { WsIsAuthGuard } from 'src/auth/guards/intra-auth-guard.service';
+import { WsIsAuthGuard } from 'src/auth/guards/intraAuthGuard.service';
 import { hashPassword, comparePassword } from './hashPasswords';
 import { UsersStatusService } from 'src/services/users.status.service';
 import { userStatus } from 'src/users/userStatus';

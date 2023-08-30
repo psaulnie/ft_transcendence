@@ -25,7 +25,7 @@ import { UsersService } from './users/users.service';
 import { Response } from 'express';
 import { AppService } from './services/app.service';
 
-import { IsAuthGuard } from './auth/guards/intra-auth-guard.service';
+import { IsAuthGuard } from './auth/guards/intraAuthGuard.service';
 import { UseGuards } from '@nestjs/common';
 
 import { catchError, firstValueFrom } from 'rxjs';

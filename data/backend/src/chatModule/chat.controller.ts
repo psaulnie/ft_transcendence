@@ -11,7 +11,7 @@ import { CacheInterceptor } from '@nestjs/cache-manager';
 import { RoomService } from '../services/room.service';
 import { UsersService } from '../users/users.service';
 
-import { IsAuthGuard } from 'src/auth/guards/intra-auth-guard.service';
+import { IsAuthGuard } from 'src/auth/guards/intraAuthGuard.service';
 import { User } from 'src/entities';
 import { userRole } from './chatEnums';
 
