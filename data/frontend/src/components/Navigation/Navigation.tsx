@@ -58,7 +58,7 @@ function Navigation({setDrawerState}: {setDrawerState: any}) {
 							alignItems: 'flex-end',
 						}}>
 						<div>
-							Name
+							{user.username}
 						</div>
 						<div>
 							Level 5

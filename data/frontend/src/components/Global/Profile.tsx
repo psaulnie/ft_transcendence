@@ -4,13 +4,15 @@ import React, { useEffect, useState } from 'react';
 import falonsoImage from './falonso.jpg';
 
 import { Box, Grid, Button, Avatar, Typography, Paper} from '@mui/material';
+import { useSelector } from "react-redux";
 
 interface ProfileProps {
 	toggleProfil: () => void;
 }
 
 function Profile({ toggleProfil } : ProfileProps) {
-
+	const user = useSelector((state: any) => state.user);
+	const urlAvatar = "http://localhost:5000/api/avatar/" + user.username;
 	const handleButtonClick = () => {
 		toggleProfil();
 	  };
@@ -37,10 +39,10 @@ function Profile({ toggleProfil } : ProfileProps) {
 					<Grid item xs sx={{ width:'100%', height:'100%'}}>
 						<Grid container spacing={1} justifyContent="center" alignItems="center">
 							<Grid item xs={6} sx={{backgroundColor:''}}>
-								<Avatar src={falonsoImage} alt="User Avatar" sx={{marginLeft:'0.5em', width: '5em', height: '5em'}}/>
+								<Avatar src={urlAvatar} alt="User Avatar" sx={{marginLeft:'0.5em', width: '5em', height: '5em'}}/>
 							</Grid>
 							<Grid item xs={6} sx={{backgroundColor:'', marginTop:'0.2em'}}>
-								<Typography variant="h6" sx={{ fontSize: 30, fontWeight: 'bold', color: 'black',}}>Falonso</Typography>
+								<Typography variant="h6" sx={{ fontSize: 30, fontWeight: 'bold', color: 'black',}}>{user.username}</Typography>
 								<Typography variant="h6" sx={{ fontSize: 30, fontWeight: 'bold', color: 'black',}}>Rang:🥇</Typography>
 							</Grid>
 						</Grid>
