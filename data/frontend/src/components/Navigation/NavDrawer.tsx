@@ -21,12 +21,12 @@ export default function NavDrawer({state, toggleDrawer}: {state: boolean, toggle
 
     const handleEsportsClick = () => {
         toggleDrawer(false);
-		navigate('/game'); // Navigate to the '/home' route
+		navigate('/game');
     };
 
     const handleSettingsClick = () => {
         toggleDrawer(false);
-        navigate('/profile');
+        navigate('/options');
     };
 
   return (

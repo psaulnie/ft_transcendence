@@ -21,6 +21,7 @@ import Home from './components/Home/Home';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Profile from './components/Global/Profile';
+import Options from './components/Global/Options';
 import Game from './components/Game/Game';
 import { useIsAuthentifiedMutation } from './store/api';
 import { Skeleton, Box, Grid, Button, Typography, Avatar, Slide} from '@mui/material';
@@ -79,6 +80,7 @@ function App() {
 						<Route path="/profile" element={<Profile toggleProfil={toggleProfil}/>}></Route>
 						<Route path="/home" element={<Home/>}></Route>
 						<Route path="/game" element={<Game/>}></Route>
+						<Route path="/options" element={<Options/>}></Route>
 					</Routes>
 					{/* {user.isLoggedIn ? <button onClick={logoutButton}>Logout</button> : null} */}
 					{user.isLoggedIn ? (<Chat/>) : null}
