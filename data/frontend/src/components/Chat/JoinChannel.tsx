@@ -43,7 +43,7 @@ function JoinChannel() {
     if (newRoomName === "") return;
     if (
       !rooms.room.find(
-        (obj: { name: string; role: userRole }) => obj.name === newRoomName
+        (obj: { name: string; role: userRole }) => obj.name === newRoomName,
       )
     ) {
       if (access === accessStatus.protected) {
@@ -58,7 +58,7 @@ function JoinChannel() {
           hasPassword: access === accessStatus.protected,
           openTab: true,
           isMuted: false,
-        })
+        }),
       );
       webSocket.emit("joinRoom", {
         source: user.username,
@@ -107,7 +107,7 @@ function JoinChannel() {
             if (
               !rooms.room.find(
                 (obj: { name: string; role: userRole; hasPassword: boolean }) =>
-                  obj.name === room.roomName
+                  obj.name === room.roomName,
               ) &&
               room.access !== accessStatus.private
             )

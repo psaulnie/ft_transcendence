@@ -8,7 +8,7 @@ import {
   OneToMany,
   ManyToOne,
   JoinColumn,
-  OneToOne
+  OneToOne,
 } from 'typeorm';
 
 import { FriendList } from './friend.list.entity';
@@ -44,17 +44,23 @@ export class User {
   @OneToMany(() => BlockedList, (user) => user.user)
   blockedUsers: BlockedList[];
 
-  @OneToMany(() => FriendList, friendList => friendList.uid1)
+  @OneToMany(() => FriendList, (friendList) => friendList.uid1)
   friendList: FriendList[];
 
-  @ManyToOne(() => MatchHistory, matchHistory => matchHistory.id, { nullable: true })
+  @ManyToOne(() => MatchHistory, (matchHistory) => matchHistory.id, {
+    nullable: true,
+  })
   matchHistory: MatchHistory;
 
-  @OneToOne(() => Statistics, statistics => statistics.user, { nullable: true })
+  @OneToOne(() => Statistics, (statistics) => statistics.user, {
+    nullable: true,
+  })
   @JoinColumn({ name: 'statistics_user', referencedColumnName: 'user' })
   statistics: Statistics;
 
-  @OneToOne(() => Achievements, achievements => achievements.user, { nullable: true })
+  @OneToOne(() => Achievements, (achievements) => achievements.user, {
+    nullable: true,
+  })
   @JoinColumn({ name: 'achievements_user', referencedColumnName: 'user' })
   achievements: Achievements;
 

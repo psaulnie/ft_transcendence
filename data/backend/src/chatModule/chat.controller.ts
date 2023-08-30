@@ -156,13 +156,13 @@ export class ChatController {
       throw new HttpException('Unauthorized', 401);
     }
     const cUser = await this.userService.findOneByAccessToken(token);
-      // const cUser = await this.userService.findOne('testUser');
+    // const cUser = await this.userService.findOne('testUser');
     if (!cUser) {
       throw new HttpException('Unauthorized', 401);
     }
     const users = await this.userService.findAll();
     const usersList: string[] = [];
-    console.log('cUser:',cUser);
+    console.log('cUser:', cUser);
     users.forEach((element) => {
       console.log(element);
       if (!element.blockedUsers.find((obj) => obj.blockedUser.uid == cUser.uid))

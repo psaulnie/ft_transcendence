@@ -27,7 +27,13 @@ export class UsersService {
   async findOne(name: string): Promise<User> {
     return await this.usersRepository.findOne({
       where: { username: name },
-      relations: ['blockedUsers', 'friendList', 'achievements', 'blockedUsers.blockedUser', 'blockedUsers.user'],
+      relations: [
+        'blockedUsers',
+        'friendList',
+        'achievements',
+        'blockedUsers.blockedUser',
+        'blockedUsers.user',
+      ],
     });
   }
 
@@ -42,12 +48,26 @@ export class UsersService {
   async findOneByAccessToken(accessToken: string): Promise<User> {
     return await this.usersRepository.findOne({
       where: { accessToken: accessToken },
-      relations: ['blockedUsers', 'friendList', 'achievements', 'blockedUsers.blockedUser', 'blockedUsers.user']
+      relations: [
+        'blockedUsers',
+        'friendList',
+        'achievements',
+        'blockedUsers.blockedUser',
+        'blockedUsers.user',
+      ],
     });
   }
 
   async findAll(): Promise<User[]> {
-    return await this.usersRepository.find({relations: ['blockedUsers', 'friendList', 'achievements', 'blockedUsers.blockedUser', 'blockedUsers.user']});
+    return await this.usersRepository.find({
+      relations: [
+        'blockedUsers',
+        'friendList',
+        'achievements',
+        'blockedUsers.blockedUser',
+        'blockedUsers.user',
+      ],
+    });
   }
 
   async addUser(user: User): Promise<User> {
@@ -57,7 +77,7 @@ export class UsersService {
   async createUser(name: string) {
     console.log('createuser');
     if (await this.findOneByUsername(name)) {
-      return ;
+      return;
     }
     const newUser = new User();
     newUser.urlAvatar = '';
@@ -71,10 +91,10 @@ export class UsersService {
     newUser.matchHistory = null;
     newUser.statistics = null;
     newUser.achievements = null;
-    
-    console.log("before");
+
+    console.log('before');
     await this.usersRepository.save(newUser);
-    console.log("finish");
+    console.log('finish');
 
     // For testing ----
     // const newUser = {
@@ -98,8 +118,10 @@ export class UsersService {
   async blockUser(user: User, blockedUser: User) {
     console.log('blockuser');
     const block = new BlockedList();
-    if (user.blockedUsers.find((obj) => obj.blockedUser.uid === blockedUser.uid)) {
-      return ;
+    if (
+      user.blockedUsers.find((obj) => obj.blockedUser.uid === blockedUser.uid)
+    ) {
+      return;
     }
     block.user = user;
     block.blockedUser = blockedUser;
@@ -111,7 +133,8 @@ export class UsersService {
   async unblockUser(user: User, blockedUser: User) {
     console.log('unblockuser');
     user.blockedUsers = user.blockedUsers.filter(
-      (obj) => obj.user.uid !== user.uid && obj.blockedUser.uid !== blockedUser.uid,
+      (obj) =>
+        obj.user.uid !== user.uid && obj.blockedUser.uid !== blockedUser.uid,
     );
     await this.usersRepository.save(user);
   }

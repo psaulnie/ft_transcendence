@@ -52,7 +52,7 @@ export default function UsersList({
   if (isDirectMessage === false) usersList = usersListData;
   else
     usersList = [
-      { username: user.username, role: userRole.none,  isMuted: false },
+      { username: user.username, role: userRole.none, isMuted: false },
       { username: roomName, role: userRole.none, isMuted: false },
     ];
 
@@ -66,7 +66,7 @@ export default function UsersList({
               mouseX: event.clientX + 2,
               mouseY: event.clientY - 6,
             }
-          : null
+          : null,
       );
   };
 

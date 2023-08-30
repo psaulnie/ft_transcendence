@@ -47,13 +47,13 @@ export const roomsSlice = createSlice({
         hasPassword: boolean;
         openTab: boolean;
         isMuted: boolean;
-      }>
+      }>,
     ) => {
       const room = state.room.find(
-        (obj: roomType) => obj.name === action.payload.name
+        (obj: roomType) => obj.name === action.payload.name,
       );
       const roomIndex = state.room.findIndex(
-        (obj: roomType) => obj.name === action.payload.name
+        (obj: roomType) => obj.name === action.payload.name,
       );
       if (!room) {
         state.room.push({
@@ -67,18 +67,19 @@ export const roomsSlice = createSlice({
           isMuted: false,
         });
         if (action.payload.openTab || state.index === -1) state.index++;
-      } else if (roomIndex !== -1 && action.payload.openTab) state.index = roomIndex;
+      } else if (roomIndex !== -1 && action.payload.openTab)
+        state.index = roomIndex;
     },
     removeRoom: (state, action: PayloadAction<string>) => {
       state.room = state.room.filter(
-        (element) => element.name !== action.payload
+        (element) => element.name !== action.payload,
       );
       if (state.room.length === 0) state.index = -1;
       else if (state.index !== 0) state.index--;
     },
     changeRole: (state, action: PayloadAction<roomType>) => {
       const roomIndex = state.room.findIndex(
-        (obj: roomType) => obj.name === action.payload.name
+        (obj: roomType) => obj.name === action.payload.name,
       );
       if (roomIndex !== -1) {
         state.room[roomIndex].role = action.payload.role;
@@ -91,10 +92,10 @@ export const roomsSlice = createSlice({
     },
     addMsg: (
       state,
-      action: PayloadAction<{ name: string; message: chatResponseArgs }>
+      action: PayloadAction<{ name: string; message: chatResponseArgs }>,
     ) => {
       const roomIndex = state.room.findIndex(
-        (obj: roomType) => obj.name === action.payload.name
+        (obj: roomType) => obj.name === action.payload.name,
       );
       if (roomIndex !== -1) {
         state.room[roomIndex].messages.push(action.payload.message);
@@ -118,7 +119,7 @@ export const roomsSlice = createSlice({
     },
     setHasPassword: (
       state,
-      action: PayloadAction<{ index: number; value: boolean }>
+      action: PayloadAction<{ index: number; value: boolean }>,
     ) => {
       if (state.room[action.payload.index])
         state.room[action.payload.index].hasPassword = action.payload.value;
@@ -129,7 +130,7 @@ export const roomsSlice = createSlice({
     },
     mute: (state, action: PayloadAction<string>) => {
       const roomIndex = state.room.findIndex(
-        (obj: roomType) => obj.name === action.payload
+        (obj: roomType) => obj.name === action.payload,
       );
       if (roomIndex !== -1) {
         state.room[roomIndex].isMuted = true;
@@ -138,7 +139,7 @@ export const roomsSlice = createSlice({
     },
     unmute: (state, action: PayloadAction<string>) => {
       const roomIndex = state.room.findIndex(
-        (obj: roomType) => obj.name === action.payload
+        (obj: roomType) => obj.name === action.payload,
       );
       if (roomIndex !== -1) {
         state.room[roomIndex].isMuted = false;

@@ -22,7 +22,7 @@ export default function DirectMessageProvider() {
             hasPassword: false,
             openTab: false,
             isMuted: false,
-          })
+          }),
         );
         dispatch(addMsg({ name: value.source, message: value }));
       }

@@ -25,7 +25,7 @@ function Tab() {
         variant="text"
         onClick={handleOpenTab}
         startIcon={
-          <Box sx={{ fontSize: 30, color: "red" }}>
+          <Box sx={{ fontSize: 30, color: "black" }}>
             <MenuIcon sx={{ marginLeft: "1.8em", width: "auto" }} />
           </Box>
         }
@@ -35,7 +35,7 @@ function Tab() {
             backgroundColor: "rgba(255, 255, 255, 0)",
           },
           "& .MuiButton-startIcon": {
-            marginRight: "0.25em", // Ajustez la marge droite de l'icône pour le centrer
+            marginRight: "0.25em",
           },
           "& .MuiButton-label": {
             display: "flex",
@@ -45,11 +45,7 @@ function Tab() {
       ></Button>
 
       {/* Drawer for the tab */}
-      <Drawer
-        anchor="right" // Slide in from the right
-        open={isTabOpen}
-        onClose={handleCloseTab}
-      >
+      <Drawer anchor="right" open={isTabOpen} onClose={handleCloseTab}>
         <Box
           sx={{
             width: "100%",

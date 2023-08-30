@@ -30,7 +30,7 @@ export class Gateway
   constructor(
     private roomService: RoomService,
     private userService: UsersService,
-    private usersStatusService: UsersStatusService
+    private usersStatusService: UsersStatusService,
   ) {}
   @WebSocketServer() server: Server;
 
@@ -49,14 +49,16 @@ export class Gateway
     if (!user) throw new WsException('Source user not found');
     const targetUser = await this.userService.findOne(payload.target);
     if (!targetUser) throw new WsException('Target user not found');
-    if (targetUser.blockedUsers.some(blockedUser => blockedUser.blockedUser.uid === user.uid))
-    {
+    if (
+      targetUser.blockedUsers.some(
+        (blockedUser) => blockedUser.blockedUser.uid === user.uid,
+      )
+    ) {
       this.server.emit(payload.source + 'OPTIONS', {
         source: payload.source,
         target: payload.target,
         action: actionTypes.blockedmsg,
-
-      })
+      });
       throw new WsException('Target user blocked source user');
     }
     this.server.emit(payload.target, {
@@ -69,7 +71,6 @@ export class Gateway
     });
   }
 
-  
   @SubscribeMessage('sendMsg')
   async sendMsg(client: Socket, payload: sendMsgArgs) {
     if (
@@ -99,7 +100,6 @@ export class Gateway
     });
   }
 
-  
   @SubscribeMessage('joinRoom')
   async joinRoom(client: Socket, payload: any) {
     if (
@@ -119,7 +119,12 @@ export class Gateway
     // If room doesn't exist
     if ((await this.roomService.findOne(payload.room)) == null) {
       if (payload.access != accessStatus.protected)
-        await this.roomService.createRoom(payload.room, user, payload.access, '');
+        await this.roomService.createRoom(
+          payload.room,
+          user,
+          payload.access,
+          '',
+        );
       else {
         hasPassword = true;
         const hashedPassword = await hashPassword(payload.password);
@@ -184,7 +189,6 @@ export class Gateway
       });
   }
 
-  
   @SubscribeMessage('leaveRoom')
   async leaveRoom(client: Socket, payload: any) {
     if (
@@ -203,7 +207,6 @@ export class Gateway
     });
   }
 
-  
   @SubscribeMessage('openPrivateMessage')
   async openPrivateMessage(client: Socket, payload: any) {
     if (
@@ -224,7 +227,6 @@ export class Gateway
     });
   }
 
-  
   @SubscribeMessage('kick')
   async kickUser(client: Socket, payload: actionArgs) {
     if (
@@ -239,7 +241,9 @@ export class Gateway
     if (!admin) throw new WsException('Source user not found');
     const room = await this.roomService.findOne(payload.room);
     if (!room) throw new WsException('Room not found');
-    const isInRoom = room.usersList.find((tmpUser) => tmpUser.user.uid === user.uid);
+    const isInRoom = room.usersList.find(
+      (tmpUser) => tmpUser.user.uid === user.uid,
+    );
     if (!isInRoom) throw new WsException('User not in room');
     if ((await this.roomService.getRole(room, admin.uid)) == userRole.none)
       throw new WsException('Source user is not admin of the room');
@@ -257,7 +261,6 @@ export class Gateway
     });
   }
 
-  
   @SubscribeMessage('ban')
   async banUser(client: Socket, payload: actionArgs) {
     if (
@@ -272,7 +275,9 @@ export class Gateway
     if (!admin) throw new WsException('Source user not found');
     const room = await this.roomService.findOne(payload.room);
     if (!room) throw new WsException('Room not found');
-    const isInRoom = room.usersList.find((tmpUser) => tmpUser.user.uid === user.uid);
+    const isInRoom = room.usersList.find(
+      (tmpUser) => tmpUser.user.uid === user.uid,
+    );
     if (!isInRoom) throw new WsException('User not in room');
     if ((await this.roomService.getRole(room, admin.uid)) == userRole.none)
       throw new WsException('Source user is not admin of the room');
@@ -290,7 +295,6 @@ export class Gateway
     });
   }
 
-  
   @SubscribeMessage('block')
   async blockUser(client: Socket, payload: actionArgs) {
     if (
@@ -307,7 +311,6 @@ export class Gateway
     await this.userService.blockUser(user, blockedUser);
   }
 
-  
   @SubscribeMessage('unblock')
   async unblockUser(client: Socket, payload: actionArgs) {
     if (
@@ -324,7 +327,6 @@ export class Gateway
     await this.userService.unblockUser(user, blockedUser);
   }
 
-  
   @SubscribeMessage('admin')
   async addAdmin(client: Socket, payload: actionArgs) {
     if (
@@ -350,7 +352,6 @@ export class Gateway
     });
   }
 
-  
   @SubscribeMessage('mute')
   async muteUser(client: Socket, payload: actionArgs) {
     if (
@@ -376,7 +377,6 @@ export class Gateway
     });
   }
 
-  
   @SubscribeMessage('unmute')
   async unmuteUser(client: Socket, payload: actionArgs) {
     if (
@@ -403,7 +403,6 @@ export class Gateway
     });
   }
 
-  
   @SubscribeMessage('setPasswordToRoom')
   async setPasswordToRoom(
     client: Socket,
@@ -433,7 +432,6 @@ export class Gateway
     });
   }
 
-  
   @SubscribeMessage('removePasswordToRoom')
   async removePasswordToRoom(
     client: Socket,
@@ -455,7 +453,6 @@ export class Gateway
     });
   }
 
-  
   @SubscribeMessage('inviteUser')
   async inviteUser(
     client: Socket,
@@ -476,7 +473,6 @@ export class Gateway
     });
   }
 
-  
   @SubscribeMessage('joinPrivateRoom')
   async joinPrivateRoom(
     client: Socket,
@@ -494,7 +490,6 @@ export class Gateway
     });
   }
 
-  
   @SubscribeMessage('game')
   async handleGame(
     client: Socket,

@@ -37,7 +37,7 @@ function JoinDirectMessage() {
     if (newUser === "") return;
     if (
       !rooms.room.find(
-        (obj: { name: string; role: string }) => obj.name === newUser
+        (obj: { name: string; role: string }) => obj.name === newUser,
       )
     ) {
       dispatch(
@@ -48,7 +48,7 @@ function JoinDirectMessage() {
           hasPassword: false,
           openTab: true,
           isMuted: false,
-        })
+        }),
       );
       webSocket.emit("openPrivateMsg", {
         source: user.username,

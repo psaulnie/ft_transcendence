@@ -61,7 +61,7 @@ function CreateChannel() {
     event.preventDefault();
     if (
       !rooms.room.find(
-        (obj: { name: string; role: userRole }) => obj.name === newRoomName
+        (obj: { name: string; role: userRole }) => obj.name === newRoomName,
       )
     ) {
       let hasPassword = false;
@@ -78,7 +78,7 @@ function CreateChannel() {
           hasPassword: hasPassword,
           openTab: true,
           isMuted: false,
-        })
+        }),
       );
       webSocket.emit("joinRoom", {
         source: user.username,

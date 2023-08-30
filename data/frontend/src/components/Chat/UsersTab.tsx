@@ -12,7 +12,7 @@ import { userRole } from "./chatEnums";
 function UsersTab({ roomName }: { roomName: string }) {
   const rooms = useSelector((state: any) => state.rooms);
   const roomIndex = rooms.room.findIndex(
-    (obj: { name: string; role: userRole }) => obj.name === roomName
+    (obj: { name: string; role: userRole }) => obj.name === roomName,
   );
 
   const [isTabOpen, setIsTabOpen] = useState(false);
@@ -28,7 +28,7 @@ function UsersTab({ roomName }: { roomName: string }) {
 
   useEffect(() => {
     const cRole = rooms.room.find(
-      (obj: { name: string; role: userRole }) => obj.name === roomName
+      (obj: { name: string; role: userRole }) => obj.name === roomName,
     );
     if (cRole) setRole(cRole.role);
   }, [setRole, rooms, roomName]);
@@ -66,11 +66,7 @@ function UsersTab({ roomName }: { roomName: string }) {
       ></Button>
 
       {/* Drawer for the tab */}
-      <Drawer
-        anchor="right" // Slide in from the right
-        open={isTabOpen}
-        onClose={handleCloseTab}
-      >
+      <Drawer anchor="right" open={isTabOpen} onClose={handleCloseTab}>
         <Box
           sx={{
             width: "100%",
@@ -91,7 +87,6 @@ function UsersTab({ roomName }: { roomName: string }) {
             </h1>
           </Box>
           <Grid container sx={{ marginLeft: "5%" }}>
-            {/* <Typography>Users:</Typography> */}
             <UsersList
               roomName={roomName}
               role={role}

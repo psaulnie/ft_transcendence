@@ -1,5 +1,5 @@
 export enum accessStatus {
-	public = 0,
-	private,
-	protected
+  public = 0,
+  private,
+  protected,
 }

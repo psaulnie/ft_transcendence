@@ -5,7 +5,7 @@ export enum accessStatus {
 }
 
 export enum userRole {
-	none = 0,
-	owner,
-	admin
+  none = 0,
+  owner,
+  admin,
 }

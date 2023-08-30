@@ -7,12 +7,16 @@ import { logout } from "./store/user";
 
 import Navigation from "./components/Navigation/Navigation";
 import NavDrawer from "./components/Navigation/NavDrawer";
+import Game from "./components/Global/Game";
+import Options from "./components/Global/Options";
+import Profile from "./components/Global/Profile";
 import Home from "./components/Home/Home";
 import Chat from "./components/Chat/Chat";
 
 export default function Base() {
   const dispatch = useDispatch();
 
+  const [isProfilOpen, setIsProfilOpen] = useState(false);
   const [drawerState, setDrawerState] = useState(false);
 
   const toggleDrawer =
@@ -27,11 +31,9 @@ export default function Base() {
       setDrawerState(open);
     };
 
-  function logoutButton(e: SyntheticEvent) {
-    e.preventDefault();
-    dispatch(logout());
-    window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/logout`;
-  }
+  const toggleProfil = () => {
+    setIsProfilOpen(!isProfilOpen);
+  };
 
   return (
     <div className="main">
@@ -39,8 +41,13 @@ export default function Base() {
       <NavDrawer state={drawerState} toggleDrawer={toggleDrawer} />
       <Routes>
         <Route path="/home" element={<Home />}></Route>
+        <Route
+          path="/profile"
+          element={<Profile toggleProfil={toggleProfil} />}
+        ></Route>
+        {/* <Route path="/game" element={<Game/>}></Route> */}
+        <Route path="/options" element={<Options />}></Route>
       </Routes>
-      <button onClick={logoutButton}>Logout</button>
       <Chat />
     </div>
   );

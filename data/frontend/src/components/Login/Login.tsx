@@ -7,7 +7,7 @@ import Cookies from "js-cookie";
 function Login() {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
-  const refused = params.get('login-refused');
+  const refused = params.get("login-refused");
   const [isLoading, setIsLoading] = useState(true);
   const [isOk, setIsOk] = useState(false);
 
@@ -30,26 +30,27 @@ function Login() {
 
   const fetchData = () => {
     fetch(`http://${process.env.REACT_APP_IP}:5000/auth/status`, {
-      credentials: 'include',
-    }).then((response) => {
-      return response.json();
-    }).then((data) => {
-      if (data.statusCode === 403)
-        setIsOk(false)
-      else
-        setIsOk(data);
-      setIsLoading(false);
-    }).catch((error) => {
-      setIsOk(false);
-      setIsLoading(false);
-      // TODO : handle fetch error
-    });
+      credentials: "include",
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        if (data.statusCode === 403) setIsOk(false);
+        else setIsOk(data);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        setIsOk(false);
+        setIsLoading(false);
+        // TODO : handle fetch error
+      });
   };
   useEffect(() => {
     fetchData();
   }, []);
 
-  if (isLoading) return (<div>Loading...</div>) // TODO : add a loading component
+  if (isLoading) return <div>Loading...</div>; // TODO : add a loading component
   if (isOk) return <Navigate to="/home" />;
   return (
     <div className="main">
@@ -59,11 +60,13 @@ function Login() {
           LogIn
         </button>
       </form>
-      <button type="button" onClick={testlogin}>Log as user test</button>
-      {refused === 'true' && (
-            <div className="alert alert-warning">
-                La connexion avec Intra42 a été refusée. Veuillez réessayer.
-            </div>
+      <button type="button" onClick={testlogin}>
+        Log as user test
+      </button>
+      {refused === "true" && (
+        <div className="alert alert-warning">
+          La connexion avec Intra42 a été refusée. Veuillez réessayer.
+        </div>
       )}
     </div>
   );

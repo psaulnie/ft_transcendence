@@ -11,12 +11,22 @@ import Room from "./Room";
 import Tab from "./Tab";
 import UsersTab from "./UsersTab";
 import DirectMessageProvider from "./DirectMessageProvider";
+import PersonIcon from "@mui/icons-material/Person";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ChatProcess from "./ChatProcess";
 import Error from "../Global/Error";
 
-import { Skeleton, Box, Grid, Button, Slide } from "@mui/material";
+import {
+  Skeleton,
+  Box,
+  Grid,
+  Button,
+  Typography,
+  Avatar,
+  Slide,
+} from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
 
 import RoomTabs from "./RoomTabs";
 import { addRoom, setRoomIndex } from "../../store/rooms";
@@ -64,7 +74,7 @@ function Chat() {
             isDirectMsg: false,
             isMuted: element.isMuted,
             openTab: false,
-          })
+          }),
         );
       });
 

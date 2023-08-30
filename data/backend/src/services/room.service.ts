@@ -94,7 +94,7 @@ export class RoomService {
     if (!room) return;
     console.log('-1 user in ' + roomName);
     room.usersNumber--;
-    console.log('number of users:' + room.usersNumber)
+    console.log('number of users:' + room.usersNumber);
     if (room.usersNumber <= 0) {
       console.log('room deleted');
       this.removeRoom(roomName);

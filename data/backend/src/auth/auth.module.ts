@@ -20,6 +20,9 @@ import { BlockedList } from 'src/entities/blocked.list.entity';
     },
     UsersService,
   ],
-  imports: [TypeOrmModule.forFeature([User, BlockedList]), HttpModule.register({})],
+  imports: [
+    TypeOrmModule.forFeature([User, BlockedList]),
+    HttpModule.register({}),
+  ],
 })
 export class AuthModule {}

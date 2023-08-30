@@ -45,7 +45,7 @@ export default function ChatProcess() {
 
   const handleClose = (
     event?: React.SyntheticEvent | Event,
-    reason?: string
+    reason?: string,
   ) => {
     if (reason === "clickaway") {
       return;
@@ -55,7 +55,7 @@ export default function ChatProcess() {
 
   const handleCloseInvite = (
     event?: React.SyntheticEvent | Event,
-    reason?: string
+    reason?: string,
   ) => {
     if (reason === "clickaway") {
       return;
@@ -74,7 +74,7 @@ export default function ChatProcess() {
         hasPassword: hasPassword,
         openTab: true,
         isMuted: false,
-      })
+      }),
     );
     webSocket.emit("joinPrivateRoom", {
       roomName: room,
@@ -90,19 +90,19 @@ export default function ChatProcess() {
         dispatch(removeRoom(value.target));
         setSnackbar(
           "You've been kicked from this channel: " + value.target,
-          "error"
+          "error",
         );
       } else if (value.action === actionTypes.ban) {
         dispatch(removeRoom(value.target));
         setSnackbar(
           "You are banned from this channel: " + value.target,
-          "error"
+          "error",
         );
       } else if (value.action === actionTypes.private) {
         dispatch(removeRoom(value.target));
         setSnackbar(
           "You cannot join this private channel: " + value.target,
-          "error"
+          "error",
         );
       } else if (value.action === actionTypes.admin) {
         dispatch(
@@ -111,7 +111,7 @@ export default function ChatProcess() {
             role: userRole.admin,
             isDirectMsg: false,
             hasPassword: false,
-          })
+          }),
         );
         setSnackbar("You are now admin in " + value.source, "success");
       } else if (value.action === actionTypes.mute) {
@@ -121,7 +121,7 @@ export default function ChatProcess() {
         dispatch(unmute(value.source));
         setSnackbar(
           "You've been unmuted from this channel: " + value.source,
-          "success"
+          "success",
         );
       } else if (value.action === actionTypes.wrongpassword) {
         dispatch(removeRoom(value.target));
@@ -129,7 +129,7 @@ export default function ChatProcess() {
       } else if (value.action === actionTypes.invited) {
         setInviteSnackbar(
           "You've been invited in this channel: " + value.source,
-          "info"
+          "info",
         );
         if (value.hasPassword) setHasPassword(true);
         setRoom(value.source);

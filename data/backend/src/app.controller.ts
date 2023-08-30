@@ -89,8 +89,7 @@ export class AppController {
   @Get('/avatar/remove')
   @UseGuards(AuthenticatedGuard)
   async removeAvatar(@Req() context: any, @Query('username') username: string) {
-    if (!username)
-      return new HttpException('Bad Request', 400);
+    if (!username) return new HttpException('Bad Request', 400);
     const user = await this.userService.findOne(username);
     if (context.headers.authorization != 'Bearer ' + user.accessToken)
       return new HttpException('Unauthorized', 401);
@@ -107,7 +106,11 @@ export class AppController {
           }),
         ),
     );
-    await this.userService.updateAvatar(user, url.data.image.versions.small, true);
+    await this.userService.updateAvatar(
+      user,
+      url.data.image.versions.small,
+      true,
+    );
   }
   @Get('/avatar/:username')
   async getAvatar(
@@ -150,10 +153,8 @@ export class AppController {
   }
 }
 
-export function isUrl(path: string) : boolean {
-  if (path.startsWith('http:/') || path.startsWith('https:/'))
-    return (true);
-  else if (path.startsWith('www.'))
-    return (true);
-  return (false);
+export function isUrl(path: string): boolean {
+  if (path.startsWith('http:/') || path.startsWith('https:/')) return true;
+  else if (path.startsWith('www.')) return true;
+  return false;
 }
