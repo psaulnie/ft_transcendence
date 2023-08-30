@@ -2,15 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
-import { userStatus } from '../users/userStatus';
-import path from 'path';
-import fs from 'fs';
+import { BlockedList } from 'src/entities/blocked.list.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
+    @InjectRepository(BlockedList)
+    private blockedUserRepository: Repository<BlockedList>,
   ) {}
 
   // For testing only, TO REMOVE-----------------------------------------------------------
@@ -27,7 +27,13 @@ export class UsersService {
   async findOne(name: string): Promise<User> {
     return await this.usersRepository.findOne({
       where: { username: name },
-      relations: ['blockedUsers'],
+      relations: [
+        'blockedUsers',
+        'friendList',
+        'achievements',
+        'blockedUsers.blockedUser',
+        'blockedUsers.user',
+      ],
     });
   }
 
@@ -36,32 +42,59 @@ export class UsersService {
   }
 
   async findOneById(id: number): Promise<User> {
-    return await this.usersRepository.findOne({ where: { id: id } });
+    return await this.usersRepository.findOne({ where: { uid: id } });
   }
 
-  async findOneByClientId(clientId: string): Promise<User> {
+  async findOneByAccessToken(accessToken: string): Promise<User> {
     return await this.usersRepository.findOne({
-      where: { clientId: clientId },
+      where: { accessToken: accessToken },
+      relations: [
+        'blockedUsers',
+        'friendList',
+        'achievements',
+        'blockedUsers.blockedUser',
+        'blockedUsers.user',
+      ],
     });
   }
 
   async findAll(): Promise<User[]> {
-    return await this.usersRepository.find();
+    return await this.usersRepository.find({
+      relations: [
+        'blockedUsers',
+        'friendList',
+        'achievements',
+        'blockedUsers.blockedUser',
+        'blockedUsers.user',
+      ],
+    });
   }
 
   async addUser(user: User): Promise<User> {
     return await this.usersRepository.save(user);
   }
 
-  async createUser(name: string, pass: string) {
+  async createUser(name: string) {
     console.log('createuser');
+    if (await this.findOneByUsername(name)) {
+      return;
+    }
     const newUser = new User();
-
     newUser.urlAvatar = '';
     newUser.username = name;
-    if (!newUser.blockedUsers) newUser.blockedUsers = [];
+    newUser.accessToken = 'test';
+    newUser.refreshToken = '';
+    newUser.blockedUsers = [];
+    newUser.intraId = '';
+    newUser.intraUsername = '';
+    newUser.friendList = [];
+    newUser.matchHistory = null;
+    newUser.statistics = null;
+    newUser.achievements = null;
 
+    console.log('before');
     await this.usersRepository.save(newUser);
+    console.log('finish');
 
     // For testing ----
     // const newUser = {
@@ -81,24 +114,34 @@ export class UsersService {
   async removeUser(name: string) {
     return await this.usersRepository.delete({ username: name });
   }
-
+  // TODO FRIEND LIST (ADD, REMOVE, GET WITH CONDITIONS!!! LIKE UID1 < UID2)
   async blockUser(user: User, blockedUser: User) {
     console.log('blockuser');
-    user.blockedUsers.push(blockedUser);
+    const block = new BlockedList();
+    if (
+      user.blockedUsers.find((obj) => obj.blockedUser.uid === blockedUser.uid)
+    ) {
+      return;
+    }
+    block.user = user;
+    block.blockedUser = blockedUser;
+    user.blockedUsers.push(block);
+    await this.blockedUserRepository.save(block);
     await this.usersRepository.save(user);
   }
 
   async unblockUser(user: User, blockedUser: User) {
     console.log('unblockuser');
     user.blockedUsers = user.blockedUsers.filter(
-      (obj) => obj.username !== blockedUser.username,
+      (obj) =>
+        obj.user.uid !== user.uid && obj.blockedUser.uid !== blockedUser.uid,
     );
     await this.usersRepository.save(user);
   }
 
-  async updateAvatar(user: User, avatar: string) {
+  async updateAvatar(user: User, avatar: string, isUrl: boolean) {
     console.log('updateavatar');
-    if (user.urlAvatar !== '' && user.urlAvatar !== null) {
+    if (isUrl == false && user.urlAvatar !== '' && user.urlAvatar !== null) {
       const fs = require('fs');
       const path = require('path');
       const filePath = path.resolve(__dirname, '/avatars', user.urlAvatar);

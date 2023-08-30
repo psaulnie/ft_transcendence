@@ -5,11 +5,15 @@ import {
   HttpException,
   Param,
   UseInterceptors,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { CacheInterceptor } from '@nestjs/cache-manager';
 import { RoomService } from '../services/room.service';
 import { UsersService } from '../users/users.service';
-import { UsersList } from 'src/entities/usersList.entity';
+import { AuthenticatedGuard } from 'src/auth/guards/intra-auth.guards';
+import { User } from 'src/entities';
+import { userRole } from './chatEnums';
 
 @Controller('/api/chat/')
 export class ChatController {
@@ -19,40 +23,46 @@ export class ChatController {
   ) {}
 
   @UseInterceptors(CacheInterceptor)
+  @UseGuards(AuthenticatedGuard)
   @Get('role/:username/:roomName')
   async getRole(
-    @Query() data: any,
     @Param('username') username: string,
     @Param('roomName') roomName: string,
-  ): Promise<string> {
+  ): Promise<userRole> {
     if (username == null || roomName == null)
       throw new HttpException('Bad request', 400);
     const user = await this.userService.findOne(username);
     if (!user) throw new HttpException('Unprocessable Entity', 422);
     const room = await this.roomService.findOne(roomName);
     if (!room) throw new HttpException('Unprocessable Entity', 422);
-    return await this.roomService.getRole(room, user.id);
+    return await this.roomService.getRole(room, user.uid);
   }
 
   @UseInterceptors(CacheInterceptor)
+  @UseGuards(AuthenticatedGuard)
   @Get(':username/blocked')
-  async getBlockedUser(
-    @Query() data: any,
-    @Param('username') username: string,
-  ): Promise<string[]> {
-    // TODO fix function
+  async getBlockedUser(@Param('username') username: string): Promise<string[]> {
+    console.log('getBlockedUser');
     if (username == null) throw new HttpException('Bad request', 400);
     const user = await this.userService.findOne(username);
     if (!user) throw new HttpException('Unprocessable Entity', 422);
     const usersList = [];
     const blockedUsers = user.blockedUsers;
-    blockedUsers.forEach((element) => {
-      if (element.username) usersList.push(element.username);
-    });
+    let userBlocked: User;
+    for (const element of blockedUsers) {
+      if (element) {
+        userBlocked = await this.userService.findOneById(
+          element.blockedUser.uid,
+        );
+        if (!userBlocked) return;
+        usersList.push(userBlocked.username);
+      }
+    }
     return usersList;
   }
 
   @UseInterceptors(CacheInterceptor)
+  @UseGuards(AuthenticatedGuard)
   @Get('rooms/list')
   async getRoomsList(): Promise<{}[]> {
     const rooms = await this.roomService.findAll();
@@ -69,6 +79,7 @@ export class ChatController {
   }
 
   @UseInterceptors(CacheInterceptor)
+  @UseGuards(AuthenticatedGuard)
   @Get(':roomName/users')
   async getUsersInRoom(
     @Query() data: any,
@@ -78,19 +89,22 @@ export class ChatController {
     const room = await this.roomService.findOne(roomName);
     if (!room) throw new HttpException('Unprocessable Entity', 422);
     const usersList = [];
-
-    room.usersID.forEach((element: UsersList) => {
-      if (element.user && element.user.username)
-        usersList.push({
-          username: element.user.username,
-          role: element.role,
-          isMuted: element.isMuted,
-        });
-    });
+    let user: User;
+    for (const element of room.usersList) {
+      if (!element.user.uid || element.isBanned === true) continue;
+      user = await this.userService.findOneById(element.user.uid);
+      if (!user) continue;
+      usersList.push({
+        username: user.username,
+        role: element.role,
+        isMuted: element.isMuted,
+      });
+    }
     return usersList;
   }
 
   @UseInterceptors(CacheInterceptor)
+  @UseGuards(AuthenticatedGuard)
   @Get(':username/rooms/list')
   async getUserRoomsList(
     @Query() data: any,
@@ -99,12 +113,14 @@ export class ChatController {
     if (username == null) throw new HttpException('Bad request', 400);
     const rooms = await this.roomService.findAll();
     if (!rooms) throw new HttpException('Unprocessable Entity', 422);
+    const user = await this.userService.findOne(username);
+    if (!user) throw new HttpException('Unprocessable Entity', 422);
     const roomsList = [];
-    rooms.forEach((element) => {
-      const userInfo = element.usersID.find(
-        (obj) => obj.user.username == username,
+    for (const element of rooms) {
+      const userInfo = element.usersList.find(
+        (obj) => user.uid == obj.user.uid,
       );
-      if (element.usersID.find((obj) => obj.user.username == username))
+      if (element.usersList.find((obj) => user.uid == obj.user.uid))
         roomsList.push({
           roomName: element.roomName,
           role: userInfo.role,
@@ -112,11 +128,12 @@ export class ChatController {
           isBanned: userInfo.isBanned,
           hasPassword: element.password !== '',
         });
-    });
+    }
     return roomsList;
   }
 
   @UseInterceptors(CacheInterceptor)
+  @UseGuards(AuthenticatedGuard)
   @Get(':roomName/exist')
   async getIsRoomNameTaken(
     @Query() data: any,
@@ -128,19 +145,36 @@ export class ChatController {
   }
 
   @UseInterceptors(CacheInterceptor)
+  @UseGuards(AuthenticatedGuard)
   @Get('users/list')
-  async getUsersList(): Promise<string[]> {
+  async getUsersList(@Req() req: Request): Promise<string[]> {
+    let [type, token] = req.headers['authorization']?.split(' ') ?? [];
+    if (type !== 'Bearer') {
+      token = undefined;
+    }
+    if (!token) {
+      throw new HttpException('Unauthorized', 401);
+    }
+    const cUser = await this.userService.findOneByAccessToken(token);
+    // const cUser = await this.userService.findOne('testUser');
+    if (!cUser) {
+      throw new HttpException('Unauthorized', 401);
+    }
     const users = await this.userService.findAll();
     const usersList: string[] = [];
-
-    users.forEach((element) => usersList.push(element.username));
+    console.log('cUser:', cUser);
+    users.forEach((element) => {
+      console.log(element);
+      if (!element.blockedUsers.find((obj) => obj.blockedUser.uid == cUser.uid))
+        usersList.push(element.username);
+    });
     return usersList;
   }
 
   @UseInterceptors(CacheInterceptor)
+  @UseGuards(AuthenticatedGuard)
   @Get(':username/:roomName/status')
   async getUserStatusInRoom(
-    @Query() data: any,
     @Param('username') username: string,
     @Param('roomName') roomName: string,
   ): Promise<any> {
@@ -148,20 +182,21 @@ export class ChatController {
       throw new HttpException('Bad request', 400);
     const room = await this.roomService.findOne(roomName);
     if (!room) throw new HttpException('Unprocessable Entity', 422);
-    const user = room.usersID.find((obj) => obj.user.username == username);
+    const user = await this.userService.findOne(username);
     if (!user) throw new HttpException('Unprocessable Entity', 422);
-    return { isMuted: user.isMuted, role: user.role };
+    const userInRoom = room.usersList.find((obj) => obj.user.uid == user.uid);
+    if (!userInRoom) throw new HttpException('Unprocessable Entity', 422);
+    return { isMuted: userInRoom.isMuted, role: userInRoom.role };
   }
 
   @UseInterceptors(CacheInterceptor)
+  @UseGuards(AuthenticatedGuard)
   @Get(':username/:roomName/invited')
   async getInvitedUsersList(
-    @Query() data: any,
     @Param('username') username: string,
     @Param('roomName') roomName: string,
   ): Promise<{}[]> {
     if (username == null || roomName == null)
-      // TODO handle error
       throw new HttpException('Bad request', 400);
     const users = await this.userService.findAll();
     const usersList: {}[] = [];
@@ -169,7 +204,7 @@ export class ChatController {
     for (const element of users) {
       if (
         element.username != username &&
-        (await this.roomService.isUserInRoom(roomName, element.id)) == false
+        (await this.roomService.isUserInRoom(roomName, element.uid)) == false
       )
         usersList.push({ label: element.username });
     }

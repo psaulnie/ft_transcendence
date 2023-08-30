@@ -5,11 +5,10 @@ RUN mkdir /avatars
 WORKDIR /app
 
 #check if needed
-RUN npm install --save-dev @nestjs/typeorm typeorm
-RUN npm install --save-dev @nestjs/websockets @nestjs/platform-socket.io
-RUN npm install
+#RUN npm install --save-dev @nestjs/typeorm typeorm
+#RUN npm install --save-dev @nestjs/websockets @nestjs/platform-socket.io
 
-RUN npm install --save @nestjs/jwt
+#RUN npm install
 
 COPY entrypoint.sh ../
 

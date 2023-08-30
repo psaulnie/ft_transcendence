@@ -7,6 +7,8 @@ import {
   StreamableFile,
   Res,
   Param,
+  Req,
+  Query,
 } from '@nestjs/common';
 import { UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -22,6 +24,13 @@ import { randomUUID } from 'crypto';
 import { UsersService } from './users/users.service';
 import { Response } from 'express';
 import { AppService } from './services/app.service';
+
+import { AuthenticatedGuard } from './auth/guards/intra-auth.guards';
+import { UseGuards } from '@nestjs/common';
+
+import { catchError, firstValueFrom } from 'rxjs';
+import { UnauthorizedException } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
 
 const fileInterceptorOptions = {
   fileFilter: (req, file, cb) => {
@@ -55,30 +64,59 @@ export class AppController {
   constructor(
     private readonly appService: AppService,
     private readonly userService: UsersService,
+    private readonly httpService: HttpService,
   ) {}
 
   @Post('/avatar/upload')
+  @UseGuards(AuthenticatedGuard)
   @UseInterceptors(FileInterceptor('file', fileInterceptorOptions))
   async uploadAvatar(
     @Body() body: any,
     @UploadedFile() file: Express.Multer.File,
+    @Req() context: any,
   ) {
-    // TODO add access token
     if (body && file && body.username) {
       const user = await this.userService.findOne(body.username);
+      if (context.headers.authorization != 'Bearer ' + user.accessToken)
+        return new HttpException('Unauthorized', 401);
       if (user) {
         console.log('upload');
-        await this.userService.updateAvatar(user, file.path);
+        await this.userService.updateAvatar(user, file.path, false);
       } else throw new HttpException('Unprocessable Entity', 422);
     } else throw new HttpException('Bad Request', 400);
   }
 
+  @Get('/avatar/remove')
+  @UseGuards(AuthenticatedGuard)
+  async removeAvatar(@Req() context: any, @Query('username') username: string) {
+    if (!username) return new HttpException('Bad Request', 400);
+    const user = await this.userService.findOne(username);
+    if (context.headers.authorization != 'Bearer ' + user.accessToken)
+      return new HttpException('Unauthorized', 401);
+    const url = await firstValueFrom(
+      this.httpService
+        .get('https://api.intra.42.fr/v2/me', {
+          headers: {
+            Authorization: `${context.headers.authorization}`,
+          },
+        })
+        .pipe(
+          catchError((error: any) => {
+            throw new UnauthorizedException();
+          }),
+        ),
+    );
+    await this.userService.updateAvatar(
+      user,
+      url.data.image.versions.small,
+      true,
+    );
+  }
   @Get('/avatar/:username')
   async getAvatar(
     @Param('username') username: string,
     @Res({ passthrough: true }) res: Response,
   ): Promise<StreamableFile> {
-    // TODO Need to handle URLs
     if (username == null) {
       throw new HttpException('Bad Request', 400);
     }
@@ -86,6 +124,10 @@ export class AppController {
     const user = await this.userService.findOne(username);
     if (user) {
       const path = user.urlAvatar;
+      if (isUrl(path)) {
+        res.redirect(path);
+        return;
+      }
       if (path) {
         const file = createReadStream(join(process.cwd(), '..' + path));
         if (file) {
@@ -109,12 +151,10 @@ export class AppController {
       return new StreamableFile(file);
     } else throw new HttpException('Internal Server Error', 500);
   }
-
-  @Post(':username/authentified')
-  async isAuthentified(@Param('username') username: string, @Body() accessToken: string): Promise<boolean> {
-    const user = await this.userService.findOne(username);
-    if (!user) throw new HttpException('Unprocessable Entity', 422);
-    return (accessToken === user.accessToken);
-  }
 }
 
+export function isUrl(path: string): boolean {
+  if (path.startsWith('http:/') || path.startsWith('https:/')) return true;
+  else if (path.startsWith('www.')) return true;
+  return false;
+}

@@ -14,7 +14,11 @@ import { UsersService } from 'src/users/users.service';
 
 import { sendMsgArgs, actionArgs } from './args.interface';
 import { actionTypes } from './args.types';
-import { accessStatus } from 'src/chatModule/accessStatus';
+import { accessStatus, userRole } from 'src/chatModule/chatEnums';
+import { UseGuards } from '@nestjs/common';
+import { hashPassword, comparePassword } from './hashPasswords';
+import { UsersStatusService } from 'src/services/users.status.service';
+import { userStatus } from 'src/users/userStatus';
 
 @WebSocketGateway({
   cors: { origin: '*' },
@@ -26,18 +30,9 @@ export class Gateway
   constructor(
     private roomService: RoomService,
     private userService: UsersService,
+    private usersStatusService: UsersStatusService,
   ) {}
   @WebSocketServer() server: Server;
-
-  @SubscribeMessage('newUser')
-  async createUser(client: Socket, payload: string) {
-    if (!payload) throw new WsException('Missing parameter');
-    const user = await this.userService.findOne(payload);
-    if (user == null) {
-      console.log('New user: ' + payload);
-      await this.userService.createUser(payload, client.id);
-    } else throw new WsException('User already exists');
-  }
 
   @SubscribeMessage('sendPrivateMsg')
   async sendPrivateMessage(client: Socket, payload: sendMsgArgs) {
@@ -54,15 +49,25 @@ export class Gateway
     if (!user) throw new WsException('Source user not found');
     const targetUser = await this.userService.findOne(payload.target);
     if (!targetUser) throw new WsException('Target user not found');
-    if (targetUser.blockedUsers.includes(user))
+    if (
+      targetUser.blockedUsers.some(
+        (blockedUser) => blockedUser.blockedUser.uid === user.uid,
+      )
+    ) {
+      this.server.emit(payload.source + 'OPTIONS', {
+        source: payload.source,
+        target: payload.target,
+        action: actionTypes.blockedmsg,
+      });
       throw new WsException('Target user blocked source user');
+    }
     this.server.emit(payload.target, {
       source: payload.source,
       target: payload.target,
       action: actionTypes.msg,
       data: payload.data,
       isDirectMessage: true,
-      role: 'none',
+      role: userRole.none,
     });
   }
 
@@ -81,10 +86,10 @@ export class Gateway
     if (!user) throw new WsException('Source user not found');
     const room = await this.roomService.findOne(payload.target);
     if (!room) throw new WsException('Room not found');
-    if (room.usersID.find((tmpUser) => tmpUser.user == user))
+    if (!room.usersList.find((tmpUser) => tmpUser.user.uid === user.uid))
       throw new WsException('User not in room');
-    let role = await this.roomService.getRole(room, user.id);
-    if (!role) role = 'none';
+    let role = await this.roomService.getRole(room, user.uid);
+    if (!role) role = userRole.none;
     this.server.emit(payload.target, {
       source: payload.source,
       target: payload.target,
@@ -108,25 +113,34 @@ export class Gateway
     const user = await this.userService.findOne(payload.source);
     if (!user) throw new WsException('Source user not found');
     let hasPassword = false;
-    let role = 'none';
+    let role = userRole.none;
     if (payload.room.length > 10) payload.room = payload.room.slice(0, 10);
+
+    // If room doesn't exist
     if ((await this.roomService.findOne(payload.room)) == null) {
       if (payload.access != accessStatus.protected)
-        await this.roomService.createRoom(payload.room, user, payload.access);
-      else {
-        hasPassword = true;
-        await this.roomService.createPasswordProtectedRoom(
+        await this.roomService.createRoom(
           payload.room,
           user,
           payload.access,
-          payload.password,
+          '',
+        );
+      else {
+        hasPassword = true;
+        const hashedPassword = await hashPassword(payload.password);
+        await this.roomService.createRoom(
+          payload.room,
+          user,
+          payload.access,
+          hashedPassword,
         );
       }
-      role = 'owner';
+      role = userRole.owner;
     } else {
+      // If room exists
       if (payload.access == accessStatus.protected) {
         const roomPassword = await this.roomService.getPassword(payload.room);
-        if (roomPassword != payload.password) {
+        if (!(await comparePassword(payload.password, roomPassword))) {
           this.server.emit(payload.source + 'OPTIONS', {
             source: payload.source,
             target: payload.room,
@@ -185,7 +199,7 @@ export class Gateway
       throw new WsException('Missing parameter');
     const user = await this.userService.findOne(payload.source);
     if (!user) throw new WsException('Source user not found');
-    await this.roomService.removeUser(payload.room, user.id);
+    await this.roomService.removeUser(payload.room, user.uid);
     this.server.emit(payload.room, {
       source: payload.source,
       target: payload.room,
@@ -227,9 +241,13 @@ export class Gateway
     if (!admin) throw new WsException('Source user not found');
     const room = await this.roomService.findOne(payload.room);
     if (!room) throw new WsException('Room not found');
-    if ((await this.roomService.getRole(room, admin.id)) == 'none')
+    const isInRoom = room.usersList.find(
+      (tmpUser) => tmpUser.user.uid === user.uid,
+    );
+    if (!isInRoom) throw new WsException('User not in room');
+    if ((await this.roomService.getRole(room, admin.uid)) == userRole.none)
       throw new WsException('Source user is not admin of the room');
-    await this.roomService.removeUser(payload.room, user.id);
+    await this.roomService.removeUser(payload.room, user.uid);
     this.server.emit(payload.room, {
       source: payload.target,
       target: payload.room,
@@ -239,7 +257,7 @@ export class Gateway
       source: payload.source,
       target: payload.room,
       action: actionTypes.kick,
-      role: 'none',
+      role: userRole.none,
     });
   }
 
@@ -257,7 +275,11 @@ export class Gateway
     if (!admin) throw new WsException('Source user not found');
     const room = await this.roomService.findOne(payload.room);
     if (!room) throw new WsException('Room not found');
-    if ((await this.roomService.getRole(room, admin.id)) == 'none')
+    const isInRoom = room.usersList.find(
+      (tmpUser) => tmpUser.user.uid === user.uid,
+    );
+    if (!isInRoom) throw new WsException('User not in room');
+    if ((await this.roomService.getRole(room, admin.uid)) == userRole.none)
       throw new WsException('Source user is not admin of the room');
     await this.roomService.addToBanList(payload.room, user);
     this.server.emit(payload.room, {
@@ -269,7 +291,7 @@ export class Gateway
       source: payload.source,
       target: payload.room,
       action: actionTypes.ban,
-      role: 'none',
+      role: userRole.none,
     });
   }
 
@@ -287,7 +309,6 @@ export class Gateway
     if (user == null || blockedUser == null)
       throw new WsException('User not found');
     await this.userService.blockUser(user, blockedUser);
-    console.log(await this.userService.findOne(payload.source));
   }
 
   @SubscribeMessage('unblock')
@@ -320,14 +341,14 @@ export class Gateway
     if (!admin) throw new WsException('Source user not found');
     const room = await this.roomService.findOne(payload.room);
     if (!room) throw new WsException('Room not found');
-    if ((await this.roomService.getRole(room, admin.id)) == 'none')
+    if ((await this.roomService.getRole(room, admin.uid)) == userRole.none)
       throw new WsException('Source user is not admin of the room');
     await this.roomService.addAdmin(payload.room, user);
     this.server.emit(payload.target + 'OPTIONS', {
       source: payload.room,
       target: payload.target,
       action: actionTypes.admin,
-      role: 'admin',
+      role: userRole.admin,
     });
   }
 
@@ -345,14 +366,14 @@ export class Gateway
     if (!admin) throw new WsException('Source user not found');
     const room = await this.roomService.findOne(payload.room);
     if (!room) throw new WsException('Room not found');
-    if ((await this.roomService.getRole(room, admin.id)) == 'none')
+    if ((await this.roomService.getRole(room, admin.uid)) == userRole.none)
       throw new WsException('Source user is not admin of the room');
     await this.roomService.addToMutedList(payload.room, user);
     this.server.emit(payload.target + 'OPTIONS', {
       source: payload.room,
       target: payload.target,
       action: actionTypes.mute,
-      role: 'none',
+      role: userRole.none,
     });
   }
 
@@ -371,14 +392,14 @@ export class Gateway
     if (!admin) throw new WsException('Source user not found');
     const room = await this.roomService.findOne(payload.room);
     if (!room) throw new WsException('Room not found');
-    if ((await this.roomService.getRole(room, admin.id)) == 'none')
+    if ((await this.roomService.getRole(room, admin.uid)) == userRole.none)
       throw new WsException('Source user is not admin of the room');
     await this.roomService.removeFromMutedList(payload.room, user);
     this.server.emit(payload.target + 'OPTIONS', {
       source: payload.room,
       target: payload.target,
       action: actionTypes.unmute,
-      role: 'none',
+      role: userRole.none,
     });
   }
 
@@ -398,9 +419,12 @@ export class Gateway
     if (!admin) throw new WsException('Source user not found');
     const room = await this.roomService.findOne(payload.room);
     if (!room) throw new WsException('Room not found');
-    if ((await this.roomService.getRole(room, admin.id)) == 'none')
+    if ((await this.roomService.getRole(room, admin.uid)) == userRole.none)
       throw new WsException('Source user is not admin of the room');
-    this.roomService.setPasswordToRoom(payload.room, payload.password);
+    await this.roomService.setPasswordToRoom(
+      payload.room,
+      await hashPassword(payload.password),
+    );
     this.server.emit(payload.room, {
       source: payload.room,
       target: payload.room,
@@ -419,9 +443,9 @@ export class Gateway
     if (!admin) throw new WsException('Source user not found');
     const room = await this.roomService.findOne(payload.room);
     if (!room) throw new WsException('Room not found');
-    if ((await this.roomService.getRole(room, admin.id)) == 'none')
+    if ((await this.roomService.getRole(room, admin.uid)) == userRole.none)
       throw new WsException('Source user is not admin of the room');
-    this.roomService.removePasswordToRoom(payload.room);
+    await this.roomService.removePasswordToRoom(payload.room);
     this.server.emit(payload.room, {
       source: payload.source,
       target: payload.room,
@@ -481,9 +505,15 @@ export class Gateway
 
   async handleDisconnect(client: Socket) {
     console.log(`Client disconnected: ${client.id}`);
+    await this.usersStatusService.setUserStatus(client.id, userStatus.offline);
   }
 
   async handleConnection(client: Socket, ...args: any[]) {
     console.log(`Client connected: ${client.id}`);
+    // const user = await this.userService.findOneByAccessToken(client.handshake.auth.token);
+    // if (!user)
+    //   return ;
+    //   // throw new WsException('User not found');
+    // await this.usersStatusService.addUser(client.id, client.handshake.auth.token, user.username, userStatus.online);
   }
 }

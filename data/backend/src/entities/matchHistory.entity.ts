@@ -1,13 +1,29 @@
-import { Entity, Column, PrimaryColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
+  OneToMany,
+} from 'typeorm';
+import { User } from './user.entity';
 
 @Entity({ name: 'MatchHistory' })
 export class MatchHistory {
-	@PrimaryColumn()
-	userId: number
+  @PrimaryGeneratedColumn()
+  id: number;
 
-	@Column()
-	opponentId: number
+  @OneToMany(() => User, (user) => user.uid)
+  @JoinColumn({ name: 'user1' })
+  user1: User;
 
-	@Column()
-	winnerId: number
+  @OneToMany(() => User, (user) => user.uid)
+  @JoinColumn({ name: 'user2' })
+  user2: User;
+
+  @Column()
+  uid1Score: number;
+
+  @Column()
+  uid2Score: number;
 }

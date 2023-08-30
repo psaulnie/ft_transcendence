@@ -3,3 +3,9 @@ export enum accessStatus {
   private,
   protected,
 }
+
+export enum userRole {
+  none = 0,
+  owner,
+  admin,
+}
