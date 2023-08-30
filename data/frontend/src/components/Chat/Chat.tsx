@@ -98,7 +98,7 @@ function Chat() {
         		  	onClick={toggleBox}
         		  	sx={{
 						position: 'fixed',
-						bottom: isOpen ? '35.9em' : '0em',
+						bottom: isOpen ? '34.9em' : '0em',
 
         		  	  	right: 0,
         		  	  	width: '35.55em',
@@ -109,7 +109,7 @@ function Chat() {
 						},
 						'@media (max-width: 600px) or (max-height: 700px)': {
 							width: '22.82em',
-							bottom: isOpen ? '35.9em' : '0em',
+							bottom: isOpen ? '34.6em' : '0em',
 						},
         		  	}}
         		>
@@ -127,7 +127,7 @@ function Chat() {
             		    border: 8,
             		    borderColor: '#FC7D07',
 						marginTop: "auto",
-            		    bottom: 20,
+            		    bottom: 0,
             		    right: 0,
             		    zIndex: 9,
 						'@media (max-width: 600px) or (max-height: 700px)': {
