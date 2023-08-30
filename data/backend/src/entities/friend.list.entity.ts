@@ -6,11 +6,11 @@ export class FriendList {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => User, (user) => user.friendList)
+  @ManyToOne(() => User, (user) => user.uid)
   @JoinColumn()
   user1: User;
 
-  @ManyToOne(() => User, (user) => user.friendList)
+  @ManyToOne(() => User, (user) => user.uid)
   @JoinColumn()
   user2: User;
 }

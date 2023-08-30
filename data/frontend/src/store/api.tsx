@@ -123,6 +123,7 @@ export const {
   useGetUsersInRoomQuery,
   useGetInvitedUsersListQuery,
   useGetUserFriendsListQuery,
+  useLazyGetUserFriendsListQuery,
   useUploadAvatarMutation,
   useLazyGetIsRoomNameTakenQuery,
   useLazyGetUsersInRoomQuery,

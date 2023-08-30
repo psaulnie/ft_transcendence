@@ -1,4 +1,4 @@
-import { useGetUsersInRoomQuery } from "../../store/api";
+import { useGetUsersInRoomQuery, useLazyGetUserFriendsListQuery } from "../../store/api";
 
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -48,6 +48,8 @@ export default function UsersList({
     refetch,
   } = useGetUsersInRoomQuery({ roomName: roomName }, { skip: isDirectMessage });
 
+  const [trigger, result] = useLazyGetUserFriendsListQuery();
+
   let usersList = [];
   if (isDirectMessage === false) usersList = usersListData;
   else
@@ -60,6 +62,7 @@ export default function UsersList({
     event.preventDefault();
     if (isDirectMessage === false) refetch();
     if (user.username !== username)
+    {
       setContextMenu(
         contextMenu === null
           ? {
@@ -68,6 +71,8 @@ export default function UsersList({
             }
           : null
       );
+      trigger({username: user.username});
+    }
   };
 
   function getRoleIcon(role: userRole) {
@@ -126,6 +131,7 @@ export default function UsersList({
                   contextMenu={contextMenu}
                   setContextMenu={setContextMenu}
                   showAdminOpt={true}
+                  friendList={result}
                 />
               ) : null}
             </ListItem>

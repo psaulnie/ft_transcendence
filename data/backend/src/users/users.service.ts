@@ -32,12 +32,12 @@ export class UsersService {
       where: { username: name },
       relations: [
         'blockedUsers',
-        'friendList',
+        'friends',
         'achievements',
         'blockedUsers.blockedUser',
         'blockedUsers.user',
-        'friendList.user1',
-        'friendList.user2',
+        // 'friendList.user1',
+        // 'friendList.user2',
       ],
     });
   }
@@ -55,7 +55,7 @@ export class UsersService {
       where: { accessToken: accessToken },
       relations: [
         'blockedUsers',
-        'friendList',
+        'friends',
         'achievements',
         'blockedUsers.blockedUser',
         'blockedUsers.user',
@@ -67,7 +67,7 @@ export class UsersService {
     return await this.usersRepository.find({
       relations: [
         'blockedUsers',
-        'friendList',
+        'friends',
         'achievements',
         'blockedUsers.blockedUser',
         'blockedUsers.user',
@@ -92,7 +92,7 @@ export class UsersService {
     newUser.blockedUsers = [];
     newUser.intraId = '';
     newUser.intraUsername = '';
-    newUser.friendList = [];
+    newUser.friends = [];
     newUser.matchHistory = null;
     newUser.statistics = null;
     newUser.achievements = null;
@@ -149,49 +149,20 @@ export class UsersService {
     const newFriend = new FriendList();
     newFriend.user1 = user;
     newFriend.user2 = friend;
-    user.friendList.push(newFriend);
-    // friend.friendList.push(newFriend);
-    await this.friendListRepository.save(newFriend);
+    user.friends.push(friend);
+    friend.friends.push(user);
     await this.usersRepository.save(user);
-    // await this.usersRepository.save(friend);
-    console.log(user);
-    console.log(friend);
+    await this.usersRepository.save(friend);
   }
 
   async removeFriend(user: User, friend: User) {
     console.log('removefriend');
-    user.friendList = user.friendList.filter(
-      (obj) =>
-        !(
-          (obj.user1.uid === user.uid && obj.user2.uid === friend.uid) ||
-          (obj.user1.uid === friend.uid && obj.user2.uid === user.uid)
-        ),
-    );
+    user.friends = user.friends.filter(
+      (obj) => (obj.username !== friend.username));
+    friend.friends = friend.friends.filter(
+      (obj) => (obj.username !== user.username));
     await this.usersRepository.save(user);
-    const friendEntry = await this.friendListRepository.findOne({ // Find friend entry where user1 is user and user2 is friend or vice versa
-      relations: ['user1', 'user2'],
-      where: [
-        {
-          user1: {
-            uid: user.uid,
-          },
-          user2: {
-            uid: friend.uid,
-          },
-        },
-        {
-          user1: {
-            uid: friend.uid,
-          },
-          user2: {
-            uid: user.uid,
-          },
-        },
-      ],
-    });
-    if (friendEntry) {
-      await this.friendListRepository.remove(friendEntry);
-    }
+    await this.usersRepository.save(friend);
   }
 
   async updateAvatar(user: User, avatar: string, isUrl: boolean) {

@@ -44,8 +44,12 @@ export class User {
   @OneToMany(() => BlockedList, (user) => user.user)
   blockedUsers: BlockedList[];
 
-  @OneToMany(() => FriendList, friendList => friendList.user1)
-  friendList: FriendList[];
+  // @OneToMany(() => FriendList, friendList => friendList.user1)
+  // friendList: FriendList[];
+
+  @ManyToMany(() => User, user => user.friends)
+  @JoinTable()
+  friends: User[];
 
   @ManyToOne(() => MatchHistory, matchHistory => matchHistory.id, { nullable: true })
   matchHistory: MatchHistory;
@@ -61,6 +65,6 @@ export class User {
   @AfterLoad()
   async nullCheck() {
     if (!this.blockedUsers) this.blockedUsers = [];
-    if (!this.friendList) this.friendList = [];
+    if (!this.friends) this.friends = [];
   }
 }

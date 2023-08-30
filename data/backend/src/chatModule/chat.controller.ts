@@ -162,9 +162,7 @@ export class ChatController {
     }
     const users = await this.userService.findAll();
     const usersList: string[] = [];
-    console.log('cUser:',cUser);
     users.forEach((element) => {
-      console.log(element);
       if (!element.blockedUsers.find((obj) => obj.blockedUser.uid == cUser.uid))
         usersList.push(element.username);
     });
@@ -222,14 +220,19 @@ export class ChatController {
     const user = await this.userService.findOne(username);
     if (!user) throw new HttpException('Unprocessable Entity', 422);
     const friendList = [];
-    for (const element of user.friendList) {
+    console.log('user', user);
+    for (const element of user.friends) {
       if (element) {
-        if (element.user1.username != username)
-          friendList.push(element.user1.username);
-        else if (element.user2.username != username)
-          friendList.push(element.user2.username);
+        // console.log('user1', element.user1);
+        // console.log('user2', element.user2);
+        if (element.username != username)
+          friendList.push(element.username);
+        else if (element.username != username)
+          friendList.push(element.username);
+        console.log('friendlist', friendList);
       }
     }
+    console.log(friendList);
     return friendList;
   }
 }

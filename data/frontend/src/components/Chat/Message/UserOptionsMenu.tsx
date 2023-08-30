@@ -14,14 +14,13 @@ type arg = {
 	roomName: string,
 	contextMenu: any,
 	setContextMenu: any,
-	showAdminOpt: boolean
+	showAdminOpt: boolean,
+	friendList: any
 }
 
-export default function UserOptionsMenu({ cUser, role, roomName, contextMenu, setContextMenu, showAdminOpt }: arg) {
+export default function UserOptionsMenu({ cUser, role, roomName, contextMenu, setContextMenu, showAdminOpt, friendList }: arg) {
 	const user = useSelector((state: any) => state.user);
 	const dispatch = useDispatch();
-
-	const [isFriend, setIsFriend] = useState(false);
 
 	const handleClose = () => {
 		setContextMenu(null);
@@ -40,21 +39,13 @@ export default function UserOptionsMenu({ cUser, role, roomName, contextMenu, se
 	function sendMessage() {
 		dispatch(addRoom({name: cUser.username, role: userRole.none, hasPassword: false, isDirectMsg: true, openTab: true, isMuted: false}));
 	}
-
-	const {data, error, isError, isLoading, refetch} = useGetUserFriendsListQuery({username: user.username});
-
-	useEffect(() => {
-		refetch();
-		console.log(data);
-	}, [refetch]);
 	
-	if (isError)
-		return (<Error error={error}/>);
-	// if (data && isSuccess)
-	// 	setIsFriend(data.friendsList?.find((element: string) => element === cUser.username) ? true : false);
-	if (isLoading)
+	if (friendList.isError)
+		return (<Error error={friendList.error}/>);
+	if (friendList.isLoading)
 		return (<div>Loading...</div>)
-	console.log((data.friendsList?.find((element: string) => element === cUser.username) ? true : false));
+	if (friendList.isSuccess)
+		console.log((friendList.data));
 	return (
 			<Menu open={contextMenu !== null}
 				onClose={handleClose}
@@ -87,7 +78,7 @@ export default function UserOptionsMenu({ cUser, role, roomName, contextMenu, se
 						<span>
 							<MenuItem>See profile</MenuItem>
 							{
-								(data.friendsList?.find((element: string) => element === cUser.username) ? false : true) ?
+								(friendList.data?.find((element: string) => element === cUser.username) ? false : true) ?
 									<MenuItem onClick={() => { webSocket.emit("askBeingFriend", {source: user.username, target: cUser.username})}}>Add as friend</MenuItem>
 								:   <MenuItem onClick={() => { webSocket.emit("removeFriend", {source: user.username, target: cUser.username})}}>Remove friend</MenuItem>
 							}

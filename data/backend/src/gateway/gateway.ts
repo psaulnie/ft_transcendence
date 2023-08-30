@@ -461,7 +461,6 @@ export class Gateway
     client: Socket,
     payload: { roomName: string; username: string },
   ) {
-    console.log(payload);
     if (payload.roomName == null || payload.username == null)
       throw new WsException('Missing parameters');
     const user = await this.userService.findOne(payload.username);
@@ -505,7 +504,7 @@ export class Gateway
     if (!sourceUser) throw new WsException('Source user not found');
     const targetUser = await this.userService.findOne(payload.target);
     if (!targetUser) throw new WsException('Target user not found');
-    if (sourceUser.friendList.some(friend => friend.user2.uid === targetUser.uid))
+    if (sourceUser.friends.some(friend => friend.uid === targetUser.uid))
       throw new WsException('Already friends');
     if (targetUser.blockedUsers.some(blockedUser => blockedUser.blockedUser.uid === sourceUser.uid))
       throw new WsException('Target user blocked source user');
@@ -529,18 +528,13 @@ export class Gateway
     if (!sourceUser) throw new WsException('Source user not found');
     const targetUser = await this.userService.findOne(payload.target);
     if (!targetUser) throw new WsException('Target user not found');
-    if (sourceUser.friendList.some(friend => friend.user2.uid === targetUser.uid))
+    if (sourceUser.friends.some(friend => friend.uid === targetUser.uid))
       throw new WsException('Already friends');
     if (targetUser.blockedUsers.some(blockedUser => blockedUser.blockedUser.uid === sourceUser.uid))
       throw new WsException('Target user blocked source user');
     if (sourceUser.blockedUsers.some(blockedUser => blockedUser.blockedUser.uid === targetUser.uid))
       throw new WsException('Source user blocked target user');
     await this.userService.addFriend(sourceUser, targetUser);
-    this.server.emit(payload.target + 'OPTIONS', {
-      source: payload.source,
-      target: payload.target,
-      action: actionTypes.acceptBeingFriend,
-    });
   }
 
   @SubscribeMessage('removeFriend')
@@ -554,7 +548,7 @@ export class Gateway
     if (!sourceUser) throw new WsException('Source user not found');
     const targetUser = await this.userService.findOne(payload.target);
     if (!targetUser) throw new WsException('Target user not found');
-    if (!sourceUser.friendList.some(friend => friend.user2.uid === targetUser.uid))
+    if (!sourceUser.friends.some(friend => friend.uid === targetUser.uid))
       throw new WsException('Not friends');
     await this.userService.removeFriend(sourceUser, targetUser);
   }

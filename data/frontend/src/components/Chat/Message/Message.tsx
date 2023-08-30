@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 
 import UserOptionsMenu from './UserOptionsMenu';
 
-import { useGetUserStatusInRoomQuery } from '../../../store/api';
+import { useGetUserStatusInRoomQuery, useLazyGetUserFriendsListQuery } from '../../../store/api';
 
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -44,8 +44,11 @@ export default function Message({ message, role, roomName, isDirectMessage }: ar
 		refetch
 	} = useGetUserStatusInRoomQuery({username: message.source, roomName: roomName}, { skip: isDirectMessage });
 
+	const [trigger, result] = useLazyGetUserFriendsListQuery();
+
 	const handleContextMenu = (event: React.MouseEvent) => {
 		event.preventDefault();
+		trigger({username: user.username});
 		if (!isDirectMessage)
 		{
 			refetch();
@@ -76,7 +79,8 @@ export default function Message({ message, role, roomName, isDirectMessage }: ar
 					<UserOptionsMenu cUser={{username: message.source, role: message.role, isMuted: isMuted}} role={role}
 						roomName={roomName}
 						contextMenu={contextMenu} setContextMenu={setContextMenu}
-						showAdminOpt={showAdminOpt}/>
+						showAdminOpt={showAdminOpt}
+						friendList={result}/>
 				: null
 			}
 			<Box sx={{ flexGrow: 1, overflow: 'hidden', px: 3}} >
