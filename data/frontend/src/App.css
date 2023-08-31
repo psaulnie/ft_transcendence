@@ -3,8 +3,16 @@
   color: white;
 }
 
+body {
+  margin: 0;
+  padding: 0;
+  background: url("./components/Chat/Factory_Shortcut.webp") no-repeat center
+    center fixed;
+  background-size: cover;
+}
+
 .App-header {
-  background-color: #0A1929;
+  background-color: #0a1929;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -13,4 +21,3 @@
   font-size: calc(10px + 2vmin);
   color: white;
 }
-

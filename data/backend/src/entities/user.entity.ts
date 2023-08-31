@@ -1,34 +1,72 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany, AfterLoad, JoinColumn, ManyToMany, JoinTable } from 'typeorm';
-import { UsersList } from './usersList.entity';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  AfterLoad,
+  ManyToMany,
+  JoinTable,
+  OneToMany,
+  ManyToOne,
+  JoinColumn,
+  OneToOne,
+} from 'typeorm';
+
+import { FriendList } from './friend.list.entity';
+import { BlockedList } from './blocked.list.entity';
+import { Room } from './room.entity';
+import { Achievements } from './achievements.entity';
+import { MatchHistory } from './matchHistory.entity';
+import { Statistics } from './stats.entity';
 
 @Entity({ name: 'User' })
 export class User {
-	@PrimaryGeneratedColumn()
-	id: number
+  @PrimaryGeneratedColumn()
+  uid: number;
 
-	@Column()
-	isConnected: boolean
-	
-	@Column()
-	intraUsername: string
+  @Column()
+  intraId: string;
 
-	@Column({name: 'username'})
-	username: string
+  @Column()
+  intraUsername: string;
 
-	@Column()
-	status: number
+  @Column({ name: 'username' })
+  username: string;
 
-	// Check path to file
-	@Column()
-	avatar: string
+  @Column({ nullable: true })
+  urlAvatar: string;
 
-	@ManyToMany(() => User, blockedUsers => blockedUsers.blockedUsers)
-	@JoinTable()
-	blockedUsers: User[]
+  @Column({ name: 'access_token' })
+  accessToken: string;
 
-	@AfterLoad()
-	async nullCheck() {
-		if (!this.blockedUsers)
-			this.blockedUsers = [];
-	}
+  @Column({ name: 'refresh_token' })
+  refreshToken: string;
+
+  @OneToMany(() => BlockedList, (user) => user.user)
+  blockedUsers: BlockedList[];
+
+  @OneToMany(() => FriendList, (friendList) => friendList.uid1)
+  friendList: FriendList[];
+
+  @ManyToOne(() => MatchHistory, (matchHistory) => matchHistory.id, {
+    nullable: true,
+  })
+  matchHistory: MatchHistory;
+
+  @OneToOne(() => Statistics, (statistics) => statistics.user, {
+    nullable: true,
+  })
+  @JoinColumn({ name: 'statistics_user', referencedColumnName: 'user' })
+  statistics: Statistics;
+
+  @OneToOne(() => Achievements, (achievements) => achievements.user, {
+    nullable: true,
+  })
+  @JoinColumn({ name: 'achievements_user', referencedColumnName: 'user' })
+  achievements: Achievements;
+
+  @AfterLoad()
+  async nullCheck() {
+    if (!this.blockedUsers) this.blockedUsers = [];
+    if (!this.friendList) this.friendList = [];
+  }
 }

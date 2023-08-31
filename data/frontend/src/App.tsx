@@ -1,97 +1,79 @@
-import './App.css';
+import "./App.css";
 
-import { SyntheticEvent, useState } from 'react';
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { login, setUsername } from "./store/user";
+import { SyntheticEvent } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Cookies from "js-cookie";
 
-import { useSelector, useDispatch } from 'react-redux';
-import { login, logout, setUsername } from './store/user';
 // Components
-import Navigation from './components/Navigation/Navigation';
-// import Chat from './components/Chat/Chat';
-import Game from './components/Game/Game';
-import NavDrawer from './components/Navigation/NavDrawer';
-import Chat from './components/Chat/Chat';
+import Login from "./components/Login/Login";
+import Base from "./Base";
 
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
+import UploadButton from "./components/Global/UploadButton";
+import Home from "./components/Home/Home";
 
-const darkTheme = createTheme({
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
+import Profile from "./components/Global/Profile";
+import Options from "./components/Global/Options";
+import Game from "./components/Game/Game";
+import {
+  Skeleton,
+  Box,
+  Grid,
+  Button,
+  Typography,
+  Avatar,
+  Slide,
+} from "@mui/material";
+import PrivateRoute from "./components/Global/PrivateRoute";
+
+const theme = createTheme({
   palette: {
-    mode: 'dark',
-	background: {
-		default: '#0A1929'
-	}
+    mode: "dark",
+    primary: {
+      main: "#000000", // Red color
+    },
+    secondary: {
+      main: "#ff9900", // Orange color
+    },
   },
 });
+
 function App() {
-	const user = useSelector((state: any) => state.user);
-	const dispatch = useDispatch();
-	
-	const [drawerState, setDrawerState] = useState(false);
+  const user = useSelector((state: any) => state.user);
+  const dispatch = useDispatch();
 
-	const toggleDrawer =
-	(open: boolean) =>
-	(event: React.KeyboardEvent | React.MouseEvent) => {
-		if (
-		event.type === 'keydown' &&
-		((event as React.KeyboardEvent).key === 'Tab' ||
-			(event as React.KeyboardEvent).key === 'Shift')
-		) {
-			return;
-		}
-		setDrawerState(open);
-    };
+  useEffect(() => {
+    const username = Cookies.get("username");
+    const accessToken = Cookies.get("accessToken");
+    if (!username || !accessToken) return;
+    dispatch(setUsername(username));
+    dispatch(login(accessToken));
+  }, [dispatch]);
 
-	function onChange(e: React.ChangeEvent<HTMLInputElement>)
-	{
-		e.preventDefault();
-		dispatch(setUsername(e.currentTarget.value));
-	}
+  // const [isAuthentified, isError ] = useIsAuthentifiedMutation(user.accessToken);
+  // if (!isError)
+  // 	return (<p>error</p>)
 
-	function onSubmit(e: React.FormEvent)
-	{
-		e.preventDefault();
-		if (user.username !== '')
-			dispatch(login());
-	}
-
-	function logoutButton(e: SyntheticEvent)
-	{
-		e.preventDefault();
-		dispatch(logout());
-	}
-
-	return (
-	<div className="App">
-		<ThemeProvider theme={darkTheme}>
-     		<CssBaseline />
-			<Navigation setDrawerState={setDrawerState}/>
-			<NavDrawer state={drawerState} toggleDrawer={toggleDrawer}/>
-			<div className='main'>
-				{
-					user.isLoggedIn === false ?
-						<form onSubmit={onSubmit}>
-							<p>Username:</p>
-							<input name="username" value={user.username || ''} onChange={ onChange } />
-							<button>Login</button>
-						</form>
-					: null
-				}
-				{user.isLoggedIn ? <button onClick={logoutButton}>Logout</button> : null}
-				{/* {user.isLoggedIn ? (<Chat />) : null} */}
-				{user.isLoggedIn ? (<Game />) : null}
-			</div>
-	    </ThemeProvider>
-	</div>
-	);
+  return (
+    <div className="App">
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/login" element={<Login />}></Route>
+            <Route path="*" element={<PrivateRoute />}>
+              <Route path="*" element={<Base />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </ThemeProvider>
+    </div>
+  );
 }
 
 export default App;
-
-
-// ======================
-
-// import image from "./img/UpmostlyLogo.png"; 
-
-// function Component() {
-//   return (
-//     <div style={{ backgroundImage:`url(${image})`,backgroundRepeat:"no-repeat" }}>

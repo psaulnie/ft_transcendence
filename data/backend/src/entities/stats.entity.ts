@@ -1,17 +1,33 @@
-import { Entity, Column, PrimaryColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  OneToOne,
+  JoinColumn,
+} from 'typeorm';
+import { User } from './user.entity';
 
 @Entity({ name: 'Statistics' })
 export class Statistics {
-	@PrimaryColumn()
-	userId: number
+  @PrimaryGeneratedColumn()
+  id: number;
 
-	@Column()
-	winNbr: number
+  @OneToOne(() => User, (user) => user.uid)
+  @JoinColumn({ name: 'user' })
+  user: User;
 
-	@Column()
-	loseNbr: number
+  @Column()
+  winNbr: number;
 
-	@Column()
-	ladder: number
+  @Column()
+  loseNbr: number;
 
+  @Column()
+  matchNumber: number;
+
+  @Column()
+  level: number;
+
+  @Column()
+  rank: number;
 }

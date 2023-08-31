@@ -116,7 +116,7 @@ export default function Canvas({players} : {players: {1: string, 2: string}}) {
   
   useEffect(() => {
     const canvas = canvasRef.current;
-    const ctx = canvas?.getContext('2d');
+    const ctx = canvas?.getContext("2d");
 
     const animate = () => {
       ctx!.fillStyle = 'white';

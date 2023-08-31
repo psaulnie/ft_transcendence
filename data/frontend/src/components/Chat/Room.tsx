@@ -1,46 +1,91 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from "react";
 
-import MessagesBox from './Message/MessagesBox';
-import InputForm from './Message/InputForm';
+import { useLayoutEffect } from "react";
 
-import { useSelector } from 'react-redux';
+import MessagesBox from "./Message/MessagesBox";
+import InputForm from "./Message/InputForm";
 
-import { Grid, Box, Typography } from '@mui/material';
+import { useSelector } from "react-redux";
 
-import UsersList from './UsersList';
+import { Grid, Box } from "@mui/material";
+import { userRole } from "./chatEnums";
 
-function Room({roomName}: {roomName: string}) {
-	const rooms = useSelector((state: any) => state.rooms);
+function Room({ roomName }: { roomName: string }) {
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const rooms = useSelector((state: any) => state.rooms);
 
-	const [role, setRole] = useState('none');
-	const roomIndex = rooms.room.findIndex((obj: {name: string, role: string}) => obj.name === roomName);
+  const [role, setRole] = useState(userRole.none);
+  const roomIndex = rooms.room.findIndex(
+    (obj: { name: string; role: userRole }) => obj.name === roomName,
+  );
 
-	useEffect(() => {
-		const cRole = rooms.room.find((obj: {name: string, role: string}) => obj.name === roomName);
-		if (cRole)
-			setRole(cRole.role);
-	}, [setRole, rooms, roomName]);
+  const messages = rooms.room[roomIndex].messages;
 
-	return (
-		<Grid sx={{display: 'flex'}}>
-			<Grid item xs={8}>
-				<Grid item xs={12}>
-					<Box sx={{ height: '80vh', padding: '16px', overflow: 'auto' }}>
-						<MessagesBox messages={ rooms.room[roomIndex].messages } role={ role } roomName={ roomName } />
-					</Box>
-				</Grid>
-				<Grid item xs={12}>
-					<InputForm roomName={ roomName } isDirectMessage={rooms.room[roomIndex].isDirectMsg} />
-				</Grid>
-			</Grid>
-			<Grid item xs={4}>
-				<Box sx={{ backgroundColor: '#102b47', height: '100%', padding: '16px', borderRadius: '10px'}}>
-					<Typography>Users:</Typography>
-					<UsersList isDirectMessage={rooms.room[roomIndex].isDirectMsg} roomName={roomName} role={role} />
-				</Box>
-			</Grid>
-		</Grid>
-	);
+  useLayoutEffect(() => {
+    const containerRef = messagesContainerRef.current;
+    if (containerRef) {
+      containerRef.scrollTop = containerRef.scrollHeight;
+    }
+  }, [messages]);
+
+  useEffect(() => {
+    const cRole = rooms.room.find(
+      (obj: { name: string; role: userRole }) => obj.name === roomName,
+    );
+    if (cRole) setRole(cRole.role);
+  }, [setRole, rooms, roomName]);
+
+  return (
+    <Grid sx={{ height: "100%", width: "100%", display: "flex" }}>
+      <Grid
+        item
+        xs={8}
+        sx={{
+          height: "100%",
+          width: "100%",
+          overflow: "hidden",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <Grid
+          item
+          xs={12}
+          sx={{
+            height: "100%",
+            width: "100%",
+            padding: "16px",
+            overflow: "auto",
+            marginTop: "auto",
+          }}
+        >
+          <Box
+            sx={{
+              height: "100%",
+              width: "100%",
+              padding: "2px",
+              overflow: "scroll",
+            }}
+          >
+            <div ref={messagesContainerRef}>
+              <MessagesBox
+                messages={rooms.room[roomIndex].messages}
+                role={role}
+                roomName={roomName}
+                isDirectMessage={rooms.room[roomIndex].isDirectMsg}
+              />
+            </div>
+          </Box>
+        </Grid>
+        <Grid item xs={12} sx={{ marginTop: "auto", marginBottom: "9%" }}>
+          <InputForm
+            roomName={roomName}
+            isDirectMessage={rooms.room[roomIndex].isDirectMsg}
+          />
+        </Grid>
+      </Grid>
+    </Grid>
+  );
 }
 
 export default Room;
