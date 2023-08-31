@@ -132,14 +132,13 @@ function Chat() {
           <Box
             sx={{
               position: "fixed",
-              bgcolor: "#FFA500",
+              bgcolor: "#FE8F29",
               height: "30.28em",
               width: "31.28em",
               borderRadius: "2%",
               opacity: 0.8,
               border: 8,
-              borderColor: "#994000",
-              borderStyle: "double",
+              borderColor: "#FC7D07",
               marginTop: "auto",
               bottom: 0,
               right: 0,
