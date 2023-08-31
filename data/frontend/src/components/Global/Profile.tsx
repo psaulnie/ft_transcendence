@@ -1,5 +1,3 @@
-import UploadButton from "./UploadButton";
-
 import { Box, Grid, Button, Avatar, Typography, Paper } from "@mui/material";
 import { useSelector } from "react-redux";
 

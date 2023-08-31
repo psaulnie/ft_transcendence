@@ -1,10 +1,9 @@
 import "./App.css";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { login, setUsername } from "./store/user";
-import { SyntheticEvent } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Cookies from "js-cookie";
 
@@ -12,23 +11,8 @@ import Cookies from "js-cookie";
 import Login from "./components/Login/Login";
 import Base from "./Base";
 
-import UploadButton from "./components/Global/UploadButton";
-import Home from "./components/Home/Home";
-
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
-import Profile from "./components/Global/Profile";
-import Options from "./components/Global/Options";
-import Game from "./components/Game/Game";
-import {
-  Skeleton,
-  Box,
-  Grid,
-  Button,
-  Typography,
-  Avatar,
-  Slide,
-} from "@mui/material";
 import PrivateRoute from "./components/Global/PrivateRoute";
 
 const theme = createTheme({

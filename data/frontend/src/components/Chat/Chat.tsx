@@ -11,7 +11,6 @@ import Room from "./Room";
 import Tab from "./Tab";
 import UsersTab from "./UsersTab";
 import DirectMessageProvider from "./DirectMessageProvider";
-import PersonIcon from "@mui/icons-material/Person";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ChatProcess from "./ChatProcess";
@@ -114,7 +113,7 @@ function Chat() {
             position: "fixed",
             bottom: isOpen ? "35.9em" : "0em",
 
-            right: 20,
+            right: 0,
             width: "35.55em",
             backgroundColor: "#ff8700",
             "&:hover": {
@@ -123,7 +122,7 @@ function Chat() {
             },
             "@media (max-width: 600px) or (max-height: 700px)": {
               width: "22.82em",
-              bottom: isOpen ? "35.9em" : "0em",
+              bottom: isOpen ? "34.55em" : "0em",
             },
           }}
         >
@@ -142,8 +141,8 @@ function Chat() {
               borderColor: "#994000",
               borderStyle: "double",
               marginTop: "auto",
-              bottom: 20,
-              right: 20,
+              bottom: 0,
+              right: 0,
               zIndex: 9,
               "@media (max-width: 600px) or (max-height: 700px)": {
                 width: "20em",
