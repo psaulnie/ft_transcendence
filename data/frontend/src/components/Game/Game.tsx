@@ -14,12 +14,12 @@ export default function Game() {
 
   const [foundUser, setFoundUser] = useState(false);
   const [players, setPlayers] = useState<{1: string; 2: string }>({ 1: '', 2: '' });
-
+  const [gameRoomId, setGameRoomId] = useState("");
 
   return (
     <div>
       {
-        !foundUser ?  <Matchmaking setFoundUser={setFoundUser} setPlayers={setPlayers} /> : <Canvas players={players}/>
+        !foundUser ?  <Matchmaking setFoundUser={setFoundUser} setPlayers={setPlayers} setGameRoomId={setGameRoomId}/> : <Canvas players={players} gameRoomId={gameRoomId}/>
       }     
     </div>
   );

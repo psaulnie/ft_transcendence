@@ -494,6 +494,10 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
     });
   }
 
+/*
+----------------------------GAME---------------------------------
+*/
+
 	@SubscribeMessage('matchmaking')
 	async handleMatchmaking(client: Socket, payload: {username: string}) {
 		// const user = await this.userService.findOne(payload.username);
@@ -509,11 +513,11 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
         const user2 = await this.userService.findOne(player2);
         if (!user1 || !user2)
           throw new WsException("User not found");
-        this.gameService.newGame(user1, user2);
+        const gameRoomId = this.gameService.newGame(user1, user2, player1, player2);
         // TODO send gameRoomId of this.gameService.newGame to the players, 
         // then the players stores it and uses this ID to send the game data to the server in the handleGame function
-				this.server.emit("matchmaking" + player1, {opponent: player2});
-				this.server.emit("matchmaking" + player2, {opponent: player1});
+				this.server.emit("matchmaking" + player1, {opponent: player2, gameRoomId: gameRoomId});
+				this.server.emit("matchmaking" + player2, {opponent: player1, gameRoomId: gameRoomId});
 				this.matchmakingQueue.splice(this.matchmakingQueue.indexOf(player1), 1);
 				this.matchmakingQueue.splice(this.matchmakingQueue.indexOf(player2), 1);
 		}
@@ -529,14 +533,43 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
 		this.matchmakingQueue.splice(this.matchmakingQueue.indexOf(payload.username), 1);
 	}
 
-	@SubscribeMessage('game')
-	async handleGame(client: Socket, payload: {player: string, opponent: string, y: number})
+	// @SubscribeMessage('game')
+	// async handleGame(client: Socket, payload: {player: string, opponent: string, y: number})
+	// {
+	// 	console.log(payload);
+  //       console.log("receive");
+  //   // TODO check which game room is the player in and create new function in gameService editing the gameRoom with the new position for instance
+	// 	this.server.emit(payload.opponent, {mouseY: payload.y})
+	// }
+
+  @SubscribeMessage('pressUp')
+	async pressUp(client: Socket, payload: {player: string, opponent: string},
+		player: {name: string, opponent: string, ballPos:{x: number, y: number}, paddleP1: {x: number, y: number}, paddleP2: {x: number, y: number}, direction: number})
 	{
-		console.log(payload);
-        console.log("receive");
-    // TODO check which game room is the player in and create new function in gameService editing the gameRoom with the new position for instance
-		this.server.emit(payload.opponent, {mouseY: payload.y})
+		console.log("press UP");
+		console.log(player.name);
+		// player.direction = 1;
 	}
+
+	@SubscribeMessage('pressDown')
+	async pressDown(client: Socket, payload: {player: string, opponent: string},
+		player: {name: string, opponent: string, ballPos:{x: number, y: number}, paddleP1: {x: number, y: number}, paddleP2: {x: number, y: number}, direction: number})
+	{
+		console.log("press Down");
+		// player.direction = -1;
+	}
+
+	@SubscribeMessage('releaseKey')
+	async releaseUp(client: Socket, payload: {player: string, opponent: string},
+		player: {name: string, opponent: string, ballPos:{x: number, y: number}, paddleP1: {x: number, y: number}, paddleP2: {x: number, y: number}, direction: number})
+	{
+		// player.direction = 0;
+		console.log("release KEY");
+	}
+
+/*
+-----------------------------------------------------------------
+*/
 
   async afterInit(server: Server) {
     console.log('Init');

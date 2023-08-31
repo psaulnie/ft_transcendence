@@ -13,7 +13,7 @@ import { webSocket } from '../../webSocket';
 //   Heigth:string;
 // }
 
-export default function Canvas({players} : {players: {1: string, 2: string}}) {
+export default function Canvas({players, gameRoomId} : {players: {1: string, 2: string}, gameRoomId: string}) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [rectPositionP1, setRectPositionP1] = useState<{ x: number; y: number }>({ x: 20, y:  0});
   const [rectPositionP2, setRectPositionP2] = useState<{ x: number; y: number }>({ x: 0, y:  0});
@@ -44,16 +44,12 @@ export default function Canvas({players} : {players: {1: string, 2: string}}) {
 
     
     const handleResize = () => {
-      let scale = 0;
+      let scale = window.innerWidth * 0.00075;
 
-      if (window.innerHeight * 0.0033 >= window.innerWidth * 0.00008) {
-        scale = window.innerWidth * 0.00075;
-        // console.log("width");
-      }
-      else {
-          scale = window.innerHeight * 0.0033;
-          // console.log("Height");
-      }
+      if (scale > 1)
+        scale = 1;
+      else if (scale < 0.666)
+        scale = 0.666;
       const gameCanvas = document.querySelector('.canvas') as HTMLElement;
       if (gameCanvas) {
         gameCanvas.style.transform = `scale(${scale})`;
@@ -69,51 +65,67 @@ export default function Canvas({players} : {players: {1: string, 2: string}}) {
     };
   }, [ctx]);
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
+  // useEffect(() => {
+  //   const canvas = canvasRef.current;
 
-    const handleMouseMove = (event: MouseEvent) => {
-      const rect = canvas?.getBoundingClientRect();
-      // const mouseX = event.clientX - rect!.left;
-      const mouseY = event.clientY - rect!.top;
-      // console.log(mouseY);
-      // console.log(webSocket.connected);
-      webSocket.emit("game", {player: players[1], opponent: players[2], y: mouseY});
-      setRectPositionP1({x:20, y: mouseY});
-    };
+  //   const handleMouseMove = (event: MouseEvent) => {
+  //     const rect = canvas?.getBoundingClientRect();
+  //     // const mouseX = event.clientX - rect!.left;
+  //     const mouseY = event.clientY - rect!.top;
+  //     // console.log(mouseY);
+  //     // console.log(webSocket.connected);
+  //     webSocket.emit("game", {player: players[1], opponent: players[2], y: mouseY});
+  //     setRectPositionP1({x:20, y: mouseY});
+  //   };
 
-    canvas?.addEventListener('mousemove', handleMouseMove);
+  //   canvas?.addEventListener('mousemove', handleMouseMove);
 
-    return () => {
-      canvas?.removeEventListener('mousemove', handleMouseMove);
-    };
-  }, [players]);
+  //   return () => {
+  //     canvas?.removeEventListener('mousemove', handleMouseMove);
+  //   };
+  // }, [players]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      // a utilier pour KeyDown et utiliser le serv
-      // if (event.repeat)
-      //   return;
+      if (event.repeat)
+        return;
       const { key } = event;
-      const speed = 5;
+      const speed = 10;
 
-      if (key === 'ArrowUp') {
+      if (key === 'ArrowUp' || key === 'w') {
+        console.log("up press");
+        webSocket.emit("pressUp", {player: players[1], opponent: players[2]});
         setRectPositionP1((prevPosition) => ({ ...prevPosition, y: prevPosition.y - speed }));
-      } else if (key === 'ArrowDown') {
-        console.log("en bas");
-        // setRectPositionP1({x: 20, y: rectPositionP1.y + speed});
+      } else if (key === 'ArrowDown' || key === 's') {
+        webSocket.emit("pressDown", {player: players[1], opponent: players[2]});
         setRectPositionP1((prevPosition) => ({ ...prevPosition, y: prevPosition.y + speed }));
       }
     };
 
+    const handleKeyUp = (event: KeyboardEvent) => {
+      if (event.repeat)
+        return;
+      const { key } = event;
+      const speed = 10;
+
+      if (key === 'ArrowUp' || key === 'w' || key === 'ArrowDown' || key === 's') {
+        webSocket.emit("releaseKey", {player: players[1], opponent: players[2]});
+        // setRectPositionP1((prevPosition) => ({ ...prevPosition, y: prevPosition.y - speed }));
+      } else if (key === 'ArrowDown' || key === 's') {
+        webSocket.emit("releaseDown", {player: players[1], opponent: players[2]});
+        // setRectPositionP1((prevPosition) => ({ ...prevPosition, y: prevPosition.y + speed }));
+      }
+    };
+
     document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('keyup', handleKeyUp);
 
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('keyup', handleKeyUp);
     };
   }, []);
 
-  
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext("2d");
