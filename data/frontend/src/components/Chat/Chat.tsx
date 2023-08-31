@@ -35,7 +35,7 @@ function Chat() {
   const rooms = useSelector((state: any) => state.rooms);
   const dispatch = useDispatch();
 
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
 
   const toggleBox = () => {
     setIsOpen(!isOpen);
