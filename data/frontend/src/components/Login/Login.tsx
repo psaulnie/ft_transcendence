@@ -38,7 +38,7 @@ function Login() {
     }).then((data) => {
       setIsOk(data);
       setIsLoading(false);
-    }).catch((error) => {
+    }).catch(() => {
       setIsLoading(false);
       // TODO : handle error
     });
@@ -51,7 +51,7 @@ function Login() {
   if (isOk) return <Navigate to="/home" />;
   return (
     <div className="main">
-      <p>Coucou from Login</p>
+      <p>Coucou depuis la page 'Login'</p>
       <form>
         <button type="button" onClick={logIn}>
           LogIn
