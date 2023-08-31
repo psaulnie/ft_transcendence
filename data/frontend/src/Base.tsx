@@ -13,6 +13,7 @@ import Profile from "./components/Global/Profile";
 import Home from "./components/Home/Home";
 import Chat from "./components/Chat/Chat";
 import Achievements from "./components/Global/Achievements";
+import Modification from "./components/Global/Modification";
 
 export default function Base() {
   const dispatch = useDispatch();
@@ -49,6 +50,10 @@ export default function Base() {
         <Route path="/game" element={<Game />}></Route>
         <Route path="/options" element={<Options />}></Route>
         <Route path="/achievements" element={<Achievements />}></Route>
+        <Route
+          path="/modification"
+          element={<Modification toggleProfil={toggleProfil} />}
+        ></Route>
       </Routes>
       <Chat />
     </div>
