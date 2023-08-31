@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-
+import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { useDispatch } from "react-redux";
 import { setUsername, login } from "../../store/user";
@@ -12,18 +12,18 @@ import Profile from "../Global/Profile";
 
 export default function Home() {
   const dispatch = useDispatch();
-  const [isProfilOpen, setIsProfilOpen] = useState(false);
+  const navigate = useNavigate();
 
+  const [isProfilOpen, setIsProfilOpen] = useState(false);
   const [isGameOpen, setIsGameOpen] = useState(false);
 
   const toggleProfil = () => {
     setIsProfilOpen(!isProfilOpen);
   };
 
-  const toggleGame = () => {
-    setIsGameOpen(!isGameOpen);
-  };
-
+  const play = () => {
+    navigate("/game");
+  }
   useEffect(() => {
     const username = Cookies.get("username");
     const accessToken = Cookies.get("accessToken");
@@ -61,6 +61,7 @@ export default function Home() {
               <Button
                 variant="text"
                 color="primary"
+                onClick={play}
                 sx={{
                   textTransform: "none",
                   fontWeight: "bold",

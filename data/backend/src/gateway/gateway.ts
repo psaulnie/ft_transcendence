@@ -12,8 +12,11 @@ import { Socket, Server } from 'socket.io';
 import { RoomService } from 'src/services/room.service';
 import { UsersService } from 'src/users/users.service';
 
-import { sendMsgArgs, actionArgs } from './args.interface';
-import { actionTypes } from './args.types';
+import { manageRoomsArgs, sendMsgArgs, actionArgs } from './args.interface';
+import { actionTypes, sendMsgTypes } from './args.types';
+import { subscribe } from 'diagnostics_channel';
+import { match } from 'assert';
+import { SELF_DECLARED_DEPS_METADATA } from '@nestjs/common/constants';
 import { accessStatus, userRole } from 'src/chatModule/chatEnums';
 import { UseGuards } from '@nestjs/common';
 import { hashPassword, comparePassword } from './hashPasswords';
@@ -24,15 +27,18 @@ import { userStatus } from 'src/users/userStatus';
   cors: { origin: '*' },
   namespace: '/gateway',
 })
-export class Gateway
-  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
-{
-  constructor(
-    private roomService: RoomService,
-    private userService: UsersService,
+export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
+	
+	private matchmakingQueue: (string)[];
+
+	constructor(
+		private roomService: RoomService,
+		private userService: UsersService,
     private usersStatusService: UsersStatusService,
-  ) {}
-  @WebSocketServer() server: Server;
+	) {
+		this.matchmakingQueue = [];
+	}
+	@WebSocketServer() server: Server;
 
   @SubscribeMessage('sendPrivateMsg')
   async sendPrivateMessage(client: Socket, payload: sendMsgArgs) {
@@ -490,14 +496,41 @@ export class Gateway
     });
   }
 
-  @SubscribeMessage('game')
-  async handleGame(
-    client: Socket,
-    payload: { player: string; opponent: string; y: number },
-  ) {
-    console.log(payload);
-    console.log('receive');
-  }
+	@SubscribeMessage('matchmaking')
+	async hangleMatchmaking(client: Socket, payload: {username: string}) {
+		// const user = await this.userService.findOne(payload.username);
+		// if (!user)
+		// throw new WsException("User not found");
+		if (this.matchmakingQueue.find((name:string) => name == payload.username))
+			throw new WsException("Already in Matchmaking");
+		this.matchmakingQueue.push(payload.username);
+		while (this.matchmakingQueue.length >= 2) {
+				const player1 = this.matchmakingQueue[0];
+				const player2 = this.matchmakingQueue[1];
+				this.server.emit("matchmaking" + player1, {opponent: player2});
+				this.server.emit("matchmaking" + player2, {opponent: player1});
+				this.matchmakingQueue.splice(this.matchmakingQueue.indexOf(player1), 1);
+				this.matchmakingQueue.splice(this.matchmakingQueue.indexOf(player2), 1);
+		}
+	}
+
+	@SubscribeMessage('cancelMatchmaking')
+	async cancelMatchmaking(client: Socket, payload: {username: string}) {
+		// const user = await this.userService.findOne(payload.username);
+		// if (!user)
+		// throw new WsException("User not found");
+		if (this.matchmakingQueue.find((name:string) => name != payload.username))
+			throw new WsException("Player not in Matchmaking");
+		this.matchmakingQueue.splice(this.matchmakingQueue.indexOf(payload.username), 1);
+	}
+
+	@SubscribeMessage('game')
+	async handleGame(client: Socket, payload: {player: string, opponent: string, y: number})
+	{
+		console.log(payload);
+        console.log("receive");
+		this.server.emit(payload.opponent, {mouseY: payload.y})
+	}
 
   async afterInit(server: Server) {
     console.log('Init');
