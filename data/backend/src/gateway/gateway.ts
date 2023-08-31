@@ -12,16 +12,13 @@ import { Socket, Server } from 'socket.io';
 import { RoomService } from 'src/services/room.service';
 import { UsersService } from 'src/users/users.service';
 
-import { manageRoomsArgs, sendMsgArgs, actionArgs } from './args.interface';
-import { actionTypes, sendMsgTypes } from './args.types';
-import { subscribe } from 'diagnostics_channel';
-import { match } from 'assert';
-import { SELF_DECLARED_DEPS_METADATA } from '@nestjs/common/constants';
+import { sendMsgArgs, actionArgs } from './args.interface';
+import { actionTypes } from './args.types';
 import { accessStatus, userRole } from 'src/chatModule/chatEnums';
-import { UseGuards } from '@nestjs/common';
 import { hashPassword, comparePassword } from './hashPasswords';
 import { UsersStatusService } from 'src/services/users.status.service';
 import { userStatus } from 'src/users/userStatus';
+import { GameService } from 'src/services/game.service';
 
 @WebSocketGateway({
   cors: { origin: '*' },
@@ -35,6 +32,7 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
 		private roomService: RoomService,
 		private userService: UsersService,
     private usersStatusService: UsersStatusService,
+    private gameService: GameService,
 	) {
 		this.matchmakingQueue = [];
 	}
@@ -497,7 +495,7 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
   }
 
 	@SubscribeMessage('matchmaking')
-	async hangleMatchmaking(client: Socket, payload: {username: string}) {
+	async handleMatchmaking(client: Socket, payload: {username: string}) {
 		// const user = await this.userService.findOne(payload.username);
 		// if (!user)
 		// throw new WsException("User not found");
@@ -507,6 +505,13 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
 		while (this.matchmakingQueue.length >= 2) {
 				const player1 = this.matchmakingQueue[0];
 				const player2 = this.matchmakingQueue[1];
+        const user1 = await this.userService.findOne(player1);
+        const user2 = await this.userService.findOne(player2);
+        if (!user1 || !user2)
+          throw new WsException("User not found");
+        this.gameService.newGame(user1, user2);
+        // TODO send gameRoomId of this.gameService.newGame to the players, 
+        // then the players stores it and uses this ID to send the game data to the server in the handleGame function
 				this.server.emit("matchmaking" + player1, {opponent: player2});
 				this.server.emit("matchmaking" + player2, {opponent: player1});
 				this.matchmakingQueue.splice(this.matchmakingQueue.indexOf(player1), 1);
@@ -529,6 +534,7 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
 	{
 		console.log(payload);
         console.log("receive");
+    // TODO check which game room is the player in and create new function in gameService editing the gameRoom with the new position for instance
 		this.server.emit(payload.opponent, {mouseY: payload.y})
 	}
 

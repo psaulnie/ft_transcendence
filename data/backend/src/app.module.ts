@@ -29,6 +29,7 @@ import { UsersStatusService } from './services/users.status.service';
 import { FriendList } from './entities/friend.list.entity';
 import { BlockedList } from './entities/blocked.list.entity';
 import { Statistics } from './entities/stats.entity';
+import { GameService } from './services/game.service';
 
 @Module({
   imports: [
@@ -66,6 +67,7 @@ import { Statistics } from './entities/stats.entity';
     UsersStatusService,
     AppService,
     RoomService,
+    GameService,
     Gateway,
     IntraStrategy,
     SessionSerializer,
