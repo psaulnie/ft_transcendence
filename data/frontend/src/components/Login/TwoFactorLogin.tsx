@@ -1,37 +1,38 @@
-function TwoFactorLogin() {
+import React, { useEffect, useState } from 'react';
 
-    function generateQrCode() {
-        fetch("http://localhost:5000/2fa/generate", {
-            method: 'post',
-            credentials: "include",
-            headers: {
-                'Content-Type': 'image/png',
-            },
-        }).then((response) => {
-            return response.blob();
-        }).then((data) => {
-            // Create URL from blob()
-            const url = URL.createObjectURL(data);
-            // Find or create an element img to display image
-            let img = document.getElementById('qrCodeImage');
-            if (!img) {
-                img = document.createElement('img');
-                img.id = 'qrCodeImage';
-                document.body.appendChild(img);
+function TwoFactorLogin() {
+    const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
+
+    useEffect(() => {
+        async function fetchQrCode() {
+            try {
+                const response = await fetch("http://localhost:5000/2fa/generate", {
+                    method: 'post',
+                    credentials: "include",
+                    headers: {
+                        'Content-Type': 'image/png',
+                    },
+                });
+                const data = await response.blob();
+                const url = URL.createObjectURL(data);
+                setQrCodeUrl(url);
+            } catch (error: unknown) {
+                if (error instanceof Error) {
+                    console.log('Error:', error.message);
+                } else {
+                    console.log('An unknown error occurred:', error);
+                }
             }
-            // Update the attribute src of img element
-            (img as HTMLImageElement).src = url;
-        }).catch(error => {
-            console.log('Error:', error.message);
-        });
-        return 'Scannez le QrCode pour obtenir un code de validation';
-    }
+        }
+
+        fetchQrCode();
+    }, []);
 
     return (
         <div>
             <p>Coucou depuis la page 'TwoFactorLogin'</p>
-            <p>
-                {generateQrCode()}</p>
+            <p>Scannez le QrCode pour obtenir un code de validation</p>
+            {qrCodeUrl && <img src={qrCodeUrl} alt="QR Code" id="qrCodeImage" />}
         </div>
     );
 }
