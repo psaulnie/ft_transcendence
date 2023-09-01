@@ -126,4 +126,17 @@ export class UsersService {
       isTwoFactorAuthEnabled: true,
     });
   }
+
+  async isTwoFactorAuthEnabled(userId: number): Promise<boolean> {
+    const user = await this.usersRepository.findOne({
+      where: { uid: userId },
+      select: ['isTwoFactorAuthEnabled'],
+    });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    return user.isTwoFactorAuthEnabled;
+  }
 }

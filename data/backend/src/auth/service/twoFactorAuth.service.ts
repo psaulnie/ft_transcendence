@@ -1,14 +1,17 @@
-import { Injectable } from '@nestjs/common';
-import { authenticator } from 'otplib';
-import { User } from '../../entities';
-import { UsersService } from '../../users/users.service';
-import { ConfigService } from '@nestjs/config';
-import { toFileStream } from 'qrcode';
+import {Injectable} from '@nestjs/common';
+import {authenticator} from 'otplib';
+import {User} from '../../entities';
+import {UsersService} from '../../users/users.service';
+import {ConfigService} from '@nestjs/config';
+import {toFileStream} from 'qrcode';
 import e from 'express';
+import {InjectRepository} from '@nestjs/typeorm';
+import {Repository} from 'typeorm';
 
 @Injectable()
 export class TwoFactorAuthService {
   constructor(
+    @InjectRepository(User) private userRepo: Repository<User>,
     private readonly usersService: UsersService,
     private readonly configService: ConfigService,
   ) {}
@@ -41,5 +44,9 @@ export class TwoFactorAuthService {
       token: twoFactorAuthCode,
       secret: user.twoFactorAuthSecret,
     });
+  }
+
+  async isTwoFactorAuthTurnedOn(user: User) {
+    return await this.usersService.isTwoFactorAuthEnabled(user.uid);
   }
 }
