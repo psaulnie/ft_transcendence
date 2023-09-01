@@ -31,7 +31,7 @@ export default function NavDrawer({
 
   const handleSettingsClick = () => {
     toggleDrawer(false);
-    navigate("/modification");
+    navigate("/friendlist");
   };
 
   return (
