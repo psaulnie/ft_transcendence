@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import { webSocket } from "../../webSocket";
+import webSocketManager from "../../webSocket";
 import { accessStatus, userRole } from "./chatEnums";
 import { useDispatch, useSelector } from "react-redux";
 import { useLazyGetIsRoomNameTakenQuery } from "../../store/api";
@@ -80,7 +80,7 @@ function CreateChannel() {
           isMuted: false,
         }),
       );
-      webSocket.emit("joinRoom", {
+      webSocketManager.getSocket().emit("joinRoom", {
         source: user.username,
         room: newRoomName,
         access: access,

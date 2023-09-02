@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { webSocket } from "../../webSocket";
-
+import webSocketManager from "../../webSocket";
 import {
   Dialog,
   DialogTitle,
@@ -67,14 +66,14 @@ export default function PasswordDialog({
             isMuted: false,
           }),
         );
-        webSocket.emit("joinRoom", {
+        webSocketManager.getSocket().emit("joinRoom", {
           source: user.username,
           room: roomName,
           access: accessStatus.protected,
           password: password,
         });
       } else {
-        webSocket.emit("setPasswordToRoom", {
+        webSocketManager.getSocket().emit("setPasswordToRoom", {
           room: roomName,
           password: password,
           source: user.username,

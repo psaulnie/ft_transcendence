@@ -1,6 +1,6 @@
 // import { exit } from 'process';
 import React, { useState, useEffect} from 'react';
-import { webSocket } from '../../webSocket';
+import webSocketManager from '../../webSocket';
 // import { WidthFull } from '@mui/icons-material';
 // import { match } from 'assert';
 import { Button } from '@mui/material';
@@ -12,12 +12,12 @@ export default function Matchmaking({setFoundUser, setPlayers}: {setFoundUser: a
 
   function startMatchmaking() {
     setButtonClick(true);
-    webSocket.emit("matchmaking", {username: user.username});
+    webSocketManager.getSocket().emit("matchmaking", {username: user.username});
   }
   
   function cancelMatchmaking() {
     setButtonClick(false);
-    webSocket.emit("cancelMatchmaking", {username: user.username});
+    webSocketManager.getSocket().emit("cancelMatchmaking", {username: user.username});
   }
 
 	useEffect(() => {
@@ -28,9 +28,9 @@ export default function Matchmaking({setFoundUser, setPlayers}: {setFoundUser: a
       console.log(value);
 		}
 
-		webSocket.on("matchmaking" + user.username, process);
+		webSocketManager.getSocket().on("matchmaking" + user.username, process);
 		return () => {
-			webSocket.off("matchmaking" + user.username, process);
+			webSocketManager.getSocket().off("matchmaking" + user.username, process);
 		};
 	}, [user.username, setFoundUser, setPlayers]);
 

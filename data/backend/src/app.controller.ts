@@ -112,6 +112,7 @@ export class AppController {
       true,
     );
   }
+
   @Get('/avatar/:username')
   async getAvatar(
     @Param('username') username: string,

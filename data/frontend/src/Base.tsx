@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SyntheticEvent } from "react";
 
 import { Routes, Route } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { logout } from "./store/user";
 
 import Navigation from "./components/Navigation/Navigation";
@@ -12,8 +12,10 @@ import Options from "./components/Global/Options";
 import Profile from "./components/Global/Profile";
 import Home from "./components/Home/Home";
 import Chat from "./components/Chat/Chat";
+import webSocketManager from "./webSocket";
 
 export default function Base() {
+  const user = useSelector((state: any) => state.user);
   const dispatch = useDispatch();
 
   const [isProfilOpen, setIsProfilOpen] = useState(false);
@@ -34,6 +36,8 @@ export default function Base() {
   const toggleProfil = () => {
     setIsProfilOpen(!isProfilOpen);
   };
+
+  webSocketManager.initializeWebSocket();
 
   return (
     <div className="main">
