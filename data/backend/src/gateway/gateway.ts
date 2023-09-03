@@ -550,6 +550,8 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
       return ;
     const connectSid = credential.substring(credential.indexOf('s%3A') + 4, credential.indexOf('.', credential.indexOf('s%3A')))
     const session = await this.userService.findOneSession(connectSid);
+    if (!session)
+      return ;
     const parsedJson = JSON.parse(session.json);
     const user = await this.userService.findOne(parsedJson.passport.user.intraUsername);
     if (!user)

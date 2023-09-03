@@ -1,6 +1,7 @@
 import { Navigate, Outlet } from "react-router";
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
+import { useSelector } from "react-redux";
 
 export default function PrivateRoute() {
   const [isLoading, setIsLoading] = useState(true);
@@ -36,7 +37,7 @@ export default function PrivateRoute() {
   }, []);
 
   if (isLoading) return <div>Loading...</div>;
-  if (isOk || Cookies.get("accessToken") === "test") {
+  if ((isOk) || Cookies.get("accessToken") === "test") {
     // TODO remove when testUser no longer needed
     return <Outlet />;
   }

@@ -17,6 +17,9 @@ export class WebSocketManager {
   }
 
   getSocket() {
+    if (!this.socket) {
+      throw new Error("Socket not initialized");
+    }
     return this.socket;
   }
 }

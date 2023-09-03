@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { SyntheticEvent } from "react";
 
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "./store/user";
 
@@ -37,6 +37,13 @@ export default function Base() {
     setIsProfilOpen(!isProfilOpen);
   };
 
+  useEffect(() => {
+    if (!user || !user.username)
+    {
+      dispatch(logout());
+      window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/logout`;
+    }
+  }, []);
   webSocketManager.initializeWebSocket();
 
   return (
@@ -44,6 +51,7 @@ export default function Base() {
       <Navigation setDrawerState={setDrawerState} />
       <NavDrawer state={drawerState} toggleDrawer={toggleDrawer} />
       <Routes>
+        <Route path="*" element={<Navigate to="/home"/>}></Route>
         <Route path="/home" element={<Home />}></Route>
         <Route
           path="/profile"
