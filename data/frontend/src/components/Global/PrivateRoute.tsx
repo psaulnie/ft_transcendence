@@ -28,7 +28,6 @@ export default function PrivateRoute() {
           setIsOk(true);
         else setIsOk(false);
         setIsLoading(false);
-        // TODO : handle fetch error
       });
   };
 

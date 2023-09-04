@@ -61,7 +61,7 @@ export default function UploadButton() {
         },
       },
     ).catch(() => {
-      // TODO : handle fetch error
+      throw new Error("Api call error");
     });
   };
 

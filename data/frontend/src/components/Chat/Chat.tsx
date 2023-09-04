@@ -92,9 +92,9 @@ function Chat() {
     fetchUserRoomList,
   ]);
 
-  if (!webSocketManager.getSocket().connected) return <p>Chat Socket error</p>;
-  if (blockedUsers.isError) return <Error error={blockedUsers.error} />;
-  else if (userRoomList.isError) return <Error error={userRoomList.error} />;
+  if (blockedUsers.isError) throw new (Error as any)("API call error");
+
+  else if (userRoomList.isError) throw new (Error as any)("API call error");
   else if (blockedUsers.isLoading || userRoomList.isLoading)
     return (
       <div>

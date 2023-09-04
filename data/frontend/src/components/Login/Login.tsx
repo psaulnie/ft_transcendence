@@ -43,7 +43,6 @@ function Login() {
       .catch((error) => {
         setIsOk(false);
         setIsLoading(false);
-        // TODO : handle fetch error
       });
   };
   useEffect(() => {

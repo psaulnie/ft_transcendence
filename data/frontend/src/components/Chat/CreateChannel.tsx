@@ -33,7 +33,7 @@ function CreateChannel() {
 
   const [trigger, result] = useLazyGetIsRoomNameTakenQuery();
 
-  if (result.isError) return <Error error={result.error} />;
+  if (result.isError) throw new (Error as any)("API call error");
   else if (result.isLoading)
     return (
       <div>

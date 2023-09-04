@@ -81,7 +81,7 @@ function JoinChannel() {
     refetch();
   }, [refetch]);
 
-  if (isError) return <Error error={error} />;
+  if (isError) throw new (Error as any)("API call error");
   else if (isLoading)
     return (
       <div>
