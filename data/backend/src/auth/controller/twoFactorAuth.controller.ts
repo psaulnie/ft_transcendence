@@ -11,12 +11,12 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import {TwoFactorAuthService} from '../service/twoFactorAuth.service';
-import {Response} from 'express';
+import { TwoFactorAuthService } from '../service/twoFactorAuth.service';
+import { Response } from 'express';
 import RequestWithUser from '../service/requestWithUser.interface';
-import {AuthenticatedGuard, IntraAuthGuard,} from '../guards/intraAuthGuard.service';
-import {UsersService} from '../../users/users.service';
-import {TwoFactorAuthCodeDto} from '../dto/twoFactorAuthCode.dto';
+import { AuthenticatedGuard } from '../guards/intraAuthGuard.service';
+import { UsersService } from '../../users/users.service';
+import { TwoFactorAuthCodeDto } from '../dto/twoFactorAuthCode.dto';
 
 @Controller('2fa')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -29,7 +29,6 @@ export class TwoFactorAuthController {
   @Post('generate')
   @UseGuards(AuthenticatedGuard)
   async register(@Res() response: Response, @Req() request: RequestWithUser) {
-    console.log('GENERATE CONTROLLER (2FA)');
     const { otpAuthUrl } =
       await this.twoFactorAuthService.generateTwoFactorAuthenticationSecret(
         request.user,
@@ -75,7 +74,7 @@ export class TwoFactorAuthController {
 
   @Post('authenticate')
   @HttpCode(200)
-  @UseGuards(IntraAuthGuard)
+  @UseGuards(AuthenticatedGuard)
   async authenticate(
     @Req() request: RequestWithUser,
     @Body() { twoFactorAuthCode }: TwoFactorAuthCodeDto,
@@ -87,13 +86,6 @@ export class TwoFactorAuthController {
     if (!isCodeValid) {
       throw new UnauthorizedException('Wrong authentication code');
     }
-
-    // const accessTokenCookie = AuthService.getCookieWithJwtAccessToken(
-    //   request.user.uid,
-    //   true,
-    // );
-    //
-    // request.res.setHeader('Set-Cookie', [accessTokenCookie]);
 
     return request.user;
   }

@@ -116,13 +116,13 @@ export class UsersService {
   }
 
   async setTwoFactorAuthSecret(secret: string, userId: number) {
-    return this.usersRepository.update(userId, {
+    return await this.usersRepository.update(userId, {
       twoFactorAuthSecret: secret,
     });
   }
 
   async turnOnTwoFactorAuth(userId: number) {
-    return this.usersRepository.update(userId, {
+    return await this.usersRepository.update(userId, {
       isTwoFactorAuthEnabled: true,
     });
   }
@@ -137,6 +137,7 @@ export class UsersService {
       throw new Error('User not found');
     }
 
+    console.log('‣ isTwoFactorAuthEnabled: ', user.isTwoFactorAuthEnabled);
     return user.isTwoFactorAuthEnabled;
   }
 }
