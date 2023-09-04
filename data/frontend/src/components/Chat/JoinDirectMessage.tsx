@@ -4,6 +4,7 @@ import { webSocket } from "../../webSocket";
 import { useSelector, useDispatch } from "react-redux";
 import { useGetUsersListQuery } from "../../store/api";
 import { addRoom } from "../../store/rooms";
+import { Grid, Typography } from "@mui/material";
 
 import Error from "../Global/Error";
 
@@ -81,9 +82,9 @@ function JoinDirectMessage() {
     );
 
   return (
-    <div className="joinDirectMessage">
-      <p>Direct Message</p>
-      <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+    <Grid className="joinDirectMessage">
+      <Typography sx={{marginTop:'2em'}}>Direct Message</Typography>
+      <FormControl sx={{ minWidth: 120 }} size="small">
         <InputLabel>Users</InputLabel>
         <Select
           name="usersList"
@@ -107,10 +108,10 @@ function JoinDirectMessage() {
         </Select>
         <FormHelperText>Select an user</FormHelperText>
       </FormControl>
-      <IconButton size="small" onClick={joinRoom} disabled={newUser === ""}>
+      <IconButton size="small" onClick={joinRoom} disabled={newUser === ""} sx={{transform: "translate(0%, 6%)",}}>
         <AddIcon />
       </IconButton>
-    </div>
+    </Grid>
   );
 }
 

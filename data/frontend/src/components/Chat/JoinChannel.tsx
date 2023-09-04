@@ -20,6 +20,7 @@ import {
   Grid,
 } from "@mui/material";
 import { Skeleton } from "@mui/material";
+import { Typography } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import LockIcon from "@mui/icons-material/Lock";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -91,9 +92,9 @@ function JoinChannel() {
     );
 
   return (
-    <div className="joinChannel">
-      <p>Join a new channel</p>
-      <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+    <Grid className="joinChannel">
+      <Typography sx={{marginTop:'2em'}}>Join a new channel</Typography>
+      <FormControl sx={{ minWidth: 120 }} size="small">
         <InputLabel>Channel</InputLabel>
         <Select
           name="roomsList"
@@ -134,7 +135,7 @@ function JoinChannel() {
         </Select>
         <FormHelperText>Select an existing channel</FormHelperText>
       </FormControl>
-      <IconButton size="small" onClick={joinRoom}>
+      <IconButton size="small" onClick={joinRoom} sx={{transform: "translate(0%, 6%)",}}>
         <AddIcon />
       </IconButton>
       {showDialog === true ? (
@@ -146,7 +147,7 @@ function JoinChannel() {
           createRoom={true}
         />
       ) : null}
-    </div>
+    </Grid>
   );
 }
 
