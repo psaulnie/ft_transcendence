@@ -115,13 +115,13 @@ export class AppController {
       true,
     );
   }
-
+  
   @Get('/avatar/:username')
   async getAvatar(
     @Param('username') username: string,
     @Res({ passthrough: true }) res: Response,
-  ): Promise<StreamableFile> {
-    if (username == null) {
+    ): Promise<StreamableFile> {
+      if (username == null) {
       throw new HttpException('Bad Request', 400);
     }
 
