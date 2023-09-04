@@ -623,7 +623,6 @@ export class Gateway
   }
 
   async handleConnection(client: Socket) {
-    if (!client.handshake.auth.token) return;
     console.log(`Client connected: ${client.id}`);
     if (client.handshake.headers['authorization']?.split(' ')[1] === 'test')
       // TODO remove and TODO test
