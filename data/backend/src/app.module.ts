@@ -29,6 +29,7 @@ import { UsersStatusService } from './services/users.status.service';
 import { FriendList } from './entities/friend.list.entity';
 import { BlockedList } from './entities/blocked.list.entity';
 import { Statistics } from './entities/stats.entity';
+import { GameModule } from './game/game.module';
 import { GameService } from './services/game.service';
 
 @Module({
@@ -60,14 +61,15 @@ import { GameService } from './services/game.service';
     ]),
     CacheModule.register({ isGlobal: true }),
     HttpModule.register({}),
+    GameModule,
   ],
   controllers: [AppController, ChatController],
   providers: [
     UsersService,
+    GameService,
     UsersStatusService,
     AppService,
     RoomService,
-    GameService,
     Gateway,
     IntraStrategy,
     SessionSerializer,

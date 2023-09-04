@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 // import Canvas from './Canvas';
 import './Canvas.css'
 import { webSocket } from '../../webSocket';
+import { BlobOptions } from 'buffer';
 // import { exit } from 'process';
 // import { WidthFull } from '@mui/icons-material';
 // import Matchmaking from './Matchmaking';
@@ -15,18 +16,21 @@ import { webSocket } from '../../webSocket';
 
 export default function Canvas({players, gameRoomId} : {players: {1: string, 2: string}, gameRoomId: string}) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [rectPositionP1, setRectPositionP1] = useState<{ x: number; y: number }>({ x: 20, y:  0});
-  const [rectPositionP2, setRectPositionP2] = useState<{ x: number; y: number }>({ x: 0, y:  0});
+  const [rectPositionP1, setRectPositionP1] = useState<{ x: number; y: number }>({ x: 20, y:  175});
+  const [rectPositionP2, setRectPositionP2] = useState<{ x: number; y: number }>({ x: 620, y:  175});
+  const [ballPosition, setBallPosition] = useState<{ x: number; y: number }>({ x: 320, y:  212});
   const [canvasSize, setCanvasSize] = useState<{ width: number; height: number }>({ width: 640, height: 425 });
-  const [divSize, setDivSize] = useState<{width: any; height: any}>({width:0, height: 0})
-  const [setUp, setSetUp] = useState(false);
+  const [divSize, setDivSize] = useState<{width: any; height: any}>({width:0, height: 0});
   const rectWidth = 5;
-  const rectHeight = 50;
+  const rectHeight = 75;
   const canvas = canvasRef.current;
   const ctx = canvas?.getContext('2d');
-  
+  const isP1 = (players[1] < players[2]) ? true : false;
+  const upPress = useRef<boolean>(false);
+  const downPress = useRef<boolean>(false);
+
   useEffect(() => {
-    const divID = "canvas"
+    const divID = "canvas";
     const divElement = document.getElementById(divID);
     if (divElement)
       divElement.style.cursor = "none";
@@ -34,13 +38,13 @@ export default function Canvas({players, gameRoomId} : {players: {1: string, 2: 
     const divHeight = divElement!.offsetHeight; // Hauteur de la div en pixels
     setDivSize({width: divWidth, height: divHeight});
 
-    setRectPositionP1({x:20, y: divHeight / 2});
-    setRectPositionP2({x: divHeight - 20, y: divHeight / 2});
+    // setRectPositionP1({x:20, y: divHeight / 2});
+    // setRectPositionP2({x: divHeight - 20, y: divHeight / 2});
 
-    const canvas = canvasRef.current;
-    const ctx = canvas?.getContext('2d');
-    ctx!.fillStyle = 'white';
-    ctx?.fillRect(divWidth - 20 - rectWidth / 2, divHeight / 2 - rectHeight / 2, rectWidth, rectHeight);
+    // const canvas = canvasRef.current;
+    // const ctx = canvas?.getContext('2d');
+    // ctx!.fillStyle = 'white';
+    // ctx?.fillRect(divWidth - 20 - rectWidth / 2, divHeight / 2 - rectHeight / 2, rectWidth, rectHeight);
 
     
     const handleResize = () => {
@@ -65,40 +69,20 @@ export default function Canvas({players, gameRoomId} : {players: {1: string, 2: 
     };
   }, [ctx]);
 
-  // useEffect(() => {
-  //   const canvas = canvasRef.current;
-
-  //   const handleMouseMove = (event: MouseEvent) => {
-  //     const rect = canvas?.getBoundingClientRect();
-  //     // const mouseX = event.clientX - rect!.left;
-  //     const mouseY = event.clientY - rect!.top;
-  //     // console.log(mouseY);
-  //     // console.log(webSocket.connected);
-  //     webSocket.emit("game", {player: players[1], opponent: players[2], y: mouseY});
-  //     setRectPositionP1({x:20, y: mouseY});
-  //   };
-
-  //   canvas?.addEventListener('mousemove', handleMouseMove);
-
-  //   return () => {
-  //     canvas?.removeEventListener('mousemove', handleMouseMove);
-  //   };
-  // }, [players]);
-
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.repeat)
         return;
       const { key } = event;
-      const speed = 10;
 
       if (key === 'ArrowUp' || key === 'w') {
         console.log("up press");
-        webSocket.emit("pressUp", {player: players[1], opponent: players[2]});
-        setRectPositionP1((prevPosition) => ({ ...prevPosition, y: prevPosition.y - speed }));
-      } else if (key === 'ArrowDown' || key === 's') {
-        webSocket.emit("pressDown", {player: players[1], opponent: players[2]});
-        setRectPositionP1((prevPosition) => ({ ...prevPosition, y: prevPosition.y + speed }));
+        // upPress.current = true;
+        webSocket.emit("pressUp", {player: players[1], gameRoomId: gameRoomId});
+      }
+      if (key === 'ArrowDown' || key === 's') {
+        // downPress.current = true;
+        webSocket.emit("pressDown", {player: players[1], gameRoomId: gameRoomId});
       }
     };
 
@@ -106,14 +90,16 @@ export default function Canvas({players, gameRoomId} : {players: {1: string, 2: 
       if (event.repeat)
         return;
       const { key } = event;
-      const speed = 10;
 
-      if (key === 'ArrowUp' || key === 'w' || key === 'ArrowDown' || key === 's') {
-        webSocket.emit("releaseKey", {player: players[1], opponent: players[2]});
-        // setRectPositionP1((prevPosition) => ({ ...prevPosition, y: prevPosition.y - speed }));
-      } else if (key === 'ArrowDown' || key === 's') {
-        webSocket.emit("releaseDown", {player: players[1], opponent: players[2]});
-        // setRectPositionP1((prevPosition) => ({ ...prevPosition, y: prevPosition.y + speed }));
+      if ((key === 'ArrowUp' || key === 'w') && downPress.current === false) {
+        // upPress.current = false;
+        // downPress.current = false;
+        webSocket.emit("releaseUp", {player: players[1], gameRoomId: gameRoomId});
+      }
+      if ((key === 'ArrowDown' || key === 's') && upPress.current === false) {
+        // downPress.current = false;
+        // upPress.current = false;
+        webSocket.emit("releaseDown", {player: players[1], gameRoomId: gameRoomId});
       }
     };
 
@@ -130,30 +116,36 @@ export default function Canvas({players, gameRoomId} : {players: {1: string, 2: 
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext("2d");
 
-    const animate = () => {
-      ctx!.fillStyle = 'white';
-      ctx?.clearRect(0, 0, canvas!.width / 2, canvas!.height);
-      ctx?.fillRect(rectPositionP1.x - rectWidth / 2, rectPositionP1.y - rectHeight / 2, rectWidth, rectHeight);
-      requestAnimationFrame(animate);
-    };
-
-    animate();
-  }, [rectPositionP1, divSize]);
-
-  useEffect(() => {
-      function process(value: any) {    
+		function process(value: any) {
+      // const animate = () => {
+        // console.log("dans animate", value);
         ctx!.fillStyle = 'white';
         ctx?.clearRect(0, 0, canvas!.width, canvas!.height);
-        setRectPositionP2({x: divSize.width - 20, y: value.mouseY});
-        ctx?.fillRect(canvasSize.width - 20 - rectWidth / 2, rectPositionP2.y - rectHeight / 2, rectWidth, rectHeight);
-      
-    }
+        if (isP1 == true) {
+          // console.log("je suis P1");
+          setRectPositionP1((prevPosition) => ({ ...prevPosition, y: value.playerY}));
+          ctx?.fillRect(rectPositionP1.x /*- rectWidth / 2*/, rectPositionP1.y/* - rectHeight / 2*/, rectWidth, rectHeight);
+          setRectPositionP2((prevPosition) => ({ ...prevPosition, y: value.enemyY}));
+          ctx?.fillRect(canvasSize.width - 20/* - rectWidth / 2*/, rectPositionP2.y/* - rectHeight / 2*/, rectWidth, rectHeight);  
+        } else {
+          // console.log("je suis P2");
+          setRectPositionP2((prevPosition) => ({ ...prevPosition, y: value.enemyY}));
+          ctx?.fillRect(rectPositionP1.x/* - rectWidth / 2*/, rectPositionP1.y /*- rectHeight / 2*/, rectWidth, rectHeight);
+          setRectPositionP1((prevPosition) => ({ ...prevPosition, y: value.playerY}));
+          ctx?.fillRect(canvasSize.width - 20/* - rectWidth / 2*/, rectPositionP2.y/* - rectHeight / 2*/, rectWidth, rectHeight);  
+        }
+        setBallPosition({x: value.ballX, y: value.ballY});
+        ctx?.fillRect(ballPosition.x, ballPosition.y, 10, 10);
 
-    webSocket.on(players[1], process);
-    return () => {
-      webSocket.off(players[1], process);
+      //   requestAnimationFrame(animate);
+      // };
+      // animate();
     }
-  }, [rectPositionP2.y, canvas, ctx, canvasSize, players, divSize]);
+    webSocket.on("game" + gameRoomId, process);
+		return () => {
+			webSocket.off("game" + gameRoomId, process);
+		};
+  }, [rectPositionP1, divSize]);
 
   return (
     <div className='canvas' id='canvas'>

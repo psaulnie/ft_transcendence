@@ -19,6 +19,8 @@ import { hashPassword, comparePassword } from './hashPasswords';
 import { UsersStatusService } from 'src/services/users.status.service';
 import { userStatus } from 'src/users/userStatus';
 import { GameService } from 'src/services/game.service';
+import { randomUUID } from 'crypto';
+import { ParseUUIDPipe } from '@nestjs/common';
 
 @WebSocketGateway({
   cors: { origin: '*' },
@@ -28,6 +30,23 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
 	
 	private matchmakingQueue: (string)[];
 
+  // gameRoom: {
+  //   player1: {
+  //     name: string;
+  //     id: number;
+  //     direction: number;
+  //     Y:number;
+  //   }
+  //   player2: {
+  //     name: string;
+  //     id: number;
+  //     direction: number;
+  //     Y:number;
+  //   };
+  //   ball: {x:number, y:number};
+  //   id: string;
+  // }
+
 	constructor(
 		private roomService: RoomService,
 		private userService: UsersService,
@@ -35,6 +54,22 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
     private gameService: GameService,
 	) {
 		this.matchmakingQueue = [];
+    // this.gameRoom = {
+    //   player1: {
+    //       name: '',
+    //       id: 0,
+    //       direction: 0,
+    //       Y: 0,
+    //   },
+    //   player2: {
+    //       name: '',
+    //       id: 0,
+    //       direction: 0,
+    //       Y: 0,
+    //   },
+    //   ball: { x: 0, y: 0 },
+    //   id: '',
+  // };
 	}
 	@WebSocketServer() server: Server;
 
@@ -503,6 +538,7 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
 		// const user = await this.userService.findOne(payload.username);
 		// if (!user)
 		// throw new WsException("User not found");
+    const ticServ = 16;
 		if (this.matchmakingQueue.find((name:string) => name == payload.username))
 			throw new WsException("Already in Matchmaking");
 		this.matchmakingQueue.push(payload.username);
@@ -513,16 +549,25 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
         const user2 = await this.userService.findOne(player2);
         if (!user1 || !user2)
           throw new WsException("User not found");
-        const gameRoomId = this.gameService.newGame(user1, user2, player1, player2);
+        const gameRoomId = player1 < player2 ? this.gameService.newGame(user1, user2) : this.gameService.newGame(user2, user1)
         // TODO send gameRoomId of this.gameService.newGame to the players, 
         // then the players stores it and uses this ID to send the game data to the server in the handleGame function
 				this.server.emit("matchmaking" + player1, {opponent: player2, gameRoomId: gameRoomId});
 				this.server.emit("matchmaking" + player2, {opponent: player1, gameRoomId: gameRoomId});
 				this.matchmakingQueue.splice(this.matchmakingQueue.indexOf(player1), 1);
 				this.matchmakingQueue.splice(this.matchmakingQueue.indexOf(player2), 1);
+
+        setInterval(() => {this.gameService.movePlayer(gameRoomId)}, ticServ);
+        setInterval(() => {
+          const gameRoom = this.gameService.getGameRoom(gameRoomId);
+          if (!gameRoom)
+            return;
+          this.server.emit("game" + gameRoomId, {playerY: gameRoom.player1.Y, enemyY: gameRoom.player2.Y, ballX: gameRoom.ballPos.x, ballY: gameRoom.ballPos.y}) 
+        }, ticServ);
 		}
 	}
-
+//TODO fonction quand direction est diff de 0 bouger le Y de player
+  
 	@SubscribeMessage('cancelMatchmaking')
 	async cancelMatchmaking(client: Socket, payload: {username: string}) {
 		// const user = await this.userService.findOne(payload.username);
@@ -533,6 +578,10 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
 		this.matchmakingQueue.splice(this.matchmakingQueue.indexOf(payload.username), 1);
 	}
 
+  // async sendToClient() {
+  //   this.server.emit("game" + this.gameRoom.id, {playerY: this.gameRoom.player1.Y, enemyY: this.gameRoom.player2.Y, ballX: this.gameRoom.ball.x, ballY: this.gameRoom.ball.y}) 
+  // }
+
 	// @SubscribeMessage('game')
 	// async handleGame(client: Socket, payload: {player: string, opponent: string, y: number})
 	// {
@@ -542,29 +591,54 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
 	// 	this.server.emit(payload.opponent, {mouseY: payload.y})
 	// }
 
+  // movePlayer() {
+    // const speed = 10;
+    // // console.log("ca vas bouger");
+    // console.log(this.gameRoom);
+    // console.log(this.gameRoom ? true : false, this.gameRoom.player1 ? true : false, this.gameRoom.player1.direction);
+    // if (this.gameRoom && this.gameRoom.player1 && this.gameRoom.player1.direction !== 0) {
+    //   console.log("_______________________________")
+    //   if (this.gameRoom.player1.direction === 1) {
+    //     this.gameRoom.player1.Y -= speed;
+    //     console.log("----------------------y:", this.gameRoom.player1);
+    //   }
+    //   else if (this.gameRoom.player1.direction === -1)
+    //     this.gameRoom.player1.Y += speed;
+    // }
+    // else if (this.gameRoom && this.gameRoom.player2 && this.gameRoom.player2.direction !== 0) {
+    //   if (this.gameRoom.player2.direction === 1)
+    //     this.gameRoom.player1.Y -= speed;
+    //   else if (this.gameRoom.player2.direction === -1)
+    //     this.gameRoom.player1.Y += speed;
+    // }
+  // }
+
   @SubscribeMessage('pressUp')
-	async pressUp(client: Socket, payload: {player: string, opponent: string},
-		player: {name: string, opponent: string, ballPos:{x: number, y: number}, paddleP1: {x: number, y: number}, paddleP2: {x: number, y: number}, direction: number})
+	async pressUp(client: Socket, payload: {player: string, gameRoomId: string})
 	{
 		console.log("press UP");
-		console.log(player.name);
-		// player.direction = 1;
+    this.gameService.pressUp(payload.player, payload.gameRoomId);
 	}
 
 	@SubscribeMessage('pressDown')
-	async pressDown(client: Socket, payload: {player: string, opponent: string},
-		player: {name: string, opponent: string, ballPos:{x: number, y: number}, paddleP1: {x: number, y: number}, paddleP2: {x: number, y: number}, direction: number})
+	async pressDown(client: Socket, payload: {player: string, gameRoomId: string})
 	{
 		console.log("press Down");
-		// player.direction = -1;
+    this.gameService.pressDown(payload.player, payload.gameRoomId);
 	}
 
-	@SubscribeMessage('releaseKey')
-	async releaseUp(client: Socket, payload: {player: string, opponent: string},
-		player: {name: string, opponent: string, ballPos:{x: number, y: number}, paddleP1: {x: number, y: number}, paddleP2: {x: number, y: number}, direction: number})
+	@SubscribeMessage('releaseUp')
+	async releaseUp(client: Socket, payload: {player: string, gameRoomId: string})
 	{
-		// player.direction = 0;
 		console.log("release KEY");
+    this.gameService.releaseUp(payload.player, payload.gameRoomId);
+	}
+
+  @SubscribeMessage('releaseDown')
+	async releaseDown(client: Socket, payload: {player: string, gameRoomId: string})
+	{
+		console.log("release KEY");
+    this.gameService.releaseDown(payload.player, payload.gameRoomId);
 	}
 
 /*

@@ -36,6 +36,6 @@ export default function Matchmaking({setFoundUser, setPlayers, setGameRoomId}: {
 	}, [user.username, setFoundUser, setPlayers]);
 
   return (
-      !bouttonClick ? <Button onClick={startMatchmaking}>play</Button> : <Button onClick={cancelMatchmaking}>cancel</Button>
+      !bouttonClick ? <Button onClick={startMatchmaking}>play</Button> : <div><Button onClick={cancelMatchmaking}>cancel</Button><p>Matchmaking in progress</p></div>
   );
 };
