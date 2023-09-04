@@ -136,7 +136,7 @@ function Options() {
                 },
               }}
             >
-              S'inscrire avec Google
+              Login with Google
             </Button>
           </Grid>
           <Grid

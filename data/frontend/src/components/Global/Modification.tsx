@@ -1,11 +1,18 @@
 import { Box, Grid, Button, Avatar, Typography, TextField } from "@mui/material";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 interface ProfileProps {
   toggleProfil: () => void;
 }
 
 function Modification({ toggleProfil }: ProfileProps) {
+  const navigate = useNavigate();
+
+  	const handleProfileClick = () => {
+    	navigate("/profile");
+	};
+
   const user = useSelector((state: any) => state.user);
   const urlAvatar = "http://localhost:5000/api/avatar/" + user.username;
 
@@ -98,6 +105,7 @@ function Modification({ toggleProfil }: ProfileProps) {
             sx={{ width: "100%", height: "100%",}}
           >
             <Button
+              onClick={handleProfileClick}
               variant="contained"
               color="primary"
               sx={{

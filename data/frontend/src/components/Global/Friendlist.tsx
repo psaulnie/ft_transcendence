@@ -1,8 +1,15 @@
 import { Box, Grid, Button, Typography } from "@mui/material";
 import VideogameAssetIcon from '@mui/icons-material/VideogameAsset';
 import AdjustIcon from '@mui/icons-material/Adjust';
+import { useNavigate } from "react-router-dom";
 
 function Friendlist() {
+	const navigate = useNavigate();
+
+  	const handleProfileClick = () => {
+    	navigate("/profile");
+	};
+
   return (
     <div>
       {/* <UploadButton /> */}
@@ -202,6 +209,7 @@ function Friendlist() {
           	  	sx={{ width: "100%", height: "100%", marginTop: "0.25em" }}
           	>
           	  	<Button
+					onClick={handleProfileClick}
           	  	  	variant="contained"
           	  	  	color="primary"
           	  	  	sx={{

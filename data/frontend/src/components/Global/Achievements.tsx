@@ -1,6 +1,14 @@
 import { Box, Grid, Button, Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+
 
 function Achievements() {
+	const navigate = useNavigate();
+
+  	const handleProfileClick = () => {
+    	navigate("/profile");
+
+  };
   return (
     <div>
       {/* <UploadButton /> */}
@@ -274,6 +282,7 @@ function Achievements() {
           	  	sx={{ width: "100%", height: "100%", marginTop: "0.25em" }}
           	>
           	  	<Button
+					onClick={handleProfileClick}
           	  	  	variant="contained"
           	  	  	color="primary"
           	  	  	sx={{
