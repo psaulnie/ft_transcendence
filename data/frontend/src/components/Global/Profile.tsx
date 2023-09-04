@@ -1,7 +1,6 @@
-import UploadButton from "./UploadButton";
-
 import { Box, Grid, Button, Avatar, Typography, Paper } from "@mui/material";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 interface ProfileProps {
   toggleProfil: () => void;
@@ -13,6 +12,20 @@ function Profile({ toggleProfil }: ProfileProps) {
 
   const handleButtonClick = () => {
     toggleProfil();
+  };
+
+  const navigate = useNavigate();
+
+  const handleAchievementsClick = () => {
+    navigate("/achievements");
+  };
+
+  const handleFriendsClick = () => {
+    navigate("/friendlist");
+  };
+
+  const handleModificationClick = () => {
+    navigate("/Modification");
   };
 
   return (
@@ -57,7 +70,7 @@ function Profile({ toggleProfil }: ProfileProps) {
               <Grid
                 item
                 xs={6}
-                sx={{ backgroundColor: "", marginTop: "0.2em" }}
+                sx={{ backgroundColor: "", marginTop: "0.2em", transform: "translate(-7%, 0%)", }}
               >
                 <Typography
                   variant="h6"
@@ -180,7 +193,7 @@ function Profile({ toggleProfil }: ProfileProps) {
       <Button
         variant="contained"
         color="primary"
-        onClick={handleButtonClick}
+        onClick={handleAchievementsClick}
         sx={{
           textTransform: "none",
           fontWeight: "bold",
@@ -205,7 +218,7 @@ function Profile({ toggleProfil }: ProfileProps) {
       <Button
         variant="contained"
         color="primary"
-        onClick={handleButtonClick}
+        onClick={handleFriendsClick}
         sx={{
           textTransform: "none",
           fontWeight: "bold",
@@ -230,7 +243,7 @@ function Profile({ toggleProfil }: ProfileProps) {
       <Button
         variant="contained"
         color="primary"
-        onClick={handleButtonClick}
+        onClick={handleModificationClick}
         sx={{
           textTransform: "none",
           fontWeight: "bold",

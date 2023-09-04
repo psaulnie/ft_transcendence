@@ -5,6 +5,7 @@ import { accessStatus, userRole } from "./chatEnums";
 import { useDispatch, useSelector } from "react-redux";
 import { useLazyGetIsRoomNameTakenQuery } from "../../store/api";
 import { addRoom } from "../../store/rooms";
+import { Grid, Typography } from "@mui/material";
 
 import Error from "../Global/Error";
 
@@ -90,8 +91,8 @@ function CreateChannel() {
   }
 
   return (
-    <div className="createChannel">
-      <p>Create a new channel</p>
+    <Grid className="createChannel">
+      <Typography sx={{marginTop:'2em'}}>Create a new channel</Typography>
       <TextField
         error={result.data}
         helperText={result.data ? "This room already exists" : null}
@@ -99,7 +100,7 @@ function CreateChannel() {
         value={newRoomName}
         onChange={updateNewRoomName}
       />
-      <FormControl>
+      <FormControl sx={{height:'80%'}}>
         <InputLabel>Access</InputLabel>
         <Select name="roomAccess" onChange={changeAccess} defaultValue="">
           <MenuItem defaultChecked value="public">
@@ -114,6 +115,7 @@ function CreateChannel() {
         name="rooms"
         disabled={result.data === true || newRoomName === ""}
         onClick={createRoom}
+        sx={{transform: "translate(0%, 18%)",}}
       >
         <AddIcon />
       </IconButton>
@@ -127,7 +129,7 @@ function CreateChannel() {
         />
       ) : null}
       {result.data === true ? <p>This room already exist</p> : null}
-    </div>
+    </Grid>
   );
 }
 

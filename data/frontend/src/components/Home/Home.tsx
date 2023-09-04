@@ -4,8 +4,6 @@ import Cookies from "js-cookie";
 import { useDispatch } from "react-redux";
 import { setUsername, login } from "../../store/user";
 
-import PersonIcon from "@mui/icons-material/Person";
-
 import { Box, Grid, Button } from "@mui/material";
 
 import Profile from "../Global/Profile";
