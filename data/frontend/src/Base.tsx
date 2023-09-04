@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SyntheticEvent } from "react";
 
-import { Routes, Route } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import { logout } from "./store/user";
 
 import Navigation from "./components/Navigation/Navigation";
@@ -12,8 +12,10 @@ import Options from "./components/Global/Options";
 import Profile from "./components/Global/Profile";
 import Home from "./components/Home/Home";
 import Chat from "./components/Chat/Chat";
+import webSocketManager from "./webSocket";
 
 export default function Base() {
+  const user = useSelector((state: any) => state.user);
   const dispatch = useDispatch();
 
   const [isProfilOpen, setIsProfilOpen] = useState(false);
@@ -35,11 +37,21 @@ export default function Base() {
     setIsProfilOpen(!isProfilOpen);
   };
 
+  useEffect(() => {
+    if (!user || !user.username)
+    {
+      dispatch(logout());
+      window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/logout`;
+    }
+  }, []);
+  webSocketManager.initializeWebSocket();
+
   return (
     <div className="main">
       <Navigation setDrawerState={setDrawerState} />
       <NavDrawer state={drawerState} toggleDrawer={toggleDrawer} />
       <Routes>
+        <Route path="*" element={<Navigate to="/home"/>}></Route>
         <Route path="/home" element={<Home />}></Route>
         <Route
           path="/profile"

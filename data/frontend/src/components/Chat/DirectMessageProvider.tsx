@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { chatResponseArgs } from "./args.interface";
 import { addMsg, addRoom, setRead } from "../../store/rooms";
-import { webSocket } from "../../webSocket";
+import webSocketManager from "../../webSocket";
 import { actionTypes } from "./args.types";
 import { userRole } from "./chatEnums";
 
@@ -29,9 +29,9 @@ export default function DirectMessageProvider() {
       dispatch(setRead(rooms.index));
     }
 
-    webSocket.on(user.username, onMsgSent);
+    webSocketManager.getSocket().on(user.username, onMsgSent);
     return () => {
-      webSocket.off(user.username, onMsgSent);
+      webSocketManager.getSocket().off(user.username, onMsgSent);
     };
   }, [user, dispatch, rooms]);
 

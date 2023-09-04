@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { webSocket } from "../../webSocket";
-
+import webSocketManager from "../../webSocket";
 import {
   Dialog,
   DialogTitle,
@@ -51,7 +50,7 @@ export default function SelectUserDialog({ open, setOpen, roomName }: arg) {
 
   function confirmButton(e: any) {
     e.preventDefault();
-    webSocket.emit("inviteUser", {
+    webSocketManager.getSocket().emit("inviteUser", {
       roomName: roomName,
       username: selectedUser,
       source: user.username,
@@ -74,7 +73,7 @@ export default function SelectUserDialog({ open, setOpen, roomName }: arg) {
     refetch();
   }, [refetch]);
 
-  if (isError) return <Error error={error} />;
+  if (isError) throw new (Error as any)("API call error");
   if (isLoading) return <Skeleton variant="rectangular" />;
 
   return (

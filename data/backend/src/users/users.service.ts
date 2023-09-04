@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
 import { BlockedList } from 'src/entities/blocked.list.entity';
+import { TypeormSession } from 'src/entities';
 
 @Injectable()
 export class UsersService {
@@ -11,6 +12,8 @@ export class UsersService {
     private usersRepository: Repository<User>,
     @InjectRepository(BlockedList)
     private blockedUserRepository: Repository<BlockedList>,
+    @InjectRepository(TypeormSession)
+    private typeormSessionRepository: Repository<TypeormSession>
   ) {}
 
   // For testing only, TO REMOVE-----------------------------------------------------------
@@ -153,5 +156,11 @@ export class UsersService {
     }
     user.urlAvatar = avatar;
     await this.usersRepository.save(user);
+  }
+
+  async findOneSession(sessionId: string): Promise<TypeormSession> {
+    return await this.typeormSessionRepository.findOne({
+      where: { id: sessionId },
+    });
   }
 }

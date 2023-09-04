@@ -8,7 +8,6 @@ import { userStatus } from 'src/users/userStatus';
 export class UsersStatusService {
   private readonly usersStatus: {
     clientId: string;
-    accessToken: string;
     username: string;
     status: userStatus;
   }[];
@@ -21,7 +20,6 @@ export class UsersStatusService {
 
   async addUser(
     clientId: string,
-    accessToken: string,
     username: string,
     status: userStatus,
   ) {
@@ -35,11 +33,10 @@ export class UsersStatusService {
     if (userStatusIndex != -1)
       this.usersStatus[userStatusIndex] = {
         clientId,
-        accessToken,
         username,
         status,
       };
-    else this.usersStatus.push({ clientId, accessToken, username, status });
+    else this.usersStatus.push({ clientId, username, status });
   }
 
   async removeUser(clientId: string) {

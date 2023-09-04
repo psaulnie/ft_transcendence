@@ -543,10 +543,20 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
 
   async handleConnection(client: Socket, ...args: any[]) {
     console.log(`Client connected: ${client.id}`);
-    // const user = await this.userService.findOneByAccessToken(client.handshake.auth.token);
-    // if (!user)
-    //   return ;
-    //   // throw new WsException('User not found');
-    // await this.usersStatusService.addUser(client.id, client.handshake.auth.token, user.username, userStatus.online);
+    if (client.handshake.headers['authorization']?.split(' ')[1] === 'test') // TODO remove and TODO test
+      return ('testUser');
+    const credential = client.handshake.headers.cookie?.split(';').find((cookie) => cookie.includes('connect.sid'));
+    if (!credential)
+      return ;
+    const connectSid = credential.substring(credential.indexOf('s%3A') + 4, credential.indexOf('.', credential.indexOf('s%3A')))
+    const session = await this.userService.findOneSession(connectSid);
+    if (!session)
+      return ;
+    const parsedJson = JSON.parse(session.json);
+    const user = await this.userService.findOne(parsedJson.passport.user.intraUsername);
+    if (!user)
+      return ;
+      // throw new WsException('User not found');
+    await this.usersStatusService.addUser(client.id, parsedJson.passport.user.intraUsername, userStatus.online);
   }
 }

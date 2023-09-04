@@ -1,4 +1,4 @@
-import { webSocket } from "../../../webSocket";
+import webSocketManager from "../../../webSocket";
 import { useDispatch, useSelector } from "react-redux";
 import { addBlockedUser, removeBlockedUser } from "../../../store/user";
 import { Menu, MenuItem, Divider } from "@mui/material";
@@ -30,7 +30,7 @@ export default function UserOptionsMenu({
   };
 
   function blockUser(cUser: { username: string; role: userRole }) {
-    webSocket.emit("block", {
+    webSocketManager.getSocket().emit("block", {
       source: user.username,
       target: cUser.username,
       room: roomName,
@@ -39,7 +39,7 @@ export default function UserOptionsMenu({
   }
 
   function unblockUser(cUser: { username: string; role: userRole }) {
-    webSocket.emit("unblock", {
+    webSocketManager.getSocket().emit("unblock", {
       source: user.username,
       target: cUser.username,
       room: roomName,
@@ -79,7 +79,7 @@ export default function UserOptionsMenu({
         <span>
           <MenuItem
             onClick={() => {
-              webSocket.emit("kick", {
+              webSocketManager.getSocket().emit("kick", {
                 source: user.username,
                 target: cUser.username,
                 room: roomName,
@@ -90,7 +90,7 @@ export default function UserOptionsMenu({
           </MenuItem>
           <MenuItem
             onClick={() => {
-              webSocket.emit("ban", {
+              webSocketManager.getSocket().emit("ban", {
                 source: user.username,
                 target: cUser.username,
                 room: roomName,
@@ -102,7 +102,7 @@ export default function UserOptionsMenu({
           {!cUser.isMuted ? (
             <MenuItem
               onClick={() => {
-                webSocket.emit("mute", {
+                webSocketManager.getSocket().emit("mute", {
                   source: user.username,
                   target: cUser.username,
                   room: roomName,
@@ -114,7 +114,7 @@ export default function UserOptionsMenu({
           ) : (
             <MenuItem
               onClick={() => {
-                webSocket.emit("unmute", {
+                webSocketManager.getSocket().emit("unmute", {
                   source: user.username,
                   target: cUser.username,
                   room: roomName,
@@ -126,7 +126,7 @@ export default function UserOptionsMenu({
           )}
           <MenuItem
             onClick={() => {
-              webSocket.emit("admin", {
+              webSocketManager.getSocket().emit("admin", {
                 source: user.username,
                 target: cUser.username,
                 room: roomName,

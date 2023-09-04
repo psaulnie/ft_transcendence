@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-import { webSocket } from "../../webSocket";
+import webSocketManager from "../../webSocket";
 import { useSelector, useDispatch } from "react-redux";
 import { useGetUsersListQuery } from "../../store/api";
 import { addRoom } from "../../store/rooms";
@@ -50,7 +50,7 @@ function JoinDirectMessage() {
           isMuted: false,
         }),
       );
-      webSocket.emit("openPrivateMsg", {
+      webSocketManager.getSocket().emit("openPrivateMsg", {
         source: user.username,
         room: newUser,
         access: 0,
@@ -71,7 +71,7 @@ function JoinDirectMessage() {
     refetch();
   }, [refetch]);
 
-  if (isError) return <Error error={error} />;
+  if (isError) throw new (Error as any)("API call error");
   else if (isLoading)
     return (
       <div>

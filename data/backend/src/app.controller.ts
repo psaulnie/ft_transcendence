@@ -31,6 +31,8 @@ import { UseGuards } from '@nestjs/common';
 import { catchError, firstValueFrom } from 'rxjs';
 import { UnauthorizedException } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
+import { UsersStatusService } from './services/users.status.service';
+import { userStatus } from './users/userStatus';
 
 const fileInterceptorOptions = {
   fileFilter: (req, file, cb) => {
@@ -65,6 +67,7 @@ export class AppController {
     private readonly appService: AppService,
     private readonly userService: UsersService,
     private readonly httpService: HttpService,
+    private readonly userStatusArrayService: UsersStatusService
   ) {}
 
   @Post('/avatar/upload')
@@ -112,6 +115,7 @@ export class AppController {
       true,
     );
   }
+
   @Get('/avatar/:username')
   async getAvatar(
     @Param('username') username: string,
@@ -151,6 +155,40 @@ export class AppController {
       return new StreamableFile(file);
     } else throw new HttpException('Internal Server Error', 500);
   }
+
+  @Get(':username/status')
+  @UseGuards(AuthenticatedGuard)
+  async getUserStatus(@Param('username') username: string): Promise<userStatus> {
+    if (username == null) throw new HttpException('Bad Request', 400);
+    const user = await this.userService.findOne(username);
+    if (!user) throw new HttpException('Unprocessable Entity', 422);
+    const status = await this.userStatusArrayService.getUserStatus(user.username);
+    if (!status)
+      return (userStatus.offline);
+    return (status.status);
+  }
+
+  @Get(':username/friends/status')
+  @UseGuards(AuthenticatedGuard)
+  async getUserStatusFriendsList(@Param('username') username: string) {
+
+    // TODO can't work without working friend list
+    // if (username == null) throw new HttpException('Bad Request', 400);
+    // const user = await this.userService.findOne(username);
+    // if (!user) throw new HttpException('Unprocessable Entity', 422);
+    // const friends = user.friendList;
+    // const friendsList = [];
+    // for (const friend of friends) {
+    //   const status = await this.userStatusArrayService.getUserStatus(friend.uid1.username);
+    //   if (status)
+    //     friendsList.push({
+    //       username: friend.uid1.username,
+    //       status: status.status,
+    //     });
+    // }
+    // return friendsList;
+  }
+
 }
 
 export function isUrl(path: string): boolean {

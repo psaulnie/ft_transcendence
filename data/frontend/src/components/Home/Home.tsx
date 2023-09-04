@@ -27,7 +27,8 @@ export default function Home() {
   useEffect(() => {
     const username = Cookies.get("username");
     const accessToken = Cookies.get("accessToken");
-    if (!username || !accessToken) return; // TODO
+    if (!username || !accessToken)
+      return ;
     dispatch(setUsername(username));
     dispatch(login(accessToken));
   }, [dispatch]);
