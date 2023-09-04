@@ -80,7 +80,7 @@ export default function UsersList({
     if (isDirectMessage === false) refetch();
   }, [isDirectMessage, refetch]);
 
-  if (isError && isDirectMessage === false) return <Error error={error} />;
+  if (isError && isDirectMessage === false) throw new (Error as any)("API call error");
   else if (isLoading && isDirectMessage === false)
     return (
       <div>

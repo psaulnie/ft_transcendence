@@ -28,20 +28,18 @@ const theme = createTheme({
 });
 
 function App() {
-  const user = useSelector((state: any) => state.user);
   const dispatch = useDispatch();
 
   useEffect(() => {
     const username = Cookies.get("username");
     const accessToken = Cookies.get("accessToken");
-    if (!username || !accessToken) return;
+    if (!username || !accessToken) {
+      return ;
+    }
     dispatch(setUsername(username));
     dispatch(login(accessToken));
+    Cookies.remove("username");
   }, [dispatch]);
-
-  // const [isAuthentified, isError ] = useIsAuthentifiedMutation(user.accessToken);
-  // if (!isError)
-  // 	return (<p>error</p>)
 
   return (
     <div className="App">

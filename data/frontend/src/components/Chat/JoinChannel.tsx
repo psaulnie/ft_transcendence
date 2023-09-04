@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-import { webSocket } from "../../webSocket";
+import webSocketManager from "../../webSocket";
 import { useSelector, useDispatch } from "react-redux";
 import { useGetRoomsListQuery } from "../../store/api";
 import { accessStatus, userRole } from "./chatEnums";
@@ -61,7 +61,7 @@ function JoinChannel() {
           isMuted: false,
         }),
       );
-      webSocket.emit("joinRoom", {
+      webSocketManager.getSocket().emit("joinRoom", {
         source: user.username,
         room: newRoomName,
         access: 0,
@@ -82,7 +82,7 @@ function JoinChannel() {
     refetch();
   }, [refetch]);
 
-  if (isError) return <Error error={error} />;
+  if (isError) throw new (Error as any)("API call error");
   else if (isLoading)
     return (
       <div>

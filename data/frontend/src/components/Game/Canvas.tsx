@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 // import Canvas from './Canvas';
 import './Canvas.css'
-import { webSocket } from '../../webSocket';
+import webSocketManager from '../../webSocket';
 // import { exit } from 'process';
 // import { WidthFull } from '@mui/icons-material';
 // import Matchmaking from './Matchmaking';
@@ -78,7 +78,7 @@ export default function Canvas({players} : {players: {1: string, 2: string}}) {
       const mouseY = event.clientY - rect!.top;
       // console.log(mouseY);
       // console.log(webSocket.connected);
-      webSocket.emit("game", {player: players[1], opponent: players[2], y: mouseY});
+      webSocketManager.getSocket().emit("game", {player: players[1], opponent: players[2], y: mouseY});
       setRectPositionP1({x:20, y: mouseY});
     };
 
@@ -137,9 +137,9 @@ export default function Canvas({players} : {players: {1: string, 2: string}}) {
       
     }
 
-    webSocket.on(players[1], process);
+    webSocketManager.getSocket().on(players[1], process);
     return () => {
-      webSocket.off(players[1], process);
+      webSocketManager.getSocket().off(players[1], process);
     }
   }, [rectPositionP2.y, canvas, ctx, canvasSize, players, divSize]);
 

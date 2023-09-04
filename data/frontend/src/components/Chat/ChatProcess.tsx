@@ -11,7 +11,7 @@ import {
 } from "../../store/rooms";
 
 import { chatResponseArgs } from "./args.interface";
-import { webSocket } from "../../webSocket";
+import webSocketManager from "../../webSocket";
 
 import { Snackbar, Alert, AlertColor, IconButton, Box } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
@@ -76,7 +76,7 @@ export default function ChatProcess() {
         isMuted: false,
       }),
     );
-    webSocket.emit("joinPrivateRoom", {
+    webSocketManager.getSocket().emit("joinPrivateRoom", {
       roomName: room,
       username: user.username,
     });
@@ -137,9 +137,9 @@ export default function ChatProcess() {
         setSnackbar("This user blocked you", "error");
       }
     }
-    webSocket.on(user.username + "OPTIONS", process);
+    webSocketManager.getSocket().on(user.username + "OPTIONS", process);
     return () => {
-      webSocket.off(user.username + "OPTIONS", process);
+      webSocketManager.getSocket().off(user.username + "OPTIONS", process);
     };
   }, [user.username, dispatch, rooms]);
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { webSocket } from "../../webSocket";
+import webSocketManager from "../../webSocket";
 
 import { useDispatch, useSelector } from "react-redux";
 import { useLazyGetBlockedUsersQuery } from "../../store/api";
@@ -91,9 +91,9 @@ function Chat() {
     fetchUserRoomList,
   ]);
 
-  if (!webSocket.connected) return <p>Chat Socket error</p>;
-  if (blockedUsers.isError) return <Error error={blockedUsers.error} />;
-  else if (userRoomList.isError) return <Error error={userRoomList.error} />;
+  if (blockedUsers.isError) throw new (Error as any)("API call error");
+
+  else if (userRoomList.isError) throw new (Error as any)("API call error");
   else if (blockedUsers.isLoading || userRoomList.isLoading)
     return (
       <div>
