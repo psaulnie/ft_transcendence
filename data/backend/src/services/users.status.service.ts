@@ -46,7 +46,11 @@ export class UsersStatusService {
     );
   }
 
-  async getUserStatus(clientId: string) {
+  async getUserStatus(username: string) {
+    return this.usersStatus.find((user) => user.username === username);
+  }
+
+  async getUserStatusByClientId(clientId: string) {
     return this.usersStatus.find((user) => user.clientId === clientId);
   }
 
