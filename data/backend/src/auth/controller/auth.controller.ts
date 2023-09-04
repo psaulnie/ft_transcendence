@@ -1,21 +1,11 @@
-import {
-  Controller,
-  Get,
-  Req,
-  Res,
-  UnauthorizedException,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { Request, Response } from 'express';
 import {
   AuthenticatedGuard,
   IntraAuthGuard,
 } from '../guards/intraAuthGuard.service';
 import { User } from '../../entities';
-
 import { HttpService as NestHttpService } from '@nestjs/axios';
-
-import { catchError, firstValueFrom } from 'rxjs';
 import { UsersService } from 'src/users/users.service';
 
 @Controller('auth')
@@ -32,7 +22,6 @@ export class AuthController {
   @Get('login')
   @UseGuards(IntraAuthGuard)
   login() {
-    console.log('LOGIN CONTROLLER');
     return;
   }
 
@@ -43,7 +32,6 @@ export class AuthController {
   @Get('redirect')
   @UseGuards(IntraAuthGuard)
   redirect(@Res() res: Response, @Req() req: Request) {
-    console.log('REDIRECT CONTROLLER');
     const user = req.user as User;
     console.log('‣ accessToken : ', user.accessToken);
     res.cookie('accessToken', user.accessToken, {
@@ -54,7 +42,7 @@ export class AuthController {
       httpOnly: false,
       secure: false,
     }); // Set accessToken in cookie
-    res.redirect('http://localhost:3000/2fa');
+    res.redirect(`http://${process.env.IP}:3000/2fa`);
     // res.sendStatus(200);
   }
 
@@ -63,9 +51,8 @@ export class AuthController {
    * Retrieve the auth status
    */
   @Get('status')
-  @UseGuards(AuthenticatedGuard)
   status(@Req() req: Request) {
-    return req.user;
+    return req.isAuthenticated();
   }
 
   /**
@@ -95,54 +82,12 @@ export class AuthController {
     res.clearCookie('connect.sid');
 
     // Redirect on login page
-    res.redirect('http://localhost:3000/login');
-  }
-
-  /**
-   * GET /api/auth/connected
-   * Check the access token to see if the user is connected
-   */
-  @Get('connected')
-  async connected(@Req() req: Request) {
-    try {
-      console.log('CONNECTED CONTROLLER');
-      let result = true;
-      let [type, token] = req.headers['authorization']?.split(' ') ?? [];
-      if (type !== 'Bearer') {
-        token = undefined;
-      }
-      if (token === 'test') return true;
-      if (!token) {
-        console.log('‣ CONNECTED CONTROLLER RETURN FALSE');
-        return false;
-      }
-
-      await firstValueFrom(
-        this.httpService
-          .get('https://api.intra.42.fr/oauth/token/info', {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          })
-          .pipe(
-            catchError(() => {
-              result = false;
-              throw new UnauthorizedException();
-            }),
-          ),
-      );
-      console.log('‣ CONNECTED CONTROLLER RETURN ', result);
-      return result;
-    } catch {
-      console.log('‣ CONNECTED CONTROLLER RETURN FALSE');
-      return false;
-    }
+    res.redirect(`http://${process.env.IP}:3000/login`);
   }
 
   @Get('testlogin')
   async testlogin(@Res() res: Response) {
-    console.log('TESTLOGIN CONTROLLER');
-    await this.usersService.createUser('testUser');
+    this.usersService.createUser('testUser');
     res.cookie('accessToken', 'test', {
       httpOnly: false,
       secure: false,
@@ -151,6 +96,6 @@ export class AuthController {
       httpOnly: false,
       secure: false,
     }); // Set username in cookie
-    res.redirect('http://localhost:3000/home');
+    res.redirect(`http://${process.env.IP}:3000/home`);
   }
 }

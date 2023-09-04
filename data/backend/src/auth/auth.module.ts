@@ -4,7 +4,7 @@ import { TwoFactorAuthController } from './controller/twoFactorAuth.controller';
 import { AuthService } from './service/auth.service';
 import { IntraStrategy } from './strategies/intraAuth.strategy';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from '../entities';
+import { TypeormSession, User } from '../entities';
 import { SessionSerializer } from './session/Serializer';
 import { HttpModule } from '@nestjs/axios';
 import { UsersService } from 'src/users/users.service';
@@ -26,7 +26,7 @@ import { ConfigService } from '@nestjs/config';
     ConfigService,
   ],
   imports: [
-    TypeOrmModule.forFeature([User, BlockedList]),
+    TypeOrmModule.forFeature([User, BlockedList, TypeormSession]),
     HttpModule.register({}),
   ],
 })

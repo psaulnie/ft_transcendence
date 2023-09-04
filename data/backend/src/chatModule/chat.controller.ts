@@ -6,12 +6,12 @@ import {
   Param,
   UseInterceptors,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { CacheInterceptor } from '@nestjs/cache-manager';
 import { RoomService } from '../services/room.service';
 import { UsersService } from '../users/users.service';
-
-import { IsAuthGuard } from 'src/auth/guards/intraAuthGuard.service';
+import { AuthenticatedGuard } from '../auth/guards/intraAuthGuard.service';
 import { User } from 'src/entities';
 import { userRole } from './chatEnums';
 
@@ -23,7 +23,7 @@ export class ChatController {
   ) {}
 
   @UseInterceptors(CacheInterceptor)
-  @UseGuards(IsAuthGuard)
+  @UseGuards(AuthenticatedGuard)
   @Get('role/:username/:roomName')
   async getRole(
     @Param('username') username: string,
@@ -39,7 +39,7 @@ export class ChatController {
   }
 
   @UseInterceptors(CacheInterceptor)
-  @UseGuards(IsAuthGuard)
+  @UseGuards(AuthenticatedGuard)
   @Get(':username/blocked')
   async getBlockedUser(@Param('username') username: string): Promise<string[]> {
     console.log('getBlockedUser');
@@ -62,7 +62,7 @@ export class ChatController {
   }
 
   @UseInterceptors(CacheInterceptor)
-  @UseGuards(IsAuthGuard)
+  @UseGuards(AuthenticatedGuard)
   @Get('rooms/list')
   async getRoomsList(): Promise<{}[]> {
     const rooms = await this.roomService.findAll();
@@ -79,7 +79,7 @@ export class ChatController {
   }
 
   @UseInterceptors(CacheInterceptor)
-  @UseGuards(IsAuthGuard)
+  @UseGuards(AuthenticatedGuard)
   @Get(':roomName/users')
   async getUsersInRoom(
     @Query() data: any,
@@ -104,7 +104,7 @@ export class ChatController {
   }
 
   @UseInterceptors(CacheInterceptor)
-  @UseGuards(IsAuthGuard)
+  @UseGuards(AuthenticatedGuard)
   @Get(':username/rooms/list')
   async getUserRoomsList(
     @Query() data: any,
@@ -133,7 +133,7 @@ export class ChatController {
   }
 
   @UseInterceptors(CacheInterceptor)
-  @UseGuards(IsAuthGuard)
+  @UseGuards(AuthenticatedGuard)
   @Get(':roomName/exist')
   async getIsRoomNameTaken(
     @Query() data: any,
@@ -145,18 +145,34 @@ export class ChatController {
   }
 
   @UseInterceptors(CacheInterceptor)
-  @UseGuards(IsAuthGuard)
+  @UseGuards(AuthenticatedGuard)
   @Get('users/list')
-  async getUsersList(): Promise<string[]> {
+  async getUsersList(@Req() req: Request): Promise<string[]> {
+    let [type, token] = req.headers['authorization']?.split(' ') ?? [];
+    if (type !== 'Bearer') {
+      token = undefined;
+    }
+    if (!token) {
+      throw new HttpException('Unauthorized', 401);
+    }
+    const cUser = await this.userService.findOneByAccessToken(token);
+    // const cUser = await this.userService.findOne('testUser');
+    if (!cUser) {
+      throw new HttpException('Unauthorized', 401);
+    }
     const users = await this.userService.findAll();
     const usersList: string[] = [];
-
-    users.forEach((element) => usersList.push(element.username));
+    console.log('cUser:', cUser);
+    users.forEach((element) => {
+      console.log(element);
+      if (!element.blockedUsers.find((obj) => obj.blockedUser.uid == cUser.uid))
+        usersList.push(element.username);
+    });
     return usersList;
   }
 
   @UseInterceptors(CacheInterceptor)
-  @UseGuards(IsAuthGuard)
+  @UseGuards(AuthenticatedGuard)
   @Get(':username/:roomName/status')
   async getUserStatusInRoom(
     @Param('username') username: string,
@@ -174,7 +190,7 @@ export class ChatController {
   }
 
   @UseInterceptors(CacheInterceptor)
-  @UseGuards(IsAuthGuard)
+  @UseGuards(AuthenticatedGuard)
   @Get(':username/:roomName/invited')
   async getInvitedUsersList(
     @Param('username') username: string,

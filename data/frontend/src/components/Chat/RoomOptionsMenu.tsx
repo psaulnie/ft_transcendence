@@ -6,7 +6,7 @@ import { Menu, MenuItem, Divider } from "@mui/material";
 import PasswordDialog from "./PasswordDialog";
 import SelectUserDialog from "./SelectUserDialog";
 
-import { webSocket } from "../../webSocket";
+import webSocketManager from "../../webSocket";
 import { userRole } from "./chatEnums";
 
 type arg = {
@@ -40,7 +40,7 @@ export default function RoomOptionsMenu({
   }
 
   function removePassword() {
-    webSocket.emit("removePasswordToRoom", {
+    webSocketManager.getSocket().emit("removePasswordToRoom", {
       room: roomName,
       source: user.username,
     });
@@ -94,7 +94,7 @@ export default function RoomOptionsMenu({
           ) : null}
         </div>
       </Menu>
-      {showPasswordDialog === true ? (
+      {showPasswordDialog ? (
         <PasswordDialog
           open={showPasswordDialog}
           setOpen={setShowPasswordDialog}
@@ -103,7 +103,7 @@ export default function RoomOptionsMenu({
           createRoom={false}
         />
       ) : null}
-      {showUserDialog === true ? (
+      {showUserDialog ? (
         <SelectUserDialog
           open={showUserDialog}
           setOpen={setShowUserDialog}

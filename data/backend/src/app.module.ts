@@ -8,7 +8,7 @@ import { AppService } from './services/app.service';
 
 import { AuthModule } from './auth/auth.module';
 import { PassportModule } from '@nestjs/passport';
-import { entities } from './entities';
+import { TypeormSession, entities } from './entities';
 
 import { User } from './entities';
 
@@ -56,6 +56,7 @@ import { Statistics } from './entities/stats.entity';
       FriendList,
       BlockedList,
       UsersList,
+      TypeormSession,
     ]),
     CacheModule.register({ isGlobal: true }),
     HttpModule.register({}),

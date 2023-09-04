@@ -44,21 +44,20 @@ export default function UsersList({
     data: usersListData,
     isLoading,
     isError,
-    error,
     refetch,
-  } = useGetUsersInRoomQuery({ roomName: roomName }, { skip: isDirectMessage }); // TODO skip if direct msg
+  } = useGetUsersInRoomQuery({ roomName: roomName }, { skip: isDirectMessage });
 
   let usersList = [];
-  if (isDirectMessage === false) usersList = usersListData;
+  if (!isDirectMessage) usersList = usersListData;
   else
     usersList = [
-      { username: user.username, role: userRole.none,  isMuted: false },
+      { username: user.username, role: userRole.none, isMuted: false },
       { username: roomName, role: userRole.none, isMuted: false },
     ];
 
   const handleContextMenu = (event: React.MouseEvent, username: string) => {
     event.preventDefault();
-    if (isDirectMessage === false) refetch();
+    if (!isDirectMessage) refetch();
     if (user.username !== username)
       setContextMenu(
         contextMenu === null
@@ -66,7 +65,7 @@ export default function UsersList({
               mouseX: event.clientX + 2,
               mouseY: event.clientY - 6,
             }
-          : null
+          : null,
       );
   };
 
@@ -77,11 +76,11 @@ export default function UsersList({
   }
 
   useEffect(() => {
-    if (isDirectMessage === false) refetch();
+    if (!isDirectMessage) refetch();
   }, [isDirectMessage, refetch]);
 
-  if (isError && isDirectMessage === false) return <Error error={error} />;
-  else if (isLoading && isDirectMessage === false)
+  if (isError && !isDirectMessage) throw new (Error as any)("API call error");
+  else if (isLoading && !isDirectMessage)
     return (
       <div>
         <Skeleton variant="text" />

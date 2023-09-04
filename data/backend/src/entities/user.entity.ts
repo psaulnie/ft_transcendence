@@ -55,16 +55,16 @@ export class User {
   })
   matchHistory: MatchHistory;
 
-  @OneToOne(() => Statistics, (statistics) => statistics.uid, {
+  @OneToOne(() => Statistics, (statistics) => statistics.user, {
     nullable: true,
   })
-  @JoinColumn({ name: 'statistics_uid', referencedColumnName: 'uid' })
+  @JoinColumn({ name: 'statistics_user', referencedColumnName: 'user' })
   statistics: Statistics;
 
-  @OneToOne(() => Achievements, (achievements) => achievements.uid, {
+  @OneToOne(() => Achievements, (achievements) => achievements.user, {
     nullable: true,
   })
-  @JoinColumn({ name: 'achievements_uid', referencedColumnName: 'uid' })
+  @JoinColumn({ name: 'achievements_user', referencedColumnName: 'user' })
   achievements: Achievements;
 
   @AfterLoad()

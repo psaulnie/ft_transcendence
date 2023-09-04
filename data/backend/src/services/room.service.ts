@@ -28,37 +28,13 @@ export class RoomService {
     });
   }
 
-  async createRoom(name: string, user: User, access: number): Promise<Room> {
-    console.log('createroom');
-    const room = new Room();
-    const usersList = new UsersList();
-
-    usersList.user = user;
-    usersList.role = userRole.owner;
-    usersList.isBanned = false;
-    usersList.isMuted = false;
-
-    room.roomName = name;
-    room.owner = user;
-    room.usersNumber = 1;
-    room.access = access;
-    room.password = '';
-    if (!room.usersList) room.usersList = [];
-    // room.usersID.push(usersList);
-    room.usersList.push(await this.usersListRepository.save(usersList));
-    return await this.roomsRepository.save(room);
-  }
-
-  // TODO: check if it is possible to merge functions
-  //  'createRoom' and 'createPasswordProtectedRoom'
-  //  because there are a lot of duplicated lines
-  async createPasswordProtectedRoom(
+  async createRoom(
     name: string,
     user: User,
     access: number,
     password: string,
   ): Promise<Room> {
-    console.log('createpasswordprotectedroom');
+    console.log('createroom');
     const room = new Room();
     const usersList = new UsersList();
 
@@ -118,7 +94,7 @@ export class RoomService {
     if (!room) return;
     console.log('-1 user in ' + roomName);
     room.usersNumber--;
-    console.log('number of users:' + room.usersNumber)
+    console.log('number of users:' + room.usersNumber);
     if (room.usersNumber <= 0) {
       console.log('room deleted');
       this.removeRoom(roomName);
@@ -193,12 +169,12 @@ export class RoomService {
   async isMuted(roomName: string, user: User): Promise<boolean> {
     console.log('ismuted');
     const room = await this.findOne(roomName);
-    if (!room) return false; // TODO handle error
+    if (!room) return false;
     const userInList = room.usersList.find((obj) => {
       if (obj.user.uid) return obj.user.uid == user.uid;
       return false;
     });
-    if (!userInList) return false; // TODO handle error
+    if (!userInList) return false;
     return userInList.isMuted;
   }
 
@@ -243,8 +219,6 @@ export class RoomService {
   async isUserInRoom(roomName: string, userID: number): Promise<boolean> {
     console.log('isuserinroom');
     const room = await this.findOne(roomName);
-    if (!room || !room.usersList.find((obj) => obj.user.uid == userID))
-      return false;
-    else return true;
+    return !(!room || !room.usersList.find((obj) => obj.user.uid == userID));
   }
 }

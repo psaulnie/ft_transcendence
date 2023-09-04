@@ -1,10 +1,8 @@
 import "./App.css";
 
 import { useEffect } from "react";
-
 import { useDispatch } from "react-redux";
 import { login, setUsername } from "./store/user";
-
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Cookies from "js-cookie";
 
@@ -35,9 +33,12 @@ function App() {
   useEffect(() => {
     const username = Cookies.get("username");
     const accessToken = Cookies.get("accessToken");
-    if (!username || !accessToken) return; // TODO
+    if (!username || !accessToken) {
+      return;
+    }
     dispatch(setUsername(username));
     dispatch(login(accessToken));
+    Cookies.remove("username");
   }, [dispatch]);
 
   return (

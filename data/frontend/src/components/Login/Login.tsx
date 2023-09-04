@@ -1,19 +1,18 @@
 import { useLocation } from "react-router";
 import { SyntheticEvent, useEffect, useState } from "react";
 import { Navigate } from "react-router";
-
-import Cookies from "js-cookie";
+import { Button, Typography } from "@mui/material";
 
 function Login() {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
-  const refused = params.get('login-refused');
+  const refused = params.get("login-refused");
   const [isLoading, setIsLoading] = useState(true);
   const [isOk, setIsOk] = useState(false);
 
   async function apiIntraLogIn() {
     try {
-      window.location.href = "http://localhost:5000/auth/login";
+      window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/login`;
     } catch (e) {
       console.log("Error from apiIntraLogIn(): ", e);
     }
@@ -25,44 +24,113 @@ function Login() {
   }
 
   function testlogin() {
-    window.location.href = "http://localhost:5000/auth/testlogin";
+    window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/testlogin`;
   }
 
   const fetchData = () => {
-    fetch("http://localhost:5000/auth/connected", {
-      headers: {
-        Authorization: "Bearer " + Cookies.get("accessToken"),
-      },
-    }).then((response) => {
-      return response.json();
-    }).then((data) => {
-      setIsOk(data);
-      setIsLoading(false);
-    }).catch(() => {
-      setIsLoading(false);
-      // TODO : handle error
-    });
+    fetch(`http://${process.env.REACT_APP_IP}:5000/auth/status`, {
+      credentials: "include",
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        if (data.statusCode === 403) setIsOk(false);
+        else setIsOk(data);
+        setIsLoading(false);
+      })
+      .catch(() => {
+        setIsOk(false);
+        setIsLoading(false);
+      });
   };
   useEffect(() => {
     fetchData();
   }, []);
 
-  if (isLoading) return (<div>Loading...</div>) // TODO : add a loading component
+  if (isLoading) return <div>Loading...</div>; // TODO : add a loading component
   if (isOk) return <Navigate to="/home" />;
   return (
     <div className="main">
-      <p>Coucou depuis la page 'Login'</p>
-      <form>
-        <button type="button" onClick={logIn}>
-          LogIn
-        </button>
-      </form>
-      <button type="button" onClick={testlogin}>Log as user test</button>
-      {refused === 'true' && (
-            <div className="alert alert-warning">
-                La connexion avec Intra42 a été refusée. Veuillez réessayer.
-            </div>
+      <Button
+        variant="text"
+        color="primary"
+        onClick={logIn}
+        sx={{
+          textTransform: "none",
+          fontWeight: "bold",
+          fontSize: "36px",
+          marginTop: "5em",
+          width: "6em",
+          height: "1.6em",
+          backgroundColor: "rgba(255, 255, 255, 0.9)",
+          borderColor: "#000000",
+          border: "2px solid",
+          borderRadius: "15px",
+          lineHeight: "3",
+          color: "black",
+          "&:hover": {
+            backgroundColor: "red",
+            borderColor: "red",
+          },
+        }}
+      >
+        <span
+          style={{
+            position: "relative",
+            top: "3px",
+          }}
+        >
+          Login
+        </span>
+      </Button>
+      <button type="button" onClick={testlogin}>
+        Log as user test
+      </button>
+      {refused === "true" && (
+        <div className="alert alert-warning">
+          La connexion avec Intra42 a été refusée. Veuillez réessayer.
+        </div>
       )}
+      <Typography
+        variant="h6"
+        sx={{
+          fontSize: 18,
+          fontWeight: "bold",
+          color: "black",
+          marginTop: "9em",
+        }}
+      >
+        FT_Transcendence by:
+      </Typography>
+      <Typography
+        variant="h6"
+        sx={{ fontSize: 16, fontWeight: "bold", color: "black" }}
+      >
+        {" "}
+        Lbattest{" "}
+      </Typography>
+      <Typography
+        variant="h6"
+        sx={{ fontSize: 16, fontWeight: "bold", color: "black" }}
+      >
+        {" "}
+        Apercebo{" "}
+      </Typography>
+      <Typography
+        variant="h6"
+        sx={{ fontSize: 16, fontWeight: "bold", color: "black" }}
+      >
+        {" "}
+        Psaulnie{" "}
+      </Typography>
+      <Typography
+        variant="h6"
+        sx={{ fontSize: 16, fontWeight: "bold", color: "black" }}
+      >
+        {" "}
+        Dbouron{" "}
+      </Typography>
     </div>
   );
 }

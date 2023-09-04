@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { webSocket } from "../../webSocket";
-
+import webSocketManager from "../../webSocket";
 import {
   Dialog,
   DialogTitle,
@@ -28,7 +27,7 @@ const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
     children: React.ReactElement<any, any>;
   },
-  ref: React.Ref<unknown>
+  ref: React.Ref<unknown>,
 ) {
   return <Zoom ref={ref} {...props} style={{ transitionDelay: "100ms" }} />;
 });
@@ -56,7 +55,7 @@ export default function PasswordDialog({
   function confirmButton(e: any) {
     e.preventDefault();
     if (password !== "") {
-      if (createRoom === true) {
+      if (createRoom) {
         dispatch(
           addRoom({
             name: roomName,
@@ -65,16 +64,16 @@ export default function PasswordDialog({
             hasPassword: true,
             openTab: true,
             isMuted: false,
-          })
+          }),
         );
-        webSocket.emit("joinRoom", {
+        webSocketManager.getSocket().emit("joinRoom", {
           source: user.username,
           room: roomName,
           access: accessStatus.protected,
           password: password,
         });
       } else {
-        webSocket.emit("setPasswordToRoom", {
+        webSocketManager.getSocket().emit("setPasswordToRoom", {
           room: roomName,
           password: password,
           source: user.username,

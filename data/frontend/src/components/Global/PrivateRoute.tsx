@@ -7,28 +7,38 @@ export default function PrivateRoute() {
   const [isOk, setIsOk] = useState(false);
 
   const fetchData = () => {
-    fetch("http://localhost:5000/auth/connected", {
+    fetch(`http://${process.env.REACT_APP_IP}:5000/auth/status`, {
+      credentials: "include",
       headers: {
-        Authorization: "Bearer " + Cookies.get("accessToken"),
+        authorization: "Bearer " + Cookies.get("accessToken"),
       },
-    }).then((response) => {
-      return response.json();
-    }).then((data) => {
-      setIsOk(data);
-      setIsLoading(false);
-    }).catch(() => {
-      setIsLoading(false);
-      // TODO : handle error
-    });
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        if (data.statusCode === 403) setIsOk(false);
+        else setIsOk(data);
+        setIsLoading(false);
+      })
+      .catch(() => {
+        if (Cookies.get("accessToken") === "test")
+          // TODO remove when testUser no longer needed
+          setIsOk(true);
+        else setIsOk(false);
+        setIsLoading(false);
+      });
   };
 
   useEffect(() => {
     fetchData();
-  });
+  }, []);
 
   if (isLoading) return <div>Loading...</div>;
-  if (isOk) {
+  if (isOk || Cookies.get("accessToken") === "test") {
+    // TODO remove when testUser no longer needed
     return <Outlet />;
   }
+  // return (null);
   return <Navigate to="/login" />;
 }

@@ -25,7 +25,7 @@ function Tab() {
         variant="text"
         onClick={handleOpenTab}
         startIcon={
-          <Box sx={{ fontSize: 30, color: "red" }}>
+          <Box sx={{ fontSize: 30, color: "black" }}>
             <MenuIcon sx={{ marginLeft: "1.8em", width: "auto" }} />
           </Box>
         }
@@ -35,7 +35,7 @@ function Tab() {
             backgroundColor: "rgba(255, 255, 255, 0)",
           },
           "& .MuiButton-startIcon": {
-            marginRight: "0.25em", // Ajustez la marge droite de l'icône pour le centrer
+            marginRight: "0.25em",
           },
           "& .MuiButton-label": {
             display: "flex",
@@ -45,38 +45,34 @@ function Tab() {
       ></Button>
 
       {/* Drawer for the tab */}
-      <Drawer
-        anchor="right" // Slide in from the right
-        open={isTabOpen}
-        onClose={handleCloseTab}
-      >
+      <Drawer anchor="right" open={isTabOpen} onClose={handleCloseTab}>
         <Box
           sx={{
-            width: "100%",
+            width: "15.4em",
             height: "100%",
-            background: "linear-gradient(to bottom left, #f26700, #bf0505)",
-            Padding: "16px",
+            background: "#FE8F29",
+            padding: "1em",
           }}
         >
-          <Box sx={{ textAlign: "center", marginTop: "5%", color: "black" }}>
-            <h1
-              style={{
-                fontWeight: "bold",
-                textDecoration: "underline",
-                fontSize: "80px",
-              }}
-            >
-              Menu !
-            </h1>
-          </Box>
-          <Grid container sx={{ marginLeft: "5%" }}>
+          <Grid container>
             <JoinDirectMessage />
+            <JoinChannel />
           </Grid>
-          <Grid container sx={{ marginLeft: "5%" }}>
+          <Grid container>
             <CreateChannel />
           </Grid>
-          <Grid container sx={{ marginLeft: "5%" }}>
-            <JoinChannel />
+          <Grid container>
+            <Button
+              sx={{
+                color: "white",
+                marginLeft: "6em",
+                marginTop: "1.6em",
+                height: "1.8em",
+                fontSize: "12px",
+              }}
+            >
+              Cancel
+            </Button>
           </Grid>
         </Box>
       </Drawer>

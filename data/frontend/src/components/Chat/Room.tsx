@@ -16,7 +16,7 @@ function Room({ roomName }: { roomName: string }) {
 
   const [role, setRole] = useState(userRole.none);
   const roomIndex = rooms.room.findIndex(
-    (obj: { name: string; role: userRole }) => obj.name === roomName
+    (obj: { name: string; role: userRole }) => obj.name === roomName,
   );
 
   const messages = rooms.room[roomIndex].messages;
@@ -30,7 +30,7 @@ function Room({ roomName }: { roomName: string }) {
 
   useEffect(() => {
     const cRole = rooms.room.find(
-      (obj: { name: string; role: userRole }) => obj.name === roomName
+      (obj: { name: string; role: userRole }) => obj.name === roomName,
     );
     if (cRole) setRole(cRole.role);
   }, [setRole, rooms, roomName]);

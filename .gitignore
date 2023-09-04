@@ -3,3 +3,4 @@ node_modules/
 data/database/
 data/avatars/
 data/avatar
+.vscode/

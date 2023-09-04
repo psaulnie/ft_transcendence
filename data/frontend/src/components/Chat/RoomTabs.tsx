@@ -9,10 +9,9 @@ import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
 import { useDispatch, useSelector } from "react-redux";
 import { useState } from "react";
 
-import { webSocket } from "../../webSocket";
+import webSocketManager from "../../webSocket";
 import { removeRoom, setRead, setRoomIndex } from "../../store/rooms";
 import RoomOptionsMenu from "./RoomOptionsMenu";
-import { userRole } from "./chatEnums";
 
 export default function RoomTabs() {
   const user = useSelector((state: any) => state.user);
@@ -32,7 +31,7 @@ export default function RoomTabs() {
               mouseX: event.clientX + 2,
               mouseY: event.clientY - 6,
             }
-          : null
+          : null,
       );
   };
   function changeSelectedRoom(event: React.SyntheticEvent, newIndex: number) {
@@ -41,7 +40,7 @@ export default function RoomTabs() {
   }
 
   function quitRoom(roomName: string) {
-    webSocket.emit("leaveRoom", {
+    webSocketManager.getSocket().emit("leaveRoom", {
       source: user.username,
       room: roomName,
       access: 0,
@@ -56,16 +55,14 @@ export default function RoomTabs() {
           position: "fixed",
           bottom: "100",
           "& .MuiTabs-flexContainer": {
-            // Adjust the width of the tabs
             maxWidth: "19em",
-            maxHeight: "100%", // You can adjust the value here
+            maxHeight: "100%",
             marginTop: "0px",
           },
           "@media (max-width: 600px) or (max-height: 700px)": {
             "& .MuiTabs-flexContainer": {
-              // Adjust the width of the tabs
               maxWidth: "10em",
-              maxHeight: "100%", // You can adjust the value here
+              maxHeight: "100%",
               marginTop: "0px",
             },
           },
@@ -78,13 +75,13 @@ export default function RoomTabs() {
           "& .MuiTabs-indicator": {
             top: "0",
             marginTop: "2px",
-            backgroundColor: "red",
+            backgroundColor: "transparent",
           },
           "& .MuiTabs-scrollButtons.Mui-disabled": {
             opacity: "0.3",
           },
           "& .Mui-selected": {
-            backgroundColor: "red",
+            backgroundColor: "#FC7D07",
             color: "black",
           },
         }}
@@ -96,8 +93,8 @@ export default function RoomTabs() {
       >
         {rooms.room.map(
           (
-            room: { name: string; role: userRole; unread: boolean },
-            key: number
+            room: { name: string; role: number; unread: boolean },
+            key: number,
           ) => (
             <Tab
               onClick={() => dispatch(setRead(key))}
@@ -136,7 +133,7 @@ export default function RoomTabs() {
               }
               iconPosition="start"
             />
-          )
+          ),
         )}
       </Tabs>
     );

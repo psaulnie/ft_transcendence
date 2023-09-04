@@ -12,7 +12,7 @@ export default function UploadButton() {
 
   const [selectedFile, setSelectedFile] = useState<File | undefined>(undefined);
   const [fileUrl, setFileUrl] = useState("");
-	const [isLoading, setIsLoading] = useState(false);	
+  const [isLoading, setIsLoading] = useState(false);
   const [uploadAvatar] = useUploadAvatarMutation();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -48,17 +48,20 @@ export default function UploadButton() {
   };
 
   const handleRemovePicture = () => {
-
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
     }, 1000);
-    fetch("http://localhost:5000/api/avatar/remove?username=" + user.username, {
-      headers: {
-        Authorization: "Bearer " + Cookies.get("accessToken"),
+    fetch(
+      `http://${process.env.REACT_APP_IP}:5000/api/avatar/remove?username=${user.username}`,
+      {
+        credentials: "include",
+        headers: {
+          authorization: "Bearer " + Cookies.get("accessToken"),
+        },
       },
-    }).catch(() => {
-      // TODO : handle error
+    ).catch(() => {
+      throw new Error("Api call error");
     });
   };
 
@@ -70,7 +73,9 @@ export default function UploadButton() {
         <UploadIcon />
       </Button>
       {fileUrl !== "" ? <img width="15%" src={fileUrl} alt="avatar" /> : null}
-      <Button onClick={handleRemovePicture} disabled={isLoading}>Remove</Button>
+      <Button onClick={handleRemovePicture} disabled={isLoading}>
+        Remove
+      </Button>
     </Grid>
   );
 }

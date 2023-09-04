@@ -24,10 +24,11 @@ async function bootstrap() {
       store: new TypeormStore().connect(sessionRepo),
     }),
   );
+  app.use(cookieParser());
   app.use(passport.initialize());
   app.use(passport.session());
   app.enableCors({
-    origin: 'http://localhost:3000',
+    origin: `http://${process.env.IP}:3000`,
     credentials: true, // Allow cookies
   });
   await app.listen(port, () => {

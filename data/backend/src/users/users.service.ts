@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
 import { BlockedList } from 'src/entities/blocked.list.entity';
+import { TypeormSession } from 'src/entities';
 
 @Injectable()
 export class UsersService {
@@ -11,6 +12,8 @@ export class UsersService {
     private usersRepository: Repository<User>,
     @InjectRepository(BlockedList)
     private blockedUserRepository: Repository<BlockedList>,
+    @InjectRepository(TypeormSession)
+    private typeormSessionRepository: Repository<TypeormSession>,
   ) {}
 
   async findOne(name: string): Promise<User> {
@@ -37,11 +40,26 @@ export class UsersService {
   async findOneByAccessToken(accessToken: string): Promise<User> {
     return await this.usersRepository.findOne({
       where: { accessToken: accessToken },
+      relations: [
+        'blockedUsers',
+        'friendList',
+        'achievements',
+        'blockedUsers.blockedUser',
+        'blockedUsers.user',
+      ],
     });
   }
 
   async findAll(): Promise<User[]> {
-    return await this.usersRepository.find();
+    return await this.usersRepository.find({
+      relations: [
+        'blockedUsers',
+        'friendList',
+        'achievements',
+        'blockedUsers.blockedUser',
+        'blockedUsers.user',
+      ],
+    });
   }
 
   async addUser(user: User): Promise<User> {
@@ -56,7 +74,7 @@ export class UsersService {
     const newUser = new User();
     newUser.urlAvatar = '';
     newUser.username = name;
-    newUser.accessToken = '';
+    newUser.accessToken = 'test';
     newUser.refreshToken = '';
     newUser.blockedUsers = [];
     newUser.intraId = '';
@@ -66,9 +84,7 @@ export class UsersService {
     newUser.statistics = null;
     newUser.achievements = null;
 
-    console.log('before');
     await this.usersRepository.save(newUser);
-    console.log('finish');
   }
 
   async removeUser(name: string) {
@@ -113,6 +129,12 @@ export class UsersService {
     }
     user.urlAvatar = avatar;
     await this.usersRepository.save(user);
+  }
+
+  async findOneSession(sessionId: string): Promise<TypeormSession> {
+    return await this.typeormSessionRepository.findOne({
+      where: { id: sessionId },
+    });
   }
 
   async setTwoFactorAuthSecret(secret: string, userId: number) {
