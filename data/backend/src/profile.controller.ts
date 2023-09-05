@@ -58,4 +58,13 @@ import {
 
 		return achievements;
 	}
+
+	@Get('/:username/level')
+	@UseGuards(AuthenticatedGuard)
+	async getUserLevel(@Param('username') username: string) {
+		if (!username) throw new HttpException('No username provided', 400);
+		const user = await this.userService.findOneProfile(username);
+		if (!user) throw new HttpException('Unprocessable entity', 422);
+		return user.statistics.level;
+	}
 }

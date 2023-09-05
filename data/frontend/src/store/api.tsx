@@ -116,6 +116,15 @@ export const apiSlice = createApi({
         },
       }),
     }),
+    getUserLevel: builder.query({
+      query: ({ username = null }) => ({
+        url: "/api/profile/" + username + "/level",
+        method: "GET",
+        headers: {
+          Authorization: "Bearer " + Cookies.get("accessToken"),
+        },
+      }),
+    }),
     uploadAvatar: builder.mutation({
       query: (body: FormData) => ({
         url: "/api/avatar/upload",
@@ -148,5 +157,6 @@ export const {
   useLazyGetBlockedUsersQuery,
   useLazyGetUserRoomListQuery,
   useGetUserProfileQuery,
-  useGetUserAchievementsQuery
+  useGetUserAchievementsQuery,
+  useGetUserLevelQuery,
 } = apiSlice;
