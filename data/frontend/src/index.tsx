@@ -11,12 +11,12 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
-    <Provider store={store}>
-      <ErrorBoundaries>
+    <ErrorBoundaries>
+      <Provider store={store}>
         <App />
-      </ErrorBoundaries>
-    </Provider>
-  </React.StrictMode>,
+      </Provider>
+    </ErrorBoundaries>
+  </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function

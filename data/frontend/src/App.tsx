@@ -1,6 +1,6 @@
 import "./App.css";
 
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { login, setUsername } from "./store/user";
@@ -28,6 +28,7 @@ const theme = createTheme({
 });
 
 function App() {
+  const user = useSelector((state: any) => state.user);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -40,7 +41,6 @@ function App() {
     dispatch(login(accessToken));
     Cookies.remove("username");
   }, [dispatch]);
-
   return (
     <div className="App">
       <ThemeProvider theme={theme}>

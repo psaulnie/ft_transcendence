@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
 import { BlockedList } from 'src/entities/blocked.list.entity';
+import { FriendList } from 'src/entities/friend.list.entity';
 import { TypeormSession } from 'src/entities';
 
 @Injectable()
@@ -12,6 +13,8 @@ export class UsersService {
     private usersRepository: Repository<User>,
     @InjectRepository(BlockedList)
     private blockedUserRepository: Repository<BlockedList>,
+    @InjectRepository(FriendList)
+    private friendListRepository: Repository<FriendList>,
     @InjectRepository(TypeormSession)
     private typeormSessionRepository: Repository<TypeormSession>
   ) {}
@@ -32,7 +35,7 @@ export class UsersService {
       where: { username: name },
       relations: [
         'blockedUsers',
-        'friendList',
+        'friends',
         'achievements',
         'blockedUsers.blockedUser',
         'blockedUsers.user',
@@ -53,7 +56,7 @@ export class UsersService {
       where: { accessToken: accessToken },
       relations: [
         'blockedUsers',
-        'friendList',
+        'friends',
         'achievements',
         'blockedUsers.blockedUser',
         'blockedUsers.user',
@@ -65,7 +68,7 @@ export class UsersService {
     return await this.usersRepository.find({
       relations: [
         'blockedUsers',
-        'friendList',
+        'friends',
         'achievements',
         'blockedUsers.blockedUser',
         'blockedUsers.user',
@@ -90,7 +93,7 @@ export class UsersService {
     newUser.blockedUsers = [];
     newUser.intraId = '';
     newUser.intraUsername = '';
-    newUser.friendList = [];
+    newUser.friends = [];
     newUser.matchHistory = null;
     newUser.statistics = null;
     newUser.achievements = null;
@@ -140,6 +143,27 @@ export class UsersService {
         obj.user.uid !== user.uid && obj.blockedUser.uid !== blockedUser.uid,
     );
     await this.usersRepository.save(user);
+  }
+
+  async addFriend(user: User, friend: User) {
+    console.log('addfriend');
+    const newFriend = new FriendList();
+    newFriend.user1 = user;
+    newFriend.user2 = friend;
+    user.friends.push(friend);
+    friend.friends.push(user);
+    await this.usersRepository.save(user);
+    await this.usersRepository.save(friend);
+  }
+
+  async removeFriend(user: User, friend: User) {
+    console.log('removefriend');
+    user.friends = user.friends.filter(
+      (obj) => (obj.username !== friend.username));
+    friend.friends = friend.friends.filter(
+      (obj) => (obj.username !== user.username));
+    await this.usersRepository.save(user);
+    await this.usersRepository.save(friend);
   }
 
   async updateAvatar(user: User, avatar: string, isUrl: boolean) {

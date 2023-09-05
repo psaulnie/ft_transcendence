@@ -165,26 +165,65 @@ function Profile({ toggleProfil }: ProfileProps) {
                 gap: "0.5em",
               }}
             >
-              <Box sx={{ backgroundColor: "grey", color: "black" }}>
-                victoire
+              <Box sx={{ backgroundColor: "#454545", color: "black", height:'1.5em'}}>
+                <Grid
+                container
+                spacing={0}
+                >
+                    <Box sx={{backgroundColor: "#D9D9D9", border:'black solid', borderWidth:'1px', height: "1.5em", width: "1.5em", borderRadius:'3em', marginLeft:'2.2em' }}></Box>
+                    <Typography sx={{ color:'#1ABAFF', marginLeft:'2em', fontSize: 20,}}> 4 </Typography>
+                    <Typography sx={{ marginLeft:'0.4em', fontSize: 20, color: "black" }}> : </Typography>
+                    <Typography sx={{ marginLeft:'0.5em', fontSize: 20, color: "#FC7D07" }}> 2 </Typography>
+                    <Box sx={{backgroundColor: "#D9D9D9", border:'black solid', borderWidth:'1px', height: "1.5em", width: "1.5em", borderRadius:'3em', marginLeft:'2.4em' }}></Box>
+                </Grid>
               </Box>
-              <Box sx={{ backgroundColor: "grey", color: "black" }}>
-                defaite
+              <Box sx={{ backgroundColor: "#454545", color: "black", height:'1.5em'}}>
+                <Grid
+                container
+                spacing={0}
+                >
+                    <Box sx={{backgroundColor: "#D9D9D9", border:'black solid', borderWidth:'1px', height: "1.5em", width: "1.5em", borderRadius:'3em', marginLeft:'2.2em' }}></Box>
+                    <Typography sx={{ color:'#1ABAFF', marginLeft:'2em', fontSize: 20,}}> 9 </Typography>
+                    <Typography sx={{ marginLeft:'0.4em', fontSize: 20, color: "black" }}> : </Typography>
+                    <Typography sx={{ marginLeft:'0.5em', fontSize: 20, color: "#FC7D07" }}> 0 </Typography>
+                    <Box sx={{backgroundColor: "#D9D9D9", border:'black solid', borderWidth:'1px', height: "1.5em", width: "1.5em", borderRadius:'3em', marginLeft:'2.4em' }}></Box>
+                </Grid>
               </Box>
-              <Box sx={{ backgroundColor: "grey", color: "black" }}>
-                victoire
+              <Box sx={{ backgroundColor: "#454545", color: "black", height:'1.5em'}}>
+                <Grid
+                container
+                spacing={0}
+                >
+                    <Box sx={{backgroundColor: "#D9D9D9", border:'black solid', borderWidth:'1px', height: "1.5em", width: "1.5em", borderRadius:'3em', marginLeft:'2.2em' }}></Box>
+                    <Typography sx={{ color:'#FC7D07', marginLeft:'2em', fontSize: 20,}}> 3 </Typography>
+                    <Typography sx={{ marginLeft:'0.4em', fontSize: 20, color: "black" }}> : </Typography>
+                    <Typography sx={{ marginLeft:'0.5em', fontSize: 20, color: "#1ABAFF" }}> 4 </Typography>
+                    <Box sx={{backgroundColor: "#D9D9D9", border:'black solid', borderWidth:'1px', height: "1.5em", width: "1.5em", borderRadius:'3em', marginLeft:'2.4em' }}></Box>
+                </Grid>
               </Box>
-              <Box sx={{ backgroundColor: "grey", color: "black" }}>
-                victoire
+              <Box sx={{ backgroundColor: "#454545", color: "black", height:'1.5em'}}>
+                <Grid
+                container
+                spacing={0}
+                >
+                    <Box sx={{backgroundColor: "#D9D9D9", border:'black solid', borderWidth:'1px', height: "1.5em", width: "1.5em", borderRadius:'3em', marginLeft:'2.2em' }}></Box>
+                    <Typography sx={{ color:'#1ABAFF', marginLeft:'2em', fontSize: 20,}}> 4 </Typography>
+                    <Typography sx={{ marginLeft:'0.4em', fontSize: 20, color: "black" }}> : </Typography>
+                    <Typography sx={{ marginLeft:'0.5em', fontSize: 20, color: "#FC7D07" }}> 2 </Typography>
+                    <Box sx={{backgroundColor: "#D9D9D9", border:'black solid', borderWidth:'1px', height: "1.5em", width: "1.5em", borderRadius:'3em', marginLeft:'2.4em' }}></Box>
+                </Grid>
               </Box>
-              <Box sx={{ backgroundColor: "grey", color: "black" }}>
-                victoire
-              </Box>
-              <Box sx={{ backgroundColor: "grey", color: "black" }}>
-                victoire
-              </Box>
-              <Box sx={{ backgroundColor: "grey", color: "black" }}>
-                victoire
+              <Box sx={{ backgroundColor: "454545", color: "black", height:'1.5em'}}>
+                <Grid
+                container
+                spacing={0}
+                >
+                    <Box sx={{backgroundColor: "#D9D9D9", border:'black solid', borderWidth:'1px', height: "1.5em", width: "1.5em", borderRadius:'3em', marginLeft:'2.2em' }}></Box>
+                    <Typography sx={{ color:'#1ABAFF', marginLeft:'2em', fontSize: 20,}}> 4 </Typography>
+                    <Typography sx={{ marginLeft:'0.4em', fontSize: 20, color: "black" }}> : </Typography>
+                    <Typography sx={{ marginLeft:'0.5em', fontSize: 20, color: "#FC7D07" }}> 2 </Typography>
+                    <Box sx={{backgroundColor: "#D9D9D9", border:'black solid', borderWidth:'1px', height: "1.5em", width: "1.5em", borderRadius:'3em', marginLeft:'2.4em' }}></Box>
+                </Grid>
               </Box>
             </Box>
           </Grid>

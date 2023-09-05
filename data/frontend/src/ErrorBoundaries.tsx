@@ -1,4 +1,7 @@
 import React, { ErrorInfo, ReactElement } from "react";
+import { Button, Typography, Box } from "@mui/material";
+import ReplayIcon from '@mui/icons-material/Replay';
+
 interface ErrorBoundaryState {
     hasError: boolean
     errorMessage: string
@@ -23,10 +26,13 @@ export class ErrorBoundaries extends React.Component<ErrorboundaryProps, ErrorBo
     render(): React.ReactNode {
         if(this.state?.hasError){
             return(
-                <div className="divClass">
-                    <p><h3>Error</h3></p>
-                    {this.state.errorMessage}
-                </div>
+                <Box sx={{borderRadius:'1em', backgroundColor:'#D9D9D9', marginTop:'10em', marginLeft:'2.5em', border:'black solid', padding:'0.5em', position: "fixed"}} className="divClass">
+                    <Typography sx={{fontSize:'28px', marginLeft:'2.7em'}}>Error</Typography>
+                    <Typography sx={{fontSize:'20px'}}> {this.state.errorMessage} </Typography>
+                    <Button sx={{ marginBottom:'0.5em', marginTop:'0.5em', lineHeight: '3', height: "2.2em", color:'black', fontSize:'14px', marginLeft:'4.52em', border:'black solid', borderWidth:'2px', backgroundColor:'#FE8F29'}}>
+                        reload <ReplayIcon sx={{fontSize:'15px', transform: "translate(15%, -10%)",}}/>
+                    </Button>
+                </Box>
             )
         }
         return(this.props.children)
