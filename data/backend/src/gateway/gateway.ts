@@ -573,8 +573,11 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
 
   async handleConnection(client: Socket, ...args: any[]) {
     console.log(`Client connected: ${client.id}`);
-    if (client.handshake.headers['authorization']?.split(' ')[1] === 'test') // TODO remove and TODO test
-      return ('testUser');
+    if (client.handshake.headers.cookie.split('=')[1] === 'test') // TODO remove when testUser removed
+    {
+      await this.usersStatusService.addUser(client.id, 'testUser', userStatus.online);
+      return ;
+    }
     const credential = client.handshake.headers.cookie?.split(';').find((cookie) => cookie.includes('connect.sid'));
     if (!credential)
       return ;

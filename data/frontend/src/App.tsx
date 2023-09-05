@@ -40,7 +40,6 @@ function App() {
     dispatch(login(accessToken));
     Cookies.remove("username");
   }, [dispatch]);
-throw new Exception('a');
   return (
     <div className="App">
       <ThemeProvider theme={theme}>
