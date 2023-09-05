@@ -549,9 +549,7 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
         const user2 = await this.userService.findOne(player2);
         if (!user1 || !user2)
           throw new WsException("User not found");
-        const gameRoomId = player1 < player2 ? this.gameService.newGame(user1, user2) : this.gameService.newGame(user2, user1)
-        // TODO send gameRoomId of this.gameService.newGame to the players, 
-        // then the players stores it and uses this ID to send the game data to the server in the handleGame function
+        const gameRoomId = player1 < player2 ? this.gameService.newGame(user1, user2) : this.gameService.newGame(user2, user1);
 				this.server.emit("matchmaking" + player1, {opponent: player2, gameRoomId: gameRoomId});
 				this.server.emit("matchmaking" + player2, {opponent: player1, gameRoomId: gameRoomId});
 				this.matchmakingQueue.splice(this.matchmakingQueue.indexOf(player1), 1);
@@ -562,11 +560,10 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
           const gameRoom = this.gameService.getGameRoom(gameRoomId);
           if (!gameRoom)
             return;
-          this.server.emit("game" + gameRoomId, {playerY: gameRoom.player1.Y, enemyY: gameRoom.player2.Y, ballX: gameRoom.ballPos.x, ballY: gameRoom.ballPos.y}) 
+          this.server.emit("game" + gameRoomId, {playerY: gameRoom.player1.Y, enemyY: gameRoom.player2.Y, ballX: gameRoom.ballPos.x, ballY: gameRoom.ballPos.y, p1Score: gameRoom.player1.score, p2Score: gameRoom.player2.score}) 
         }, ticServ);
 		}
 	}
-//TODO fonction quand direction est diff de 0 bouger le Y de player
   
 	@SubscribeMessage('cancelMatchmaking')
 	async cancelMatchmaking(client: Socket, payload: {username: string}) {
@@ -577,41 +574,6 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
 			throw new WsException("Player not in Matchmaking");
 		this.matchmakingQueue.splice(this.matchmakingQueue.indexOf(payload.username), 1);
 	}
-
-  // async sendToClient() {
-  //   this.server.emit("game" + this.gameRoom.id, {playerY: this.gameRoom.player1.Y, enemyY: this.gameRoom.player2.Y, ballX: this.gameRoom.ball.x, ballY: this.gameRoom.ball.y}) 
-  // }
-
-	// @SubscribeMessage('game')
-	// async handleGame(client: Socket, payload: {player: string, opponent: string, y: number})
-	// {
-	// 	console.log(payload);
-  //       console.log("receive");
-  //   // TODO check which game room is the player in and create new function in gameService editing the gameRoom with the new position for instance
-	// 	this.server.emit(payload.opponent, {mouseY: payload.y})
-	// }
-
-  // movePlayer() {
-    // const speed = 10;
-    // // console.log("ca vas bouger");
-    // console.log(this.gameRoom);
-    // console.log(this.gameRoom ? true : false, this.gameRoom.player1 ? true : false, this.gameRoom.player1.direction);
-    // if (this.gameRoom && this.gameRoom.player1 && this.gameRoom.player1.direction !== 0) {
-    //   console.log("_______________________________")
-    //   if (this.gameRoom.player1.direction === 1) {
-    //     this.gameRoom.player1.Y -= speed;
-    //     console.log("----------------------y:", this.gameRoom.player1);
-    //   }
-    //   else if (this.gameRoom.player1.direction === -1)
-    //     this.gameRoom.player1.Y += speed;
-    // }
-    // else if (this.gameRoom && this.gameRoom.player2 && this.gameRoom.player2.direction !== 0) {
-    //   if (this.gameRoom.player2.direction === 1)
-    //     this.gameRoom.player1.Y -= speed;
-    //   else if (this.gameRoom.player2.direction === -1)
-    //     this.gameRoom.player1.Y += speed;
-    // }
-  // }
 
   @SubscribeMessage('pressUp')
 	async pressUp(client: Socket, payload: {player: string, gameRoomId: string})
