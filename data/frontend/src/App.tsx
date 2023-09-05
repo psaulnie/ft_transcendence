@@ -41,7 +41,6 @@ function App() {
     dispatch(login(accessToken));
     Cookies.remove("username");
   }, [dispatch]);
-
   return (
     <div className="App">
       <ThemeProvider theme={theme}>

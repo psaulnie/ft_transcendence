@@ -1,36 +1,40 @@
-import React, { Component, ErrorInfo, ReactNode } from "react";
+import React, { ErrorInfo, ReactElement } from "react";
+import { Button, Typography, Box } from "@mui/material";
+import ReplayIcon from '@mui/icons-material/Replay';
 
-interface Props {
-  children?: ReactNode;
+interface ErrorBoundaryState {
+    hasError: boolean
+    errorMessage: string
+}
+interface ErrorboundaryProps {
+    children: ReactElement
 }
 
-interface State {
-  hasError: boolean;
-}
-
-class ErrorBoundaries extends Component<Props, State> {
-  public state: State = {
-    hasError: false
-  };
-
-  public static getDerivedStateFromError(_: Error): State {
-    // Update state so the next render will show the fallback UI.
-    return { hasError: true };
-  }
-
-  public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    // console.error("Uncaught error:", error, errorInfo);
-    // console.log(error, errorInfo)
-    // const mute = [error, errorInfo];
-  }
-
-  public render() {
-    if (this.state.hasError) {
-      return <h1>Sorry.. there was an error</h1>;
+export class ErrorBoundaries extends React.Component<ErrorboundaryProps, ErrorBoundaryState>{
+    constructor(props: ErrorboundaryProps){
+        super(props)
+        this.state = {
+                        hasError : false,
+                        errorMessage: ""
+                     }
     }
-
-    return this.props.children;
-  }
+    componentDidCatch(error: Error, errorInfo: ErrorInfo){
+        this.setState({hasError: true})
+        this.setState({errorMessage: error.message})
+        //Do something with err and errorInfo
+    }
+    render(): React.ReactNode {
+        if(this.state?.hasError){
+            return(
+                <Box sx={{borderRadius:'1em', backgroundColor:'#D9D9D9', marginTop:'10em', marginLeft:'2.5em', border:'black solid', padding:'0.5em', position: "fixed"}} className="divClass">
+                    <Typography sx={{fontSize:'28px', marginLeft:'2.7em'}}>Error</Typography>
+                    <Typography sx={{fontSize:'20px'}}> {this.state.errorMessage} </Typography>
+                    <Button sx={{ marginBottom:'0.5em', marginTop:'0.5em', lineHeight: '3', height: "2.2em", color:'black', fontSize:'14px', marginLeft:'4.52em', border:'black solid', borderWidth:'2px', backgroundColor:'#FE8F29'}}>
+                        reload <ReplayIcon sx={{fontSize:'15px', transform: "translate(15%, -10%)",}}/>
+                    </Button>
+                </Box>
+            )
+        }
+        return(this.props.children)
+    }
 }
-
-export default ErrorBoundaries;
