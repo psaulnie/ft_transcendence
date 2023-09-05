@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
-import { useDispatch } from "react-redux";
-import { setUsername, login } from "../../store/user";
+import { useDispatch, useSelector } from "react-redux";
+import user, { setUsername, login, logout } from "../../store/user";
 
 import { Box, Grid, Button } from "@mui/material";
 
 import Profile from "../Global/Profile";
+import { useGetUserProfileQuery } from "../../store/api";
 
 export default function Home() {
+  const user = useSelector((state: any) => state.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -24,6 +26,19 @@ export default function Home() {
     dispatch(login(accessToken));
   }, [dispatch]);
 
+  const {
+    data: userProfile,
+    isLoading,
+    isError,
+  } = useGetUserProfileQuery({username: user.username});
+
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error</div>; // TODO handle error
+  if (userProfile.exist === false) {
+    dispatch(logout());
+        window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/logout`;
+
+  }
   return (
     <div>
         <Box
@@ -67,7 +82,7 @@ export default function Home() {
                   },
                 }}
               >
-                Jouer
+                Play
               </Button>
             </Grid>
             <Grid item>
@@ -101,7 +116,7 @@ export default function Home() {
                       fontSize: "24px",
                     }}
                   >
-                    Apercebo
+                    Welcome
                   </Grid>
                   <Grid
                     item
@@ -111,7 +126,7 @@ export default function Home() {
                       fontSize: "24px",
                     }}
                   >
-                    Victoires: 4
+                    Wins: {userProfile.wins}
                   </Grid>
                   <Grid
                     item
@@ -121,7 +136,7 @@ export default function Home() {
                       fontSize: "24px",
                     }}
                   >
-                    Defaites: 2
+                    Loses: {userProfile.loses}
                   </Grid>
                   <Grid
                     item
@@ -131,7 +146,7 @@ export default function Home() {
                       fontSize: "24px",
                     }}
                   >
-                    Rang:
+                    Rank: {userProfile.rank}
                   </Grid>
                 </Grid>
               </Box>

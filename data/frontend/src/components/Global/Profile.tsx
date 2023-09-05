@@ -258,6 +258,8 @@ function Profile() {
       >
         Achievements
       </Button>
+      {
+        user.username === username ?
       <Button
         variant="contained"
         color="primary"
@@ -281,8 +283,10 @@ function Profile() {
           },
         }}
       >
-        Friends list
+        Friends
       </Button>
+      : null
+      }
       {
         user.username === username ?
           <Button

@@ -16,6 +16,7 @@ import Achievements from "./components/Global/Achievements/Achievements";
 import Modification from "./components/Global/Modification";
 import Friendlist from "./components/Global/Friendlist";
 import webSocketManager from "./webSocket";
+import Cookies from "js-cookie";
 
 export default function Base() {
   const user = useSelector((state: any) => state.user);
@@ -43,6 +44,7 @@ export default function Base() {
       window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/logout`;
     }
   }, []);
+
   webSocketManager.initializeWebSocket();
 
   return (
