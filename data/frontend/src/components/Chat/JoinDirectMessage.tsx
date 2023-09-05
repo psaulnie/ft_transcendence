@@ -6,7 +6,6 @@ import { useGetUsersListQuery } from "../../store/api";
 import { addRoom } from "../../store/rooms";
 import { Grid, Typography } from "@mui/material";
 
-import Error from "../Global/Error";
 
 import {
   FormControl,
@@ -64,7 +63,6 @@ function JoinDirectMessage() {
     data: usersList,
     isLoading,
     isError,
-    error,
     refetch,
   } = useGetUsersListQuery({});
 

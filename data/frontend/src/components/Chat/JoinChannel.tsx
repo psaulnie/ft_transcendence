@@ -7,7 +7,6 @@ import { accessStatus, userRole } from "./chatEnums";
 import { addRoom } from "../../store/rooms";
 
 import PasswordDialog from "./PasswordDialog";
-import Error from "../Global/Error";
 
 import {
   FormControl,

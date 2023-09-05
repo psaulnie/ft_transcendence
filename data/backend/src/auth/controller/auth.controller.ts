@@ -1,10 +1,8 @@
 import {
   Controller,
   Get,
-  Next,
   Req,
   Res,
-  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
@@ -15,9 +13,6 @@ import {
 import { User } from '../../entities';
 
 import { HttpService as NestHttpService } from '@nestjs/axios';
-
-import { AxiosError } from 'axios';
-import { catchError, firstValueFrom } from 'rxjs';
 import { UsersService } from 'src/users/users.service';
 
 @Controller('auth')
@@ -28,7 +23,7 @@ export class AuthController {
   ) {}
 
   /**
-   * GET /api/auth/login
+   * GET /auth/login
    * This is the route the user will visit to authenticate
    */
   @Get('login')
@@ -38,7 +33,7 @@ export class AuthController {
   }
 
   /**
-   * GET /api/auth/redirect
+   * GET /auth/redirect
    * This is the redirect URL the OAuth2 Provider will call.
    */
   @Get('redirect')
@@ -59,7 +54,7 @@ export class AuthController {
   }
 
   /**
-   * GET /api/auth/status
+   * GET /auth/status
    * Retrieve the auth status
    */
   @Get('status')
@@ -68,7 +63,7 @@ export class AuthController {
   }
 
   /**
-   * GET /api/auth/logout
+   * GET /auth/logout
    * Logging the user out
    */
   @Get('logout')
@@ -96,44 +91,6 @@ export class AuthController {
     // Redirect on login page
     res.redirect('http://localhost:3000/login');
   }
-  /**
-   * GET /api/auth/connected
-   * Check the access token to see if the user is connected
-   */
-
-  // @Get('connected')
-  // @UseGuards(AuthenticatedGuard)
-  // async connected(@Req() req: Request) {
-  //   try {
-  //     let result = true;
-  //     let [type, token] = req.headers['authorization']?.split(' ') ?? [];
-  //     if (type !== 'Bearer') {
-  //       token = undefined;
-  //     }
-  //     if (token === 'test') return true;
-  //     if (!token) {
-  //       return false;
-  //     }
-
-  //     await firstValueFrom(
-  //       this.httpService
-  //         .get('https://api.intra.42.fr/oauth/token/info', {
-  //           headers: {
-  //             Authorization: `Bearer ${token}`,
-  //           },
-  //         })
-  //         .pipe(
-  //           catchError((error: any) => {
-  //             result = false;
-  //             throw new UnauthorizedException();
-  //           }),
-  //         ),
-  //     );
-  //     return result;
-  //   } catch {
-  //     return false;
-  //   }
-  // }
 
   @Get('testlogin')
   async testlogin(@Res() res: Response, @Req() req: Request) {

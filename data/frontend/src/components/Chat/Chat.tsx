@@ -14,7 +14,6 @@ import DirectMessageProvider from "./DirectMessageProvider";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ChatProcess from "./ChatProcess";
-import Error from "../Global/Error";
 
 import {
   Skeleton,
