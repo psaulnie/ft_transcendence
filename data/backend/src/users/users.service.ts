@@ -149,17 +149,38 @@ export class UsersService {
     });
   }
 
+  async turnOffTwoFactorAuth(userId: number) {
+    return await this.usersRepository.update(userId, {
+      isTwoFactorAuthEnabled: false,
+    });
+  }
+
   async isTwoFactorAuthEnabled(userId: number): Promise<boolean> {
     const user = await this.usersRepository.findOne({
       where: { uid: userId },
       select: ['isTwoFactorAuthEnabled'],
     });
-
     if (!user) {
       throw new Error('User not found');
     }
-
-    console.log('‣ isTwoFactorAuthEnabled: ', user.isTwoFactorAuthEnabled);
     return user.isTwoFactorAuthEnabled;
+  }
+
+  async changeTwoFactorAuthState(userId: number, twoFactorAuthState: boolean) {
+    await this.usersRepository.update(userId, {
+      twoFactorAuthState: twoFactorAuthState,
+    });
+    return twoFactorAuthState;
+  }
+
+  async getTwoFactorAuthState(userId: number) {
+    const user = await this.usersRepository.findOne({
+      where: { uid: userId },
+      select: ['twoFactorAuthState'],
+    });
+    if (!user) {
+      throw new Error('User not found');
+    }
+    return user.twoFactorAuthState;
   }
 }

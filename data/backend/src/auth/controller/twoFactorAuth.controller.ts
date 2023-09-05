@@ -26,6 +26,31 @@ export class TwoFactorAuthController {
     private readonly usersService: UsersService,
   ) {}
 
+  @Post('state')
+  @HttpCode(200)
+  @UseGuards(AuthenticatedGuard)
+  async changeTwoFactorAuthState(
+    @Req() request: RequestWithUser,
+    @Body() { twoFactorAuthState },
+  ) {
+    console.log(
+      'In State endpoint, 2FaState: ',
+      twoFactorAuthState,
+      typeof twoFactorAuthState,
+    );
+    if (twoFactorAuthState === undefined) {
+      return await this.usersService.getTwoFactorAuthState(request.user.uid);
+    } else {
+      if (!twoFactorAuthState) {
+        await this.usersService.turnOffTwoFactorAuth(request.user.uid);
+      }
+      return await this.usersService.changeTwoFactorAuthState(
+        request.user.uid,
+        twoFactorAuthState,
+      );
+    }
+  }
+
   @Post('generate')
   @UseGuards(AuthenticatedGuard)
   async register(@Res() response: Response, @Req() request: RequestWithUser) {

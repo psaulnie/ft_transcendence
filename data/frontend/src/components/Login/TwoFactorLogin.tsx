@@ -12,26 +12,44 @@ function TwoFactorLogin() {
   );
 
   useEffect(() => {
-    async function checkTwoFactorStatus() {
+    async function checkTwoFactorAuthState() {
       try {
-        const response = await fetch("http://localhost:5000/2fa/status", {
+        const response = await fetch("http://localhost:5000/2fa/state", {
+          method: 'post',
           credentials: "include",
+          headers: {
+            'Content-Type': 'application/json',
+          },
         });
         const data = await response.json();
-        setIsTwoFactorEnabled(data);
-        if (!data) {
-          fetchQrCode();
-        }
-      } catch (error) {
-        if (error instanceof Error) {
-          console.log("Error:", error.message);
+        if (response.ok && data === true) {
+          checkTwoFactorStatus();
+        } else if (data === false) {
+          navigate("/home");
         } else {
-          console.log("An unknown error occurred:", error);
+          console.error('Failed to fetch state of 2FA');
         }
+      } catch (error: any) {
+        console.log('Error: ', error.message());
       }
     }
-    checkTwoFactorStatus();
+    checkTwoFactorAuthState();
   }, []);
+
+  async function checkTwoFactorStatus() {
+    try {
+      const response = await fetch("http://localhost:5000/2fa/status", {
+        credentials: "include",
+      });
+      const data = await response.json();
+      setIsTwoFactorEnabled(data);
+      if (!data) {
+        fetchQrCode();
+      }
+    } catch (error: any) {
+        console.log("Error:", error.message);
+    }
+  }
 
   async function fetchQrCode() {
     try {
@@ -45,12 +63,8 @@ function TwoFactorLogin() {
       const data = await response.blob();
       const url = URL.createObjectURL(data);
       setQrCodeUrl(url);
-    } catch (error: unknown) {
-      if (error instanceof Error) {
+    } catch (error: any) {
         console.log("Error:", error.message);
-      } else {
-        console.log("An unknown error occurred:", error);
-      }
     }
   }
 
@@ -73,12 +87,8 @@ function TwoFactorLogin() {
         console.log("Wrong authentication code");
         setError(true);
       }
-    } catch (error: unknown) {
-      if (error instanceof Error) {
+    } catch (error: any) {
         console.log("Error:", error.message);
-      } else {
-        console.log("An unknown error occurred:", error);
-      }
     }
   }
 
@@ -101,12 +111,8 @@ function TwoFactorLogin() {
         console.log("Wrong authentication code");
         setError(true);
       }
-    } catch (error: unknown) {
-      if (error instanceof Error) {
+    } catch (error: any) {
         console.log("Error:", error.message);
-      } else {
-        console.log("An unknown error occurred:", error);
-      }
     }
   }
 

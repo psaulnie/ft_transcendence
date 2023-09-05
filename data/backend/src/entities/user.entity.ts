@@ -38,6 +38,9 @@ export class User {
   @Column({ name: 'refresh_token' })
   refreshToken: string;
 
+  @Column({ default: false })
+  public twoFactorAuthState: boolean;
+
   @Column({ nullable: true })
   public twoFactorAuthSecret?: string;
 
