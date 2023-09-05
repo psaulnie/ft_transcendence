@@ -1,4 +1,3 @@
-import UploadButton from "./UploadButton";
 import React, { useEffect, useState } from "react";
 
 import { Box, Grid, Button, Avatar, Typography, Paper } from "@mui/material";
@@ -6,7 +5,6 @@ import { Box, Grid, Button, Avatar, Typography, Paper } from "@mui/material";
 function Options() {
   return (
     <div>
-      {/* <UploadButton /> */}
       <Box
         sx={{
           position: "fixed",

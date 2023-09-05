@@ -26,11 +26,11 @@ export default function Base() {
   const [drawerState, setDrawerState] = useState(false);
   const [isGameOpen, setIsGameOpen] = useState(false);
   const toggleDrawer =
-  (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
-    if (
-      event.type === "keydown" &&
-      ((event as React.KeyboardEvent).key === "Tab" ||
-      (event as React.KeyboardEvent).key === "Shift")
+    (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
+      if (
+        event.type === "keydown" &&
+        ((event as React.KeyboardEvent).key === "Tab" ||
+          (event as React.KeyboardEvent).key === "Shift")
       ) {
         return;
       }
@@ -38,8 +38,7 @@ export default function Base() {
     };
 
   useEffect(() => {
-    if (!user || !user.username)
-    {
+    if (!user || !user.username) {
       dispatch(logout());
       window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/logout`;
     }
@@ -52,17 +51,17 @@ export default function Base() {
       <Navigation setDrawerState={setDrawerState} />
       <NavDrawer state={drawerState} toggleDrawer={toggleDrawer} />
       <Routes>
-        <Route path="*" element={<Navigate to="/home"/>}></Route>
+        <Route path="*" element={<Navigate to="/home" />}></Route>
         <Route path="/home" element={<Home />}></Route>
         <Route path="/profile/:username" element={<Profile />}></Route>
         <Route path="/game" element={<Game />}></Route>
         <Route path="/options" element={<Options />}></Route>
-        <Route path="/profile/:username/achievements" element={<Achievements />}></Route>
-        <Route path="/friendlist" element={<Friendlist />}></Route>
         <Route
-          path="/modification"
-          element={<Modification />}
+          path="/profile/:username/achievements"
+          element={<Achievements />}
         ></Route>
+        <Route path="/friendlist" element={<Friendlist />}></Route>
+        <Route path="/edit" element={<Modification />}></Route>
       </Routes>
       <Chat />
     </div>

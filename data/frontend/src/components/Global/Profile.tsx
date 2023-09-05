@@ -26,7 +26,7 @@ function Profile() {
   };
 
   const handleModificationClick = () => {
-    navigate("/modification");
+    navigate(`/edit`);
   };
 
   if (isLoading) return <div>Loading...</div>;

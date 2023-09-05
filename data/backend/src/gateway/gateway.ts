@@ -621,6 +621,18 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
 		this.server.emit(payload.opponent, {mouseY: payload.y})
 	}
 
+  async changeUsername(client: Socket, payload: string) {
+    const userStatus = await this.usersStatusService.getUserStatusByClientId(client.id);
+    if (!userStatus)
+      return ;
+    if (userStatus.clientId !== client.id)
+      throw new WsException('Forbidden');
+    const user = await this.userService.findOne(userStatus.username);
+    if (!user)
+      return ;
+    await this.userService.changeUsername(user, payload);
+  }
+
   async afterInit(server: Server) {
     console.log('Init');
   }

@@ -28,17 +28,6 @@ export class UsersService {
     private achievementsRepository: Repository<Achievements>,
   ) {}
 
-  // For testing only, TO REMOVE-----------------------------------------------------------
-  private index = 0;
-  private users = [];
-
-  // async findOne(
-  //   username: string,
-  // ): Promise<{ id: number; username: string; password: string } | undefined> {
-  //   return this.users.find((user) => user.username === username);
-  // }
-  // //----------------------------------------------------------------------------------------
-
   async findOne(name: string): Promise<User> {
     return await this.usersRepository.findOne({
       where: { username: name },
@@ -125,7 +114,7 @@ export class UsersService {
     newUser.refreshToken = '';
     newUser.blockedUsers = [];
     newUser.intraId = '';
-    newUser.intraUsername = '';
+    newUser.intraUsername = name;
     newUser.friends = [];
     newUser.matchHistory = [];
     newUser.statistics = statistics;
@@ -214,6 +203,12 @@ export class UsersService {
       }
     }
     user.urlAvatar = avatar;
+    await this.usersRepository.save(user);
+  }
+
+  async changeUsername(user: User, username: string) {
+    console.log('changeusername');
+    user.username = username;
     await this.usersRepository.save(user);
   }
 
