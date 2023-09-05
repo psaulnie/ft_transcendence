@@ -5,7 +5,7 @@ export const apiSlice = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
     baseUrl: `http://${process.env.REACT_APP_IP}:5000`,
-    credentials: 'include',
+    credentials: "include",
   }),
   endpoints: (builder) => ({
     getRole: builder.query({

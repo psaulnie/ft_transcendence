@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { webSocket } from "../../webSocket";
-
+import webSocketManager from "../../webSocket";
 import {
   Dialog,
   DialogTitle,
@@ -18,8 +17,6 @@ import { useSelector } from "react-redux";
 
 import { useGetInvitedUsersListQuery } from "../../store/api";
 
-import Error from "../Global/Error";
-
 type arg = {
   open: boolean;
   setOpen: any;
@@ -30,7 +27,7 @@ const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
     children: React.ReactElement<any, any>;
   },
-  ref: React.Ref<unknown>
+  ref: React.Ref<unknown>,
 ) {
   return <Zoom ref={ref} {...props} style={{ transitionDelay: "100ms" }} />;
 });
@@ -51,7 +48,7 @@ export default function SelectUserDialog({ open, setOpen, roomName }: arg) {
 
   function confirmButton(e: any) {
     e.preventDefault();
-    webSocket.emit("inviteUser", {
+    webSocketManager.getSocket().emit("inviteUser", {
       roomName: roomName,
       username: selectedUser,
       source: user.username,
@@ -74,7 +71,7 @@ export default function SelectUserDialog({ open, setOpen, roomName }: arg) {
     refetch();
   }, [refetch]);
 
-  if (isError) return <Error error={error} />;
+  if (isError) throw new (Error as any)("API call error");
   if (isLoading) return <Skeleton variant="rectangular" />;
 
   return (

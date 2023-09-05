@@ -6,7 +6,7 @@ import * as passport from 'passport';
 import { TypeormSession } from './entities';
 import { TypeormStore } from 'connect-typeorm';
 import { DataSource } from 'typeorm';
-import * as cookieParser from 'cookie-parser'
+import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

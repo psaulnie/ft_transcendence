@@ -1,7 +1,6 @@
-
 export enum sendMsgTypes {
-	msg = 0,
-	invite
+  msg = 0,
+  invite,
 }
 
 export enum actionTypes {

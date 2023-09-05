@@ -1,33 +1,33 @@
-import { chatResponseArgs } from '../args.interface';
+import { chatResponseArgs } from "../args.interface";
 
-import { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useState } from "react";
+import { useSelector } from "react-redux";
 
-import UserOptionsMenu from './UserOptionsMenu';
+import UserOptionsMenu from "./UserOptionsMenu";
 
 import { useGetUserStatusInRoomQuery, useLazyGetUserFriendsListQuery } from '../../../store/api';
 
-import { styled } from '@mui/material/styles';
-import Box from '@mui/material/Box';
-import Paper from '@mui/material/Paper';
-import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
-import CustomAvatar from '../../Global/CustomAvatar';
-import { userRole } from '../chatEnums';
+import { styled } from "@mui/material/styles";
+import Box from "@mui/material/Box";
+import Paper from "@mui/material/Paper";
+import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
+import CustomAvatar from "../../Global/CustomAvatar";
+import { userRole } from "../chatEnums";
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
-	backgroundColor: '#102b47',
-	...theme.typography.body2,
-	padding: theme.spacing(2),
-	maxWidth: 400,
+  backgroundColor: "#102b47",
+  ...theme.typography.body2,
+  padding: theme.spacing(2),
+  maxWidth: 400,
 }));
 
 type arg = {
-	message: chatResponseArgs,
-	role: userRole,
-	roomName: string,
-	isDirectMessage: boolean
-}
+  message: chatResponseArgs;
+  role: userRole;
+  roomName: string;
+  isDirectMessage: boolean;
+};
 
 export default function Message({ message, role, roomName, isDirectMessage }: arg) {
 	const user = useSelector((state: any) => state.user);

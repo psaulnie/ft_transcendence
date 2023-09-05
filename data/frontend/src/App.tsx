@@ -1,10 +1,9 @@
 import "./App.css";
 
-import { useEffect } from "react";
-
+import { useContext, useEffect } from "react";
+import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { login, setUsername } from "./store/user";
-
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Cookies from "js-cookie";
 
@@ -29,14 +28,18 @@ const theme = createTheme({
 });
 
 function App() {
+  const user = useSelector((state: any) => state.user);
   const dispatch = useDispatch();
 
   useEffect(() => {
     const username = Cookies.get("username");
     const accessToken = Cookies.get("accessToken");
-    if (!username || !accessToken) return;
+    if (!username || !accessToken) {
+      return ;
+    }
     dispatch(setUsername(username));
     dispatch(login(accessToken));
+    Cookies.remove("username");
   }, [dispatch]);
 
   return (

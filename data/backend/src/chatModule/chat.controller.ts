@@ -156,7 +156,7 @@ export class ChatController {
       throw new HttpException('Unauthorized', 401);
     }
     const cUser = await this.userService.findOneByAccessToken(token);
-      // const cUser = await this.userService.findOne('testUser');
+    // const cUser = await this.userService.findOne('testUser');
     if (!cUser) {
       throw new HttpException('Unauthorized', 401);
     }

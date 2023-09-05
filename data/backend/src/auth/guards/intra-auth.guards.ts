@@ -27,11 +27,11 @@ export class AuthenticatedGuard implements CanActivate {
     const req = context.switchToHttp().getRequest();
     // TODO REMOVE -------
     const [type, token] = req.headers['authorization']?.split(' ') ?? [];
-    if (type && type === 'Bearer' && token && token === 'test')
-    {
-      return (true);
+    if (type && type === 'Bearer' && token && token === 'test') {
+      return true;
     }
     // -------------------
+    // console.log(req.isAuthenticated());
     return req.isAuthenticated();
   }
 }

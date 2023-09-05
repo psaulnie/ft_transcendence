@@ -19,7 +19,6 @@ import StarIcon from "@mui/icons-material/Star";
 import StarOutlineIcon from "@mui/icons-material/StarOutline";
 import PersonIcon from "@mui/icons-material/Person";
 
-import Error from "../Global/Error";
 import UserOptionsMenu from "./Message/UserOptionsMenu";
 import CustomAvatar from "../Global/CustomAvatar";
 import { userRole } from "./chatEnums";
@@ -54,7 +53,7 @@ export default function UsersList({
   if (isDirectMessage === false) usersList = usersListData;
   else
     usersList = [
-      { username: user.username, role: userRole.none,  isMuted: false },
+      { username: user.username, role: userRole.none, isMuted: false },
       { username: roomName, role: userRole.none, isMuted: false },
     ];
 
@@ -69,7 +68,7 @@ export default function UsersList({
               mouseX: event.clientX + 2,
               mouseY: event.clientY - 6,
             }
-          : null
+          : null,
       );
       trigger({username: user.username});
     }
@@ -85,7 +84,7 @@ export default function UsersList({
     if (isDirectMessage === false) refetch();
   }, [isDirectMessage, refetch]);
 
-  if (isError && isDirectMessage === false) return <Error error={error} />;
+  if (isError && isDirectMessage === false) throw new (Error as any)("API call error");
   else if (isLoading && isDirectMessage === false)
     return (
       <div>

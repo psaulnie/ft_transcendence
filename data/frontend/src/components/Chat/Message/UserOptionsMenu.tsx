@@ -1,4 +1,4 @@
-import { webSocket } from '../../../webSocket';
+import webSocketManager from '../../../webSocket';
 import { useDispatch, useSelector } from 'react-redux';
 import { addBlockedUser, removeBlockedUser } from '../../../store/user';
 import { Menu, MenuItem, Divider } from '@mui/material';
@@ -6,7 +6,6 @@ import { addRoom } from '../../../store/rooms';
 import { userRole } from '../chatEnums';
 import { useEffect, useState } from 'react';
 import { useGetUserFriendsListQuery } from '../../../store/api';
-import Error from '../../Global/Error';
 
 type arg = {
 	cUser: {username: string, role: userRole, isMuted: boolean},
@@ -27,12 +26,12 @@ export default function UserOptionsMenu({ cUser, role, roomName, contextMenu, se
 	};
 
 	function blockUser(cUser: {username: string, role: userRole}) {
-		webSocket.emit("block", { source: user.username, target: cUser.username, room: roomName });
+		webSocketManager.getSocket()?.emit("block", { source: user.username, target: cUser.username, room: roomName });
 		dispatch(addBlockedUser(cUser.username));
 	}
 
 	function unblockUser(cUser: {username: string, role: userRole}) {
-		webSocket.emit("unblock", { source: user.username, target: cUser.username, room: roomName });
+		webSocketManager.getSocket()?.emit("unblock", { source: user.username, target: cUser.username, room: roomName });
 		dispatch(removeBlockedUser(cUser.username));
 	}
 
@@ -41,7 +40,7 @@ export default function UserOptionsMenu({ cUser, role, roomName, contextMenu, se
 	}
 	
 	if (friendList.isError)
-		return (<Error error={friendList.error}/>);
+		throw new (Error as any)('Api call error');
 	if (friendList.isLoading)
 		return (<div>Loading...</div>)
 	if (friendList.isSuccess)
@@ -59,16 +58,16 @@ export default function UserOptionsMenu({ cUser, role, roomName, contextMenu, se
 				{
 					role !== userRole.none && user.username !== cUser.username && cUser.role === userRole.none && showAdminOpt ? (
 						<span>
-							<MenuItem onClick={ () => { webSocket.emit("kick", { source: user.username, target: cUser.username, room: roomName }) } } >Kick</MenuItem>
-							<MenuItem onClick={ () => { webSocket.emit("ban", { source: user.username, target: cUser.username, room: roomName })  } } >Ban</MenuItem>
+							<MenuItem onClick={ () => { webSocketManager.getSocket()?.emit("kick", { source: user.username, target: cUser.username, room: roomName }) } } >Kick</MenuItem>
+							<MenuItem onClick={ () => { webSocketManager.getSocket()?.emit("ban", { source: user.username, target: cUser.username, room: roomName })  } } >Ban</MenuItem>
 							{
 								!cUser.isMuted ?
-									<MenuItem onClick={ () => { webSocket.emit("mute", { source: user.username, target: cUser.username, room: roomName }) } }>Mute</MenuItem>
+									<MenuItem onClick={ () => { webSocketManager.getSocket()?.emit("mute", { source: user.username, target: cUser.username, room: roomName }) } }>Mute</MenuItem>
 								:
-									<MenuItem onClick={ () => { webSocket.emit("unmute", { source: user.username, target: cUser.username, room: roomName }) } }>Unmute</MenuItem>
+									<MenuItem onClick={ () => { webSocketManager.getSocket()?.emit("unmute", { source: user.username, target: cUser.username, room: roomName }) } }>Unmute</MenuItem>
 
 							}
-							<MenuItem onClick={ () => { webSocket.emit("admin", { source: user.username, target: cUser.username, room: roomName }) } } >Set {cUser.username} as administrator</MenuItem>
+							<MenuItem onClick={ () => { webSocketManager.getSocket()?.emit("admin", { source: user.username, target: cUser.username, room: roomName }) } } >Set {cUser.username} as administrator</MenuItem>
 							<Divider/>
 						</span>
 					) : null
@@ -79,8 +78,8 @@ export default function UserOptionsMenu({ cUser, role, roomName, contextMenu, se
 							<MenuItem>See profile</MenuItem>
 							{
 								(friendList.data?.find((element: string) => element === cUser.username) ? false : true) ?
-									<MenuItem onClick={() => { webSocket.emit("askBeingFriend", {source: user.username, target: cUser.username})}}>Add as friend</MenuItem>
-								:   <MenuItem onClick={() => { webSocket.emit("removeFriend", {source: user.username, target: cUser.username})}}>Remove friend</MenuItem>
+									<MenuItem onClick={() => { webSocketManager.getSocket()?.emit("askBeingFriend", {source: user.username, target: cUser.username})}}>Add as friend</MenuItem>
+								:   <MenuItem onClick={() => { webSocketManager.getSocket()?.emit("removeFriend", {source: user.username, target: cUser.username})}}>Remove friend</MenuItem>
 							}
 							<MenuItem>Invite {cUser.username} to play Pong</MenuItem>
 							{

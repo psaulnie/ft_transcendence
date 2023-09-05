@@ -1,51 +1,45 @@
-import UploadButton from "./UploadButton";
-import falonsoImage from "./falonso.jpg";
-
-import { Box, Grid, Button, Avatar, Typography } from "@mui/material";
+import { Box, Grid, Button, Avatar, Typography, Paper } from "@mui/material";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 interface ProfileProps {
   toggleProfil: () => void;
 }
 
 function Profile({ toggleProfil }: ProfileProps) {
+  const user = useSelector((state: any) => state.user);
+  const urlAvatar = "http://localhost:5000/api/avatar/" + user.username;
+
   const handleButtonClick = () => {
     toggleProfil();
+  };
+
+  const navigate = useNavigate();
+
+  const handleAchievementsClick = () => {
+    navigate("/achievements");
+  };
+
+  const handleFriendsClick = () => {
+    navigate("/friendlist");
+  };
+
+  const handleModificationClick = () => {
+    navigate("/Modification");
   };
 
   return (
     <div>
       <h1>Profile</h1>
-      <UploadButton />
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={handleButtonClick}
-        sx={{
-          textTransform: "none",
-          fontWeight: "bold",
-          fontSize: "36px",
-          width: "4em",
-          height: "1.4em",
-          backgroundColor: "rgba(220, 220, 220, 0.9)",
-          borderColor: "red",
-          color: "black",
-          "&:hover": {
-            backgroundColor: "grey",
-            borderColor: "red",
-          },
-        }}
-      >
-        Back
-      </Button>
+      {/* <UploadButton /> */}
       <Box
         sx={{
           position: "fixed",
-          top: "56%",
-          left: "30%",
-          transform: "translate(-50%, -50%)",
-          width: "30em",
-          height: "30em",
-          padding: "2em",
+          transform: "translate(5%, 0%)",
+          top: "12%",
+          width: "90%",
+          height: "60%",
+          padding: "1em",
           borderRadius: "3em",
           background: "linear-gradient(to right, #ECECEC, #d6d4d4)",
           border: "2px solid #000000",
@@ -54,75 +48,223 @@ function Profile({ toggleProfil }: ProfileProps) {
       >
         <Grid
           container
-          spacing={1}
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-          columns={{ xs: 12 }}
+          spacing={0}
+          direction="column"
+          justifyContent="center"
+          alignItems="center"
         >
+          <Grid item xs sx={{ width: "100%", height: "100%" }}>
+            <Grid
+              container
+              spacing={1}
+              justifyContent="center"
+              alignItems="center"
+            >
+              <Grid item xs={6} sx={{ backgroundColor: "" }}>
+                <Avatar
+                  src={urlAvatar}
+                  alt="User Avatar"
+                  sx={{ marginLeft: "0.5em", width: "5em", height: "5em" }}
+                />
+              </Grid>
+              <Grid
+                item
+                xs={6}
+                sx={{ backgroundColor: "", marginTop: "0.2em", transform: "translate(-7%, 0%)", }}
+              >
+                <Typography
+                  variant="h6"
+                  sx={{ fontSize: 30, fontWeight: "bold", color: "black" }}
+                >
+                  {user.username}
+                </Typography>
+                <Typography
+                  variant="h6"
+                  sx={{ fontSize: 30, fontWeight: "bold", color: "black" }}
+                >
+                  Rang:🥇
+                </Typography>
+              </Grid>
+            </Grid>
+          </Grid>
           <Grid
             item
-            xs={5}
+            xs
+            sx={{ backgroundColor: "", width: "100%", height: "100%" }}
+          >
+            <Typography
+              variant="h6"
+              sx={{
+                fontSize: 28,
+                fontWeight: "bold",
+                textDecoration: "underline",
+                color: "black",
+              }}
+            >
+              STATS
+            </Typography>
+          </Grid>
+          <Grid
+            item
+            xs
             sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
+              backgroundColor: "",
+              width: "100%",
+              height: "90%",
+              marginTop: "-0.5em",
             }}
           >
-            <Avatar
-              src={falonsoImage}
-              alt="User Avatar"
-              sx={{ width: "8em", height: "8em", marginLeft: "2em" }}
-            />
+            <Grid
+              container
+              spacing={1}
+              justifyContent="center"
+              alignItems="center"
+            >
+              <Grid item xs={6}>
+                <Typography variant="h6" sx={{ fontSize: 24, color: "black" }}>
+                  Wins: 4
+                </Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography variant="h6" sx={{ fontSize: 24, color: "black" }}>
+                  Loses: 2
+                </Typography>
+              </Grid>
+            </Grid>
           </Grid>
-          <Grid item xs={7}>
-            <Box>
-              <Typography
-                variant="h6"
-                sx={{
-                  fontSize: 28,
-                  fontWeight: "bold",
-                  color: "black",
-                  marginLeft: "1em",
-                }}
-              >
-                Falonso
-              </Typography>
-              <Typography
-                variant="body2"
-                sx={{
-                  fontSize: 28,
-                  fontWeight: "bold",
-                  color: "black",
-                  marginLeft: "1em",
-                }}
-              >
-                Status: Auth
-              </Typography>
+          <Grid
+            item
+            xs
+            sx={{
+              backgroundColor: "",
+              width: "100%",
+              height: "100%",
+              marginTop: "-0.4em",
+            }}
+          >
+            <Typography variant="h6" sx={{ fontSize: 24, color: "black" }}>
+              Match history:
+            </Typography>
+          </Grid>
+          <Grid
+            item
+            xs
+            sx={{
+              backgroundColor: "",
+              width: "100%",
+              height: "30%",
+              marginTop: "-0.4em",
+            }}
+          >
+            <Box
+              sx={{
+                overflow: "auto",
+                height: "6.3em",
+                padding: "0.3em",
+                display: "grid",
+                gap: "0.5em",
+              }}
+            >
+              <Box sx={{ backgroundColor: "grey", color: "black" }}>
+                victoire
+              </Box>
+              <Box sx={{ backgroundColor: "grey", color: "black" }}>
+                defaite
+              </Box>
+              <Box sx={{ backgroundColor: "grey", color: "black" }}>
+                victoire
+              </Box>
+              <Box sx={{ backgroundColor: "grey", color: "black" }}>
+                victoire
+              </Box>
+              <Box sx={{ backgroundColor: "grey", color: "black" }}>
+                victoire
+              </Box>
+              <Box sx={{ backgroundColor: "grey", color: "black" }}>
+                victoire
+              </Box>
+              <Box sx={{ backgroundColor: "grey", color: "black" }}>
+                victoire
+              </Box>
             </Box>
-          </Grid>
-          <Grid item xs={4}>
-            <Typography variant="body1">33</Typography>
-          </Grid>
-          <Grid item xs={4}>
-            <Typography variant="body1">44</Typography>
-          </Grid>
-          <Grid item xs={4}>
-            <Typography variant="body1">55</Typography>
-          </Grid>
-          <Grid item xs={4}>
-            <Typography variant="body1">66</Typography>
-          </Grid>
-          <Grid item xs={4}>
-            <Typography variant="body1">77</Typography>
-          </Grid>
-          <Grid item xs={4}>
-            <Typography variant="body1">88</Typography>
           </Grid>
         </Grid>
       </Box>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleAchievementsClick}
+        sx={{
+          textTransform: "none",
+          fontWeight: "bold",
+          fontSize: "20px",
+          width: "10em",
+          height: "1.4em",
+          position: "fixed",
+          border: "2px solid #000000",
+          transform: "translate(-50%, 0%)",
+          backgroundColor: "rgba(220, 220, 220, 0.9)",
+          borderRadius: "1em",
+          top: "74%",
+          color: "black",
+          "&:hover": {
+            backgroundColor: "grey",
+            borderColor: "red",
+          },
+        }}
+      >
+        Achievements
+      </Button>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleFriendsClick}
+        sx={{
+          textTransform: "none",
+          fontWeight: "bold",
+          fontSize: "20px",
+          width: "10em",
+          height: "1.4em",
+          position: "fixed",
+          transform: "translate(-50%, 0%)",
+          backgroundColor: "rgba(220, 220, 220, 0.9)",
+          border: "2px solid #000000",
+          borderRadius: "1em",
+          top: "80.5%",
+          color: "black",
+          "&:hover": {
+            backgroundColor: "grey",
+            borderColor: "red",
+          },
+        }}
+      >
+        Friends list
+      </Button>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleModificationClick}
+        sx={{
+          textTransform: "none",
+          fontWeight: "bold",
+          fontSize: "20px",
+          width: "10em",
+          height: "1.4em",
+          position: "fixed",
+          transform: "translate(-50%, 0%)",
+          backgroundColor: "rgba(220, 220, 220, 0.9)",
+          border: "2px solid #000000",
+          borderRadius: "1em",
+          top: "87%",
+          color: "black",
+          "&:hover": {
+            backgroundColor: "grey",
+            borderColor: "red",
+          },
+        }}
+      >
+        Change profil
+      </Button>
     </div>
   );
 }

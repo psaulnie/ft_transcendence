@@ -25,7 +25,14 @@ export class IntraStrategy extends PassportStrategy(Strategy) {
 - accessToken: ${accessToken},
 - refreshToken: ${refreshToken},
 -----`);
-    const details = { intraId, username, accessToken, refreshToken, urlAvatar: '', intraUsername: username };
+    const details = {
+      intraId,
+      username,
+      accessToken,
+      refreshToken,
+      urlAvatar: '',
+      intraUsername: username,
+    };
     return this.authService.validateUser(details);
   }
 }

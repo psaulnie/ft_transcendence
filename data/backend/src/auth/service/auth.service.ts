@@ -11,8 +11,10 @@ import { UnauthorizedException } from '@nestjs/common';
 
 @Injectable()
 export class AuthService implements AuthProvider {
-  constructor(@InjectRepository(User) private userRepo: Repository<User>,
-    private readonly httpService: HttpService) {}
+  constructor(
+    @InjectRepository(User) private userRepo: Repository<User>,
+    private readonly httpService: HttpService,
+  ) {}
   async validateUser(details: UserDetails) {
     const { intraId, accessToken, refreshToken } = details;
     console.log('details in validateUser : ', details);
@@ -21,7 +23,7 @@ export class AuthService implements AuthProvider {
     console.log('-----');
     if (user) {
       if (user.urlAvatar === '' || user.urlAvatar === null) {
-      const url = await firstValueFrom(
+        const url = await firstValueFrom(
           this.httpService
             .get('https://api.intra.42.fr/v2/me', {
               headers: {
