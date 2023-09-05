@@ -21,4 +21,6 @@ export enum actionTypes {
   noPassword,
   invited,
   blockedMsg,
+  askBeingFriend,
+  acceptBeingFriend,
 }

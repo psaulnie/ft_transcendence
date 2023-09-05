@@ -2,16 +2,8 @@ import {
   ExecutionContext,
   Injectable,
   CanActivate,
-  UnauthorizedException,
-  Inject,
-  HttpException,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { HttpService as NestHttpService } from '@nestjs/axios';
-
-import { AxiosError } from 'axios';
-import { catchError, firstValueFrom } from 'rxjs';
-import { WsException } from '@nestjs/websockets';
 
 @Injectable()
 export class IntraAuthGuards extends AuthGuard('42') {

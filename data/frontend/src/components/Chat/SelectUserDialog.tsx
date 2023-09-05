@@ -17,8 +17,6 @@ import { useSelector } from "react-redux";
 
 import { useGetInvitedUsersListQuery } from "../../store/api";
 
-import Error from "../Global/Error";
-
 type arg = {
   open: boolean;
   setOpen: any;
