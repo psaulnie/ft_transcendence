@@ -32,7 +32,7 @@ function Navigation({ setDrawerState }: { setDrawerState: any }) {
   };
 
   const handleProfileClick = () => {
-    navigate("/profile");
+    navigate(`/profile/${user.username}`);
   };
 
   function logoutButton(e: SyntheticEvent) {

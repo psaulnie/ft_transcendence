@@ -12,13 +12,6 @@ export default function Home() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const [isProfilOpen, setIsProfilOpen] = useState(false);
-  const [isGameOpen, setIsGameOpen] = useState(false);
-
-  const toggleProfil = () => {
-    setIsProfilOpen(!isProfilOpen);
-  };
-
   const play = () => {
     navigate("/game");
   }
@@ -33,10 +26,6 @@ export default function Home() {
 
   return (
     <div>
-      {isProfilOpen ? (
-        <Profile toggleProfil={toggleProfil} />
-      ) : (
-        /* {isGameOpen ? (<Profile toggleGame={toggleGame}/>) : ( A TROUVER SOLUTION */
         <Box
           sx={{
             display: "flex",
@@ -149,7 +138,6 @@ export default function Home() {
             </Grid>
           </Grid>
         </Box>
-      )}
     </div>
   );
 }

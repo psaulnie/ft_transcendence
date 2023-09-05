@@ -2,11 +2,7 @@ import { Box, Grid, Button, Avatar, Typography, TextField } from "@mui/material"
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
-interface ProfileProps {
-  toggleProfil: () => void;
-}
-
-function Modification({ toggleProfil }: ProfileProps) {
+function Modification() {
   const navigate = useNavigate();
 
   	const handleProfileClick = () => {
@@ -14,11 +10,7 @@ function Modification({ toggleProfil }: ProfileProps) {
 	};
 
   const user = useSelector((state: any) => state.user);
-  const urlAvatar = "http://localhost:5000/api/avatar/" + user.username;
-
-  const handleButtonClick = () => {
-    toggleProfil();
-  };
+  const urlAvatar = `http://${process.env.REACT_APP_IP}:5000/api/avatar/${user.username}`;
 
   return (
     <div>

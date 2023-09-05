@@ -35,10 +35,6 @@ export default function Base() {
       }
       setDrawerState(open);
     };
-    
-  const toggleProfil = () => {
-    setIsProfilOpen(!isProfilOpen);
-  };
 
   useEffect(() => {
     if (!user || !user.username)
@@ -56,17 +52,14 @@ export default function Base() {
       <Routes>
         <Route path="*" element={<Navigate to="/home"/>}></Route>
         <Route path="/home" element={<Home />}></Route>
-        <Route
-          path="/profile"
-          element={<Profile toggleProfil={toggleProfil} />}
-        ></Route>
+        <Route path="/profile/:username" element={<Profile />}></Route>
         <Route path="/game" element={<Game />}></Route>
         <Route path="/options" element={<Options />}></Route>
         <Route path="/achievements" element={<Achievements />}></Route>
         <Route path="/friendlist" element={<Friendlist />}></Route>
         <Route
           path="/modification"
-          element={<Modification toggleProfil={toggleProfil} />}
+          element={<Modification />}
         ></Route>
       </Routes>
       <Chat />
