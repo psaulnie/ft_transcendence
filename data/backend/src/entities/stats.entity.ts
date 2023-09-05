@@ -12,22 +12,18 @@ export class Statistics {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @OneToOne(() => User, (user) => user.uid)
-  @JoinColumn({ name: 'user' })
-  user: User;
-
-  @Column()
+  @Column({default: 0})
   winNbr: number;
 
-  @Column()
+  @Column({default: 0})
   loseNbr: number;
 
-  @Column()
+  @Column({default: 0})
   matchNumber: number;
 
-  @Column()
+  @Column({default: 1})
   level: number;
 
-  @Column()
+  @Column({default: 0})
   rank: number;
 }

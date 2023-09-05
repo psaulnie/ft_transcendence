@@ -12,7 +12,7 @@ import Options from "./components/Global/Options";
 import Profile from "./components/Global/Profile";
 import Home from "./components/Home/Home";
 import Chat from "./components/Chat/Chat";
-import Achievements from "./components/Global/Achievements";
+import Achievements from "./components/Global/Achievements/Achievements";
 import Modification from "./components/Global/Modification";
 import Friendlist from "./components/Global/Friendlist";
 import webSocketManager from "./webSocket";
@@ -55,7 +55,7 @@ export default function Base() {
         <Route path="/profile/:username" element={<Profile />}></Route>
         <Route path="/game" element={<Game />}></Route>
         <Route path="/options" element={<Options />}></Route>
-        <Route path="/achievements" element={<Achievements />}></Route>
+        <Route path="/profile/:username/achievements" element={<Achievements />}></Route>
         <Route path="/friendlist" element={<Friendlist />}></Route>
         <Route
           path="/modification"

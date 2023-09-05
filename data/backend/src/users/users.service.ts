@@ -5,6 +5,9 @@ import { Repository } from 'typeorm';
 import { BlockedList } from 'src/entities/blocked.list.entity';
 import { FriendList } from 'src/entities/friend.list.entity';
 import { TypeormSession } from 'src/entities';
+import { MatchHistory } from 'src/entities/matchHistory.entity';
+import { Statistics } from 'src/entities/stats.entity';
+import { Achievements } from 'src/entities/achievements.entity';
 
 @Injectable()
 export class UsersService {
@@ -16,7 +19,13 @@ export class UsersService {
     @InjectRepository(FriendList)
     private friendListRepository: Repository<FriendList>,
     @InjectRepository(TypeormSession)
-    private typeormSessionRepository: Repository<TypeormSession>
+    private typeormSessionRepository: Repository<TypeormSession>,
+    @InjectRepository(MatchHistory)
+    private matchHistoryRepository: Repository<MatchHistory>,
+    @InjectRepository(Statistics)
+    private statisticsRepository: Repository<Statistics>,
+    @InjectRepository(Achievements)
+    private achievementsRepository: Repository<Achievements>,
   ) {}
 
   // For testing only, TO REMOVE-----------------------------------------------------------
@@ -43,6 +52,27 @@ export class UsersService {
     });
   }
 
+  async findOneProfile(name: string): Promise<User> {
+    return await this.usersRepository.findOne({
+      where: { username: name },
+      relations: [
+        'friends',
+        'matchHistory',
+        'matchHistory.user1',
+        'matchHistory.user2',
+        'statistics',
+      ],
+    });
+  }
+
+  async findOneAchievements(name: string): Promise<User> {
+    return await this.usersRepository.findOne({
+      where: { username: name },
+      relations: [
+        'achievements',
+      ],
+    });
+  }
   async findOneByUsername(name: string): Promise<User> {
     return await this.usersRepository.findOne({ where: { username: name } });
   }
@@ -86,6 +116,9 @@ export class UsersService {
       return;
     }
     const newUser = new User();
+    const statistics = new Statistics();
+    const achievements = new Achievements();
+
     newUser.urlAvatar = '';
     newUser.username = name;
     newUser.accessToken = 'test';
@@ -94,11 +127,13 @@ export class UsersService {
     newUser.intraId = '';
     newUser.intraUsername = '';
     newUser.friends = [];
-    newUser.matchHistory = null;
-    newUser.statistics = null;
-    newUser.achievements = null;
+    newUser.matchHistory = [];
+    newUser.statistics = statistics;
+    newUser.achievements = achievements;
 
     console.log('before');
+    await this.statisticsRepository.save(statistics);
+    await this.achievementsRepository.save(achievements);
     await this.usersRepository.save(newUser);
     console.log('finish');
 
