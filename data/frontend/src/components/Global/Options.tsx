@@ -15,8 +15,7 @@ function Options() {
     useEffect(() => {
         async function checkTwoFactorState() {
             try {
-                console.log('Before 1st fetch twoFactorAuthState', twoFactorAuthState);
-                const response = await fetch("http://localhost:5000/2fa/state", {
+                const response = await fetch("http://localhost:5000/2fa/getState", {
                     method: 'post',
                     credentials: "include",
                     headers: {
@@ -24,14 +23,13 @@ function Options() {
                     },
                 });
                 const data = await response.json();
-                if (response.ok && typeof data === 'boolean') {
+                if (response.ok) {
                     setTwoFactorAuthState(data);
                 } else {
                     console.error("Unexpected response:", data);
                 }
-                console.log('After 1st fetch twoFactorAuthState', twoFactorAuthState, 'data', data, typeof data);
             } catch (error: any) {
-                console.log("Error:", error.message);
+                console.error("Error:", error.message);
             }
         }
         checkTwoFactorState();
@@ -39,11 +37,9 @@ function Options() {
 
     async function changeTwoFactorAuthState() {
       try {
-        console.log('Before change of twoFactorAuthState', twoFactorAuthState);
         const newState = !twoFactorAuthState;
         setTwoFactorAuthState(newState);
-        console.log('After change of twoFactorAuthState', twoFactorAuthState, 'state: ', newState);
-        const response = await fetch("http://localhost:5000/2fa/state", {
+        const response = await fetch("http://localhost:5000/2fa/changeState", {
           method: 'post',
           credentials: "include",
           headers: {
@@ -58,7 +54,7 @@ function Options() {
           navigate("/2fa");
         }
       } catch (error: any) {
-          console.log("Error:", error.message);
+          console.error("Error:", error.message);
       }
     }
 

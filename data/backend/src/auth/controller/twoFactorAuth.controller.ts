@@ -26,7 +26,14 @@ export class TwoFactorAuthController {
     private readonly usersService: UsersService,
   ) {}
 
-  @Post('state')
+  @Post('getState')
+  @HttpCode(200)
+  @UseGuards(AuthenticatedGuard)
+  async getTwoFactorAuthState(@Req() request: RequestWithUser) {
+    return await this.usersService.getTwoFactorAuthState(request.user.uid);
+  }
+
+  @Post('changeState')
   @HttpCode(200)
   @UseGuards(AuthenticatedGuard)
   async changeTwoFactorAuthState(
@@ -38,17 +45,13 @@ export class TwoFactorAuthController {
       twoFactorAuthState,
       typeof twoFactorAuthState,
     );
-    if (twoFactorAuthState === undefined) {
-      return await this.usersService.getTwoFactorAuthState(request.user.uid);
-    } else {
-      if (!twoFactorAuthState) {
-        await this.usersService.turnOffTwoFactorAuth(request.user.uid);
-      }
-      return await this.usersService.changeTwoFactorAuthState(
-        request.user.uid,
-        twoFactorAuthState,
-      );
+    if (!twoFactorAuthState) {
+      await this.usersService.turnOffTwoFactorAuth(request.user.uid);
     }
+    return await this.usersService.changeTwoFactorAuthState(
+      request.user.uid,
+      twoFactorAuthState,
+    );
   }
 
   @Post('generate')
@@ -109,7 +112,10 @@ export class TwoFactorAuthController {
       request.user,
     );
     if (!isCodeValid) {
-      throw new UnauthorizedException('Wrong authentication code');
+      return {
+        status: 'codeError',
+        message: 'Wrong authentication code',
+      };
     }
 
     return request.user;

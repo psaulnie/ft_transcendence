@@ -14,7 +14,7 @@ function TwoFactorLogin() {
   useEffect(() => {
     async function checkTwoFactorAuthState() {
       try {
-        const response = await fetch("http://localhost:5000/2fa/state", {
+        const response = await fetch("http://localhost:5000/2fa/getState", {
           method: 'post',
           credentials: "include",
           headers: {
@@ -24,13 +24,13 @@ function TwoFactorLogin() {
         const data = await response.json();
         if (response.ok && data === true) {
           checkTwoFactorStatus();
-        } else if (data === false) {
+        } else if (response.ok && data === false) {
           navigate("/home");
         } else {
           console.error('Failed to fetch state of 2FA');
         }
       } catch (error: any) {
-        console.log('Error: ', error.message());
+        console.error('Error: ', error.message());
       }
     }
     checkTwoFactorAuthState();
@@ -47,7 +47,7 @@ function TwoFactorLogin() {
         fetchQrCode();
       }
     } catch (error: any) {
-        console.log("Error:", error.message);
+        console.error("Error:", error.message);
     }
   }
 
@@ -64,7 +64,7 @@ function TwoFactorLogin() {
       const url = URL.createObjectURL(data);
       setQrCodeUrl(url);
     } catch (error: any) {
-        console.log("Error:", error.message);
+        console.error("Error:", error.message);
     }
   }
 
@@ -88,7 +88,7 @@ function TwoFactorLogin() {
         setError(true);
       }
     } catch (error: any) {
-        console.log("Error:", error.message);
+        console.error("Error:", error.message);
     }
   }
 
@@ -102,8 +102,8 @@ function TwoFactorLogin() {
         },
         body: JSON.stringify({ twoFactorAuthCode: twoFactorAuthCode }),
       });
-
-      if (response.ok) {
+      const data = await response.json();
+      if (response.ok && data.status !== 'codeError') {
         console.log("2FA authentication successfully.");
         setError(false);
         navigate("/home");
@@ -112,7 +112,7 @@ function TwoFactorLogin() {
         setError(true);
       }
     } catch (error: any) {
-        console.log("Error:", error.message);
+        console.error("Error:", error.message);
     }
   }
 
