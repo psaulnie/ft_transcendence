@@ -22,6 +22,8 @@ import PersonIcon from "@mui/icons-material/Person";
 import UserOptionsMenu from "./Message/UserOptionsMenu";
 import CustomAvatar from "../Global/CustomAvatar";
 import { userRole } from "./chatEnums";
+import ErrorSnackbar from "../Global/ErrorSnackbar";
+import Loading from "../Global/Loading";
 
 export default function UsersList({
   isDirectMessage,
@@ -43,6 +45,7 @@ export default function UsersList({
     data: usersListData,
     isLoading,
     isError,
+    error,
     refetch,
   } = useGetUsersInRoomQuery({ roomName: roomName }, { skip: isDirectMessage });
 
@@ -83,14 +86,8 @@ export default function UsersList({
     if (!isDirectMessage) refetch();
   }, [isDirectMessage, refetch]);
 
-  if (isError && !isDirectMessage) throw new (Error as any)("API call error");
-  else if (isLoading && !isDirectMessage)
-    return (
-      <div>
-        <Skeleton variant="text" />
-        <Skeleton variant="rectangular" />
-      </div>
-    );
+  if (isError && !isDirectMessage) return <ErrorSnackbar error={error} />;
+  if (isLoading && !isDirectMessage) return (<Loading />);
   return (
     <Grid>
       <List>

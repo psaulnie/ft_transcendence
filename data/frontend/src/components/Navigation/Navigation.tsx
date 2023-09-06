@@ -17,6 +17,7 @@ import { useDispatch } from "react-redux";
 import { logout } from "../../store/user";
 import { SyntheticEvent } from "react";
 import { useGetUserLevelQuery } from "../../store/api";
+import Loading from "../Global/Loading";
 
 // If logged in, show the account button
 function Navigation({ setDrawerState }: { setDrawerState: any }) {
@@ -50,7 +51,7 @@ function Navigation({ setDrawerState }: { setDrawerState: any }) {
     isError,
   } = useGetUserLevelQuery({username: user.username}, {skip: !user.username});
   
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <Loading />;
   if (isError) return <div>Error</div>; // TODO handle error
   return (
     <Box sx={{ flexGrow: 1 }}>

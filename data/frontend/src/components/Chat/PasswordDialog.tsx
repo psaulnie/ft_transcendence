@@ -21,6 +21,7 @@ type arg = {
   roomName: string;
   role: userRole;
   createRoom: boolean;
+  setNewRoomName: any;
 };
 
 const Transition = React.forwardRef(function Transition(
@@ -38,6 +39,7 @@ export default function PasswordDialog({
   roomName,
   role,
   createRoom,
+  setNewRoomName
 }: arg) {
   const user = useSelector((state: any) => state.user);
   const dispatch = useDispatch();
@@ -80,6 +82,8 @@ export default function PasswordDialog({
         });
       }
       setOpen(false);
+      if (setNewRoomName)
+        setNewRoomName("");
     }
   }
 
