@@ -21,13 +21,12 @@ export default function PrivateRoute() {
         else setIsOk(data);
         setIsLoading(false);
       })
-      .catch((error) => {
+      .catch(() => {
         if (Cookies.get("accessToken") === "test")
           // TODO remove when testUser no longer needed
           setIsOk(true);
         else setIsOk(false);
         setIsLoading(false);
-        // TODO : handle fetch error
       });
   };
 

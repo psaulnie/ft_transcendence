@@ -4,7 +4,8 @@ import CreateChannel from "./CreateChannel";
 import JoinChannel from "./JoinChannel";
 import JoinDirectMessage from "./JoinDirectMessage";
 
-import { Box, Grid, Button } from "@mui/material";
+import { Box, Grid, Button,} from "@mui/material";
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import Drawer from "@mui/material/Drawer";
 import MenuIcon from "@mui/icons-material/Menu";
 
@@ -48,31 +49,23 @@ function Tab() {
       <Drawer anchor="right" open={isTabOpen} onClose={handleCloseTab}>
         <Box
           sx={{
-            width: "100%",
+            width: "15.4em",
             height: "100%",
-            background: "linear-gradient(to bottom left, #f26700, #bf0505)",
-            Padding: "16px",
+            background: "#FE8F29",
+            padding: "1em",
           }}
         >
-          <Box sx={{ textAlign: "center", marginTop: "5%", color: "black" }}>
-            <h1
-              style={{
-                fontWeight: "bold",
-                textDecoration: "underline",
-                fontSize: "80px",
-              }}
-            >
-              Menu !
-            </h1>
-          </Box>
-          <Grid container sx={{ marginLeft: "5%" }}>
+          <Grid container>
             <JoinDirectMessage />
+            <JoinChannel />
           </Grid>
-          <Grid container sx={{ marginLeft: "5%" }}>
+          <Grid container>
             <CreateChannel />
           </Grid>
-          <Grid container sx={{ marginLeft: "5%" }}>
-            <JoinChannel />
+          <Grid container>
+            <Button sx={{color:'white', marginLeft:'6em', marginTop:'1.6em', height:'1.8em', fontSize:'12px'}} onClick={() => setIsTabOpen(false)}>
+              <ArrowForwardIosIcon />
+            </Button>
           </Grid>
         </Box>
       </Drawer>

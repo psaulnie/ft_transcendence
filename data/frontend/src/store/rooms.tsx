@@ -99,8 +99,7 @@ export const roomsSlice = createSlice({
       );
       if (roomIndex !== -1) {
         state.room[roomIndex].messages.push(action.payload.message);
-        if (roomIndex !== state.index) state.room[roomIndex].unread = true;
-        else state.room[roomIndex].unread = false;
+        state.room[roomIndex].unread = (roomIndex !== state.index);
       } else {
         state.room.push({
           name: action.payload.name,

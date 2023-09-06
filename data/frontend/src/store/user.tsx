@@ -7,6 +7,8 @@ interface UserState {
   accessToken: string;
   isUserBlocked: boolean;
   blockedUsers: string[];
+  isError: boolean;
+  error: string;
 }
 
 const initialUser: UserState = localStorage.getItem("user")
@@ -17,8 +19,8 @@ const initialUser: UserState = localStorage.getItem("user")
       accessToken: "",
       isUserBlocked: false,
       blockedUsers: [],
-      isMuted: false,
-      mutedTime: null,
+      isError: false,
+      error: '',
     };
 
 const initialState: UserState = {
@@ -27,6 +29,8 @@ const initialState: UserState = {
   isUserBlocked: initialUser.isUserBlocked,
   blockedUsers: initialUser.blockedUsers,
   accessToken: initialUser.accessToken,
+  isError: initialUser.isError,
+  error: initialUser.error,
 };
 
 export const userSlice = createSlice({
@@ -49,6 +53,7 @@ export const userSlice = createSlice({
     },
     setUsername: (state, action: PayloadAction<string>) => {
       state.username = action.payload;
+      localStorage.setItem("user", JSON.stringify(state));
     },
     addBlockedUser: (state, action: PayloadAction<string>) => {
       const nbr = state.blockedUsers.indexOf(action.payload);
@@ -60,9 +65,15 @@ export const userSlice = createSlice({
     },
     isUserBlocked: (state) => {
       const nbr = state.blockedUsers.indexOf(state.username);
-      if (nbr === -1) state.isUserBlocked = false;
-      else state.isUserBlocked = true;
+      state.isUserBlocked = (nbr !== -1);
     },
+    setIsError: (state, error: PayloadAction<string>) => {
+      state.isError = !state.isError;
+      if (state.isError === true && error.payload !== '')
+        state.error = error.payload;
+      else
+        state.error = '';
+    }
   },
 });
 
@@ -73,5 +84,6 @@ export const {
   addBlockedUser,
   removeBlockedUser,
   isUserBlocked,
+  setIsError,
 } = userSlice.actions;
 export default userSlice.reducer;

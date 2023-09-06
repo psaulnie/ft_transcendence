@@ -1,7 +1,6 @@
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import { Grid } from "@mui/material";
@@ -17,39 +16,48 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { logout } from "../../store/user";
 import { SyntheticEvent } from "react";
+import { useGetUserLevelQuery } from "../../store/api";
 
 // If logged in, show the account button
 function Navigation({ setDrawerState }: { setDrawerState: any }) {
+  const user = useSelector((state: any) => state.user);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-
+  const open = Boolean(anchorEl);
+  
   const handleBoxClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
-
+  
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
 
   const handleProfileClick = () => {
-    navigate("/profile");
+    navigate(`/profile/${user.username}`);
   };
-
+  
   function logoutButton(e: SyntheticEvent) {
     e.preventDefault();
     dispatch(logout());
     window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/logout`;
   }
 
-  const open = Boolean(anchorEl);
-  const user = useSelector((state: any) => state.user);
+  const {
+    data: userLevel,
+    isLoading,
+    isError,
+  } = useGetUserLevelQuery({username: user.username}, {skip: !user.username});
+  
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error</div>; // TODO handle error
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar
         position="static"
         sx={{ backgroundColor: "#FC7D07", height: "3.5em" }}
-      >
+        >
         <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
           <IconButton
             size="large"
@@ -74,7 +82,7 @@ function Navigation({ setDrawerState }: { setDrawerState: any }) {
             }}
           >
             <div>{user.username}</div>
-            <div>Level 5</div>
+            <div>Level {userLevel}</div>
           </Grid>
           <Grid item xs={3}>
             <Box

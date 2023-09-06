@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { webSocket } from "../../webSocket";
-
+import webSocketManager from "../../webSocket";
 import {
   Dialog,
   DialogTitle,
@@ -56,7 +55,7 @@ export default function PasswordDialog({
   function confirmButton(e: any) {
     e.preventDefault();
     if (password !== "") {
-      if (createRoom === true) {
+      if (createRoom) {
         dispatch(
           addRoom({
             name: roomName,
@@ -67,14 +66,14 @@ export default function PasswordDialog({
             isMuted: false,
           }),
         );
-        webSocket.emit("joinRoom", {
+        webSocketManager.getSocket().emit("joinRoom", {
           source: user.username,
           room: roomName,
           access: accessStatus.protected,
           password: password,
         });
       } else {
-        webSocket.emit("setPasswordToRoom", {
+        webSocketManager.getSocket().emit("setPasswordToRoom", {
           room: roomName,
           password: password,
           source: user.username,
@@ -93,8 +92,10 @@ export default function PasswordDialog({
     >
       <DialogTitle>Enter password:</DialogTitle>
       <TextField
+        autoComplete='off'
         helperText="Enter password"
         label="Password"
+        type="password"
         value={password}
         onChange={updatePassword}
       />

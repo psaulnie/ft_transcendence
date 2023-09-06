@@ -25,12 +25,14 @@ import { UsersService } from './users/users.service';
 import { Response } from 'express';
 import { AppService } from './services/app.service';
 
-import { AuthenticatedGuard } from './auth/guards/intra-auth.guards';
+import { AuthenticatedGuard } from './auth/guards/intraAuthGuard.service';
 import { UseGuards } from '@nestjs/common';
 
 import { catchError, firstValueFrom } from 'rxjs';
 import { UnauthorizedException } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
+import { UsersStatusService } from './services/users.status.service';
+import { userStatus } from './users/userStatus';
 
 const fileInterceptorOptions = {
   fileFilter: (req, file, cb) => {
@@ -65,6 +67,7 @@ export class AppController {
     private readonly appService: AppService,
     private readonly userService: UsersService,
     private readonly httpService: HttpService,
+    private readonly userStatusArrayService: UsersStatusService,
   ) {}
 
   @Post('/avatar/upload')
@@ -78,6 +81,7 @@ export class AppController {
     if (body && file && body.username) {
       const user = await this.userService.findOne(body.username);
       if (context.headers.authorization != 'Bearer ' + user.accessToken)
+        // TODO replace with the connect.sid cookie (using usersStatus array?)
         return new HttpException('Unauthorized', 401);
       if (user) {
         console.log('upload');
@@ -92,6 +96,7 @@ export class AppController {
     if (!username) return new HttpException('Bad Request', 400);
     const user = await this.userService.findOne(username);
     if (context.headers.authorization != 'Bearer ' + user.accessToken)
+      // TODO replace with the connect.sid cookie (using usersStatus array?)
       return new HttpException('Unauthorized', 401);
     const url = await firstValueFrom(
       this.httpService
@@ -101,7 +106,7 @@ export class AppController {
           },
         })
         .pipe(
-          catchError((error: any) => {
+          catchError(() => {
             throw new UnauthorizedException();
           }),
         ),
@@ -112,6 +117,22 @@ export class AppController {
       true,
     );
   }
+
+  @Get('/avatar/')
+  async getDefaultAvatar(
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<StreamableFile> {
+    const file = createReadStream(
+      join(process.cwd(), '../avatars/default.jpg'),
+    );
+    if (file) {
+      res.set({
+        'Content-Type': 'image/jpg',
+      });
+      return new StreamableFile(file);
+    } else throw new HttpException('Internal Server Error', 500);
+  }
+
   @Get('/avatar/:username')
   async getAvatar(
     @Param('username') username: string,
@@ -150,6 +171,41 @@ export class AppController {
       });
       return new StreamableFile(file);
     } else throw new HttpException('Internal Server Error', 500);
+  }
+
+  @Get(':username/status')
+  @UseGuards(AuthenticatedGuard)
+  async getUserStatus(
+    @Param('username') username: string,
+  ): Promise<userStatus> {
+    if (username == null) throw new HttpException('Bad Request', 400);
+    const user = await this.userService.findOne(username);
+    if (!user) throw new HttpException('Unprocessable Entity', 422);
+    const status = await this.userStatusArrayService.getUserStatus(
+      user.username,
+    );
+    if (!status) return userStatus.offline;
+    return status.status;
+  }
+
+  @Get(':username/friends/status')
+  @UseGuards(AuthenticatedGuard)
+  async getUserStatusFriendsList(@Param('username') username: string) {
+    // TODO can't work without working friend list
+    // if (username == null) throw new HttpException('Bad Request', 400);
+    // const user = await this.userService.findOne(username);
+    // if (!user) throw new HttpException('Unprocessable Entity', 422);
+    // const friends = user.friendList;
+    // const friendsList = [];
+    // for (const friend of friends) {
+    //   const status = await this.userStatusArrayService.getUserStatus(friend.uid1.username);
+    //   if (status)
+    //     friendsList.push({
+    //       username: friend.uid1.username,
+    //       status: status.status,
+    //     });
+    // }
+    // return friendsList;
   }
 }
 

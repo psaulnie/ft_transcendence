@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './Canvas.css'
-import { webSocket } from '../../webSocket';
+import webSocketManager from '../../webSocket';
 import { Button } from '@mui/material';
 
 export default function Canvas({players, gameRoomId, setFoundUser} : {players: {1: string, 2: string}, gameRoomId: string, setFoundUser: any}) {
@@ -34,13 +34,13 @@ export default function Canvas({players, gameRoomId, setFoundUser} : {players: {
         gameCanvas.style.transform = `scale(${scale})`;
       }
     };
-    
+
     handleResize();
-    
-    window.addEventListener('resize', handleResize);
-    
+
+    window.addEventListener("resize", handleResize);
+
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
 
@@ -51,10 +51,10 @@ export default function Canvas({players, gameRoomId, setFoundUser} : {players: {
       const { key } = event;
 
       if (key === 'ArrowUp' || key === 'w') {
-        webSocket.emit("pressUp", {player: players[1], gameRoomId: gameRoomId});
+        webSocketManager.getSocket().emit("pressUp", {player: players[1], gameRoomId: gameRoomId});
       }
       if (key === 'ArrowDown' || key === 's') {
-        webSocket.emit("pressDown", {player: players[1], gameRoomId: gameRoomId});
+        webSocketManager.getSocket().emit("pressDown", {player: players[1], gameRoomId: gameRoomId});
       }
     };
 
@@ -64,10 +64,10 @@ export default function Canvas({players, gameRoomId, setFoundUser} : {players: {
       const { key } = event;
 
       if (key === 'ArrowUp' || key === 'w') {
-        webSocket.emit("releaseUp", {player: players[1], gameRoomId: gameRoomId});
+        webSocketManager.getSocket().emit("releaseUp", {player: players[1], gameRoomId: gameRoomId});
       }
       if (key === 'ArrowDown' || key === 's') {
-        webSocket.emit("releaseDown", {player: players[1], gameRoomId: gameRoomId});
+        webSocketManager.getSocket().emit("releaseDown", {player: players[1], gameRoomId: gameRoomId});
       }
     };
 
@@ -118,9 +118,9 @@ export default function Canvas({players, gameRoomId, setFoundUser} : {players: {
         }
       }
     }
-    webSocket.on("game" + gameRoomId, process);
+    webSocketManager.getSocket().on("game" + gameRoomId, process);
 		return () => {
-			webSocket.off("game" + gameRoomId, process);
+			webSocketManager.getSocket().off("game" + gameRoomId, process);
 		};
   }, [rectPositionP1, rectPositionP2, ballPosition, gameRoomId, player1, player2]);
 
@@ -138,7 +138,7 @@ export default function Canvas({players, gameRoomId, setFoundUser} : {players: {
     setFoundUser(false);
     const name = players[1];
     console.log(name);
-    webSocket.emit("leaveGame" , { gameRoomId, coward:name });
+    webSocketManager.getSocket().emit("leaveGame" , { gameRoomId, coward:name });
     console.log("bah alors ca veux leave?", players[1]);
   }
 

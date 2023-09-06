@@ -1,10 +1,9 @@
 import "./App.css";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { login, setUsername } from "./store/user";
-import { SyntheticEvent } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Cookies from "js-cookie";
 
@@ -12,24 +11,10 @@ import Cookies from "js-cookie";
 import Login from "./components/Login/Login";
 import Base from "./Base";
 
-import UploadButton from "./components/Global/UploadButton";
-import Home from "./components/Home/Home";
-
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
-import Profile from "./components/Global/Profile";
-import Options from "./components/Global/Options";
-import Game from "./components/Game/Game";
-import {
-  Skeleton,
-  Box,
-  Grid,
-  Button,
-  Typography,
-  Avatar,
-  Slide,
-} from "@mui/material";
 import PrivateRoute from "./components/Global/PrivateRoute";
+import TwoFactorLogin from "./components/Login/TwoFactorLogin";
 
 const theme = createTheme({
   palette: {
@@ -44,20 +29,19 @@ const theme = createTheme({
 });
 
 function App() {
-  const user = useSelector((state: any) => state.user);
+  useSelector((state: any) => state.user);
   const dispatch = useDispatch();
 
   useEffect(() => {
     const username = Cookies.get("username");
     const accessToken = Cookies.get("accessToken");
-    if (!username || !accessToken) return;
+    if (!username || !accessToken) {
+      return;
+    }
     dispatch(setUsername(username));
     dispatch(login(accessToken));
+    Cookies.remove("username");
   }, [dispatch]);
-
-  // const [isAuthentified, isError ] = useIsAuthentifiedMutation(user.accessToken);
-  // if (!isError)
-  // 	return (<p>error</p>)
 
   return (
     <div className="App">
@@ -66,6 +50,7 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/login" element={<Login />}></Route>
+            <Route path="/2fa" element={<TwoFactorLogin />}></Route>
             <Route path="*" element={<PrivateRoute />}>
               <Route path="*" element={<Base />} />
             </Route>

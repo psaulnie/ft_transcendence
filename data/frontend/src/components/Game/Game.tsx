@@ -1,9 +1,9 @@
 // import { exit } from 'process';
-import React, { useState } from 'react';
+import React, { useState } from "react";
 // import { webSocket } from '../../webSocket';
 // import { WidthFull } from '@mui/icons-material';
-import Matchmaking from './Matchmaking';
-import Canvas from './Canvas';
+import Matchmaking from "./Matchmaking";
+import Canvas from "./Canvas";
 
 // interface InterfaceProps{
 //   WidthFrame:string;
@@ -11,7 +11,6 @@ import Canvas from './Canvas';
 // }
 
 export default function Game() {
-
   const [foundUser, setFoundUser] = useState(false);
   const [players, setPlayers] = useState<{1: string; 2: string }>({ 1: '', 2: '' });
   const [gameRoomId, setGameRoomId] = useState("");
@@ -23,4 +22,4 @@ export default function Game() {
       }     
     </div>
   );
-};
+}

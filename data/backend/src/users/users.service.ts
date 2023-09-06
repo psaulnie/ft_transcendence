@@ -3,6 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
 import { BlockedList } from 'src/entities/blocked.list.entity';
+import { TypeormSession } from 'src/entities';
+import { MatchHistory } from 'src/entities/matchHistory.entity';
+import { Statistics } from 'src/entities/stats.entity';
+import { Achievements } from 'src/entities/achievements.entity';
 
 @Injectable()
 export class UsersService {
@@ -11,29 +15,52 @@ export class UsersService {
     private usersRepository: Repository<User>,
     @InjectRepository(BlockedList)
     private blockedUserRepository: Repository<BlockedList>,
+    @InjectRepository(TypeormSession)
+    private typeormSessionRepository: Repository<TypeormSession>,
+    @InjectRepository(MatchHistory)
+    private matchHistoryRepository: Repository<MatchHistory>,
+    @InjectRepository(Statistics)
+    private statisticsRepository: Repository<Statistics>,
+    @InjectRepository(Achievements)
+    private achievementsRepository: Repository<Achievements>,
   ) {}
-
-  // For testing only, TO REMOVE-----------------------------------------------------------
-  private index = 0;
-  private users = [];
-
-  // async findOne(
-  //   username: string,
-  // ): Promise<{ id: number; username: string; password: string } | undefined> {
-  //   return this.users.find((user) => user.username === username);
-  // }
-  // //----------------------------------------------------------------------------------------
 
   async findOne(name: string): Promise<User> {
     return await this.usersRepository.findOne({
       where: { username: name },
       relations: [
         'blockedUsers',
-        'friendList',
+        'friends',
         'achievements',
         'blockedUsers.blockedUser',
         'blockedUsers.user',
       ],
+    });
+  }
+
+  async findOneProfile(name: string): Promise<User> {
+    return await this.usersRepository.findOne({
+      where: { username: name },
+      relations: [
+        'friends',
+        'matchHistory',
+        'matchHistory.user1',
+        'matchHistory.user2',
+        'statistics',
+      ],
+    });
+  }
+
+  async findOneAchievements(name: string): Promise<User> {
+    return await this.usersRepository.findOne({
+      where: { username: name },
+      relations: ['achievements'],
+    });
+  }
+
+  async findOneByIntraUsername(name: string): Promise<User> {
+    return await this.usersRepository.findOne({
+      where: { intraUsername: name },
     });
   }
 
@@ -50,7 +77,7 @@ export class UsersService {
       where: { accessToken: accessToken },
       relations: [
         'blockedUsers',
-        'friendList',
+        'friends',
         'achievements',
         'blockedUsers.blockedUser',
         'blockedUsers.user',
@@ -62,7 +89,7 @@ export class UsersService {
     return await this.usersRepository.find({
       relations: [
         'blockedUsers',
-        'friendList',
+        'friends',
         'achievements',
         'blockedUsers.blockedUser',
         'blockedUsers.user',
@@ -76,39 +103,29 @@ export class UsersService {
 
   async createUser(name: string) {
     console.log('createuser');
-    if (await this.findOneByUsername(name)) {
+    if (await this.findOneByUsername('testUser')) {
       return;
     }
     const newUser = new User();
+    const statistics = new Statistics();
+    const achievements = new Achievements();
+
     newUser.urlAvatar = '';
     newUser.username = name;
     newUser.accessToken = 'test';
     newUser.refreshToken = '';
     newUser.blockedUsers = [];
     newUser.intraId = '';
-    newUser.intraUsername = '';
-    newUser.friendList = [];
-    newUser.matchHistory = null;
-    newUser.statistics = null;
-    newUser.achievements = null;
+    newUser.intraUsername = name;
+    newUser.friends = [];
+    newUser.matchHistory = [];
+    newUser.statistics = statistics;
+    newUser.achievements = achievements;
 
     console.log('before');
+    await this.statisticsRepository.save(statistics);
+    await this.achievementsRepository.save(achievements);
     await this.usersRepository.save(newUser);
-    console.log('finish');
-
-    // For testing ----
-    // const newUser = {
-    //   id: this.index--,
-    //   username: name,
-    //   password: pass,
-    //   avatar:
-    //     'https://marketplace.canva.com/MAB6vzmEQlA/1/thumbnail_large/canva-robot-electric-avatar-icon-MAB6vzmEQlA.png',
-    // };
-    // this.users.push(newUser);
-    // // End of testing ----
-    // console.log('users in createUser ', this.users);
-    // console.log(`${newUser.username} successfully registered`);
-    // return newUser;
   }
 
   async removeUser(name: string) {
@@ -139,6 +156,26 @@ export class UsersService {
     await this.usersRepository.save(user);
   }
 
+  async addFriend(user: User, friend: User) {
+    console.log('addfriend');
+    user.friends.push(friend);
+    friend.friends.push(user);
+    await this.usersRepository.save(user);
+    await this.usersRepository.save(friend);
+  }
+
+  async removeFriend(user: User, friend: User) {
+    console.log('removefriend');
+    user.friends = user.friends.filter(
+      (obj) => obj.username !== friend.username,
+    );
+    friend.friends = friend.friends.filter(
+      (obj) => obj.username !== user.username,
+    );
+    await this.usersRepository.save(user);
+    await this.usersRepository.save(friend);
+  }
+
   async updateAvatar(user: User, avatar: string, isUrl: boolean) {
     console.log('updateavatar');
     if (isUrl == false && user.urlAvatar !== '' && user.urlAvatar !== null) {
@@ -153,5 +190,81 @@ export class UsersService {
     }
     user.urlAvatar = avatar;
     await this.usersRepository.save(user);
+  }
+
+  async changeUsername(user: User, username: string) {
+    console.log('changeusername in service');
+    user.username = username;
+    await this.usersRepository.save(user);
+  }
+
+  async findOneSession(sessionId: string): Promise<TypeormSession> {
+    return await this.typeormSessionRepository.findOne({
+      where: { id: sessionId },
+    });
+  }
+
+  async isTwoFactorAuthenticated(userId: number): Promise<boolean> {
+    const user = await this.usersRepository.findOne({
+      where: { uid: userId },
+      select: ['isTwoFactorAuthenticated'],
+    });
+    if (!user) {
+      throw new Error('User not found');
+    }
+    return user.isTwoFactorAuthenticated;
+  }
+
+  async setIsTwoFactorAuthenticated(userId: number, value: boolean) {
+    return await this.usersRepository.update(userId, {
+      isTwoFactorAuthenticated: value,
+    });
+  }
+
+  async setTwoFactorAuthSecret(secret: string, userId: number) {
+    return await this.usersRepository.update(userId, {
+      twoFactorAuthSecret: secret,
+    });
+  }
+
+  async turnOnTwoFactorAuth(userId: number) {
+    return await this.usersRepository.update(userId, {
+      isTwoFactorAuthEnabled: true,
+    });
+  }
+
+  async turnOffTwoFactorAuth(userId: number) {
+    return await this.usersRepository.update(userId, {
+      isTwoFactorAuthEnabled: false,
+    });
+  }
+
+  async isTwoFactorAuthEnabled(userId: number): Promise<boolean> {
+    const user = await this.usersRepository.findOne({
+      where: { uid: userId },
+      select: ['isTwoFactorAuthEnabled'],
+    });
+    if (!user) {
+      throw new Error('User not found');
+    }
+    return user.isTwoFactorAuthEnabled;
+  }
+
+  async changeTwoFactorAuthState(userId: number, twoFactorAuthState: boolean) {
+    await this.usersRepository.update(userId, {
+      twoFactorAuthState: twoFactorAuthState,
+    });
+    return twoFactorAuthState;
+  }
+
+  async getTwoFactorAuthState(userId: number) {
+    const user = await this.usersRepository.findOne({
+      where: { uid: userId },
+      select: ['twoFactorAuthState'],
+    });
+    if (!user) {
+      throw new Error('User not found');
+    }
+    return user.twoFactorAuthState;
   }
 }

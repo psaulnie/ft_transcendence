@@ -1,6 +1,6 @@
-import { useGetUsersInRoomQuery } from "../../store/api";
+import { useGetUsersInRoomQuery, useLazyGetUserFriendsListQuery } from "../../store/api";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
 import {
@@ -19,7 +19,6 @@ import StarIcon from "@mui/icons-material/Star";
 import StarOutlineIcon from "@mui/icons-material/StarOutline";
 import PersonIcon from "@mui/icons-material/Person";
 
-import Error from "../Global/Error";
 import UserOptionsMenu from "./Message/UserOptionsMenu";
 import CustomAvatar from "../Global/CustomAvatar";
 import { userRole } from "./chatEnums";
@@ -44,12 +43,13 @@ export default function UsersList({
     data: usersListData,
     isLoading,
     isError,
-    error,
     refetch,
   } = useGetUsersInRoomQuery({ roomName: roomName }, { skip: isDirectMessage });
 
-  let usersList = [];
-  if (isDirectMessage === false) usersList = usersListData;
+  const [trigger, result] = useLazyGetUserFriendsListQuery();
+
+  let usersList: any[];
+  if (!isDirectMessage) usersList = usersListData;
   else
     usersList = [
       { username: user.username, role: userRole.none, isMuted: false },
@@ -58,8 +58,9 @@ export default function UsersList({
 
   const handleContextMenu = (event: React.MouseEvent, username: string) => {
     event.preventDefault();
-    if (isDirectMessage === false) refetch();
+    if (!isDirectMessage) refetch();
     if (user.username !== username)
+    {
       setContextMenu(
         contextMenu === null
           ? {
@@ -68,6 +69,8 @@ export default function UsersList({
             }
           : null,
       );
+      trigger({username: user.username});
+    }
   };
 
   function getRoleIcon(role: userRole) {
@@ -77,11 +80,11 @@ export default function UsersList({
   }
 
   useEffect(() => {
-    if (isDirectMessage === false) refetch();
+    if (!isDirectMessage) refetch();
   }, [isDirectMessage, refetch]);
 
-  if (isError && isDirectMessage === false) return <Error error={error} />;
-  else if (isLoading && isDirectMessage === false)
+  if (isError && !isDirectMessage) throw new (Error as any)("API call error");
+  else if (isLoading && !isDirectMessage)
     return (
       <div>
         <Skeleton variant="text" />
@@ -126,6 +129,7 @@ export default function UsersList({
                   contextMenu={contextMenu}
                   setContextMenu={setContextMenu}
                   showAdminOpt={true}
+                  friendList={result}
                 />
               ) : null}
             </ListItem>

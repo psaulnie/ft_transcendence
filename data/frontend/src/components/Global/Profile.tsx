@@ -1,24 +1,40 @@
-import UploadButton from "./UploadButton";
-
-import { Box, Grid, Button, Avatar, Typography, Paper } from "@mui/material";
+import { Box, Grid, Button, Avatar, Typography } from "@mui/material";
 import { useSelector } from "react-redux";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { useGetUserProfileQuery } from "../../store/api";
 
-interface ProfileProps {
-  toggleProfil: () => void;
-}
 
-function Profile({ toggleProfil }: ProfileProps) {
+function Profile() {
+  const { username } = useParams();
   const user = useSelector((state: any) => state.user);
-  const urlAvatar = "http://localhost:5000/api/avatar/" + user.username;
+  const urlAvatar = `http://${process.env.REACT_APP_IP}:5000/api/avatar/${username}`;
 
-  const handleButtonClick = () => {
-    toggleProfil();
+  const navigate = useNavigate();
+  const {
+    data: userProfile,
+    isLoading,
+    isError,
+  } = useGetUserProfileQuery({username}, {skip: !username});
+
+  const handleAchievementsClick = () => {
+    navigate(`/profile/${username}/achievements`);
   };
 
-  return (
+  const handleFriendsClick = () => {
+    navigate("/friendlist");
+  };
+
+  const handleModificationClick = () => {
+    navigate(`/edit`);
+  };
+
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error</div>; // TODO handle error
+  if (userProfile.exist === false)
+    return <Navigate to="/home" />
+
+    return (
     <div>
-      <h1>Profile</h1>
-      {/* <UploadButton /> */}
       <Box
         sx={{
           position: "fixed",
@@ -57,19 +73,19 @@ function Profile({ toggleProfil }: ProfileProps) {
               <Grid
                 item
                 xs={6}
-                sx={{ backgroundColor: "", marginTop: "0.2em" }}
+                sx={{ backgroundColor: "", marginTop: "0.2em", transform: "translate(-7%, 0%)", }}
               >
                 <Typography
                   variant="h6"
                   sx={{ fontSize: 30, fontWeight: "bold", color: "black" }}
                 >
-                  {user.username}
+                  {userProfile.username}
                 </Typography>
                 <Typography
                   variant="h6"
                   sx={{ fontSize: 30, fontWeight: "bold", color: "black" }}
                 >
-                  Rang:🥇
+                  Rank: {userProfile.rank}
                 </Typography>
               </Grid>
             </Grid>
@@ -109,12 +125,12 @@ function Profile({ toggleProfil }: ProfileProps) {
             >
               <Grid item xs={6}>
                 <Typography variant="h6" sx={{ fontSize: 24, color: "black" }}>
-                  Wins: 4
+                  Wins: {userProfile.wins}
                 </Typography>
               </Grid>
               <Grid item xs={6}>
                 <Typography variant="h6" sx={{ fontSize: 24, color: "black" }}>
-                  Loses: 2
+                  Loses: {userProfile.loses}
                 </Typography>
               </Grid>
             </Grid>
@@ -152,26 +168,65 @@ function Profile({ toggleProfil }: ProfileProps) {
                 gap: "0.5em",
               }}
             >
-              <Box sx={{ backgroundColor: "grey", color: "black" }}>
-                victoire
+              <Box sx={{ backgroundColor: "#454545", color: "black", height:'1.5em'}}>
+                <Grid
+                container
+                spacing={0}
+                >
+                    <Box sx={{backgroundColor: "#D9D9D9", border:'black solid', borderWidth:'1px', height: "1.5em", width: "1.5em", borderRadius:'3em', marginLeft:'2.2em' }}></Box>
+                    <Typography sx={{ color:'#1ABAFF', marginLeft:'2em', fontSize: 20,}}> 4 </Typography>
+                    <Typography sx={{ marginLeft:'0.4em', fontSize: 20, color: "black" }}> : </Typography>
+                    <Typography sx={{ marginLeft:'0.5em', fontSize: 20, color: "#FC7D07" }}> 2 </Typography>
+                    <Box sx={{backgroundColor: "#D9D9D9", border:'black solid', borderWidth:'1px', height: "1.5em", width: "1.5em", borderRadius:'3em', marginLeft:'2.4em' }}></Box>
+                </Grid>
               </Box>
-              <Box sx={{ backgroundColor: "grey", color: "black" }}>
-                defaite
+              <Box sx={{ backgroundColor: "#454545", color: "black", height:'1.5em'}}>
+                <Grid
+                container
+                spacing={0}
+                >
+                    <Box sx={{backgroundColor: "#D9D9D9", border:'black solid', borderWidth:'1px', height: "1.5em", width: "1.5em", borderRadius:'3em', marginLeft:'2.2em' }}></Box>
+                    <Typography sx={{ color:'#1ABAFF', marginLeft:'2em', fontSize: 20,}}> 9 </Typography>
+                    <Typography sx={{ marginLeft:'0.4em', fontSize: 20, color: "black" }}> : </Typography>
+                    <Typography sx={{ marginLeft:'0.5em', fontSize: 20, color: "#FC7D07" }}> 0 </Typography>
+                    <Box sx={{backgroundColor: "#D9D9D9", border:'black solid', borderWidth:'1px', height: "1.5em", width: "1.5em", borderRadius:'3em', marginLeft:'2.4em' }}></Box>
+                </Grid>
               </Box>
-              <Box sx={{ backgroundColor: "grey", color: "black" }}>
-                victoire
+              <Box sx={{ backgroundColor: "#454545", color: "black", height:'1.5em'}}>
+                <Grid
+                container
+                spacing={0}
+                >
+                    <Box sx={{backgroundColor: "#D9D9D9", border:'black solid', borderWidth:'1px', height: "1.5em", width: "1.5em", borderRadius:'3em', marginLeft:'2.2em' }}></Box>
+                    <Typography sx={{ color:'#FC7D07', marginLeft:'2em', fontSize: 20,}}> 3 </Typography>
+                    <Typography sx={{ marginLeft:'0.4em', fontSize: 20, color: "black" }}> : </Typography>
+                    <Typography sx={{ marginLeft:'0.5em', fontSize: 20, color: "#1ABAFF" }}> 4 </Typography>
+                    <Box sx={{backgroundColor: "#D9D9D9", border:'black solid', borderWidth:'1px', height: "1.5em", width: "1.5em", borderRadius:'3em', marginLeft:'2.4em' }}></Box>
+                </Grid>
               </Box>
-              <Box sx={{ backgroundColor: "grey", color: "black" }}>
-                victoire
+              <Box sx={{ backgroundColor: "#454545", color: "black", height:'1.5em'}}>
+                <Grid
+                container
+                spacing={0}
+                >
+                    <Box sx={{backgroundColor: "#D9D9D9", border:'black solid', borderWidth:'1px', height: "1.5em", width: "1.5em", borderRadius:'3em', marginLeft:'2.2em' }}></Box>
+                    <Typography sx={{ color:'#1ABAFF', marginLeft:'2em', fontSize: 20,}}> 4 </Typography>
+                    <Typography sx={{ marginLeft:'0.4em', fontSize: 20, color: "black" }}> : </Typography>
+                    <Typography sx={{ marginLeft:'0.5em', fontSize: 20, color: "#FC7D07" }}> 2 </Typography>
+                    <Box sx={{backgroundColor: "#D9D9D9", border:'black solid', borderWidth:'1px', height: "1.5em", width: "1.5em", borderRadius:'3em', marginLeft:'2.4em' }}></Box>
+                </Grid>
               </Box>
-              <Box sx={{ backgroundColor: "grey", color: "black" }}>
-                victoire
-              </Box>
-              <Box sx={{ backgroundColor: "grey", color: "black" }}>
-                victoire
-              </Box>
-              <Box sx={{ backgroundColor: "grey", color: "black" }}>
-                victoire
+              <Box sx={{ backgroundColor: "454545", color: "black", height:'1.5em'}}>
+                <Grid
+                container
+                spacing={0}
+                >
+                    <Box sx={{backgroundColor: "#D9D9D9", border:'black solid', borderWidth:'1px', height: "1.5em", width: "1.5em", borderRadius:'3em', marginLeft:'2.2em' }}></Box>
+                    <Typography sx={{ color:'#1ABAFF', marginLeft:'2em', fontSize: 20,}}> 4 </Typography>
+                    <Typography sx={{ marginLeft:'0.4em', fontSize: 20, color: "black" }}> : </Typography>
+                    <Typography sx={{ marginLeft:'0.5em', fontSize: 20, color: "#FC7D07" }}> 2 </Typography>
+                    <Box sx={{backgroundColor: "#D9D9D9", border:'black solid', borderWidth:'1px', height: "1.5em", width: "1.5em", borderRadius:'3em', marginLeft:'2.4em' }}></Box>
+                </Grid>
               </Box>
             </Box>
           </Grid>
@@ -180,7 +235,7 @@ function Profile({ toggleProfil }: ProfileProps) {
       <Button
         variant="contained"
         color="primary"
-        onClick={handleButtonClick}
+        onClick={handleAchievementsClick}
         sx={{
           textTransform: "none",
           fontWeight: "bold",
@@ -202,10 +257,12 @@ function Profile({ toggleProfil }: ProfileProps) {
       >
         Achievements
       </Button>
+      {
+        user.username === username ?
       <Button
         variant="contained"
         color="primary"
-        onClick={handleButtonClick}
+        onClick={handleFriendsClick}
         sx={{
           textTransform: "none",
           fontWeight: "bold",
@@ -225,33 +282,39 @@ function Profile({ toggleProfil }: ProfileProps) {
           },
         }}
       >
-        Friends list
+        Friends
       </Button>
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={handleButtonClick}
-        sx={{
-          textTransform: "none",
-          fontWeight: "bold",
-          fontSize: "20px",
-          width: "10em",
-          height: "1.4em",
-          position: "fixed",
-          transform: "translate(-50%, 0%)",
-          backgroundColor: "rgba(220, 220, 220, 0.9)",
-          border: "2px solid #000000",
-          borderRadius: "1em",
-          top: "87%",
-          color: "black",
-          "&:hover": {
-            backgroundColor: "grey",
-            borderColor: "red",
-          },
-        }}
-      >
-        Change profil
-      </Button>
+      : null
+      }
+      {
+        user.username === username ?
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleModificationClick}
+            sx={{
+              textTransform: "none",
+              fontWeight: "bold",
+              fontSize: "20px",
+              width: "10em",
+              height: "1.4em",
+              position: "fixed",
+              transform: "translate(-50%, 0%)",
+              backgroundColor: "rgba(220, 220, 220, 0.9)",
+              border: "2px solid #000000",
+              borderRadius: "1em",
+              top: "87%",
+              color: "black",
+              "&:hover": {
+                backgroundColor: "grey",
+                borderColor: "red",
+              },
+            }}
+          >
+            Change profile
+          </Button>
+        : null
+      }
     </div>
   );
 }

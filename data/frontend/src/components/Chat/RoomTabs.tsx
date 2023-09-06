@@ -9,10 +9,9 @@ import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
 import { useDispatch, useSelector } from "react-redux";
 import { useState } from "react";
 
-import { webSocket } from "../../webSocket";
+import webSocketManager from "../../webSocket";
 import { removeRoom, setRead, setRoomIndex } from "../../store/rooms";
 import RoomOptionsMenu from "./RoomOptionsMenu";
-import { userRole } from "./chatEnums";
 
 export default function RoomTabs() {
   const user = useSelector((state: any) => state.user);
@@ -41,7 +40,7 @@ export default function RoomTabs() {
   }
 
   function quitRoom(roomName: string) {
-    webSocket.emit("leaveRoom", {
+    webSocketManager.getSocket().emit("leaveRoom", {
       source: user.username,
       room: roomName,
       access: 0,

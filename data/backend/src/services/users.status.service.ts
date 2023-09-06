@@ -8,7 +8,6 @@ import { userStatus } from 'src/users/userStatus';
 export class UsersStatusService {
   private readonly usersStatus: {
     clientId: string;
-    accessToken: string;
     username: string;
     status: userStatus;
   }[];
@@ -19,12 +18,7 @@ export class UsersStatusService {
     this.usersStatus = [];
   }
 
-  async addUser(
-    clientId: string,
-    accessToken: string,
-    username: string,
-    status: userStatus,
-  ) {
+  async addUser(clientId: string, username: string, status: userStatus) {
     const user = await this.userRepository.findOne({
       where: { username: username },
     });
@@ -35,21 +29,26 @@ export class UsersStatusService {
     if (userStatusIndex != -1)
       this.usersStatus[userStatusIndex] = {
         clientId,
-        accessToken,
         username,
         status,
       };
-    else this.usersStatus.push({ clientId, accessToken, username, status });
+    else this.usersStatus.push({ clientId, username, status });
   }
 
-  async removeUser(clientId: string) {
-    this.usersStatus.splice(
-      this.usersStatus.findIndex((user) => user.clientId === clientId),
-      1,
+  async changeUsername(old: string, newUsername: string) {
+    const userStatusIndex = this.usersStatus.findIndex(
+      (user) => user.username === old,
     );
+    if (userStatusIndex != -1)
+      this.usersStatus[userStatusIndex].username = newUsername;
+  }
+  async getUserStatus(username: string) {
+    return this.usersStatus.find((user) => user.username === username);
   }
 
-  async getUserStatus(clientId: string) {
+  async getUserStatusByClientId(clientId: string) {
+    console.log(clientId);
+    console.log(this.usersStatus);
     return this.usersStatus.find((user) => user.clientId === clientId);
   }
 

@@ -1,5 +1,5 @@
 import React, { KeyboardEvent, SyntheticEvent, useState } from "react";
-import { webSocket } from "../../../webSocket";
+import webSocketManager from "../../../webSocket";
 import { sendMsgArgs } from "../args.interface";
 import { sendMsgTypes } from "../args.types";
 import { useSelector } from "react-redux";
@@ -38,9 +38,12 @@ export default function InputForm({
       data: "",
     });
     setIsLoading(true);
-    webSocket.timeout(500).emit(msg, value, () => {
-      setIsLoading(false);
-    });
+    webSocketManager
+      .getSocket()
+      .timeout(500)
+      .emit(msg, value, () => {
+        setIsLoading(false);
+      });
   }
   function keyPress(event: KeyboardEvent<HTMLButtonElement>) {
     event.preventDefault();
@@ -77,6 +80,7 @@ export default function InputForm({
             fullWidth
             value={message}
             onChange={onChange}
+            autoComplete='off'
             disabled={
               rooms.room.find((obj: any) => obj.name === roomName).isMuted
             }

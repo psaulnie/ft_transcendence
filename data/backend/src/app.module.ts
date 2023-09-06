@@ -8,7 +8,7 @@ import { AppService } from './services/app.service';
 
 import { AuthModule } from './auth/auth.module';
 import { PassportModule } from '@nestjs/passport';
-import { entities } from './entities';
+import { TypeormSession, entities } from './entities';
 
 import { User } from './entities';
 
@@ -22,15 +22,15 @@ import { Gateway } from './gateway/gateway';
 import { UsersService } from './users/users.service';
 
 import { SessionSerializer } from './auth/session/Serializer';
-import { IntraStrategy } from './auth/strategies/intra-auth.strategies';
+import { IntraStrategy } from './auth/strategies/intraAuth.strategy';
 import { AuthService } from './auth/service/auth.service';
 import { HttpModule } from '@nestjs/axios';
 import { UsersStatusService } from './services/users.status.service';
-import { FriendList } from './entities/friend.list.entity';
 import { BlockedList } from './entities/blocked.list.entity';
 import { Statistics } from './entities/stats.entity';
 import { GameModule } from './game/game.module';
 import { GameService } from './services/game.service';
+import { ProfileController } from './profile.controller';
 
 @Module({
   imports: [
@@ -55,15 +55,15 @@ import { GameService } from './services/game.service';
       Achievements,
       MatchHistory,
       Statistics,
-      FriendList,
       BlockedList,
       UsersList,
+      TypeormSession,
     ]),
     CacheModule.register({ isGlobal: true }),
     HttpModule.register({}),
     GameModule,
   ],
-  controllers: [AppController, ChatController],
+  controllers: [AppController, ChatController, ProfileController],
   providers: [
     UsersService,
     GameService,

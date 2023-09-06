@@ -11,7 +11,7 @@ import {
 import { CacheInterceptor } from '@nestjs/cache-manager';
 import { RoomService } from '../services/room.service';
 import { UsersService } from '../users/users.service';
-import { AuthenticatedGuard } from 'src/auth/guards/intra-auth.guards';
+import { AuthenticatedGuard } from '../auth/guards/intraAuthGuard.service';
 import { User } from 'src/entities';
 import { userRole } from './chatEnums';
 
@@ -162,9 +162,7 @@ export class ChatController {
     }
     const users = await this.userService.findAll();
     const usersList: string[] = [];
-    console.log('cUser:', cUser);
     users.forEach((element) => {
-      console.log(element);
       if (!element.blockedUsers.find((obj) => obj.blockedUser.uid == cUser.uid))
         usersList.push(element.username);
     });
@@ -209,5 +207,28 @@ export class ChatController {
         usersList.push({ label: element.username });
     }
     return usersList;
+  }
+
+  @UseInterceptors(CacheInterceptor)
+  @UseGuards(AuthenticatedGuard)
+  @Get(':username/friends')
+  async getUserFriendsList(@Param('username') username: string): Promise<{}[]> {
+    if (username == null) throw new HttpException('Bad request', 400);
+    const user = await this.userService.findOne(username);
+    if (!user) throw new HttpException('Unprocessable Entity', 422);
+    const friendList = [];
+    console.log('user', user);
+    for (const element of user.friends) {
+      if (element) {
+        // console.log('user1', element.user1);
+        // console.log('user2', element.user2);
+        if (element.username != username) friendList.push(element.username);
+        else if (element.username != username)
+          friendList.push(element.username);
+        console.log('friendlist', friendList);
+      }
+    }
+    console.log(friendList);
+    return friendList;
   }
 }

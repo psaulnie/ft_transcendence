@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 
-import { webSocket } from "../../webSocket";
+import webSocketManager from "../../webSocket";
 import { useSelector, useDispatch } from "react-redux";
 import { useGetUsersListQuery } from "../../store/api";
 import { addRoom } from "../../store/rooms";
+import { Grid, Typography } from "@mui/material";
 
-import Error from "../Global/Error";
 
 import {
   FormControl,
@@ -50,7 +50,7 @@ function JoinDirectMessage() {
           isMuted: false,
         }),
       );
-      webSocket.emit("openPrivateMsg", {
+      webSocketManager.getSocket().emit("openPrivateMsg", {
         source: user.username,
         room: newUser,
         access: 0,
@@ -63,7 +63,6 @@ function JoinDirectMessage() {
     data: usersList,
     isLoading,
     isError,
-    error,
     refetch,
   } = useGetUsersListQuery({});
 
@@ -71,7 +70,7 @@ function JoinDirectMessage() {
     refetch();
   }, [refetch]);
 
-  if (isError) return <Error error={error} />;
+  if (isError) throw new (Error as any)("API call error");
   else if (isLoading)
     return (
       <div>
@@ -81,9 +80,9 @@ function JoinDirectMessage() {
     );
 
   return (
-    <div className="joinDirectMessage">
-      <p>Direct Message</p>
-      <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+    <Grid className="joinDirectMessage">
+      <Typography sx={{ marginTop: "2em" }}>Direct Message</Typography>
+      <FormControl sx={{ minWidth: 120 }} size="small">
         <InputLabel>Users</InputLabel>
         <Select
           name="usersList"
@@ -107,10 +106,15 @@ function JoinDirectMessage() {
         </Select>
         <FormHelperText>Select an user</FormHelperText>
       </FormControl>
-      <IconButton size="small" onClick={joinRoom} disabled={newUser === ""}>
+      <IconButton
+        size="small"
+        onClick={joinRoom}
+        disabled={newUser === ""}
+        sx={{ transform: "translate(0%, 6%)" }}
+      >
         <AddIcon />
       </IconButton>
-    </div>
+    </Grid>
   );
 }
 

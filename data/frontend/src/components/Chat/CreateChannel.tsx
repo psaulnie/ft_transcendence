@@ -1,12 +1,11 @@
 import React, { useState } from "react";
 
-import { webSocket } from "../../webSocket";
+import webSocketManager from "../../webSocket";
 import { accessStatus, userRole } from "./chatEnums";
 import { useDispatch, useSelector } from "react-redux";
 import { useLazyGetIsRoomNameTakenQuery } from "../../store/api";
 import { addRoom } from "../../store/rooms";
-
-import Error from "../Global/Error";
+import { Grid, Typography } from "@mui/material";
 
 import {
   TextField,
@@ -33,7 +32,7 @@ function CreateChannel() {
 
   const [trigger, result] = useLazyGetIsRoomNameTakenQuery();
 
-  if (result.isError) return <Error error={result.error} />;
+  if (result.isError) throw new (Error as any)("API call error");
   else if (result.isLoading)
     return (
       <div>
@@ -67,7 +66,6 @@ function CreateChannel() {
       let hasPassword = false;
       if (access === accessStatus.protected) {
         setShowDialog(true);
-        hasPassword = true;
         return;
       }
       dispatch(
@@ -80,7 +78,7 @@ function CreateChannel() {
           isMuted: false,
         }),
       );
-      webSocket.emit("joinRoom", {
+      webSocketManager.getSocket().emit("joinRoom", {
         source: user.username,
         room: newRoomName,
         access: access,
@@ -90,16 +88,17 @@ function CreateChannel() {
   }
 
   return (
-    <div className="createChannel">
-      <p>Create a new channel</p>
+    <Grid className="createChannel">
+      <Typography sx={{ marginTop: "2em" }}>Create a new channel</Typography>
       <TextField
+        autoComplete='off'
         error={result.data}
         helperText={result.data ? "This room already exists" : null}
         label="Room name"
         value={newRoomName}
         onChange={updateNewRoomName}
       />
-      <FormControl>
+      <FormControl sx={{ height: "80%" }}>
         <InputLabel>Access</InputLabel>
         <Select name="roomAccess" onChange={changeAccess} defaultValue="">
           <MenuItem defaultChecked value="public">
@@ -114,10 +113,11 @@ function CreateChannel() {
         name="rooms"
         disabled={result.data === true || newRoomName === ""}
         onClick={createRoom}
+        sx={{ transform: "translate(0%, 18%)" }}
       >
         <AddIcon />
       </IconButton>
-      {showDialog === true ? (
+      {showDialog ? (
         <PasswordDialog
           open={showDialog}
           setOpen={setShowDialog}
@@ -127,7 +127,7 @@ function CreateChannel() {
         />
       ) : null}
       {result.data === true ? <p>This room already exist</p> : null}
-    </div>
+    </Grid>
   );
 }
 

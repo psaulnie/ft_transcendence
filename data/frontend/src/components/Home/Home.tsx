@@ -1,43 +1,36 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
-import Cookies from "js-cookie";
-import { useDispatch } from "react-redux";
-import { setUsername, login } from "../../store/user";
-
-import PersonIcon from "@mui/icons-material/Person";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../../store/user";
 
 import { Box, Grid, Button } from "@mui/material";
 
-import Profile from "../Global/Profile";
+import { useGetUserProfileQuery } from "../../store/api";
 
 export default function Home() {
+  const user = useSelector((state: any) => state.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
-  const [isProfilOpen, setIsProfilOpen] = useState(false);
-  const [isGameOpen, setIsGameOpen] = useState(false);
-
-  const toggleProfil = () => {
-    setIsProfilOpen(!isProfilOpen);
-  };
 
   const play = () => {
     navigate("/game");
   }
-  useEffect(() => {
-    const username = Cookies.get("username");
-    const accessToken = Cookies.get("accessToken");
-    if (!username || !accessToken) return; // TODO
-    dispatch(setUsername(username));
-    dispatch(login(accessToken));
-  }, [dispatch]);
+
+  const {
+    data: userProfile,
+    isLoading,
+    isError,
+  } = useGetUserProfileQuery({username: user.username}, {skip: !user.username});
+
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error</div>; // TODO handle error
+  if (userProfile.exist === false) {
+    dispatch(logout());
+    window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/logout`;
+  }
 
   return (
     <div>
-      {isProfilOpen ? (
-        <Profile toggleProfil={toggleProfil} />
-      ) : (
-        /* {isGameOpen ? (<Profile toggleGame={toggleGame}/>) : ( A TROUVER SOLUTION */
         <Box
           sx={{
             display: "flex",
@@ -79,7 +72,7 @@ export default function Home() {
                   },
                 }}
               >
-                Jouer
+                Play
               </Button>
             </Grid>
             <Grid item>
@@ -113,7 +106,7 @@ export default function Home() {
                       fontSize: "24px",
                     }}
                   >
-                    Apercebo
+                    Welcome
                   </Grid>
                   <Grid
                     item
@@ -123,7 +116,7 @@ export default function Home() {
                       fontSize: "24px",
                     }}
                   >
-                    Victoires: 4
+                    Wins: {userProfile.wins}
                   </Grid>
                   <Grid
                     item
@@ -133,7 +126,7 @@ export default function Home() {
                       fontSize: "24px",
                     }}
                   >
-                    Defaites: 2
+                    Loses: {userProfile.loses}
                   </Grid>
                   <Grid
                     item
@@ -143,14 +136,13 @@ export default function Home() {
                       fontSize: "24px",
                     }}
                   >
-                    Rang:
+                    Rank: {userProfile.rank}
                   </Grid>
                 </Grid>
               </Box>
             </Grid>
           </Grid>
         </Box>
-      )}
     </div>
   );
 }

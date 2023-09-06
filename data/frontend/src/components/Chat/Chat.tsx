@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 
-import { webSocket } from "../../webSocket";
-
 import { useDispatch, useSelector } from "react-redux";
 import { useLazyGetBlockedUsersQuery } from "../../store/api";
 import { useLazyGetUserRoomListQuery } from "../../store/api";
@@ -11,22 +9,11 @@ import Room from "./Room";
 import Tab from "./Tab";
 import UsersTab from "./UsersTab";
 import DirectMessageProvider from "./DirectMessageProvider";
-import PersonIcon from "@mui/icons-material/Person";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ChatProcess from "./ChatProcess";
-import Error from "../Global/Error";
 
-import {
-  Skeleton,
-  Box,
-  Grid,
-  Button,
-  Typography,
-  Avatar,
-  Slide,
-} from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
+import { Skeleton, Box, Grid, Button, Slide } from "@mui/material";
 
 import RoomTabs from "./RoomTabs";
 import { addRoom, setRoomIndex } from "../../store/rooms";
@@ -92,9 +79,8 @@ function Chat() {
     fetchUserRoomList,
   ]);
 
-  if (!webSocket.connected) return <p>Chat Socket error</p>;
-  if (blockedUsers.isError) return <Error error={blockedUsers.error} />;
-  else if (userRoomList.isError) return <Error error={userRoomList.error} />;
+  if (blockedUsers.isError) throw new (Error as any)("API call error");
+  else if (userRoomList.isError) throw new (Error as any)("API call error");
   else if (blockedUsers.isLoading || userRoomList.isLoading)
     return (
       <div>
@@ -114,7 +100,7 @@ function Chat() {
             position: "fixed",
             bottom: isOpen ? "35.9em" : "0em",
 
-            right: 20,
+            right: 0,
             width: "35.55em",
             backgroundColor: "#ff8700",
             "&:hover": {
@@ -123,7 +109,7 @@ function Chat() {
             },
             "@media (max-width: 600px) or (max-height: 700px)": {
               width: "22.82em",
-              bottom: isOpen ? "35.9em" : "0em",
+              bottom: isOpen ? "34.55em" : "0em",
             },
           }}
         >
@@ -133,17 +119,16 @@ function Chat() {
           <Box
             sx={{
               position: "fixed",
-              bgcolor: "#FFA500",
+              bgcolor: "#FE8F29",
               height: "30.28em",
               width: "31.28em",
               borderRadius: "2%",
               opacity: 0.8,
               border: 8,
-              borderColor: "#994000",
-              borderStyle: "double",
+              borderColor: "#FC7D07",
               marginTop: "auto",
-              bottom: 20,
-              right: 20,
+              bottom: 0,
+              right: 0,
               zIndex: 9,
               "@media (max-width: 600px) or (max-height: 700px)": {
                 width: "20em",

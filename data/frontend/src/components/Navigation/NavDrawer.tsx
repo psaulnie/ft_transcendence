@@ -5,10 +5,8 @@ import Drawer from "@mui/material/Drawer";
 import HomeIcon from "@mui/icons-material/Home";
 import SportsEsportsIcon from "@mui/icons-material/SportsEsports";
 import SettingsIcon from "@mui/icons-material/Settings";
-import { Typography, Grid, Button } from "@mui/material";
+import { Grid, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-
-import NavDrawerButton from "./NavDrawerButton";
 
 export default function NavDrawer({
   state,
