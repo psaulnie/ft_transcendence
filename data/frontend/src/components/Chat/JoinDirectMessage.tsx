@@ -19,6 +19,8 @@ import {
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { userRole } from "./chatEnums";
+import ErrorSnackbar from "../Global/ErrorSnackbar";
+import Loading from "../Global/Loading";
 
 function JoinDirectMessage() {
   const user = useSelector((state: any) => state.user);
@@ -63,6 +65,7 @@ function JoinDirectMessage() {
     data: usersList,
     isLoading,
     isError,
+    error,
     refetch,
   } = useGetUsersListQuery({});
 
@@ -70,14 +73,8 @@ function JoinDirectMessage() {
     refetch();
   }, [refetch]);
 
-  if (isError) throw new (Error as any)("API call error");
-  else if (isLoading)
-    return (
-      <div>
-        <Skeleton variant="text" />
-        <Skeleton variant="rectangular" />
-      </div>
-    );
+  if (isError) return <ErrorSnackbar error={error} />;
+  else if (isLoading) return <Loading />;
 
   return (
     <Grid className="joinDirectMessage">

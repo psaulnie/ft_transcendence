@@ -20,6 +20,8 @@ import {
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import PasswordDialog from "./PasswordDialog";
+import ErrorSnackbar from "../Global/ErrorSnackbar";
+import Loading from "../Global/Loading";
 
 function CreateChannel() {
   const user = useSelector((state: any) => state.user);
@@ -32,14 +34,8 @@ function CreateChannel() {
 
   const [trigger, result] = useLazyGetIsRoomNameTakenQuery();
 
-  if (result.isError) throw new (Error as any)("API call error");
-  else if (result.isLoading)
-    return (
-      <div>
-        <Skeleton variant="text" />
-        <Skeleton variant="rectangular" />
-      </div>
-    );
+  if (result.isError) return <ErrorSnackbar error={result.error} />;
+  else if (result.isLoading) return (<Loading />);
 
   function updateNewRoomName(e: any) {
     if (e.target.value.length > 0) trigger({ roomName: e.target.value });
@@ -124,6 +120,7 @@ function CreateChannel() {
           roomName={newRoomName}
           role={userRole.owner}
           createRoom={true}
+          setNewRoomName={setNewRoomName}
         />
       ) : null}
       {result.data === true ? <p>This room already exist</p> : null}

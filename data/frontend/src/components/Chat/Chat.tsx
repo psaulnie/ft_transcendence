@@ -13,10 +13,12 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ChatProcess from "./ChatProcess";
 
-import { Skeleton, Box, Grid, Button, Slide } from "@mui/material";
+import { Skeleton, Box, Grid, Button, Slide, Snackbar } from "@mui/material";
 
 import RoomTabs from "./RoomTabs";
 import { addRoom, setRoomIndex } from "../../store/rooms";
+import ErrorSnackbar from "../Global/ErrorSnackbar";
+import Loading from "../Global/Loading";
 
 function Chat() {
   const user = useSelector((state: any) => state.user);
@@ -79,15 +81,9 @@ function Chat() {
     fetchUserRoomList,
   ]);
 
-  if (blockedUsers.isError) throw new (Error as any)("API call error");
-  else if (userRoomList.isError) throw new (Error as any)("API call error");
-  else if (blockedUsers.isLoading || userRoomList.isLoading)
-    return (
-      <div>
-        <Skeleton variant="text" />
-        <Skeleton variant="rectangular" />
-      </div>
-    );
+  if (blockedUsers.isError) return <ErrorSnackbar error={blockedUsers.error} />;
+  else if (userRoomList.isError) return <ErrorSnackbar error={userRoomList.error} />;
+  else if (blockedUsers.isLoading || userRoomList.isLoading) return (<Loading />)
 
   return (
     <div className="chat">

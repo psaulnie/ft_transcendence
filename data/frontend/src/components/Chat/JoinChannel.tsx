@@ -23,6 +23,8 @@ import { Typography } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import LockIcon from "@mui/icons-material/Lock";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import ErrorSnackbar from "../Global/ErrorSnackbar";
+import Loading from "../Global/Loading";
 
 function JoinChannel() {
   const user = useSelector((state: any) => state.user);
@@ -73,6 +75,7 @@ function JoinChannel() {
     data: roomsList,
     isLoading,
     isError,
+    error,
     refetch,
   } = useGetRoomsListQuery({});
 
@@ -80,14 +83,8 @@ function JoinChannel() {
     refetch();
   }, [refetch]);
 
-  if (isError) throw new (Error as any)("API call error");
-  else if (isLoading)
-    return (
-      <div>
-        <Skeleton variant="text" />
-        <Skeleton variant="rectangular" />
-      </div>
-    );
+  if (isError) return <ErrorSnackbar error={error} />;
+  else if (isLoading) return <Loading />;
 
   return (
     <Grid className="joinChannel">
@@ -145,6 +142,7 @@ function JoinChannel() {
           open={showDialog}
           setOpen={setShowDialog}
           roomName={newRoomName}
+          setNewRoomName={setNewRoomName}
           role={userRole.none}
           createRoom={true}
         />

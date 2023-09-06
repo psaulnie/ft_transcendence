@@ -558,9 +558,13 @@ export class Gateway
     );
     if (!userStatus || userStatus.clientId !== client.id)
       throw new WsException('Forbidden');
+    const invitedUserStatus = await this.usersStatusService.getUserStatus(
+      payload.username,
+    );
+    if (!invitedUserStatus) throw new WsException('Invited user not found');
     const room = await this.roomService.findOne(payload.roomName);
     if (!room) throw new WsException('Room not found');
-    this.server.emit(payload.username + 'OPTIONS', {
+    this.server.emit(invitedUserStatus.clientId, {
       source: payload.roomName,
       target: payload.username,
       action: actionTypes.invited,
@@ -828,7 +832,6 @@ export class Gateway
     console.log(client.handshake.headers.cookie);
     if (client?.handshake?.headers?.cookie?.split('=')[1] === 'test') {
       // TODO remove when testUser removed
-      console.log("A")
       await this.usersStatusService.addUser(
         client.id,
         'testUser',

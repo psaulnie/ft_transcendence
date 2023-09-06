@@ -5,6 +5,8 @@ import { Menu, MenuItem, Divider } from '@mui/material';
 import { addRoom } from '../../../store/rooms';
 import { userRole } from '../chatEnums';
 import { useNavigate } from 'react-router';
+import ErrorSnackbar from '../../Global/ErrorSnackbar';
+import Loading from '../../Global/Loading';
 
 type arg = {
 	cUser: {username: string, role: userRole, isMuted: boolean},
@@ -40,11 +42,8 @@ export default function UserOptionsMenu({ cUser, role, roomName, contextMenu, se
 	}
 	
 	if (friendList.isError)
-		throw new (Error as any)('Api call error');
-	if (friendList.isLoading)
-		return (<div>Loading...</div>)
-	if (friendList.isSuccess)
-		console.log((friendList.data));
+		return <ErrorSnackbar error={friendList.error} />;
+	if (friendList.isLoading) return <Loading />;
 	return (
 			<Menu open={contextMenu !== null}
 				onClose={handleClose}

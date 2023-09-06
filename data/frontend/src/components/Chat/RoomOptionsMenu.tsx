@@ -101,6 +101,7 @@ export default function RoomOptionsMenu({
           roomName={roomName}
           role={userRole.none}
           createRoom={false}
+          setNewRoomName={null}
         />
       ) : null}
       {showUserDialog ? (

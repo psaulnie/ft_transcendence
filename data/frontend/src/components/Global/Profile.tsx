@@ -2,6 +2,7 @@ import { Box, Grid, Button, Avatar, Typography } from "@mui/material";
 import { useSelector } from "react-redux";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { useGetUserProfileQuery } from "../../store/api";
+import Loading from "./Loading";
 
 
 function Profile() {
@@ -28,7 +29,7 @@ function Profile() {
     navigate(`/edit`);
   };
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <Loading />;
   if (isError) return <div>Error</div>; // TODO handle error
   if (userProfile.exist === false)
     return <Navigate to="/home" />

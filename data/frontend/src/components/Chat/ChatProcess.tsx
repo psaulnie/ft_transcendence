@@ -141,8 +141,6 @@ export default function ChatProcess() {
           "You've been unmuted from this channel: " + value.source,
           "success",
         );
-      } else if (value.action === actionTypes.rightpassword) {
-
       } else if (value.action === actionTypes.wrongpassword) {
         dispatch(removeRoom(value.target));
         setSnackbar("Wrong password", "error");

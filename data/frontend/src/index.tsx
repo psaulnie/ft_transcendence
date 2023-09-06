@@ -11,11 +11,9 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
-    <ErrorBoundaries>
       <Provider store={store}>
         <App />
       </Provider>
-    </ErrorBoundaries>
   </React.StrictMode>
 );
 
