@@ -8,6 +8,7 @@ import { Box, Grid, Button, CircularProgress, Backdrop } from "@mui/material";
 import { useGetUserProfileQuery } from "../../store/api";
 import Loading from "../Global/Loading";
 import webSocketManager from "../../webSocket";
+import ErrorSnackbar from "../Global/ErrorSnackbar";
 
 export default function Home() {
   const user = useSelector((state: any) => state.user);
@@ -22,10 +23,11 @@ export default function Home() {
     data: userProfile,
     isLoading,
     isError,
+    error,
   } = useGetUserProfileQuery({username: user.username}, {skip: !user.username});
 
   if (isLoading) return (<Loading />);
-  if (isError) return <div>Error</div>; // TODO handle error
+  if (isError) return <ErrorSnackbar error={error} />;
   if (userProfile.exist === false) {
     dispatch(logout());
     window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/logout`;

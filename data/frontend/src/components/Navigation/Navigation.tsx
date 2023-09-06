@@ -18,6 +18,7 @@ import { logout } from "../../store/user";
 import { SyntheticEvent } from "react";
 import { useGetUserLevelQuery } from "../../store/api";
 import Loading from "../Global/Loading";
+import ErrorSnackbar from "../Global/ErrorSnackbar";
 
 // If logged in, show the account button
 function Navigation({ setDrawerState }: { setDrawerState: any }) {
@@ -49,10 +50,12 @@ function Navigation({ setDrawerState }: { setDrawerState: any }) {
     data: userLevel,
     isLoading,
     isError,
+    error,
   } = useGetUserLevelQuery({username: user.username}, {skip: !user.username});
   
   if (isLoading) return <Loading />;
-  if (isError) return <div>Error</div>; // TODO handle error
+  if (isError) return <ErrorSnackbar error={error} />
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar
