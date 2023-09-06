@@ -560,7 +560,7 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
           const gameRoom = this.gameService.getGameRoom(gameRoomId);
           if (!gameRoom)
             return;
-          this.server.emit("game" + gameRoomId, {playerY: gameRoom.player1.Y, enemyY: gameRoom.player2.Y, ballX: gameRoom.ballPos.x, ballY: gameRoom.ballPos.y, p1Score: gameRoom.player1.score, p2Score: gameRoom.player2.score}) 
+          this.server.emit("game" + gameRoomId, {playerY: gameRoom.player1.Y, enemyY: gameRoom.player2.Y, ballX: gameRoom.ballPos.x, ballY: gameRoom.ballPos.y, p1Score: gameRoom.player1.score, p2Score: gameRoom.player2.score, coward: gameRoom.coward}) 
         }, ticServ);
 		}
 	}
@@ -575,31 +575,37 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
 		this.matchmakingQueue.splice(this.matchmakingQueue.indexOf(payload.username), 1);
 	}
 
+  @SubscribeMessage('leaveGame')
+  async leaveGame(client: Socket, payload: {gameRoomId: string, coward: string}) {
+    console.log("dans gateway leaveGame", payload.gameRoomId, payload.coward);
+    this.gameService.leaveGame(payload.gameRoomId, payload.coward);
+  }
+
   @SubscribeMessage('pressUp')
 	async pressUp(client: Socket, payload: {player: string, gameRoomId: string})
 	{
-		console.log("press UP");
+		// console.log("press UP");
     this.gameService.pressUp(payload.player, payload.gameRoomId);
 	}
 
 	@SubscribeMessage('pressDown')
 	async pressDown(client: Socket, payload: {player: string, gameRoomId: string})
 	{
-		console.log("press Down");
+		// console.log("press Down");
     this.gameService.pressDown(payload.player, payload.gameRoomId);
 	}
 
 	@SubscribeMessage('releaseUp')
 	async releaseUp(client: Socket, payload: {player: string, gameRoomId: string})
 	{
-		console.log("release KEY");
+		// console.log("release KEY");
     this.gameService.releaseUp(payload.player, payload.gameRoomId);
 	}
 
   @SubscribeMessage('releaseDown')
 	async releaseDown(client: Socket, payload: {player: string, gameRoomId: string})
 	{
-		console.log("release KEY");
+		// console.log("release KEY");
     this.gameService.releaseDown(payload.player, payload.gameRoomId);
 	}
 
@@ -614,6 +620,7 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
   async handleDisconnect(client: Socket) {
     console.log(`Client disconnected: ${client.id}`);
     await this.usersStatusService.setUserStatus(client.id, userStatus.offline);
+    // TODO call function leaveGame if in game
   }
 
   async handleConnection(client: Socket, ...args: any[]) {

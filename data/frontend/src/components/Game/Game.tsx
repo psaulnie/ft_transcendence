@@ -19,7 +19,7 @@ export default function Game() {
   return (
     <div>
       {
-        !foundUser ?  <Matchmaking setFoundUser={setFoundUser} setPlayers={setPlayers} setGameRoomId={setGameRoomId}/> : <Canvas players={players} gameRoomId={gameRoomId}/>
+        !foundUser ?  <Matchmaking setFoundUser={setFoundUser} setPlayers={setPlayers} setGameRoomId={setGameRoomId}/> : <Canvas players={players} gameRoomId={gameRoomId} setFoundUser={setFoundUser}/>
       }     
     </div>
   );

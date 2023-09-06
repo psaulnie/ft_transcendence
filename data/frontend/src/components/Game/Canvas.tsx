@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './Canvas.css'
 import { webSocket } from '../../webSocket';
+import { Button } from '@mui/material';
 
-export default function Canvas({players, gameRoomId} : {players: {1: string, 2: string}, gameRoomId: string}) {
+export default function Canvas({players, gameRoomId, setFoundUser} : {players: {1: string, 2: string}, gameRoomId: string, setFoundUser: any}) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [rectPositionP1, setRectPositionP1] = useState<{ x: number; y: number }>({ x: 20, y:  175});
-  const [rectPositionP2, setRectPositionP2] = useState<{ x: number; y: number }>({ x: 620, y:  175});
+  const [rectPositionP1, setRectPositionP1] = useState<{ x: number; y: number }>({ x: 5, y:  175});
+  const [rectPositionP2, setRectPositionP2] = useState<{ x: number; y: number }>({ x: 630, y:  175});
   const [ballPosition, setBallPosition] = useState<{ x: number; y: number }>({ x: 320, y:  212});
   const canvasSize = { width: 640, height: 425 }
   const rectWidth = 5;
@@ -84,6 +85,15 @@ export default function Canvas({players, gameRoomId} : {players: {1: string, 2: 
     const ctx = canvas?.getContext("2d");
 
 		function process(value: any) {
+      if (value.coward !== null) {
+        ctx?.clearRect(0, 0, canvas!.width, canvas!.height);
+        console.log("il y a un lache");
+        ctx!.fillStyle = 'white';
+        ctx!.font = "40px serif";
+        ctx!.textAlign = "start";
+        ctx?.fillText(value.coward + " left the game", 150, 150);
+        return ; 
+      } else {
         ctx!.fillStyle = 'white';
         ctx!.font = "20px serif";
         ctx?.clearRect(0, 0, canvas!.width, canvas!.height);
@@ -91,7 +101,7 @@ export default function Canvas({players, gameRoomId} : {players: {1: string, 2: 
         setRectPositionP1((prevPosition) => ({ ...prevPosition, y: value.playerY}));
         ctx?.fillRect(rectPositionP1.x, rectPositionP1.y, rectWidth, rectHeight);
         setRectPositionP2((prevPosition) => ({ ...prevPosition, y: value.enemyY}));
-        ctx?.fillRect(canvasSize.width - 20, rectPositionP2.y, rectWidth, rectHeight);  
+        ctx?.fillRect(rectPositionP2.x, rectPositionP2.y, rectWidth, rectHeight);  
 
         setBallPosition({x: value.ballX, y: value.ballY});
         ctx?.fillRect(ballPosition.x, ballPosition.y, ballWidth, ballWidth);
@@ -106,12 +116,13 @@ export default function Canvas({players, gameRoomId} : {players: {1: string, 2: 
         } else if (value.p2Score === maxScore) {
           endMatch(player2);
         }
+      }
     }
     webSocket.on("game" + gameRoomId, process);
 		return () => {
 			webSocket.off("game" + gameRoomId, process);
 		};
-  }, [rectPositionP1, rectPositionP2, ballPosition, gameRoomId, player1, player2, canvasSize.width]);
+  }, [rectPositionP1, rectPositionP2, ballPosition, gameRoomId, player1, player2]);
 
   function endMatch(name: string) {
     const canvas = canvasRef.current;
@@ -123,10 +134,19 @@ export default function Canvas({players, gameRoomId} : {players: {1: string, 2: 
     ctx?.fillText(name + " Win the game", 150, 150);
   }
 
+  function quitGame(gameRoomId: string) {
+    setFoundUser(false);
+    const name = players[1];
+    console.log(name);
+    webSocket.emit("leaveGame" , { gameRoomId, coward:name });
+    console.log("bah alors ca veux leave?", players[1]);
+  }
+
   return (
     <div className='canvas' id='canvas'>
       <canvas ref={canvasRef} width={canvasSize.width} height={canvasSize.height}
               style={{ display: 'block'}}/>
+      <Button onClick={() => quitGame(gameRoomId)}>Leave game</Button>
     </div>
   );
 };

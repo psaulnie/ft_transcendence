@@ -21,6 +21,7 @@ export interface gameRoom {
 	ballPos: {x: number, y: number},
 	ballSpeedX: number,
 	ballSpeedY: number,
+	coward: string,
 	// spectators: User[],
 }
 
@@ -61,8 +62,9 @@ export class GameService {
 				score: 0,
 			},
 			ballPos: {x: 310, y: 202},
-			ballSpeedX: 1,
-			ballSpeedY: 1,
+			ballSpeedX: 5,
+			ballSpeedY: 5,
+			coward: null,
 			// spectator: [],
 		});
 		this.resetBall(gameRoomId);
@@ -99,16 +101,20 @@ export class GameService {
 			this.gameRooms[roomIndex].ballSpeedY = -this.gameRooms[roomIndex].ballSpeedY;
 		}
 
-		if (this.gameRooms[roomIndex].ballPos.x < rectWidth + 20 &&
+		if (this.gameRooms[roomIndex].ballPos.x < rectWidth + 5 &&
 			this.gameRooms[roomIndex].ballPos.y + ballWidth > this.gameRooms[roomIndex].player1.Y &&
 			this.gameRooms[roomIndex].ballPos.y < this.gameRooms[roomIndex].player1.Y + rectHeight) {
+				if (this.gameRooms[roomIndex].ballPos.x + (ballWidth / 2) >= 5)
+					this.gameRooms[roomIndex].ballPos.x = 5 + rectWidth; //  5 is p1.x 
 				this.gameRooms[roomIndex].ballSpeedX = -this.gameRooms[roomIndex].ballSpeedX;
 		}
 
-		if (this.gameRooms[roomIndex].ballPos.x > 640 - 20 - 2 * rectWidth &&
+		if (this.gameRooms[roomIndex].ballPos.x > 640 - 9 - 2 * rectWidth &&
 			this.gameRooms[roomIndex].ballPos.y  + ballWidth > this.gameRooms[roomIndex].player2.Y &&
 			this.gameRooms[roomIndex].ballPos.y < this.gameRooms[roomIndex].player2.Y + rectHeight) {
-				this.gameRooms[roomIndex].ballSpeedX= -this.gameRooms[roomIndex].ballSpeedX;
+				if (this.gameRooms[roomIndex].ballPos.x + (ballWidth / 2) <= 630 + rectWidth) 
+					this.gameRooms[roomIndex].ballPos.x = 630 - rectWidth ;// 630 is p2.x
+				this.gameRooms[roomIndex].ballSpeedX= -this.gameRooms[roomIndex].ballSpeedX;	
 		}
 
 		if (this.gameRooms[roomIndex].ballPos.x < 0) {
@@ -131,11 +137,11 @@ export class GameService {
 		const roomIndex = this.gameRooms.findIndex((obj) => obj.gameRoomId === gameRoomId);
 		if (roomIndex === -1)
 			return ;
-			this.gameRooms[roomIndex].ballPos.x = 310;
-			this.gameRooms[roomIndex].ballPos.y = 202;
-			this.gameRooms[roomIndex].ballSpeedX = -this.gameRooms[roomIndex].ballSpeedX;
-			this.gameRooms[roomIndex].ballSpeedY = Math.random() * 10 - 5;
-		}
+		this.gameRooms[roomIndex].ballPos.x = 310;
+		this.gameRooms[roomIndex].ballPos.y = 202;
+		this.gameRooms[roomIndex].ballSpeedX = -this.gameRooms[roomIndex].ballSpeedX;
+		this.gameRooms[roomIndex].ballSpeedY = Math.random() * 2 - 1;
+	}
 
 	pressUp(player: string, gameRoomId: string)
 	{
@@ -194,5 +200,14 @@ export class GameService {
 		if (!room)
 			return ;
 		return (room);
+	}
+
+	leaveGame(gameRoomId: string, coward:string) {
+		const roomIndex = this.gameRooms.findIndex((obj) => obj.gameRoomId === gameRoomId);
+		console.log(roomIndex);
+		if (roomIndex === -1)
+			return ;
+		this.gameRooms[roomIndex].coward = coward;
+		console.log("dans gameService leaveGame");
 	}
 }
