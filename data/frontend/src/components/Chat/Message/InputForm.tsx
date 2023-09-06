@@ -80,6 +80,7 @@ export default function InputForm({
             fullWidth
             value={message}
             onChange={onChange}
+            autoComplete='off'
             disabled={
               rooms.room.find((obj: any) => obj.name === roomName).isMuted
             }

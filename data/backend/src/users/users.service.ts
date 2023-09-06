@@ -4,6 +4,9 @@ import { User } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
 import { BlockedList } from 'src/entities/blocked.list.entity';
 import { TypeormSession } from 'src/entities';
+import { MatchHistory } from 'src/entities/matchHistory.entity';
+import { Statistics } from 'src/entities/stats.entity';
+import { Achievements } from 'src/entities/achievements.entity';
 
 @Injectable()
 export class UsersService {
@@ -14,6 +17,12 @@ export class UsersService {
     private blockedUserRepository: Repository<BlockedList>,
     @InjectRepository(TypeormSession)
     private typeormSessionRepository: Repository<TypeormSession>,
+    @InjectRepository(MatchHistory)
+    private matchHistoryRepository: Repository<MatchHistory>,
+    @InjectRepository(Statistics)
+    private statisticsRepository: Repository<Statistics>,
+    @InjectRepository(Achievements)
+    private achievementsRepository: Repository<Achievements>,
   ) {}
 
   async findOne(name: string): Promise<User> {
@@ -21,11 +30,37 @@ export class UsersService {
       where: { username: name },
       relations: [
         'blockedUsers',
-        'friendList',
+        'friends',
         'achievements',
         'blockedUsers.blockedUser',
         'blockedUsers.user',
       ],
+    });
+  }
+
+  async findOneProfile(name: string): Promise<User> {
+    return await this.usersRepository.findOne({
+      where: { username: name },
+      relations: [
+        'friends',
+        'matchHistory',
+        'matchHistory.user1',
+        'matchHistory.user2',
+        'statistics',
+      ],
+    });
+  }
+
+  async findOneAchievements(name: string): Promise<User> {
+    return await this.usersRepository.findOne({
+      where: { username: name },
+      relations: ['achievements'],
+    });
+  }
+
+  async findOneByIntraUsername(name: string): Promise<User> {
+    return await this.usersRepository.findOne({
+      where: { intraUsername: name },
     });
   }
 
@@ -42,7 +77,7 @@ export class UsersService {
       where: { accessToken: accessToken },
       relations: [
         'blockedUsers',
-        'friendList',
+        'friends',
         'achievements',
         'blockedUsers.blockedUser',
         'blockedUsers.user',
@@ -54,7 +89,7 @@ export class UsersService {
     return await this.usersRepository.find({
       relations: [
         'blockedUsers',
-        'friendList',
+        'friends',
         'achievements',
         'blockedUsers.blockedUser',
         'blockedUsers.user',
@@ -68,22 +103,28 @@ export class UsersService {
 
   async createUser(name: string) {
     console.log('createuser');
-    if (await this.findOneByUsername(name)) {
+    if (await this.findOneByUsername('testUser')) {
       return;
     }
     const newUser = new User();
+    const statistics = new Statistics();
+    const achievements = new Achievements();
+
     newUser.urlAvatar = '';
     newUser.username = name;
     newUser.accessToken = 'test';
     newUser.refreshToken = '';
     newUser.blockedUsers = [];
     newUser.intraId = '';
-    newUser.intraUsername = '';
-    newUser.friendList = [];
-    newUser.matchHistory = null;
-    newUser.statistics = null;
-    newUser.achievements = null;
+    newUser.intraUsername = name;
+    newUser.friends = [];
+    newUser.matchHistory = [];
+    newUser.statistics = statistics;
+    newUser.achievements = achievements;
 
+    console.log('before');
+    await this.statisticsRepository.save(statistics);
+    await this.achievementsRepository.save(achievements);
     await this.usersRepository.save(newUser);
   }
 
@@ -115,6 +156,26 @@ export class UsersService {
     await this.usersRepository.save(user);
   }
 
+  async addFriend(user: User, friend: User) {
+    console.log('addfriend');
+    user.friends.push(friend);
+    friend.friends.push(user);
+    await this.usersRepository.save(user);
+    await this.usersRepository.save(friend);
+  }
+
+  async removeFriend(user: User, friend: User) {
+    console.log('removefriend');
+    user.friends = user.friends.filter(
+      (obj) => obj.username !== friend.username,
+    );
+    friend.friends = friend.friends.filter(
+      (obj) => obj.username !== user.username,
+    );
+    await this.usersRepository.save(user);
+    await this.usersRepository.save(friend);
+  }
+
   async updateAvatar(user: User, avatar: string, isUrl: boolean) {
     console.log('updateavatar');
     if (isUrl == false && user.urlAvatar !== '' && user.urlAvatar !== null) {
@@ -128,6 +189,12 @@ export class UsersService {
       }
     }
     user.urlAvatar = avatar;
+    await this.usersRepository.save(user);
+  }
+
+  async changeUsername(user: User, username: string) {
+    console.log('changeusername in service');
+    user.username = username;
     await this.usersRepository.save(user);
   }
 

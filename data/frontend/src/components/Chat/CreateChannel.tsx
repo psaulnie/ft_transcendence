@@ -7,8 +7,6 @@ import { useLazyGetIsRoomNameTakenQuery } from "../../store/api";
 import { addRoom } from "../../store/rooms";
 import { Grid, Typography } from "@mui/material";
 
-import Error from "../Global/Error";
-
 import {
   TextField,
   Select,
@@ -68,7 +66,6 @@ function CreateChannel() {
       let hasPassword = false;
       if (access === accessStatus.protected) {
         setShowDialog(true);
-        hasPassword = true;
         return;
       }
       dispatch(
@@ -94,6 +91,7 @@ function CreateChannel() {
     <Grid className="createChannel">
       <Typography sx={{ marginTop: "2em" }}>Create a new channel</Typography>
       <TextField
+        autoComplete='off'
         error={result.data}
         helperText={result.data ? "This room already exists" : null}
         label="Room name"

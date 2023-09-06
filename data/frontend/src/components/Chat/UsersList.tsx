@@ -1,6 +1,6 @@
-import { useGetUsersInRoomQuery } from "../../store/api";
+import { useGetUsersInRoomQuery, useLazyGetUserFriendsListQuery } from "../../store/api";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
 import {
@@ -19,7 +19,6 @@ import StarIcon from "@mui/icons-material/Star";
 import StarOutlineIcon from "@mui/icons-material/StarOutline";
 import PersonIcon from "@mui/icons-material/Person";
 
-import Error from "../Global/Error";
 import UserOptionsMenu from "./Message/UserOptionsMenu";
 import CustomAvatar from "../Global/CustomAvatar";
 import { userRole } from "./chatEnums";
@@ -47,7 +46,9 @@ export default function UsersList({
     refetch,
   } = useGetUsersInRoomQuery({ roomName: roomName }, { skip: isDirectMessage });
 
-  let usersList = [];
+  const [trigger, result] = useLazyGetUserFriendsListQuery();
+
+  let usersList: any[];
   if (!isDirectMessage) usersList = usersListData;
   else
     usersList = [
@@ -59,6 +60,7 @@ export default function UsersList({
     event.preventDefault();
     if (!isDirectMessage) refetch();
     if (user.username !== username)
+    {
       setContextMenu(
         contextMenu === null
           ? {
@@ -67,6 +69,8 @@ export default function UsersList({
             }
           : null,
       );
+      trigger({username: user.username});
+    }
   };
 
   function getRoleIcon(role: userRole) {
@@ -125,6 +129,7 @@ export default function UsersList({
                   contextMenu={contextMenu}
                   setContextMenu={setContextMenu}
                   showAdminOpt={true}
+                  friendList={result}
                 />
               ) : null}
             </ListItem>

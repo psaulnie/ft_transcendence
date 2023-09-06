@@ -6,7 +6,6 @@ import { useGetUsersListQuery } from "../../store/api";
 import { addRoom } from "../../store/rooms";
 import { Grid, Typography } from "@mui/material";
 
-import Error from "../Global/Error";
 
 import {
   FormControl,

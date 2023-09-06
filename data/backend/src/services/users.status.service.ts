@@ -35,18 +35,20 @@ export class UsersStatusService {
     else this.usersStatus.push({ clientId, username, status });
   }
 
-  async removeUser(clientId: string) {
-    this.usersStatus.splice(
-      this.usersStatus.findIndex((user) => user.clientId === clientId),
-      1,
+  async changeUsername(old: string, newUsername: string) {
+    const userStatusIndex = this.usersStatus.findIndex(
+      (user) => user.username === old,
     );
+    if (userStatusIndex != -1)
+      this.usersStatus[userStatusIndex].username = newUsername;
   }
-
   async getUserStatus(username: string) {
     return this.usersStatus.find((user) => user.username === username);
   }
 
   async getUserStatusByClientId(clientId: string) {
+    console.log(clientId);
+    console.log(this.usersStatus);
     return this.usersStatus.find((user) => user.clientId === clientId);
   }
 

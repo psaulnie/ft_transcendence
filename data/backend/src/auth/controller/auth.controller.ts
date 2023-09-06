@@ -17,7 +17,7 @@ export class AuthController {
   ) {}
 
   /**
-   * GET /api/auth/login
+   * GET /auth/login
    * This is the route the user will visit to authenticate
    */
   @Get('login')
@@ -27,7 +27,7 @@ export class AuthController {
   }
 
   /**
-   * GET /api/auth/redirect
+   * GET /auth/redirect
    * This is the redirect URL the OAuth2 Provider will call.
    */
   @Get('redirect')
@@ -48,7 +48,7 @@ export class AuthController {
   }
 
   /**
-   * GET /api/auth/status
+   * GET /auth/status
    * Retrieve the auth status
    */
   @Get('status')
@@ -57,8 +57,8 @@ export class AuthController {
   }
 
   /**
-   * GET /api/auth/logout
-   * Logging the user out and delete session
+   * GET /auth/logout
+   * Logging the user out
    */
   @Get('logout')
   @UseGuards(AuthenticatedGuard)
@@ -101,11 +101,12 @@ export class AuthController {
   @Get('testlogin')
   async testlogin(@Res() res: Response) {
     this.usersService.createUser('testUser');
+    const user = this.usersService.findOneByUsername('testUser');
     res.cookie('accessToken', 'test', {
       httpOnly: false,
       secure: false,
     }); // Set accessToken in cookie
-    res.cookie('username', 'testUser', {
+    res.cookie('username', (await user).username, {
       httpOnly: false,
       secure: false,
     }); // Set username in cookie

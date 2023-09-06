@@ -8,11 +8,16 @@ import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { catchError } from 'rxjs';
 import { UnauthorizedException } from '@nestjs/common';
+import { Statistics } from 'src/entities/stats.entity';
+import { Achievements } from 'src/entities/achievements.entity';
 
 @Injectable()
 export class AuthService implements AuthProvider {
   constructor(
     @InjectRepository(User) private userRepo: Repository<User>,
+    @InjectRepository(Statistics) private statsRepo: Repository<Statistics>,
+    @InjectRepository(Achievements)
+    private achievementsRepo: Repository<Achievements>,
     private readonly httpService: HttpService,
   ) {}
   async validateUser(details: UserDetails) {
@@ -50,7 +55,29 @@ export class AuthService implements AuthProvider {
     console.log('CREATE USER SERVICE');
     console.log('‣ UserDetails', details);
 
+    const url = await firstValueFrom(
+      this.httpService
+        .get('https://api.intra.42.fr/v2/me', {
+          headers: {
+            Authorization: `Bearer ${details.accessToken}`,
+          },
+        })
+        .pipe(
+          catchError(() => {
+            throw new UnauthorizedException();
+          }),
+        ),
+    );
+    details.urlAvatar = url.data.image.versions.small;
+
+    const achievements = new Achievements();
+    const statistics = new Statistics();
+
     const user = this.userRepo.create(details);
+    user.achievements = achievements;
+    user.statistics = statistics;
+    await this.achievementsRepo.save(achievements);
+    await this.statsRepo.save(statistics);
     return this.userRepo.save(user);
   }
 

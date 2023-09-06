@@ -11,6 +11,9 @@ import { UsersService } from 'src/users/users.service';
 import { BlockedList } from 'src/entities/blocked.list.entity';
 import { TwoFactorAuthService } from './service/twoFactorAuth.service';
 import { ConfigService } from '@nestjs/config';
+import { Statistics } from 'src/entities/stats.entity';
+import { MatchHistory } from 'src/entities/matchHistory.entity';
+import { Achievements } from 'src/entities/achievements.entity';
 
 @Module({
   controllers: [AuthController, TwoFactorAuthController],
@@ -26,7 +29,14 @@ import { ConfigService } from '@nestjs/config';
     ConfigService,
   ],
   imports: [
-    TypeOrmModule.forFeature([User, BlockedList, TypeormSession]),
+    TypeOrmModule.forFeature([
+      User,
+      BlockedList,
+      Statistics,
+      Achievements,
+      MatchHistory,
+      TypeormSession,
+    ]),
     HttpModule.register({}),
   ],
 })

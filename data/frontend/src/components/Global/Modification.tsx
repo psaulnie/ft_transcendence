@@ -6,26 +6,65 @@ import {
   Typography,
   TextField,
 } from "@mui/material";
+import { useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { useUploadAvatarMutation } from "../../store/api";
+import webSocketManager from "../../webSocket";
 
-interface ProfileProps {
-  toggleProfil: () => void;
-}
-
-function Modification({ toggleProfil }: ProfileProps) {
+function Modification() {
+  const user = useSelector((state: any) => state.user);
   const navigate = useNavigate();
 
-  const handleProfileClick = () => {
-    navigate("/profile");
+  const [newUsername, setNewUsername] = useState("");
+  const [selectedFile, setSelectedFile] = useState<File | undefined>(undefined);
+  const [fileUrl, setFileUrl] = useState("");
+  const [uploadAvatar] = useUploadAvatarMutation();
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files?.[0] !== undefined) {
+      const allowedTypes = [
+        "image/png",
+        "image/jpeg",
+        "image/jpg",
+        "image/gif",
+      ];
+      if (!allowedTypes.includes(e.target.files[0].type)) {
+        alert("Only images are allowed");
+        setSelectedFile(undefined);
+        setFileUrl("");
+      } else if (e.target.files[0].size > 1024 * 1024 * 5) {
+        alert("Image is too large");
+        setSelectedFile(undefined);
+        setFileUrl("");
+      } else {
+        setSelectedFile(e.target.files[0]);
+        setFileUrl(URL.createObjectURL(e.target.files[0]));
+      }
+    }
   };
 
-  const user = useSelector((state: any) => state.user);
-  const urlAvatar = `http://${process.env.IP}:5000/api/avatar/` + user.username;
+  const saveChanges = () => {
+    const formData = new FormData();
+    if (selectedFile !== undefined) {
+      formData.append("username", user.username);
+      formData.append("file", selectedFile);
+      uploadAvatar(formData);
+    }
+    if (newUsername !== "" && newUsername.length < 10) {
+      webSocketManager.getSocket()?.emit('changeUsername', newUsername);
+      setNewUsername("");
+    }
+  };
+
+  const handleProfileClick = () => {
+    navigate(`/profile/${user.username}`);
+  };
+
+  const urlAvatar = `http://${process.env.REACT_APP_IP}:5000/api/avatar/${user.username}`;
 
   return (
     <div>
-      {/* <UploadButton /> */}
       <Box
         sx={{
           position: "fixed",
@@ -66,6 +105,13 @@ function Modification({ toggleProfil }: ProfileProps) {
             <TextField
               placeholder=". . ."
               size="small"
+              autoComplete='off'
+              value={newUsername}
+              onChange={(e) =>
+                e.target.value.length < 10
+                  ? setNewUsername(e.target.value)
+                  : null
+              }
               sx={{
                 backgroundColor: "#F8F8F8",
                 "& input": {
@@ -85,7 +131,7 @@ function Modification({ toggleProfil }: ProfileProps) {
             >
               <Grid item xs={6} sx={{ backgroundColor: "" }}>
                 <Avatar
-                  src={urlAvatar}
+                  src={fileUrl ? fileUrl : urlAvatar}
                   alt="User Avatar"
                   sx={{ marginLeft: "0.5em", width: "5em", height: "5em" }}
                 />
@@ -102,7 +148,10 @@ function Modification({ toggleProfil }: ProfileProps) {
                     borderWidth: "2px",
                     backgroundColor: "#F8F8F8",
                   }}
+                  component="label"
                 >
+                  <input type="file" onChange={handleFileChange}
+                  hidden />
                   Download new image
                 </Button>
               </Grid>
@@ -149,6 +198,7 @@ function Modification({ toggleProfil }: ProfileProps) {
                   borderColor: "red",
                 },
               }}
+              onClick={saveChanges}
             >
               Save
             </Button>

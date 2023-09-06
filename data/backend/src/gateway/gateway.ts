@@ -62,7 +62,7 @@ export class Gateway
         (blockedUser) => blockedUser.blockedUser.uid === user.uid,
       )
     ) {
-      this.server.emit(payload.source + 'OPTIONS', {
+      this.server.emit(client.id, {
         source: payload.source,
         target: payload.target,
         action: actionTypes.blockedmsg,
@@ -123,6 +123,7 @@ export class Gateway
       throw new WsException('Missing parameter');
     if (payload.access == accessStatus.protected && payload.password == null)
       throw new WsException('Missing parameter');
+
     const user = await this.userService.findOne(payload.source);
     if (!user) throw new WsException('Source user not found');
     const userStatus = await this.usersStatusService.getUserStatus(
@@ -133,9 +134,9 @@ export class Gateway
     let hasPassword = false;
     let role = userRole.none;
     if (payload.room.length > 10) payload.room = payload.room.slice(0, 10);
-
     // If room doesn't exist
-    if ((await this.roomService.findOne(payload.room)) == null) {
+    const room = await this.roomService.findOne(payload.room);
+    if (!room) {
       if (payload.access != accessStatus.protected)
         await this.roomService.createRoom(
           payload.room,
@@ -156,10 +157,11 @@ export class Gateway
       role = userRole.owner;
     } else {
       // If room exists
-      if (payload.access == accessStatus.protected) {
+
+      if (room.access == accessStatus.protected) {
         const roomPassword = await this.roomService.getPassword(payload.room);
         if (!(await comparePassword(payload.password, roomPassword))) {
-          this.server.emit(payload.source + 'OPTIONS', {
+          this.server.emit(client.id, {
             source: payload.source,
             target: payload.room,
             action: actionTypes.wrongpassword,
@@ -170,7 +172,7 @@ export class Gateway
       }
       const nbr = await this.roomService.addUser(payload.room, user, false);
       if (nbr == -1) {
-        this.server.emit(payload.source + 'OPTIONS', {
+        this.server.emit(client.id, {
           source: payload.source,
           target: payload.room,
           action: actionTypes.ban,
@@ -178,7 +180,7 @@ export class Gateway
         return;
       }
       if (nbr == accessStatus.private) {
-        this.server.emit(payload.source + 'OPTIONS', {
+        this.server.emit(client.id, {
           source: payload.source,
           target: payload.room,
           action: actionTypes.private,
@@ -193,13 +195,13 @@ export class Gateway
         action: actionTypes.join,
       });
     else
-      this.server.emit(payload.source + 'OPTIONS', {
+      this.server.emit(client.id, {
         source: payload.source,
         target: payload.room,
         action: actionTypes.mute,
       });
     if (hasPassword == true)
-      this.server.emit(payload.source + 'OPTIONS', {
+      this.server.emit(client.id, {
         source: payload.source,
         target: payload.room,
         action: actionTypes.rightpassword,
@@ -281,7 +283,10 @@ export class Gateway
       target: payload.room,
       action: actionTypes.left,
     });
-    this.server.emit(payload.target + 'OPTIONS', {
+    const targetStatus = await this.usersStatusService.getUserStatus(
+      payload.target,
+    );
+    this.server.emit(targetStatus.clientId, {
       source: payload.source,
       target: payload.room,
       action: actionTypes.kick,
@@ -320,7 +325,10 @@ export class Gateway
       target: payload.room,
       action: actionTypes.left,
     });
-    this.server.emit(payload.target + 'OPTIONS', {
+    const targetStatus = await this.usersStatusService.getUserStatus(
+      payload.target,
+    );
+    this.server.emit(targetStatus.clientId, {
       source: payload.source,
       target: payload.room,
       action: actionTypes.ban,
@@ -392,7 +400,10 @@ export class Gateway
     if ((await this.roomService.getRole(room, admin.uid)) == userRole.none)
       throw new WsException('Source user is not admin of the room');
     await this.roomService.addAdmin(payload.room, user);
-    this.server.emit(payload.target + 'OPTIONS', {
+    const targetStatus = await this.usersStatusService.getUserStatus(
+      payload.target,
+    );
+    this.server.emit(targetStatus.clientId, {
       source: payload.room,
       target: payload.target,
       action: actionTypes.admin,
@@ -422,7 +433,10 @@ export class Gateway
     if ((await this.roomService.getRole(room, admin.uid)) == userRole.none)
       throw new WsException('Source user is not admin of the room');
     await this.roomService.addToMutedList(payload.room, user);
-    this.server.emit(payload.target + 'OPTIONS', {
+    const targetStatus = await this.usersStatusService.getUserStatus(
+      payload.target,
+    );
+    this.server.emit(targetStatus.clientId, {
       source: payload.room,
       target: payload.target,
       action: actionTypes.mute,
@@ -453,7 +467,10 @@ export class Gateway
     if ((await this.roomService.getRole(room, admin.uid)) == userRole.none)
       throw new WsException('Source user is not admin of the room');
     await this.roomService.removeFromMutedList(payload.room, user);
-    this.server.emit(payload.target + 'OPTIONS', {
+    const targetStatus = await this.usersStatusService.getUserStatus(
+      payload.target,
+    );
+    this.server.emit(targetStatus.clientId, {
       source: payload.room,
       target: payload.target,
       action: actionTypes.unmute,
@@ -526,7 +543,6 @@ export class Gateway
     client: Socket,
     payload: { roomName: string; username: string; source: string },
   ) {
-    console.log(payload);
     if (
       payload.roomName == null ||
       payload.username == null ||
@@ -572,6 +588,85 @@ export class Gateway
     });
   }
 
+  @SubscribeMessage('askBeingFriend')
+  async askBeingFriend(
+    client: Socket,
+    payload: { source: string; target: string },
+  ) {
+    if (payload.source == null || payload.target == null)
+      throw new WsException('Missing parameters');
+    const sourceUser = await this.userService.findOne(payload.source);
+    if (!sourceUser) throw new WsException('Source user not found');
+    const targetUser = await this.userService.findOne(payload.target);
+    if (!targetUser) throw new WsException('Target user not found');
+    if (sourceUser.friends.some((friend) => friend.uid === targetUser.uid))
+      throw new WsException('Already friends');
+    if (
+      targetUser.blockedUsers.some(
+        (blockedUser) => blockedUser.blockedUser.uid === sourceUser.uid,
+      )
+    )
+      throw new WsException('Target user blocked source user');
+    if (
+      sourceUser.blockedUsers.some(
+        (blockedUser) => blockedUser.blockedUser.uid === targetUser.uid,
+      )
+    )
+      throw new WsException('Source user blocked target user');
+    const targetStatus = await this.usersStatusService.getUserStatus(
+      payload.target,
+    );
+    this.server.emit(targetStatus.clientId, {
+      source: payload.source,
+      target: payload.target,
+      action: actionTypes.askBeingFriend,
+    });
+  }
+
+  @SubscribeMessage('acceptBeingFriend')
+  async acceptBeingFriend(
+    client: Socket,
+    payload: { source: string; target: string },
+  ) {
+    if (payload.source == null || payload.target == null)
+      throw new WsException('Missing parameters');
+    const sourceUser = await this.userService.findOne(payload.source);
+    if (!sourceUser) throw new WsException('Source user not found');
+    const targetUser = await this.userService.findOne(payload.target);
+    if (!targetUser) throw new WsException('Target user not found');
+    if (sourceUser.friends.some((friend) => friend.uid === targetUser.uid))
+      throw new WsException('Already friends');
+    if (
+      targetUser.blockedUsers.some(
+        (blockedUser) => blockedUser.blockedUser.uid === sourceUser.uid,
+      )
+    )
+      throw new WsException('Target user blocked source user');
+    if (
+      sourceUser.blockedUsers.some(
+        (blockedUser) => blockedUser.blockedUser.uid === targetUser.uid,
+      )
+    )
+      throw new WsException('Source user blocked target user');
+    await this.userService.addFriend(sourceUser, targetUser);
+  }
+
+  @SubscribeMessage('removeFriend')
+  async removeFriend(
+    client: Socket,
+    payload: { source: string; target: string },
+  ) {
+    if (payload.source == null || payload.target == null)
+      throw new WsException('Missing parameters');
+    const sourceUser = await this.userService.findOne(payload.source);
+    if (!sourceUser) throw new WsException('Source user not found');
+    const targetUser = await this.userService.findOne(payload.target);
+    if (!targetUser) throw new WsException('Target user not found');
+    if (!sourceUser.friends.some((friend) => friend.uid === targetUser.uid))
+      throw new WsException('Not friends');
+    await this.userService.removeFriend(sourceUser, targetUser);
+  }
+
   @SubscribeMessage('matchmaking')
   async hangleMatchmaking(client: Socket, payload: { username: string }) {
     // const user = await this.userService.findOne(payload.username);
@@ -613,7 +708,26 @@ export class Gateway
     this.server.emit(payload.opponent, { mouseY: payload.y });
   }
 
-  async afterInit() {
+  @SubscribeMessage('changeUsername')
+  async changeUsername(client: Socket, payload: string) {
+    console.log('changeusername');
+    const userStatus = await this.usersStatusService.getUserStatusByClientId(
+      client.id,
+    );
+    if (!userStatus) return;
+    console.log(userStatus.username);
+    if (userStatus.clientId !== client.id) throw new WsException('Forbidden');
+    const user = await this.userService.findOne(userStatus.username);
+    if (!user) return;
+    await this.userService.changeUsername(user, payload);
+    await this.usersStatusService.changeUsername(userStatus.username, payload);
+    this.server.emit(client.id, {
+      newUsername: payload,
+      action: actionTypes.newUsername,
+    });
+  }
+
+  async afterInit(server: Server) {
     console.log('Init');
   }
 
@@ -622,11 +736,18 @@ export class Gateway
     await this.usersStatusService.setUserStatus(client.id, userStatus.offline);
   }
 
-  async handleConnection(client: Socket) {
+  async handleConnection(client: Socket, ...args: any[]) {
     console.log(`Client connected: ${client.id}`);
-    if (client.handshake.headers['authorization']?.split(' ')[1] === 'test')
-      // TODO remove and TODO test
-      return 'testUser';
+    console.log(client.handshake.headers.cookie);
+    // if (client.handshake.headers.cookie.split('=')[1] === 'test') {
+    //   // TODO remove when testUser removed
+    //   await this.usersStatusService.addUser(
+    //     client.id,
+    //     'testUser',
+    //     userStatus.online,
+    //   );
+    //   return;
+    // }
     const credential = client.handshake.headers.cookie
       ?.split(';')
       .find((cookie) => cookie.includes('connect.sid'));
@@ -638,13 +759,13 @@ export class Gateway
     const session = await this.userService.findOneSession(connectSid);
     if (!session) return;
     const parsedJson = JSON.parse(session.json);
-    const user = await this.userService.findOne(
+    const user = await this.userService.findOneByIntraUsername(
       parsedJson.passport.user.intraUsername,
     );
     if (!user) return;
     await this.usersStatusService.addUser(
       client.id,
-      parsedJson.passport.user.intraUsername,
+      user.username,
       userStatus.online,
     );
   }

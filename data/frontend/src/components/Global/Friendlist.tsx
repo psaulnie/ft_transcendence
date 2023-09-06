@@ -12,7 +12,6 @@ function Friendlist() {
 
   return (
     <div>
-      {/* <UploadButton /> */}
       <Box
         sx={{
           position: "fixed",

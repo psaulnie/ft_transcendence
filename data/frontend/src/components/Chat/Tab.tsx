@@ -4,7 +4,8 @@ import CreateChannel from "./CreateChannel";
 import JoinChannel from "./JoinChannel";
 import JoinDirectMessage from "./JoinDirectMessage";
 
-import { Box, Grid, Button } from "@mui/material";
+import { Box, Grid, Button,} from "@mui/material";
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import Drawer from "@mui/material/Drawer";
 import MenuIcon from "@mui/icons-material/Menu";
 
@@ -62,16 +63,8 @@ function Tab() {
             <CreateChannel />
           </Grid>
           <Grid container>
-            <Button
-              sx={{
-                color: "white",
-                marginLeft: "6em",
-                marginTop: "1.6em",
-                height: "1.8em",
-                fontSize: "12px",
-              }}
-            >
-              Cancel
+            <Button sx={{color:'white', marginLeft:'6em', marginTop:'1.6em', height:'1.8em', fontSize:'12px'}} onClick={() => setIsTabOpen(false)}>
+              <ArrowForwardIosIcon />
             </Button>
           </Grid>
         </Box>

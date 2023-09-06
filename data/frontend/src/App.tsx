@@ -1,6 +1,7 @@
 import "./App.css";
 
 import { useEffect } from "react";
+import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { login, setUsername } from "./store/user";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -28,6 +29,7 @@ const theme = createTheme({
 });
 
 function App() {
+  useSelector((state: any) => state.user);
   const dispatch = useDispatch();
 
   useEffect(() => {

@@ -81,6 +81,7 @@ export class AppController {
     if (body && file && body.username) {
       const user = await this.userService.findOne(body.username);
       if (context.headers.authorization != 'Bearer ' + user.accessToken)
+        // TODO replace with the connect.sid cookie (using usersStatus array?)
         return new HttpException('Unauthorized', 401);
       if (user) {
         console.log('upload');
@@ -95,6 +96,7 @@ export class AppController {
     if (!username) return new HttpException('Bad Request', 400);
     const user = await this.userService.findOne(username);
     if (context.headers.authorization != 'Bearer ' + user.accessToken)
+      // TODO replace with the connect.sid cookie (using usersStatus array?)
       return new HttpException('Unauthorized', 401);
     const url = await firstValueFrom(
       this.httpService
@@ -114,6 +116,21 @@ export class AppController {
       url.data.image.versions.small,
       true,
     );
+  }
+
+  @Get('/avatar/')
+  async getDefaultAvatar(
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<StreamableFile> {
+    const file = createReadStream(
+      join(process.cwd(), '../avatars/default.jpg'),
+    );
+    if (file) {
+      res.set({
+        'Content-Type': 'image/jpg',
+      });
+      return new StreamableFile(file);
+    } else throw new HttpException('Internal Server Error', 500);
   }
 
   @Get('/avatar/:username')

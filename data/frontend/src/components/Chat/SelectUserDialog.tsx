@@ -17,8 +17,6 @@ import { useSelector } from "react-redux";
 
 import { useGetInvitedUsersListQuery } from "../../store/api";
 
-import Error from "../Global/Error";
-
 type arg = {
   open: boolean;
   setOpen: any;
@@ -88,7 +86,7 @@ export default function SelectUserDialog({ open, setOpen, roomName }: arg) {
           options={usersList}
           sx={{ width: 300 }}
           renderInput={(params: any) => (
-            <TextField {...params} label="User" value={params} />
+            <TextField autoComplete='off' {...params} label="User" value={params} />
           )}
           value={selectedUser}
           onChange={updateUser}

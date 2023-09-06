@@ -1,8 +1,3 @@
-export enum sendMsgTypes {
-  msg = 0,
-  invite,
-}
-
 export enum actionTypes {
   join = 0,
   left,
@@ -21,4 +16,7 @@ export enum actionTypes {
   noPassword,
   invited,
   blockedmsg,
+  askBeingFriend,
+  acceptBeingFriend,
+  newUsername,
 }
