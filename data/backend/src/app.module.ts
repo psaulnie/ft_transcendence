@@ -28,6 +28,8 @@ import { HttpModule } from '@nestjs/axios';
 import { UsersStatusService } from './services/users.status.service';
 import { BlockedList } from './entities/blocked.list.entity';
 import { Statistics } from './entities/stats.entity';
+import { GameModule } from './game/game.module';
+import { GameService } from './services/game.service';
 import { ProfileController } from './profile.controller';
 
 @Module({
@@ -59,10 +61,12 @@ import { ProfileController } from './profile.controller';
     ]),
     CacheModule.register({ isGlobal: true }),
     HttpModule.register({}),
+    GameModule,
   ],
   controllers: [AppController, ChatController, ProfileController],
   providers: [
     UsersService,
+    GameService,
     UsersStatusService,
     AppService,
     RoomService,

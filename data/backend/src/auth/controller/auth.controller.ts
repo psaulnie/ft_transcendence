@@ -101,12 +101,11 @@ export class AuthController {
   @Get('testlogin')
   async testlogin(@Res() res: Response) {
     this.usersService.createUser('testUser');
-    const user = this.usersService.findOneByUsername('testUser');
     res.cookie('accessToken', 'test', {
       httpOnly: false,
       secure: false,
     }); // Set accessToken in cookie
-    res.cookie('username', (await user).username, {
+    res.cookie('username', 'testUser', {
       httpOnly: false,
       secure: false,
     }); // Set username in cookie

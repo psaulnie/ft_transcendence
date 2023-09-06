@@ -1,8 +1,8 @@
 .canvas {
-  width: 640px;
-  height: 425px;
-  margin: auto;
-  background-image: url("./background_v1.png");
-  /* background-color: black; */
-  border: 2px solid black;
+    width: 640px;
+    height: 425px;
+    margin: auto;
+    /* background-image: url("./background_v1.png"); */
+    background-color: black;
+    /* border: 2px solid black; */
 }

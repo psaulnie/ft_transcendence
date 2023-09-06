@@ -1,78 +1,35 @@
-import React, { useState, useEffect, useRef } from "react";
-// import Canvas from './Canvas';
-import "./Canvas.css";
-import webSocketManager from "../../webSocket";
-// import { exit } from 'process';
-// import { WidthFull } from '@mui/icons-material';
-// import Matchmaking from './Matchmaking';
-// import { StyledEngineProvider } from '@mui/material';
-// import { wait } from '@testing-library/user-event/dist/utils';
+import React, { useState, useEffect, useRef } from 'react';
+import './Canvas.css'
+import webSocketManager from '../../webSocket';
+import { Button } from '@mui/material';
 
-// interface InterfaceProps{
-//   WidthFrame:string;
-//   Heigth:string;
-// }
-
-export default function Canvas({
-  players,
-}: {
-  players: { 1: string; 2: string };
-}) {
+export default function Canvas({players, gameRoomId, setFoundUser} : {players: {1: string, 2: string}, gameRoomId: string, setFoundUser: any}) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [rectPositionP1, setRectPositionP1] = useState<{
-    x: number;
-    y: number;
-  }>({ x: 20, y: 0 });
-  const [rectPositionP2, setRectPositionP2] = useState<{
-    x: number;
-    y: number;
-  }>({ x: 0, y: 0 });
-  const [canvasSize, setCanvasSize] = useState<{
-    width: number;
-    height: number;
-  }>({ width: 640, height: 425 });
-  const [divSize, setDivSize] = useState<{ width: any; height: any }>({
-    width: 0,
-    height: 0,
-  });
-  const [setUp, setSetUp] = useState(false);
+  const [rectPositionP1, setRectPositionP1] = useState<{ x: number; y: number }>({ x: 5, y:  175});
+  const [rectPositionP2, setRectPositionP2] = useState<{ x: number; y: number }>({ x: 630, y:  175});
+  const [ballPosition, setBallPosition] = useState<{ x: number; y: number }>({ x: 320, y:  212});
+  const canvasSize = { width: 640, height: 425 }
   const rectWidth = 5;
-  const rectHeight = 50;
-  const canvas = canvasRef.current;
-  const ctx = canvas?.getContext("2d");
+  const rectHeight = 75;
+  const ballWidth = 10;
+  const player1 = players[1] < players[2] ? players[1] : players[2];
+  const player2 = players[1] < players[2] ? players[2] : players[1];
+  const maxScore = 5;
 
   useEffect(() => {
     const divID = "canvas";
     const divElement = document.getElementById(divID);
-    if (divElement) divElement.style.cursor = "none";
-    const divWidth = divElement!.offsetWidth; // Largeur de la div en pixels
-    const divHeight = divElement!.offsetHeight; // Hauteur de la div en pixels
-    setDivSize({ width: divWidth, height: divHeight });
-
-    setRectPositionP1({ x: 20, y: divHeight / 2 });
-    setRectPositionP2({ x: divHeight - 20, y: divHeight / 2 });
-
-    const canvas = canvasRef.current;
-    const ctx = canvas?.getContext("2d");
-    ctx!.fillStyle = "white";
-    ctx?.fillRect(
-      divWidth - 20 - rectWidth / 2,
-      divHeight / 2 - rectHeight / 2,
-      rectWidth,
-      rectHeight,
-    );
-
+    if (divElement)
+      divElement.style.cursor = "none";
+    
     const handleResize = () => {
-      let scale = 0;
+      let scale = window.innerWidth * 0.00075;
 
-      if (window.innerHeight * 0.0033 >= window.innerWidth * 0.00008) {
-        scale = window.innerWidth * 0.00075;
-        // console.log("width");
-      } else {
-        scale = window.innerHeight * 0.0033;
-        // console.log("Height");
-      }
-      const gameCanvas = document.querySelector(".canvas") as HTMLElement;
+      if (scale > 1)
+        scale = 1;
+      else if (scale < 0.666)
+        scale = 0.666;
+      const gameCanvas = document.querySelector('.canvas') as HTMLElement;
       if (gameCanvas) {
         gameCanvas.style.transform = `scale(${scale})`;
       }
@@ -85,106 +42,111 @@ export default function Canvas({
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  }, [ctx]);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-
-    const handleMouseMove = (event: MouseEvent) => {
-      const rect = canvas?.getBoundingClientRect();
-      // const mouseX = event.clientX - rect!.left;
-      const mouseY = event.clientY - rect!.top;
-      // console.log(mouseY);
-      // console.log(webSocket.connected);
-      webSocketManager
-        .getSocket()
-        .emit("game", { player: players[1], opponent: players[2], y: mouseY });
-      setRectPositionP1({ x: 20, y: mouseY });
-    };
-
-    canvas?.addEventListener("mousemove", handleMouseMove);
-
-    return () => {
-      canvas?.removeEventListener("mousemove", handleMouseMove);
-    };
-  }, [players]);
+  }, []);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      // a utilier pour KeyDown et utiliser le serv
-      // if (event.repeat)
-      //   return;
+      if (event.repeat)
+        return;
       const { key } = event;
-      const speed = 5;
 
-      if (key === "ArrowUp") {
-        setRectPositionP1((prevPosition) => ({
-          ...prevPosition,
-          y: prevPosition.y - speed,
-        }));
-      } else if (key === "ArrowDown") {
-        console.log("en bas");
-        // setRectPositionP1({x: 20, y: rectPositionP1.y + speed});
-        setRectPositionP1((prevPosition) => ({
-          ...prevPosition,
-          y: prevPosition.y + speed,
-        }));
+      if (key === 'ArrowUp' || key === 'w') {
+        webSocketManager.getSocket().emit("pressUp", {player: players[1], gameRoomId: gameRoomId});
+      }
+      if (key === 'ArrowDown' || key === 's') {
+        webSocketManager.getSocket().emit("pressDown", {player: players[1], gameRoomId: gameRoomId});
       }
     };
 
-    document.addEventListener("keydown", handleKeyDown);
+    const handleKeyUp = (event: KeyboardEvent) => {
+      if (event.repeat)
+        return;
+      const { key } = event;
+
+      if (key === 'ArrowUp' || key === 'w') {
+        webSocketManager.getSocket().emit("releaseUp", {player: players[1], gameRoomId: gameRoomId});
+      }
+      if (key === 'ArrowDown' || key === 's') {
+        webSocketManager.getSocket().emit("releaseDown", {player: players[1], gameRoomId: gameRoomId});
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('keyup', handleKeyUp);
 
     return () => {
-      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('keyup', handleKeyUp);
     };
-  }, []);
+  }, [gameRoomId, players]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext("2d");
 
-    const animate = () => {
-      ctx!.fillStyle = "white";
-      ctx?.clearRect(0, 0, canvas!.width / 2, canvas!.height);
-      ctx?.fillRect(
-        rectPositionP1.x - rectWidth / 2,
-        rectPositionP1.y - rectHeight / 2,
-        rectWidth,
-        rectHeight,
-      );
-      requestAnimationFrame(animate);
-    };
+		function process(value: any) {
+      if (value.coward !== null) {
+        ctx?.clearRect(0, 0, canvas!.width, canvas!.height);
+        console.log("il y a un lache");
+        ctx!.fillStyle = 'white';
+        ctx!.font = "40px serif";
+        ctx!.textAlign = "start";
+        ctx?.fillText(value.coward + " left the game", 150, 150);
+        return ; 
+      } else {
+        ctx!.fillStyle = 'white';
+        ctx!.font = "20px serif";
+        ctx?.clearRect(0, 0, canvas!.width, canvas!.height);
 
-    animate();
-  }, [rectPositionP1, divSize]);
+        setRectPositionP1((prevPosition) => ({ ...prevPosition, y: value.playerY}));
+        ctx?.fillRect(rectPositionP1.x, rectPositionP1.y, rectWidth, rectHeight);
+        setRectPositionP2((prevPosition) => ({ ...prevPosition, y: value.enemyY}));
+        ctx?.fillRect(rectPositionP2.x, rectPositionP2.y, rectWidth, rectHeight);  
 
-  useEffect(() => {
-    function process(value: any) {
-      ctx!.fillStyle = "white";
-      ctx?.clearRect(0, 0, canvas!.width, canvas!.height);
-      setRectPositionP2({ x: divSize.width - 20, y: value.mouseY });
-      ctx?.fillRect(
-        canvasSize.width - 20 - rectWidth / 2,
-        rectPositionP2.y - rectHeight / 2,
-        rectWidth,
-        rectHeight,
-      );
+        setBallPosition({x: value.ballX, y: value.ballY});
+        ctx?.fillRect(ballPosition.x, ballPosition.y, ballWidth, ballWidth);
+
+        ctx!.textAlign = "start";
+        ctx?.fillText(player1 + ": " + value.p1Score, 40, 30);
+        ctx!.textAlign = "end";
+        ctx?.fillText(player2 + ": " + value.p2Score, 600, 30);
+
+        if (value.p1Score === maxScore) {
+          endMatch(player1);
+        } else if (value.p2Score === maxScore) {
+          endMatch(player2);
+        }
+      }
     }
+    webSocketManager.getSocket().on("game" + gameRoomId, process);
+		return () => {
+			webSocketManager.getSocket().off("game" + gameRoomId, process);
+		};
+  }, [rectPositionP1, rectPositionP2, ballPosition, gameRoomId, player1, player2]);
 
-    webSocketManager.getSocket().on(players[1], process);
-    return () => {
-      webSocketManager.getSocket().off(players[1], process);
-    };
-  }, [rectPositionP2.y, canvas, ctx, canvasSize, players, divSize]);
+  function endMatch(name: string) {
+    const canvas = canvasRef.current;
+    const ctx = canvas?.getContext("2d");
+
+    ctx!.fillStyle = 'white';
+    ctx!.font = "40px serif";
+    ctx!.textAlign = "start";
+    ctx?.fillText(name + " Win the game", 150, 150);
+  }
+
+  function quitGame(gameRoomId: string) {
+    setFoundUser(false);
+    const name = players[1];
+    console.log(name);
+    webSocketManager.getSocket().emit("leaveGame" , { gameRoomId, coward:name });
+    console.log("bah alors ca veux leave?", players[1]);
+  }
 
   return (
-    <div className="canvas" id="canvas">
-      <canvas
-        ref={canvasRef}
-        width={canvasSize.width}
-        height={canvasSize.height}
-        style={{ display: "block" }}
-      />
+    <div className='canvas' id='canvas'>
+      <canvas ref={canvasRef} width={canvasSize.width} height={canvasSize.height}
+              style={{ display: 'block'}}/>
+      <Button onClick={() => quitGame(gameRoomId)}>Leave game</Button>
     </div>
   );
-}
+};

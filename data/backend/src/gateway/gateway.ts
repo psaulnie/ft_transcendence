@@ -18,6 +18,7 @@ import { accessStatus, userRole } from 'src/chatModule/chatEnums';
 import { hashPassword, comparePassword } from './hashPasswords';
 import { UsersStatusService } from 'src/services/users.status.service';
 import { userStatus } from 'src/users/userStatus';
+import { GameService } from 'src/services/game.service';
 
 @WebSocketGateway({
   cors: { origin: '*' },
@@ -32,6 +33,7 @@ export class Gateway
     private roomService: RoomService,
     private userService: UsersService,
     private usersStatusService: UsersStatusService,
+    private gameService: GameService,
   ) {
     this.matchmakingQueue = [];
   }
@@ -667,22 +669,75 @@ export class Gateway
     await this.userService.removeFriend(sourceUser, targetUser);
   }
 
+  /*
+----------------------------GAME---------------------------------
+*/
+
   @SubscribeMessage('matchmaking')
-  async hangleMatchmaking(client: Socket, payload: { username: string }) {
+  async handleMatchmaking(client: Socket, payload: { username: string }) {
     // const user = await this.userService.findOne(payload.username);
     // if (!user)
     // throw new WsException("User not found");
+    const ticServ = 16;
     if (this.matchmakingQueue.find((name: string) => name == payload.username))
       throw new WsException('Already in Matchmaking');
     this.matchmakingQueue.push(payload.username);
     while (this.matchmakingQueue.length >= 2) {
       const player1 = this.matchmakingQueue[0];
       const player2 = this.matchmakingQueue[1];
-      this.server.emit('matchmaking' + player1, { opponent: player2 });
-      this.server.emit('matchmaking' + player2, { opponent: player1 });
+      const user1 = await this.userService.findOne(player1);
+      const user2 = await this.userService.findOne(player2);
+      if (!user1 || !user2) throw new WsException('User not found');
+      const gameRoomId =
+        player1 < player2
+          ? this.gameService.newGame(user1, user2)
+          : this.gameService.newGame(user2, user1);
+      this.server.emit('matchmaking' + player1, {
+        opponent: player2,
+        gameRoomId: gameRoomId,
+      });
+      this.server.emit('matchmaking' + player2, {
+        opponent: player1,
+        gameRoomId: gameRoomId,
+      });
       this.matchmakingQueue.splice(this.matchmakingQueue.indexOf(player1), 1);
       this.matchmakingQueue.splice(this.matchmakingQueue.indexOf(player2), 1);
+
+      setInterval(() => {
+        this.gameService.movePlayer(gameRoomId);
+      }, ticServ);
+      setInterval(() => {
+        const gameRoom = this.gameService.getGameRoom(gameRoomId);
+        if (!gameRoom) return;
+        this.server.emit('game' + gameRoomId, {
+          playerY: gameRoom.player1.Y,
+          enemyY: gameRoom.player2.Y,
+          ballX: gameRoom.ballPos.x,
+          ballY: gameRoom.ballPos.y,
+          p1Score: gameRoom.player1.score,
+          p2Score: gameRoom.player2.score,
+          coward: gameRoom.coward,
+        });
+      }, ticServ);
     }
+  }
+
+  @SubscribeMessage('leaveGame')
+  async leaveGame(
+    client: Socket,
+    payload: { gameRoomId: string; coward: string },
+  ) {
+    console.log('dans gateway leaveGame', payload.gameRoomId, payload.coward);
+    this.gameService.leaveGame(payload.gameRoomId, payload.coward);
+  }
+
+  @SubscribeMessage('pressUp')
+  async pressUp(
+    client: Socket,
+    payload: { player: string; gameRoomId: string },
+  ) {
+    // console.log("press UP");
+    this.gameService.pressUp(payload.player, payload.gameRoomId);
   }
 
   @SubscribeMessage('cancelMatchmaking')
@@ -727,6 +782,37 @@ export class Gateway
     });
   }
 
+  @SubscribeMessage('pressDown')
+  async pressDown(
+    client: Socket,
+    payload: { player: string; gameRoomId: string },
+  ) {
+    // console.log("press Down");
+    this.gameService.pressDown(payload.player, payload.gameRoomId);
+  }
+
+  @SubscribeMessage('releaseUp')
+  async releaseUp(
+    client: Socket,
+    payload: { player: string; gameRoomId: string },
+  ) {
+    // console.log("release KEY");
+    this.gameService.releaseUp(payload.player, payload.gameRoomId);
+  }
+
+  @SubscribeMessage('releaseDown')
+  async releaseDown(
+    client: Socket,
+    payload: { player: string; gameRoomId: string },
+  ) {
+    // console.log("release KEY");
+    this.gameService.releaseDown(payload.player, payload.gameRoomId);
+  }
+
+  /*
+-----------------------------------------------------------------
+*/
+
   async afterInit(server: Server) {
     console.log('Init');
   }
@@ -734,20 +820,22 @@ export class Gateway
   async handleDisconnect(client: Socket) {
     console.log(`Client disconnected: ${client.id}`);
     await this.usersStatusService.setUserStatus(client.id, userStatus.offline);
+    // TODO call function leaveGame if in game
   }
 
   async handleConnection(client: Socket, ...args: any[]) {
     console.log(`Client connected: ${client.id}`);
     console.log(client.handshake.headers.cookie);
-    // if (client.handshake.headers.cookie.split('=')[1] === 'test') {
-    //   // TODO remove when testUser removed
-    //   await this.usersStatusService.addUser(
-    //     client.id,
-    //     'testUser',
-    //     userStatus.online,
-    //   );
-    //   return;
-    // }
+    if (client.handshake.headers.cookie.split('=')[1] === 'test') {
+      // TODO remove when testUser removed
+      console.log("A")
+      await this.usersStatusService.addUser(
+        client.id,
+        'testUser',
+        userStatus.online,
+      );
+      return;
+    }
     const credential = client.handshake.headers.cookie
       ?.split(';')
       .find((cookie) => cookie.includes('connect.sid'));
