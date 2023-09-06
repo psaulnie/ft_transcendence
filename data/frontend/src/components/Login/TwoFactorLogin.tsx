@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router';
 
 function TwoFactorLogin() {
   const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
-  const [twoFactorTurnOnCode, setTwoFactorTurnOnCode] = useState("");
-  const [twoFactorAuthCode, setTwoFactorAuthCode] = useState("");
+  const [twoFactorTurnOnCode, setTwoFactorTurnOnCode] = useState('');
+  const [twoFactorAuthCode, setTwoFactorAuthCode] = useState('');
   const [error, setError] = useState<boolean>(false);
   const navigate = useNavigate();
   const [isTwoFactorEnabled, setIsTwoFactorEnabled] = useState<boolean | null>(
@@ -14,9 +14,9 @@ function TwoFactorLogin() {
   useEffect(() => {
     async function checkTwoFactorAuthState() {
       try {
-        const response = await fetch("http://localhost:5000/2fa/getState", {
+        const response = await fetch(`http://${process.env.REACT_APP_IP}:5000/2fa/getState`, {
           method: 'post',
-          credentials: "include",
+          credentials: 'include',
           headers: {
             'Content-Type': 'application/json',
           },
@@ -25,12 +25,12 @@ function TwoFactorLogin() {
         if (response.ok && data === true) {
           checkTwoFactorStatus();
         } else if (response.ok && data === false) {
-          navigate("/home");
+          navigate('/home');
         } else {
           console.error('Failed to fetch state of 2FA');
         }
-      } catch (error: any) {
-        console.error('Error: ', error.message());
+      } catch (error) {
+        console.error('Error: ', error);
       }
     }
     checkTwoFactorAuthState();
@@ -38,81 +38,81 @@ function TwoFactorLogin() {
 
   async function checkTwoFactorStatus() {
     try {
-      const response = await fetch("http://localhost:5000/2fa/status", {
-        credentials: "include",
+      const response = await fetch(`http://${process.env.REACT_APP_IP}:5000/2fa/status`, {
+        credentials: 'include',
       });
       const data = await response.json();
       setIsTwoFactorEnabled(data);
       if (!data) {
         fetchQrCode();
       }
-    } catch (error: any) {
-        console.error("Error:", error.message);
+    } catch (error) {
+      console.error('Error: ', error);
     }
   }
 
   async function fetchQrCode() {
     try {
-      const response = await fetch("http://localhost:5000/2fa/generate", {
-        method: "post",
-        credentials: "include",
+      const response = await fetch(`http://${process.env.REACT_APP_IP}:5000/2fa/generate`, {
+        method: 'post',
+        credentials: 'include',
         headers: {
-          "Content-Type": "image/png",
+          'Content-Type': 'image/png',
         },
       });
       const data = await response.blob();
       const url = URL.createObjectURL(data);
       setQrCodeUrl(url);
-    } catch (error: any) {
-        console.error("Error:", error.message);
+    } catch (error) {
+      console.error('Error: ', error);
     }
   }
 
   async function validateTwoFactorTurnOnCode() {
     try {
-      const response = await fetch("http://localhost:5000/2fa/turn-on", {
-        method: "post",
-        credentials: "include",
+      const response = await fetch(`http://${process.env.REACT_APP_IP}:5000/2fa/turn-on`, {
+        method: 'post',
+        credentials: 'include',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({ twoFactorAuthCode: twoFactorTurnOnCode }),
       });
-
-      if (response.ok) {
-        console.log("2FA is turned on.");
+      const data = await response.json();
+      if (response.ok && data.status !== 'codeError') {
+        console.log('2FA is turned on.');
         setError(false);
-        navigate("/home");
+        navigate('/home');
       } else {
-        console.log("Wrong authentication code");
+        console.log('Wrong authentication code');
         setError(true);
       }
-    } catch (error: any) {
-        console.error("Error:", error.message);
+    } catch (error) {
+      console.error('Error: ', error);
     }
   }
 
   async function validateTwoFactorAuthCode() {
     try {
-      const response = await fetch("http://localhost:5000/2fa/authenticate", {
-        method: "post",
-        credentials: "include",
+      const response = await fetch(`http://${process.env.REACT_APP_IP}:5000/2fa/authenticate`, {
+        method: 'post',
+        credentials: 'include',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({ twoFactorAuthCode: twoFactorAuthCode }),
       });
       const data = await response.json();
       if (response.ok && data.status !== 'codeError') {
-        console.log("2FA authentication successfully.");
+        console.log('2FA authentication successfully.');
         setError(false);
-        navigate("/home");
+        navigate('/home');
       } else {
-        console.log("Wrong authentication code");
+        console.log('Wrong authentication code');
         setError(true);
       }
-    } catch (error: any) {
-        console.error("Error:", error.message);
+    } catch (error) {
+      console.error('Error: ', error);
     }
   }
 
@@ -124,10 +124,10 @@ function TwoFactorLogin() {
         <>
           <div>
             <input
-              type="text"
+              type='text'
               value={twoFactorAuthCode}
               onChange={(e) => setTwoFactorAuthCode(e.target.value)}
-              placeholder="Enter validation code"
+              placeholder='Enter validation code'
             />
             <button onClick={validateTwoFactorAuthCode}>Validate</button>
           </div>
@@ -137,15 +137,15 @@ function TwoFactorLogin() {
           <p>Scan the QrCode to obtain a validation code</p>
           <div>
             {qrCodeUrl && (
-              <img src={qrCodeUrl} alt="QR Code" id="qrCodeImage" />
+              <img src={qrCodeUrl} alt='QR Code' id='qrCodeImage' />
             )}
           </div>
           <div>
             <input
-              type="text"
+              type='text'
               value={twoFactorTurnOnCode}
               onChange={(e) => setTwoFactorTurnOnCode(e.target.value)}
-              placeholder="Enter validation code"
+              placeholder='Enter validation code'
             />
             <button onClick={validateTwoFactorTurnOnCode}>Validate</button>
           </div>

@@ -7,6 +7,7 @@ import {
 import { User } from '../../entities';
 import { HttpService as NestHttpService } from '@nestjs/axios';
 import { UsersService } from 'src/users/users.service';
+import RequestWithUser from '../service/requestWithUser.interface';
 
 @Controller('auth')
 export class AuthController {
@@ -61,9 +62,20 @@ export class AuthController {
    */
   @Get('logout')
   @UseGuards(AuthenticatedGuard)
-  async logout(@Req() req: Request, @Res() res: Response) {
+  async logout(
+    @Req() request: RequestWithUser,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
     console.log('LOGOUT CONTROLLER');
 
+    // Set 2FA authenticated to false in DB to indicate user is not connected anymore
+    await this.usersService.setIsTwoFactorAuthenticated(
+      request.user.uid,
+      false,
+    );
+
+    // Logout session
     await new Promise<void>((resolve, reject) => {
       req.logOut((err: any) => {
         if (err) reject(err);
@@ -71,6 +83,7 @@ export class AuthController {
       });
     });
 
+    // Destroy session
     await new Promise<void>((resolve, reject) => {
       req.session.destroy((err) => {
         if (err) reject(err);

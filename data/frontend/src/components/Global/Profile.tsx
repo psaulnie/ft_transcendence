@@ -9,7 +9,7 @@ interface ProfileProps {
 function Profile({ toggleProfil }: ProfileProps) {
   const user = useSelector((state: any) => state.user);
   const navigate = useNavigate();
-  const urlAvatar = "http://localhost:5000/api/avatar/" + user.username;
+  const urlAvatar = `http://${process.env.IP}:5000/api/avatar/` + user.username;
   const handleAchievementsClick = () => {
     navigate("/achievements");
   };

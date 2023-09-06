@@ -21,7 +21,7 @@ function Modification({ toggleProfil }: ProfileProps) {
   };
 
   const user = useSelector((state: any) => state.user);
-  const urlAvatar = "http://localhost:5000/api/avatar/" + user.username;
+  const urlAvatar = `http://${process.env.IP}:5000/api/avatar/` + user.username;
 
   return (
     <div>

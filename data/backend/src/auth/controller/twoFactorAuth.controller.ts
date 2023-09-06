@@ -7,14 +7,13 @@ import {
   Post,
   Req,
   Res,
-  UnauthorizedException,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { TwoFactorAuthService } from '../service/twoFactorAuth.service';
 import { Response } from 'express';
 import RequestWithUser from '../service/requestWithUser.interface';
-import { AuthenticatedGuard } from '../guards/intraAuthGuard.service';
+import { IntraAuthenticatedGuard } from '../guards/intraAuthGuard.service';
 import { UsersService } from '../../users/users.service';
 import { TwoFactorAuthCodeDto } from '../dto/twoFactorAuthCode.dto';
 
@@ -28,14 +27,14 @@ export class TwoFactorAuthController {
 
   @Post('getState')
   @HttpCode(200)
-  @UseGuards(AuthenticatedGuard)
+  @UseGuards(IntraAuthenticatedGuard)
   async getTwoFactorAuthState(@Req() request: RequestWithUser) {
     return await this.usersService.getTwoFactorAuthState(request.user.uid);
   }
 
   @Post('changeState')
   @HttpCode(200)
-  @UseGuards(AuthenticatedGuard)
+  @UseGuards(IntraAuthenticatedGuard)
   async changeTwoFactorAuthState(
     @Req() request: RequestWithUser,
     @Body() { twoFactorAuthState },
@@ -55,7 +54,7 @@ export class TwoFactorAuthController {
   }
 
   @Post('generate')
-  @UseGuards(AuthenticatedGuard)
+  @UseGuards(IntraAuthenticatedGuard)
   async register(@Res() response: Response, @Req() request: RequestWithUser) {
     const { otpAuthUrl } =
       await this.twoFactorAuthService.generateTwoFactorAuthenticationSecret(
@@ -76,7 +75,7 @@ export class TwoFactorAuthController {
    */
   @Post('turn-on')
   @HttpCode(200)
-  @UseGuards(AuthenticatedGuard)
+  @UseGuards(IntraAuthenticatedGuard)
   async turnOnTwoFactorAuthentication(
     @Req() request: RequestWithUser,
     @Body() { twoFactorAuthCode }: TwoFactorAuthCodeDto,
@@ -86,14 +85,19 @@ export class TwoFactorAuthController {
       request.user,
     );
     if (!isCodeValid) {
-      throw new UnauthorizedException('Wrong authentication code');
+      return {
+        status: 'codeError',
+        message: 'Wrong authentication code',
+      };
     }
     await this.usersService.turnOnTwoFactorAuth(request.user.uid);
+    await this.usersService.setIsTwoFactorAuthenticated(request.user.uid, true);
+    return { status: 'success', message: '2FA is turned on.' };
   }
 
   @Get('status')
   @HttpCode(200)
-  @UseGuards(AuthenticatedGuard)
+  @UseGuards(IntraAuthenticatedGuard)
   async status(@Req() request: RequestWithUser) {
     return await this.twoFactorAuthService.isTwoFactorAuthTurnedOn(
       request.user,
@@ -102,7 +106,7 @@ export class TwoFactorAuthController {
 
   @Post('authenticate')
   @HttpCode(200)
-  @UseGuards(AuthenticatedGuard)
+  @UseGuards(IntraAuthenticatedGuard)
   async authenticate(
     @Req() request: RequestWithUser,
     @Body() { twoFactorAuthCode }: TwoFactorAuthCodeDto,
@@ -117,7 +121,7 @@ export class TwoFactorAuthController {
         message: 'Wrong authentication code',
       };
     }
-
+    await this.usersService.setIsTwoFactorAuthenticated(request.user.uid, true);
     return request.user;
   }
 }

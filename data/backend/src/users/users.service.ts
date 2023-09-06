@@ -137,6 +137,23 @@ export class UsersService {
     });
   }
 
+  async isTwoFactorAuthenticated(userId: number): Promise<boolean> {
+    const user = await this.usersRepository.findOne({
+      where: { uid: userId },
+      select: ['isTwoFactorAuthenticated'],
+    });
+    if (!user) {
+      throw new Error('User not found');
+    }
+    return user.isTwoFactorAuthenticated;
+  }
+
+  async setIsTwoFactorAuthenticated(userId: number, value: boolean) {
+    return await this.usersRepository.update(userId, {
+      isTwoFactorAuthenticated: value,
+    });
+  }
+
   async setTwoFactorAuthSecret(secret: string, userId: number) {
     return await this.usersRepository.update(userId, {
       twoFactorAuthSecret: secret,

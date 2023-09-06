@@ -39,13 +39,16 @@ export class User {
   refreshToken: string;
 
   @Column({ default: false })
-  public twoFactorAuthState: boolean;
+  twoFactorAuthState: boolean;
 
   @Column({ nullable: true })
-  public twoFactorAuthSecret?: string;
+  twoFactorAuthSecret?: string;
 
   @Column({ default: false })
-  public isTwoFactorAuthEnabled: boolean;
+  isTwoFactorAuthEnabled: boolean;
+
+  @Column({ default: false })
+  isTwoFactorAuthenticated: boolean;
 
   @OneToMany(() => BlockedList, (user) => user.user)
   blockedUsers: BlockedList[];

@@ -1,5 +1,6 @@
 import { ExecutionContext, Injectable, CanActivate } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { UsersService } from '../../users/users.service';
 
 @Injectable()
 export class IntraAuthGuard extends AuthGuard('42') {
@@ -23,17 +24,53 @@ export class IntraAuthGuard extends AuthGuard('42') {
  */
 @Injectable()
 export class AuthenticatedGuard implements CanActivate {
+  constructor(private readonly usersService: UsersService) {}
+
   async canActivate(context: ExecutionContext): Promise<boolean> {
     console.log('AUTHENTICATED GUARD');
     const req = context.switchToHttp().getRequest();
-    console.log('‣ Session:', req.session);
-    console.log('‣ Cookies received:', req.cookies);
     console.log('‣ isAuthenticated: ', req.isAuthenticated());
     // TODO REMOVE -------
     const [type, token] = req.headers['authorization']?.split(' ') ?? [];
     if (type && type === 'Bearer' && token && token === 'test') {
       return true;
     }
+    // ------------------
+
+    if (!req.isAuthenticated()) {
+      return false;
+    }
+
+    // For 2FA -----
+    const isTwoFactorAuthOn = await this.usersService.getTwoFactorAuthState(
+      req.user.uid,
+    );
+    if (isTwoFactorAuthOn) {
+      const isTwoFactorAuthenticated =
+        await this.usersService.isTwoFactorAuthenticated(req.user.uid);
+      if (!isTwoFactorAuthenticated) {
+        return false;
+      }
+    }
+    // -------------
+
+    return true;
+  }
+}
+
+@Injectable()
+export class IntraAuthenticatedGuard implements CanActivate {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    console.log('INTRA AUTHENTICATED GUARD');
+    const req = context.switchToHttp().getRequest();
+    console.log('‣ isAuthenticated: ', req.isAuthenticated());
+    // TODO REMOVE -------
+    const [type, token] = req.headers['authorization']?.split(' ') ?? [];
+    if (type && type === 'Bearer' && token && token === 'test') {
+      return true;
+    }
+    // ------------------
+
     return req.isAuthenticated();
   }
 }
