@@ -92,8 +92,10 @@ export default function PasswordDialog({
     >
       <DialogTitle>Enter password:</DialogTitle>
       <TextField
+        autoComplete='off'
         helperText="Enter password"
         label="Password"
+        type="password"
         value={password}
         onChange={updatePassword}
       />

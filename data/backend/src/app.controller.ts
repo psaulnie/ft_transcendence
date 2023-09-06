@@ -115,7 +115,22 @@ export class AppController {
       true,
     );
   }
-  
+
+  @Get('/avatar/')
+  async getDefaultAvatar(
+    @Res({ passthrough: true }) res: Response,
+    ): Promise<StreamableFile> {
+    const file = createReadStream(
+      join(process.cwd(), '../avatars/default.jpg'),
+    );
+    if (file) {
+      res.set({
+        'Content-Type': 'image/jpg',
+      });
+      return new StreamableFile(file);
+    } else throw new HttpException('Internal Server Error', 500);
+  }
+
   @Get('/avatar/:username')
   async getAvatar(
     @Param('username') username: string,
