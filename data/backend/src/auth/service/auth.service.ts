@@ -8,11 +8,15 @@ import { HttpModule, HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { catchError } from 'rxjs';
 import { UnauthorizedException } from '@nestjs/common';
+import { Statistics } from 'src/entities/stats.entity';
+import { Achievements } from 'src/entities/achievements.entity';
 
 @Injectable()
 export class AuthService implements AuthProvider {
   constructor(
     @InjectRepository(User) private userRepo: Repository<User>,
+    @InjectRepository(Statistics) private statsRepo: Repository<Statistics>,
+    @InjectRepository(Achievements) private achievementsRepo: Repository<Achievements>,
     private readonly httpService: HttpService,
   ) {}
   async validateUser(details: UserDetails) {
@@ -66,7 +70,16 @@ export class AuthService implements AuthProvider {
         ),
     );
     details.urlAvatar = url.data.image.versions.small;
+
+    const achievements = new Achievements();
+    const statistics = new Statistics();
+
     const user = this.userRepo.create(details);
+    user.achievements = achievements;
+    user.statistics = statistics;
+    this.achievementsRepo.save(achievements);
+    this.statsRepo.save(statistics);
+    console.log("A");
     return this.userRepo.save(user);
   }
 

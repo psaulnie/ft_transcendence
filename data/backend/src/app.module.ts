@@ -29,6 +29,7 @@ import { UsersStatusService } from './services/users.status.service';
 import { FriendList } from './entities/friend.list.entity';
 import { BlockedList } from './entities/blocked.list.entity';
 import { Statistics } from './entities/stats.entity';
+import { ProfileController } from './profile.controller';
 
 @Module({
   imports: [
@@ -61,7 +62,7 @@ import { Statistics } from './entities/stats.entity';
     CacheModule.register({ isGlobal: true }),
     HttpModule.register({}),
   ],
-  controllers: [AppController, ChatController],
+  controllers: [AppController, ChatController, ProfileController],
   providers: [
     UsersService,
     UsersStatusService,

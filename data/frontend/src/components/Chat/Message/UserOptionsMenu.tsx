@@ -6,6 +6,7 @@ import { addRoom } from '../../../store/rooms';
 import { userRole } from '../chatEnums';
 import { useEffect, useState } from 'react';
 import { useGetUserFriendsListQuery } from '../../../store/api';
+import { useNavigate } from 'react-router';
 
 type arg = {
 	cUser: {username: string, role: userRole, isMuted: boolean},
@@ -19,6 +20,7 @@ type arg = {
 
 export default function UserOptionsMenu({ cUser, role, roomName, contextMenu, setContextMenu, showAdminOpt, friendList }: arg) {
 	const user = useSelector((state: any) => state.user);
+	const navigate = useNavigate();
 	const dispatch = useDispatch();
 
 	const handleClose = () => {
@@ -75,7 +77,7 @@ export default function UserOptionsMenu({ cUser, role, roomName, contextMenu, se
 				{
 					user.username !== cUser.username ? (
 						<span>
-							<MenuItem>See profile</MenuItem>
+							<MenuItem onClick={() => { navigate(`/profile/${cUser.username}`) }}>See profile</MenuItem>
 							{
 								(friendList.data?.find((element: string) => element === cUser.username) ? false : true) ?
 									<MenuItem onClick={() => { webSocketManager.getSocket()?.emit("askBeingFriend", {source: user.username, target: cUser.username})}}>Add as friend</MenuItem>

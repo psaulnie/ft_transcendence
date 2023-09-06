@@ -48,26 +48,21 @@ export class User {
   @JoinTable()
   friends: User[];
 
-  @ManyToOne(() => MatchHistory, (matchHistory) => matchHistory.id, {
-    nullable: true,
-  })
-  matchHistory: MatchHistory;
+  @OneToMany(() => MatchHistory, (matchHistory) => matchHistory.user1)
+  matchHistory: MatchHistory[];
 
-  @OneToOne(() => Statistics, (statistics) => statistics.user, {
-    nullable: true,
-  })
-  @JoinColumn({ name: 'statistics_user', referencedColumnName: 'user' })
+  @OneToOne(() => Statistics)
+  @JoinColumn()
   statistics: Statistics;
 
-  @OneToOne(() => Achievements, (achievements) => achievements.user, {
-    nullable: true,
-  })
-  @JoinColumn({ name: 'achievements_user', referencedColumnName: 'user' })
+  @OneToOne(() => Achievements)
+  @JoinColumn()
   achievements: Achievements;
 
   @AfterLoad()
   async nullCheck() {
     if (!this.blockedUsers) this.blockedUsers = [];
     if (!this.friends) this.friends = [];
+    if (!this.matchHistory) this.matchHistory = [];
   }
 }

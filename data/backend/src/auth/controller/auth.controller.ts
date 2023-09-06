@@ -89,7 +89,7 @@ export class AuthController {
     res.clearCookie('connect.sid');
 
     // Redirect on login page
-    res.redirect('http://localhost:3000/login');
+    res.redirect(`http://${process.env.IP}:3000/login`);
   }
 
   @Get('testlogin')

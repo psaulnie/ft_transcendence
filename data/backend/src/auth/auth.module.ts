@@ -9,6 +9,9 @@ import { HttpModule } from '@nestjs/axios';
 import { UsersService } from 'src/users/users.service';
 import { BlockedList } from 'src/entities/blocked.list.entity';
 import { FriendList } from 'src/entities/friend.list.entity';
+import { Statistics } from 'src/entities/stats.entity';
+import { MatchHistory } from 'src/entities/matchHistory.entity';
+import { Achievements } from 'src/entities/achievements.entity';
 
 @Module({
   controllers: [AuthController],
@@ -22,7 +25,7 @@ import { FriendList } from 'src/entities/friend.list.entity';
     UsersService,
   ],
   imports: [
-    TypeOrmModule.forFeature([User, BlockedList, FriendList, TypeormSession]),
+    TypeOrmModule.forFeature([User, BlockedList, FriendList, Statistics, Achievements, MatchHistory, TypeormSession]),
     HttpModule.register({}),
   ],
 })

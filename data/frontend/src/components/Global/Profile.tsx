@@ -1,23 +1,24 @@
 import { Box, Grid, Button, Avatar, Typography, Paper } from "@mui/material";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { useGetUserProfileQuery } from "../../store/api";
 
-interface ProfileProps {
-  toggleProfil: () => void;
-}
 
-function Profile({ toggleProfil }: ProfileProps) {
+function Profile() {
+  const { username } = useParams();
   const user = useSelector((state: any) => state.user);
-  const urlAvatar = "http://localhost:5000/api/avatar/" + user.username;
-
-  const handleButtonClick = () => {
-    toggleProfil();
-  };
+  const urlAvatar = `http://${process.env.REACT_APP_IP}:5000/api/avatar/${username}`;
 
   const navigate = useNavigate();
 
+  const {
+    data: userProfile,
+    isLoading,
+    isError,
+  } = useGetUserProfileQuery({username});
+
   const handleAchievementsClick = () => {
-    navigate("/achievements");
+    navigate(`/profile/${username}/achievements`);
   };
 
   const handleFriendsClick = () => {
@@ -25,13 +26,16 @@ function Profile({ toggleProfil }: ProfileProps) {
   };
 
   const handleModificationClick = () => {
-    navigate("/Modification");
+    navigate(`/edit`);
   };
 
-  return (
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error</div>; // TODO handle error
+  if (userProfile.exist === false)
+    return <Navigate to="/home" />
+
+    return (
     <div>
-      <h1>Profile</h1>
-      {/* <UploadButton /> */}
       <Box
         sx={{
           position: "fixed",
@@ -76,13 +80,13 @@ function Profile({ toggleProfil }: ProfileProps) {
                   variant="h6"
                   sx={{ fontSize: 30, fontWeight: "bold", color: "black" }}
                 >
-                  {user.username}
+                  {username}
                 </Typography>
                 <Typography
                   variant="h6"
                   sx={{ fontSize: 30, fontWeight: "bold", color: "black" }}
                 >
-                  Rang:🥇
+                  Rank: {userProfile.rank}
                 </Typography>
               </Grid>
             </Grid>
@@ -122,12 +126,12 @@ function Profile({ toggleProfil }: ProfileProps) {
             >
               <Grid item xs={6}>
                 <Typography variant="h6" sx={{ fontSize: 24, color: "black" }}>
-                  Wins: 4
+                  Wins: {userProfile.wins}
                 </Typography>
               </Grid>
               <Grid item xs={6}>
                 <Typography variant="h6" sx={{ fontSize: 24, color: "black" }}>
-                  Loses: 2
+                  Loses: {userProfile.loses}
                 </Typography>
               </Grid>
             </Grid>
@@ -254,6 +258,8 @@ function Profile({ toggleProfil }: ProfileProps) {
       >
         Achievements
       </Button>
+      {
+        user.username === username ?
       <Button
         variant="contained"
         color="primary"
@@ -277,33 +283,39 @@ function Profile({ toggleProfil }: ProfileProps) {
           },
         }}
       >
-        Friends list
+        Friends
       </Button>
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={handleModificationClick}
-        sx={{
-          textTransform: "none",
-          fontWeight: "bold",
-          fontSize: "20px",
-          width: "10em",
-          height: "1.4em",
-          position: "fixed",
-          transform: "translate(-50%, 0%)",
-          backgroundColor: "rgba(220, 220, 220, 0.9)",
-          border: "2px solid #000000",
-          borderRadius: "1em",
-          top: "87%",
-          color: "black",
-          "&:hover": {
-            backgroundColor: "grey",
-            borderColor: "red",
-          },
-        }}
-      >
-        Change profil
-      </Button>
+      : null
+      }
+      {
+        user.username === username ?
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleModificationClick}
+            sx={{
+              textTransform: "none",
+              fontWeight: "bold",
+              fontSize: "20px",
+              width: "10em",
+              height: "1.4em",
+              position: "fixed",
+              transform: "translate(-50%, 0%)",
+              backgroundColor: "rgba(220, 220, 220, 0.9)",
+              border: "2px solid #000000",
+              borderRadius: "1em",
+              top: "87%",
+              color: "black",
+              "&:hover": {
+                backgroundColor: "grey",
+                borderColor: "red",
+              },
+            }}
+          >
+            Change profile
+          </Button>
+        : null
+      }
     </div>
   );
 }

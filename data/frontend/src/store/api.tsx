@@ -98,6 +98,33 @@ export const apiSlice = createApi({
         },
       }),
     }),
+    getUserProfile: builder.query({
+      query: ({ username = null }) => ({
+        url: "/api/profile/" + username,
+        method: "GET",
+        headers: {
+          Authorization: "Bearer " + Cookies.get("accessToken"),
+        },
+      }),
+    }),
+    getUserAchievements: builder.query({
+      query: ({ username = null }) => ({
+        url: "/api/profile/" + username + "/achievements",
+        method: "GET",
+        headers: {
+          Authorization: "Bearer " + Cookies.get("accessToken"),
+        },
+      }),
+    }),
+    getUserLevel: builder.query({
+      query: ({ username = null }) => ({
+        url: "/api/profile/" + username + "/level",
+        method: "GET",
+        headers: {
+          Authorization: "Bearer " + Cookies.get("accessToken"),
+        },
+      }),
+    }),
     uploadAvatar: builder.mutation({
       query: (body: FormData) => ({
         url: "/api/avatar/upload",
@@ -129,4 +156,7 @@ export const {
   useLazyGetUsersInRoomQuery,
   useLazyGetBlockedUsersQuery,
   useLazyGetUserRoomListQuery,
+  useGetUserProfileQuery,
+  useGetUserAchievementsQuery,
+  useGetUserLevelQuery,
 } = apiSlice;

@@ -12,22 +12,18 @@ export class Achievements {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @OneToOne(() => User, (user) => user.uid)
-  @JoinColumn({ name: 'user' })
-  user: User;
-
-  @Column()
+  @Column({default: false})
   achievement1: boolean;
 
-  @Column()
+  @Column({default: false})
   achievement2: boolean;
 
-  @Column()
+  @Column({default: false})
   achievement3: boolean;
 
-  @Column()
+  @Column({default: false})
   achievement4: boolean;
 
-  @Column()
+  @Column({default: false})
   achievement5: boolean;
 }
