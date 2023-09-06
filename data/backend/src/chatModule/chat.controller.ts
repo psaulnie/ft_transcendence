@@ -14,12 +14,15 @@ import { UsersService } from '../users/users.service';
 import { AuthenticatedGuard } from '../auth/guards/intraAuthGuard.service';
 import { User } from 'src/entities';
 import { userRole } from './chatEnums';
+import { UsersStatusService } from 'src/services/users.status.service';
+import { userStatus } from 'src/users/userStatus';
 
 @Controller('/api/chat/')
 export class ChatController {
   constructor(
     private readonly roomService: RoomService,
     private readonly userService: UsersService,
+    private readonly usersStatusService: UsersStatusService,
   ) {}
 
   @UseInterceptors(CacheInterceptor)
@@ -162,10 +165,17 @@ export class ChatController {
     }
     const users = await this.userService.findAll();
     const usersList: string[] = [];
-    users.forEach((element) => {
+    for (const element of users)
+    {
+      const cUserStatus = await this.usersStatusService.getUserStatus(element.username);
+      if (!cUserStatus)
+        continue ;
+      if (cUserStatus && cUserStatus.status === userStatus.offline) {
+        continue ;
+      }
       if (!element.blockedUsers.find((obj) => obj.blockedUser.uid == cUser.uid))
         usersList.push(element.username);
-    });
+    }
     return usersList;
   }
 
@@ -200,6 +210,11 @@ export class ChatController {
     const usersList: {}[] = [];
 
     for (const element of users) {
+      const cUsersStatus = await this.usersStatusService.getUserStatus(element.username);
+      if (!cUsersStatus)
+        continue ;
+      if (cUsersStatus && cUsersStatus.status === userStatus.offline)
+        continue ;
       if (
         element.username != username &&
         (await this.roomService.isUserInRoom(roomName, element.uid)) == false
