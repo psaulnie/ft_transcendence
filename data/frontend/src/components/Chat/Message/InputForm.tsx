@@ -38,9 +38,12 @@ export default function InputForm({
       data: "",
     });
     setIsLoading(true);
-    webSocketManager.getSocket().timeout(500).emit(msg, value, () => {
-      setIsLoading(false);
-    });
+    webSocketManager
+      .getSocket()
+      .timeout(500)
+      .emit(msg, value, () => {
+        setIsLoading(false);
+      });
   }
   function keyPress(event: KeyboardEvent<HTMLButtonElement>) {
     event.preventDefault();

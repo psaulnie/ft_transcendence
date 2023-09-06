@@ -18,11 +18,7 @@ export class UsersStatusService {
     this.usersStatus = [];
   }
 
-  async addUser(
-    clientId: string,
-    username: string,
-    status: userStatus,
-  ) {
+  async addUser(clientId: string, username: string, status: userStatus) {
     const user = await this.userRepository.findOne({
       where: { username: username },
     });
@@ -39,15 +35,7 @@ export class UsersStatusService {
     else this.usersStatus.push({ clientId, username, status });
   }
 
-  async removeUser(clientId: string) {
-    this.usersStatus.splice(
-      this.usersStatus.findIndex((user) => user.clientId === clientId),
-      1,
-    );
-  }
-
-  async changeUsername(old: string, newUsername: string)
-  {
+  async changeUsername(old: string, newUsername: string) {
     const userStatusIndex = this.usersStatus.findIndex(
       (user) => user.username === old,
     );

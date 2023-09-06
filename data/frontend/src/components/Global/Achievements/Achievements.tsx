@@ -1,4 +1,4 @@
-import { Box, Grid, Button, Typography } from "@mui/material";
+import { Box, Grid, Button } from "@mui/material";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { useGetUserAchievementsQuery } from "../../../store/api";
 import Completed from "./Completed";

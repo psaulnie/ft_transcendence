@@ -60,7 +60,6 @@ export default function SelectUserDialog({ open, setOpen, roomName }: arg) {
     data: usersList,
     isLoading,
     isError,
-    error,
     refetch,
   } = useGetInvitedUsersListQuery({
     username: user.username,

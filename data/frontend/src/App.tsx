@@ -1,6 +1,6 @@
 import "./App.css";
 
-import { useContext, useEffect } from "react";
+import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { login, setUsername } from "./store/user";
@@ -14,6 +14,7 @@ import Base from "./Base";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import PrivateRoute from "./components/Global/PrivateRoute";
+import TwoFactorLogin from "./components/Login/TwoFactorLogin";
 
 const theme = createTheme({
   palette: {
@@ -28,14 +29,14 @@ const theme = createTheme({
 });
 
 function App() {
-  const user = useSelector((state: any) => state.user);
+  useSelector((state: any) => state.user);
   const dispatch = useDispatch();
 
   useEffect(() => {
     const username = Cookies.get("username");
     const accessToken = Cookies.get("accessToken");
     if (!username || !accessToken) {
-      return ;
+      return;
     }
     dispatch(setUsername(username));
     dispatch(login(accessToken));
@@ -49,6 +50,7 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/login" element={<Login />}></Route>
+            <Route path="/2fa" element={<TwoFactorLogin />}></Route>
             <Route path="*" element={<PrivateRoute />}>
               <Route path="*" element={<Base />} />
             </Route>

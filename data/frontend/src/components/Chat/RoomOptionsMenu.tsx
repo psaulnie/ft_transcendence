@@ -94,7 +94,7 @@ export default function RoomOptionsMenu({
           ) : null}
         </div>
       </Menu>
-      {showPasswordDialog === true ? (
+      {showPasswordDialog ? (
         <PasswordDialog
           open={showPasswordDialog}
           setOpen={setShowPasswordDialog}
@@ -103,7 +103,7 @@ export default function RoomOptionsMenu({
           createRoom={false}
         />
       ) : null}
-      {showUserDialog === true ? (
+      {showUserDialog ? (
         <SelectUserDialog
           open={showUserDialog}
           setOpen={setShowUserDialog}

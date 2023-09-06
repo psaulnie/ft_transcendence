@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 
-import webSocketManager from "../../webSocket";
-
 import { useDispatch, useSelector } from "react-redux";
 import { useLazyGetBlockedUsersQuery } from "../../store/api";
 import { useLazyGetUserRoomListQuery } from "../../store/api";
@@ -15,16 +13,7 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ChatProcess from "./ChatProcess";
 
-import {
-  Skeleton,
-  Box,
-  Grid,
-  Button,
-  Typography,
-  Avatar,
-  Slide,
-} from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
+import { Skeleton, Box, Grid, Button, Slide } from "@mui/material";
 
 import RoomTabs from "./RoomTabs";
 import { addRoom, setRoomIndex } from "../../store/rooms";
@@ -91,7 +80,6 @@ function Chat() {
   ]);
 
   if (blockedUsers.isError) throw new (Error as any)("API call error");
-
   else if (userRoomList.isError) throw new (Error as any)("API call error");
   else if (blockedUsers.isLoading || userRoomList.isLoading)
     return (

@@ -8,15 +8,14 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useUploadAvatarMutation } from "../../store/api";
-import Cookies from "js-cookie";
 import webSocketManager from "../../webSocket";
 
 function Modification() {
   const user = useSelector((state: any) => state.user);
   const navigate = useNavigate();
-  
+
   const [newUsername, setNewUsername] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | undefined>(undefined);
   const [fileUrl, setFileUrl] = useState("");

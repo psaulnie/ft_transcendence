@@ -55,7 +55,7 @@ export default function PasswordDialog({
   function confirmButton(e: any) {
     e.preventDefault();
     if (password !== "") {
-      if (createRoom === true) {
+      if (createRoom) {
         dispatch(
           addRoom({
             name: roomName,

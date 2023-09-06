@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
-import Cookies from "js-cookie";
 import { useDispatch, useSelector } from "react-redux";
-import user, { setUsername, login, logout } from "../../store/user";
+import { logout } from "../../store/user";
 
 import { Box, Grid, Button } from "@mui/material";
 
-import Profile from "../Global/Profile";
 import { useGetUserProfileQuery } from "../../store/api";
 
 export default function Home() {

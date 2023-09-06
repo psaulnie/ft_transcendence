@@ -1,6 +1,6 @@
 import { useGetUsersInRoomQuery, useLazyGetUserFriendsListQuery } from "../../store/api";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
 import {
@@ -43,14 +43,13 @@ export default function UsersList({
     data: usersListData,
     isLoading,
     isError,
-    error,
     refetch,
   } = useGetUsersInRoomQuery({ roomName: roomName }, { skip: isDirectMessage });
 
   const [trigger, result] = useLazyGetUserFriendsListQuery();
 
-  let usersList = [];
-  if (isDirectMessage === false) usersList = usersListData;
+  let usersList: any[];
+  if (!isDirectMessage) usersList = usersListData;
   else
     usersList = [
       { username: user.username, role: userRole.none, isMuted: false },
@@ -59,7 +58,7 @@ export default function UsersList({
 
   const handleContextMenu = (event: React.MouseEvent, username: string) => {
     event.preventDefault();
-    if (isDirectMessage === false) refetch();
+    if (!isDirectMessage) refetch();
     if (user.username !== username)
     {
       setContextMenu(
@@ -81,11 +80,11 @@ export default function UsersList({
   }
 
   useEffect(() => {
-    if (isDirectMessage === false) refetch();
+    if (!isDirectMessage) refetch();
   }, [isDirectMessage, refetch]);
 
-  if (isError && isDirectMessage === false) throw new (Error as any)("API call error");
-  else if (isLoading && isDirectMessage === false)
+  if (isError && !isDirectMessage) throw new (Error as any)("API call error");
+  else if (isLoading && !isDirectMessage)
     return (
       <div>
         <Skeleton variant="text" />

@@ -81,7 +81,7 @@ function JoinDirectMessage() {
 
   return (
     <Grid className="joinDirectMessage">
-      <Typography sx={{marginTop:'2em'}}>Direct Message</Typography>
+      <Typography sx={{ marginTop: "2em" }}>Direct Message</Typography>
       <FormControl sx={{ minWidth: 120 }} size="small">
         <InputLabel>Users</InputLabel>
         <Select
@@ -106,7 +106,12 @@ function JoinDirectMessage() {
         </Select>
         <FormHelperText>Select an user</FormHelperText>
       </FormControl>
-      <IconButton size="small" onClick={joinRoom} disabled={newUser === ""} sx={{transform: "translate(0%, 6%)",}}>
+      <IconButton
+        size="small"
+        onClick={joinRoom}
+        disabled={newUser === ""}
+        sx={{ transform: "translate(0%, 6%)" }}
+      >
         <AddIcon />
       </IconButton>
     </Grid>

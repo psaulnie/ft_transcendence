@@ -66,7 +66,6 @@ function CreateChannel() {
       let hasPassword = false;
       if (access === accessStatus.protected) {
         setShowDialog(true);
-        hasPassword = true;
         return;
       }
       dispatch(
@@ -90,7 +89,7 @@ function CreateChannel() {
 
   return (
     <Grid className="createChannel">
-      <Typography sx={{marginTop:'2em'}}>Create a new channel</Typography>
+      <Typography sx={{ marginTop: "2em" }}>Create a new channel</Typography>
       <TextField
         autoComplete='off'
         error={result.data}
@@ -99,7 +98,7 @@ function CreateChannel() {
         value={newRoomName}
         onChange={updateNewRoomName}
       />
-      <FormControl sx={{height:'80%'}}>
+      <FormControl sx={{ height: "80%" }}>
         <InputLabel>Access</InputLabel>
         <Select name="roomAccess" onChange={changeAccess} defaultValue="">
           <MenuItem defaultChecked value="public">
@@ -114,11 +113,11 @@ function CreateChannel() {
         name="rooms"
         disabled={result.data === true || newRoomName === ""}
         onClick={createRoom}
-        sx={{transform: "translate(0%, 18%)",}}
+        sx={{ transform: "translate(0%, 18%)" }}
       >
         <AddIcon />
       </IconButton>
-      {showDialog === true ? (
+      {showDialog ? (
         <PasswordDialog
           open={showDialog}
           setOpen={setShowDialog}

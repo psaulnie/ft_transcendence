@@ -12,7 +12,6 @@ import { useState } from "react";
 import webSocketManager from "../../webSocket";
 import { removeRoom, setRead, setRoomIndex } from "../../store/rooms";
 import RoomOptionsMenu from "./RoomOptionsMenu";
-import { userRole } from "./chatEnums";
 
 export default function RoomTabs() {
   const user = useSelector((state: any) => state.user);

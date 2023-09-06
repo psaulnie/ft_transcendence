@@ -1,4 +1,4 @@
-import { Box, Grid, Button, Avatar, Typography, Paper } from "@mui/material";
+import { Box, Grid, Button, Avatar, Typography } from "@mui/material";
 import { useSelector } from "react-redux";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { useGetUserProfileQuery } from "../../store/api";

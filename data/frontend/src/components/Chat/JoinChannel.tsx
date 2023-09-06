@@ -73,7 +73,6 @@ function JoinChannel() {
     data: roomsList,
     isLoading,
     isError,
-    error,
     refetch,
   } = useGetRoomsListQuery({});
 
@@ -92,7 +91,7 @@ function JoinChannel() {
 
   return (
     <Grid className="joinChannel">
-      <Typography sx={{marginTop:'2em'}}>Join a new channel</Typography>
+      <Typography sx={{ marginTop: "2em" }}>Join a new channel</Typography>
       <FormControl sx={{ minWidth: 120 }} size="small">
         <InputLabel>Channel</InputLabel>
         <Select
@@ -134,10 +133,14 @@ function JoinChannel() {
         </Select>
         <FormHelperText>Select an existing channel</FormHelperText>
       </FormControl>
-      <IconButton size="small" onClick={joinRoom} sx={{transform: "translate(0%, 6%)",}}>
+      <IconButton
+        size="small"
+        onClick={joinRoom}
+        sx={{ transform: "translate(0%, 6%)" }}
+      >
         <AddIcon />
       </IconButton>
-      {showDialog === true ? (
+      {showDialog ? (
         <PasswordDialog
           open={showDialog}
           setOpen={setShowDialog}

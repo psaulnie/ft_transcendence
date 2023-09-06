@@ -25,7 +25,7 @@ import { UsersService } from './users/users.service';
 import { Response } from 'express';
 import { AppService } from './services/app.service';
 
-import { AuthenticatedGuard } from './auth/guards/intra-auth.guards';
+import { AuthenticatedGuard } from './auth/guards/intraAuthGuard.service';
 import { UseGuards } from '@nestjs/common';
 
 import { catchError, firstValueFrom } from 'rxjs';
@@ -67,7 +67,7 @@ export class AppController {
     private readonly appService: AppService,
     private readonly userService: UsersService,
     private readonly httpService: HttpService,
-    private readonly userStatusArrayService: UsersStatusService
+    private readonly userStatusArrayService: UsersStatusService,
   ) {}
 
   @Post('/avatar/upload')
@@ -80,7 +80,8 @@ export class AppController {
   ) {
     if (body && file && body.username) {
       const user = await this.userService.findOne(body.username);
-      if (context.headers.authorization != 'Bearer ' + user.accessToken) // TODO replace with the connect.sid cookie (using usersStatus array?)
+      if (context.headers.authorization != 'Bearer ' + user.accessToken)
+        // TODO replace with the connect.sid cookie (using usersStatus array?)
         return new HttpException('Unauthorized', 401);
       if (user) {
         console.log('upload');
@@ -94,7 +95,8 @@ export class AppController {
   async removeAvatar(@Req() context: any, @Query('username') username: string) {
     if (!username) return new HttpException('Bad Request', 400);
     const user = await this.userService.findOne(username);
-    if (context.headers.authorization != 'Bearer ' + user.accessToken) // TODO replace with the connect.sid cookie (using usersStatus array?)
+    if (context.headers.authorization != 'Bearer ' + user.accessToken)
+      // TODO replace with the connect.sid cookie (using usersStatus array?)
       return new HttpException('Unauthorized', 401);
     const url = await firstValueFrom(
       this.httpService
@@ -104,7 +106,7 @@ export class AppController {
           },
         })
         .pipe(
-          catchError((error: any) => {
+          catchError(() => {
             throw new UnauthorizedException();
           }),
         ),
@@ -119,7 +121,7 @@ export class AppController {
   @Get('/avatar/')
   async getDefaultAvatar(
     @Res({ passthrough: true }) res: Response,
-    ): Promise<StreamableFile> {
+  ): Promise<StreamableFile> {
     const file = createReadStream(
       join(process.cwd(), '../avatars/default.jpg'),
     );
@@ -135,8 +137,8 @@ export class AppController {
   async getAvatar(
     @Param('username') username: string,
     @Res({ passthrough: true }) res: Response,
-    ): Promise<StreamableFile> {
-      if (username == null) {
+  ): Promise<StreamableFile> {
+    if (username == null) {
       throw new HttpException('Bad Request', 400);
     }
 
@@ -173,20 +175,22 @@ export class AppController {
 
   @Get(':username/status')
   @UseGuards(AuthenticatedGuard)
-  async getUserStatus(@Param('username') username: string): Promise<userStatus> {
+  async getUserStatus(
+    @Param('username') username: string,
+  ): Promise<userStatus> {
     if (username == null) throw new HttpException('Bad Request', 400);
     const user = await this.userService.findOne(username);
     if (!user) throw new HttpException('Unprocessable Entity', 422);
-    const status = await this.userStatusArrayService.getUserStatus(user.username);
-    if (!status)
-      return (userStatus.offline);
-    return (status.status);
+    const status = await this.userStatusArrayService.getUserStatus(
+      user.username,
+    );
+    if (!status) return userStatus.offline;
+    return status.status;
   }
 
   @Get(':username/friends/status')
   @UseGuards(AuthenticatedGuard)
   async getUserStatusFriendsList(@Param('username') username: string) {
-
     // TODO can't work without working friend list
     // if (username == null) throw new HttpException('Bad Request', 400);
     // const user = await this.userService.findOne(username);
@@ -203,7 +207,6 @@ export class AppController {
     // }
     // return friendsList;
   }
-
 }
 
 export function isUrl(path: string): boolean {

@@ -11,7 +11,7 @@ import {
 import { CacheInterceptor } from '@nestjs/cache-manager';
 import { RoomService } from '../services/room.service';
 import { UsersService } from '../users/users.service';
-import { AuthenticatedGuard } from 'src/auth/guards/intra-auth.guards';
+import { AuthenticatedGuard } from '../auth/guards/intraAuthGuard.service';
 import { User } from 'src/entities';
 import { userRole } from './chatEnums';
 
@@ -212,11 +212,8 @@ export class ChatController {
   @UseInterceptors(CacheInterceptor)
   @UseGuards(AuthenticatedGuard)
   @Get(':username/friends')
-  async getUserFriendsList(
-    @Param('username') username: string,
-  ): Promise<{}[]> {
-    if (username == null)
-      throw new HttpException('Bad request', 400);
+  async getUserFriendsList(@Param('username') username: string): Promise<{}[]> {
+    if (username == null) throw new HttpException('Bad request', 400);
     const user = await this.userService.findOne(username);
     if (!user) throw new HttpException('Unprocessable Entity', 422);
     const friendList = [];
@@ -225,8 +222,7 @@ export class ChatController {
       if (element) {
         // console.log('user1', element.user1);
         // console.log('user2', element.user2);
-        if (element.username != username)
-          friendList.push(element.username);
+        if (element.username != username) friendList.push(element.username);
         else if (element.username != username)
           friendList.push(element.username);
         console.log('friendlist', friendList);

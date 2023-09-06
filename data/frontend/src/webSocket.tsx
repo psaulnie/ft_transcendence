@@ -12,6 +12,7 @@ export class WebSocketManager {
     if (!this.socket) {
       this.socket = io(URL, {
         withCredentials: true,
+        transports: ["websocket"],
       });
     }
   }

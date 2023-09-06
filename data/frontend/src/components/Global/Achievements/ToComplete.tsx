@@ -1,6 +1,4 @@
-import { Box, Grid, Button, Typography } from "@mui/material";
-import { Navigate, useNavigate, useParams } from "react-router-dom";
-import { useGetUserAchievementsQuery } from "../../../store/api";
+import { Box, Grid, Typography } from "@mui/material";
 
 function ToComplete({
   title,

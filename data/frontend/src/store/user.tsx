@@ -65,12 +65,11 @@ export const userSlice = createSlice({
     },
     isUserBlocked: (state) => {
       const nbr = state.blockedUsers.indexOf(state.username);
-      if (nbr === -1) state.isUserBlocked = false;
-      else state.isUserBlocked = true;
+      state.isUserBlocked = (nbr !== -1);
     },
     setIsError: (state, error: PayloadAction<string>) => {
       state.isError = !state.isError;
-      if (state.isError === true && error.payload != '')
+      if (state.isError === true && error.payload !== '')
         state.error = error.payload;
       else
         state.error = '';

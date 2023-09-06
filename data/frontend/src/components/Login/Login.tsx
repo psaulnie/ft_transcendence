@@ -3,8 +3,6 @@ import { SyntheticEvent, useEffect, useState } from "react";
 import { Navigate } from "react-router";
 import { Button, Typography } from "@mui/material";
 
-import Cookies from "js-cookie";
-
 function Login() {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
@@ -41,7 +39,7 @@ function Login() {
         else setIsOk(data);
         setIsLoading(false);
       })
-      .catch((error) => {
+      .catch(() => {
         setIsOk(false);
         setIsLoading(false);
       });
@@ -54,38 +52,38 @@ function Login() {
   if (isOk) return <Navigate to="/home" />;
   return (
     <div className="main">
-        <Button
-          variant="text"
-          color="primary"
-          onClick={logIn}
-          sx={{
-            textTransform: "none",
-            fontWeight: "bold",
-            fontSize: "36px",
-            marginTop: "5em",
-            width: "6em",
-            height: "1.6em",
-            backgroundColor: "rgba(255, 255, 255, 0.9)",
-            borderColor: "#000000",
-            border: "2px solid",
-            borderRadius: "15px",
-            lineHeight: '3',
-            color: "black",
-            "&:hover": {
-              backgroundColor: "red",
-              borderColor: "red",
-            },
+      <Button
+        variant="text"
+        color="primary"
+        onClick={logIn}
+        sx={{
+          textTransform: "none",
+          fontWeight: "bold",
+          fontSize: "36px",
+          marginTop: "5em",
+          width: "6em",
+          height: "1.6em",
+          backgroundColor: "rgba(255, 255, 255, 0.9)",
+          borderColor: "#000000",
+          border: "2px solid",
+          borderRadius: "15px",
+          lineHeight: "3",
+          color: "black",
+          "&:hover": {
+            backgroundColor: "red",
+            borderColor: "red",
+          },
+        }}
+      >
+        <span
+          style={{
+            position: "relative",
+            top: "3px",
           }}
         >
-          <span
-            style={{
-              position: 'relative',
-              top: '3px',
-            }}
-          >
-            Login
-          </span>
-        </Button>
+          Login
+        </span>
+      </Button>
       <button type="button" onClick={testlogin}>
         Log as user test
       </button>
@@ -96,14 +94,43 @@ function Login() {
       )}
       <Typography
         variant="h6"
-        sx={{ fontSize: 18, fontWeight: "bold", color: "black", marginTop: "9em" }}
+        sx={{
+          fontSize: 18,
+          fontWeight: "bold",
+          color: "black",
+          marginTop: "9em",
+        }}
       >
         FT_Transcendence by:
       </Typography>
-      <Typography variant="h6" sx={{ fontSize: 16, fontWeight: "bold", color: "black", }}> Lbattest </Typography>
-      <Typography variant="h6" sx={{ fontSize: 16, fontWeight: "bold", color: "black", }}> Apercebo </Typography>
-      <Typography variant="h6" sx={{ fontSize: 16, fontWeight: "bold", color: "black", }}> Psaulnie </Typography>
-      <Typography variant="h6" sx={{ fontSize: 16, fontWeight: "bold", color: "black", }}> Dbouron </Typography>
+      <Typography
+        variant="h6"
+        sx={{ fontSize: 16, fontWeight: "bold", color: "black" }}
+      >
+        {" "}
+        Lbattest{" "}
+      </Typography>
+      <Typography
+        variant="h6"
+        sx={{ fontSize: 16, fontWeight: "bold", color: "black" }}
+      >
+        {" "}
+        Apercebo{" "}
+      </Typography>
+      <Typography
+        variant="h6"
+        sx={{ fontSize: 16, fontWeight: "bold", color: "black" }}
+      >
+        {" "}
+        Psaulnie{" "}
+      </Typography>
+      <Typography
+        variant="h6"
+        sx={{ fontSize: 16, fontWeight: "bold", color: "black" }}
+      >
+        {" "}
+        Dbouron{" "}
+      </Typography>
     </div>
   );
 }

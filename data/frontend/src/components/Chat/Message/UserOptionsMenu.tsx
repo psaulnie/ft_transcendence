@@ -4,8 +4,6 @@ import { addBlockedUser, removeBlockedUser } from '../../../store/user';
 import { Menu, MenuItem, Divider } from '@mui/material';
 import { addRoom } from '../../../store/rooms';
 import { userRole } from '../chatEnums';
-import { useEffect, useState } from 'react';
-import { useGetUserFriendsListQuery } from '../../../store/api';
 import { useNavigate } from 'react-router';
 
 type arg = {

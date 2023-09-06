@@ -12,13 +12,9 @@ import { Socket, Server } from 'socket.io';
 import { RoomService } from 'src/services/room.service';
 import { UsersService } from 'src/users/users.service';
 
-import { manageRoomsArgs, sendMsgArgs, actionArgs } from './args.interface';
-import { actionTypes, sendMsgTypes } from './args.types';
-import { subscribe } from 'diagnostics_channel';
-import { match } from 'assert';
-import { SELF_DECLARED_DEPS_METADATA } from '@nestjs/common/constants';
+import { sendMsgArgs, actionArgs } from './args.interface';
+import { actionTypes } from './args.types';
 import { accessStatus, userRole } from 'src/chatModule/chatEnums';
-import { UseGuards } from '@nestjs/common';
 import { hashPassword, comparePassword } from './hashPasswords';
 import { UsersStatusService } from 'src/services/users.status.service';
 import { userStatus } from 'src/users/userStatus';
@@ -27,18 +23,19 @@ import { userStatus } from 'src/users/userStatus';
   cors: { origin: '*' },
   namespace: '/gateway',
 })
-export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
-	
-	private matchmakingQueue: (string)[];
+export class Gateway
+  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
+{
+  private matchmakingQueue: string[];
 
-	constructor(
-		private roomService: RoomService,
-		private userService: UsersService,
+  constructor(
+    private roomService: RoomService,
+    private userService: UsersService,
     private usersStatusService: UsersStatusService,
-	) {
-		this.matchmakingQueue = [];
-	}
-	@WebSocketServer() server: Server;
+  ) {
+    this.matchmakingQueue = [];
+  }
+  @WebSocketServer() server: Server;
 
   @SubscribeMessage('sendPrivateMsg')
   async sendPrivateMessage(client: Socket, payload: sendMsgArgs) {
@@ -53,8 +50,11 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
     const user = await this.userService.findOne(payload.source);
     console.log('sendprivmsg');
     if (!user) throw new WsException('Source user not found');
-    const userStatus = await this.usersStatusService.getUserStatus(payload.source);
-    if (!userStatus || userStatus.clientId !== client.id) throw new WsException('Forbidden');
+    const userStatus = await this.usersStatusService.getUserStatus(
+      payload.source,
+    );
+    if (!userStatus || userStatus.clientId !== client.id)
+      throw new WsException('Forbidden');
     const targetUser = await this.userService.findOne(payload.target);
     if (!targetUser) throw new WsException('Target user not found');
     if (
@@ -92,8 +92,11 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
     const user = await this.userService.findOne(payload.source);
     console.log('sendmsg');
     if (!user) throw new WsException('Source user not found');
-    const userStatus = await this.usersStatusService.getUserStatus(payload.source);
-    if (!userStatus || userStatus.clientId !== client.id) throw new WsException('Forbidden');
+    const userStatus = await this.usersStatusService.getUserStatus(
+      payload.source,
+    );
+    if (!userStatus || userStatus.clientId !== client.id)
+      throw new WsException('Forbidden');
     const room = await this.roomService.findOne(payload.target);
     if (!room) throw new WsException('Room not found');
     if (!room.usersList.find((tmpUser) => tmpUser.user.uid === user.uid))
@@ -123,8 +126,11 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
 
     const user = await this.userService.findOne(payload.source);
     if (!user) throw new WsException('Source user not found');
-    const userStatus = await this.usersStatusService.getUserStatus(payload.source);
-    if (!userStatus || userStatus.clientId !== client.id) throw new WsException('Forbidden');
+    const userStatus = await this.usersStatusService.getUserStatus(
+      payload.source,
+    );
+    if (!userStatus || userStatus.clientId !== client.id)
+      throw new WsException('Forbidden');
     let hasPassword = false;
     let role = userRole.none;
     if (payload.room.length > 10) payload.room = payload.room.slice(0, 10);
@@ -139,7 +145,6 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
           '',
         );
       else {
-
         hasPassword = true;
         const hashedPassword = await hashPassword(payload.password);
         await this.roomService.createRoom(
@@ -234,8 +239,11 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
       throw new WsException('Missing parameter');
     const user = await this.userService.findOne(payload.source);
     if (!user) throw new WsException('Source user not found');
-    const userStatus = await this.usersStatusService.getUserStatus(payload.source);
-    if (!userStatus || userStatus.clientId !== client.id) throw new WsException('Forbidden');
+    const userStatus = await this.usersStatusService.getUserStatus(
+      payload.source,
+    );
+    if (!userStatus || userStatus.clientId !== client.id)
+      throw new WsException('Forbidden');
     if (payload.room.length > 10) payload.room = payload.room.slice(0, 10);
     this.server.emit(payload.room, {
       source: payload.source,
@@ -256,8 +264,11 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
     if (!user) throw new WsException('Target user not found');
     const admin = await this.userService.findOne(payload.source);
     if (!admin) throw new WsException('Source user not found');
-    const userStatus = await this.usersStatusService.getUserStatus(payload.source);
-    if (!userStatus || userStatus.clientId !== client.id) throw new WsException('Forbidden');
+    const userStatus = await this.usersStatusService.getUserStatus(
+      payload.source,
+    );
+    if (!userStatus || userStatus.clientId !== client.id)
+      throw new WsException('Forbidden');
     const room = await this.roomService.findOne(payload.room);
     if (!room) throw new WsException('Room not found');
     const isInRoom = room.usersList.find(
@@ -272,7 +283,9 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
       target: payload.room,
       action: actionTypes.left,
     });
-    const targetStatus = await this.usersStatusService.getUserStatus(payload.target);
+    const targetStatus = await this.usersStatusService.getUserStatus(
+      payload.target,
+    );
     this.server.emit(targetStatus.clientId, {
       source: payload.source,
       target: payload.room,
@@ -293,8 +306,11 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
     if (!user) throw new WsException('Target user not found');
     const admin = await this.userService.findOne(payload.source);
     if (!admin) throw new WsException('Source user not found');
-    const userStatus = await this.usersStatusService.getUserStatus(payload.source);
-    if (!userStatus || userStatus.clientId !== client.id) throw new WsException('Forbidden');
+    const userStatus = await this.usersStatusService.getUserStatus(
+      payload.source,
+    );
+    if (!userStatus || userStatus.clientId !== client.id)
+      throw new WsException('Forbidden');
     const room = await this.roomService.findOne(payload.room);
     if (!room) throw new WsException('Room not found');
     const isInRoom = room.usersList.find(
@@ -309,7 +325,9 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
       target: payload.room,
       action: actionTypes.left,
     });
-    const targetStatus = await this.usersStatusService.getUserStatus(payload.target);
+    const targetStatus = await this.usersStatusService.getUserStatus(
+      payload.target,
+    );
     this.server.emit(targetStatus.clientId, {
       source: payload.source,
       target: payload.room,
@@ -331,8 +349,11 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
 
     if (user == null || blockedUser == null)
       throw new WsException('User not found');
-    const userStatus = await this.usersStatusService.getUserStatus(payload.source);
-    if (!userStatus || userStatus.clientId !== client.id) throw new WsException('Forbidden');
+    const userStatus = await this.usersStatusService.getUserStatus(
+      payload.source,
+    );
+    if (!userStatus || userStatus.clientId !== client.id)
+      throw new WsException('Forbidden');
     await this.userService.blockUser(user, blockedUser);
   }
 
@@ -349,8 +370,11 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
 
     if (user == null || blockedUser == null)
       throw new WsException('User not found');
-    const userStatus = await this.usersStatusService.getUserStatus(payload.source);
-    if (!userStatus || userStatus.clientId !== client.id) throw new WsException('Forbidden');
+    const userStatus = await this.usersStatusService.getUserStatus(
+      payload.source,
+    );
+    if (!userStatus || userStatus.clientId !== client.id)
+      throw new WsException('Forbidden');
     await this.userService.unblockUser(user, blockedUser);
   }
 
@@ -366,14 +390,19 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
     if (user == null) throw new WsException('User not found');
     const admin = await this.userService.findOne(payload.source);
     if (!admin) throw new WsException('Source user not found');
-    const userStatus = await this.usersStatusService.getUserStatus(payload.source);
-    if (!userStatus || userStatus.clientId !== client.id) throw new WsException('Forbidden');
+    const userStatus = await this.usersStatusService.getUserStatus(
+      payload.source,
+    );
+    if (!userStatus || userStatus.clientId !== client.id)
+      throw new WsException('Forbidden');
     const room = await this.roomService.findOne(payload.room);
     if (!room) throw new WsException('Room not found');
     if ((await this.roomService.getRole(room, admin.uid)) == userRole.none)
       throw new WsException('Source user is not admin of the room');
     await this.roomService.addAdmin(payload.room, user);
-    const targetStatus = await this.usersStatusService.getUserStatus(payload.target);
+    const targetStatus = await this.usersStatusService.getUserStatus(
+      payload.target,
+    );
     this.server.emit(targetStatus.clientId, {
       source: payload.room,
       target: payload.target,
@@ -394,14 +423,19 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
     if (user == null) throw new WsException('User not found');
     const admin = await this.userService.findOne(payload.source);
     if (!admin) throw new WsException('Source user not found');
-    const userStatus = await this.usersStatusService.getUserStatus(payload.source);
-    if (!userStatus || userStatus.clientId !== client.id) throw new WsException('Forbidden');
+    const userStatus = await this.usersStatusService.getUserStatus(
+      payload.source,
+    );
+    if (!userStatus || userStatus.clientId !== client.id)
+      throw new WsException('Forbidden');
     const room = await this.roomService.findOne(payload.room);
     if (!room) throw new WsException('Room not found');
     if ((await this.roomService.getRole(room, admin.uid)) == userRole.none)
       throw new WsException('Source user is not admin of the room');
     await this.roomService.addToMutedList(payload.room, user);
-    const targetStatus = await this.usersStatusService.getUserStatus(payload.target);
+    const targetStatus = await this.usersStatusService.getUserStatus(
+      payload.target,
+    );
     this.server.emit(targetStatus.clientId, {
       source: payload.room,
       target: payload.target,
@@ -423,14 +457,19 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
     if (user == null) throw new WsException('User not found');
     const admin = await this.userService.findOne(payload.source);
     if (!admin) throw new WsException('Source user not found');
-    const userStatus = await this.usersStatusService.getUserStatus(payload.source);
-    if (!userStatus || userStatus.clientId !== client.id) throw new WsException('Forbidden');
+    const userStatus = await this.usersStatusService.getUserStatus(
+      payload.source,
+    );
+    if (!userStatus || userStatus.clientId !== client.id)
+      throw new WsException('Forbidden');
     const room = await this.roomService.findOne(payload.room);
     if (!room) throw new WsException('Room not found');
     if ((await this.roomService.getRole(room, admin.uid)) == userRole.none)
       throw new WsException('Source user is not admin of the room');
     await this.roomService.removeFromMutedList(payload.room, user);
-    const targetStatus = await this.usersStatusService.getUserStatus(payload.target);
+    const targetStatus = await this.usersStatusService.getUserStatus(
+      payload.target,
+    );
     this.server.emit(targetStatus.clientId, {
       source: payload.room,
       target: payload.target,
@@ -453,8 +492,11 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
     console.log('setPasswordToRoom');
     const admin = await this.userService.findOne(payload.source);
     if (!admin) throw new WsException('Source user not found');
-    const userStatus = await this.usersStatusService.getUserStatus(payload.source);
-    if (!userStatus || userStatus.clientId !== client.id) throw new WsException('Forbidden');
+    const userStatus = await this.usersStatusService.getUserStatus(
+      payload.source,
+    );
+    if (!userStatus || userStatus.clientId !== client.id)
+      throw new WsException('Forbidden');
     const room = await this.roomService.findOne(payload.room);
     if (!room) throw new WsException('Room not found');
     if ((await this.roomService.getRole(room, admin.uid)) == userRole.none)
@@ -479,8 +521,11 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
       throw new WsException('Missing parameter');
     const admin = await this.userService.findOne(payload.source);
     if (!admin) throw new WsException('Source user not found');
-    const userStatus = await this.usersStatusService.getUserStatus(payload.source);
-    if (!userStatus || userStatus.clientId !== client.id) throw new WsException('Forbidden');
+    const userStatus = await this.usersStatusService.getUserStatus(
+      payload.source,
+    );
+    if (!userStatus || userStatus.clientId !== client.id)
+      throw new WsException('Forbidden');
     const room = await this.roomService.findOne(payload.room);
     if (!room) throw new WsException('Room not found');
     if ((await this.roomService.getRole(room, admin.uid)) == userRole.none)
@@ -496,14 +541,21 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
   @SubscribeMessage('inviteUser')
   async inviteUser(
     client: Socket,
-    payload: { roomName: string; username: string, source: string },
+    payload: { roomName: string; username: string; source: string },
   ) {
-    if (payload.roomName == null || payload.username == null || payload.source == null)
+    if (
+      payload.roomName == null ||
+      payload.username == null ||
+      payload.source == null
+    )
       throw new WsException('Missing parameters');
     const user = await this.userService.findOne(payload.username);
     if (!user) throw new WsException('User not found');
-    const userStatus = await this.usersStatusService.getUserStatus(payload.source);
-    if (!userStatus || userStatus.clientId !== client.id) throw new WsException('Forbidden');
+    const userStatus = await this.usersStatusService.getUserStatus(
+      payload.source,
+    );
+    if (!userStatus || userStatus.clientId !== client.id)
+      throw new WsException('Forbidden');
     const room = await this.roomService.findOne(payload.roomName);
     if (!room) throw new WsException('Room not found');
     this.server.emit(payload.username + 'OPTIONS', {
@@ -523,8 +575,11 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
       throw new WsException('Missing parameters');
     const user = await this.userService.findOne(payload.username);
     if (!user) throw new WsException('User not found');
-    const userStatus = await this.usersStatusService.getUserStatus(payload.username);
-    if (!userStatus || userStatus.clientId !== client.id) throw new WsException('Forbidden');
+    const userStatus = await this.usersStatusService.getUserStatus(
+      payload.username,
+    );
+    if (!userStatus || userStatus.clientId !== client.id)
+      throw new WsException('Forbidden');
     await this.roomService.addUser(payload.roomName, user, true);
     this.server.emit(payload.roomName, {
       source: payload.username,
@@ -544,14 +599,24 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
     if (!sourceUser) throw new WsException('Source user not found');
     const targetUser = await this.userService.findOne(payload.target);
     if (!targetUser) throw new WsException('Target user not found');
-    if (sourceUser.friends.some(friend => friend.uid === targetUser.uid))
+    if (sourceUser.friends.some((friend) => friend.uid === targetUser.uid))
       throw new WsException('Already friends');
-    if (targetUser.blockedUsers.some(blockedUser => blockedUser.blockedUser.uid === sourceUser.uid))
+    if (
+      targetUser.blockedUsers.some(
+        (blockedUser) => blockedUser.blockedUser.uid === sourceUser.uid,
+      )
+    )
       throw new WsException('Target user blocked source user');
-    if (sourceUser.blockedUsers.some(blockedUser => blockedUser.blockedUser.uid === targetUser.uid))
+    if (
+      sourceUser.blockedUsers.some(
+        (blockedUser) => blockedUser.blockedUser.uid === targetUser.uid,
+      )
+    )
       throw new WsException('Source user blocked target user');
-      const targetStatus = await this.usersStatusService.getUserStatus(payload.target);
-      this.server.emit(targetStatus.clientId, {
+    const targetStatus = await this.usersStatusService.getUserStatus(
+      payload.target,
+    );
+    this.server.emit(targetStatus.clientId, {
       source: payload.source,
       target: payload.target,
       action: actionTypes.askBeingFriend,
@@ -569,11 +634,19 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
     if (!sourceUser) throw new WsException('Source user not found');
     const targetUser = await this.userService.findOne(payload.target);
     if (!targetUser) throw new WsException('Target user not found');
-    if (sourceUser.friends.some(friend => friend.uid === targetUser.uid))
+    if (sourceUser.friends.some((friend) => friend.uid === targetUser.uid))
       throw new WsException('Already friends');
-    if (targetUser.blockedUsers.some(blockedUser => blockedUser.blockedUser.uid === sourceUser.uid))
+    if (
+      targetUser.blockedUsers.some(
+        (blockedUser) => blockedUser.blockedUser.uid === sourceUser.uid,
+      )
+    )
       throw new WsException('Target user blocked source user');
-    if (sourceUser.blockedUsers.some(blockedUser => blockedUser.blockedUser.uid === targetUser.uid))
+    if (
+      sourceUser.blockedUsers.some(
+        (blockedUser) => blockedUser.blockedUser.uid === targetUser.uid,
+      )
+    )
       throw new WsException('Source user blocked target user');
     await this.userService.addFriend(sourceUser, targetUser);
   }
@@ -589,59 +662,63 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
     if (!sourceUser) throw new WsException('Source user not found');
     const targetUser = await this.userService.findOne(payload.target);
     if (!targetUser) throw new WsException('Target user not found');
-    if (!sourceUser.friends.some(friend => friend.uid === targetUser.uid))
+    if (!sourceUser.friends.some((friend) => friend.uid === targetUser.uid))
       throw new WsException('Not friends');
     await this.userService.removeFriend(sourceUser, targetUser);
   }
-  
-	@SubscribeMessage('matchmaking')
-	async hangleMatchmaking(client: Socket, payload: {username: string}) {
-		// const user = await this.userService.findOne(payload.username);
-		// if (!user)
-		// throw new WsException("User not found");
-		if (this.matchmakingQueue.find((name:string) => name == payload.username))
-			throw new WsException("Already in Matchmaking");
-		this.matchmakingQueue.push(payload.username);
-		while (this.matchmakingQueue.length >= 2) {
-				const player1 = this.matchmakingQueue[0];
-				const player2 = this.matchmakingQueue[1];
-				this.server.emit("matchmaking" + player1, {opponent: player2});
-				this.server.emit("matchmaking" + player2, {opponent: player1});
-				this.matchmakingQueue.splice(this.matchmakingQueue.indexOf(player1), 1);
-				this.matchmakingQueue.splice(this.matchmakingQueue.indexOf(player2), 1);
-		}
-	}
 
-	@SubscribeMessage('cancelMatchmaking')
-	async cancelMatchmaking(client: Socket, payload: {username: string}) {
-		// const user = await this.userService.findOne(payload.username);
-		// if (!user)
-		// throw new WsException("User not found");
-		if (this.matchmakingQueue.find((name:string) => name != payload.username))
-			throw new WsException("Player not in Matchmaking");
-		this.matchmakingQueue.splice(this.matchmakingQueue.indexOf(payload.username), 1);
-	}
+  @SubscribeMessage('matchmaking')
+  async hangleMatchmaking(client: Socket, payload: { username: string }) {
+    // const user = await this.userService.findOne(payload.username);
+    // if (!user)
+    // throw new WsException("User not found");
+    if (this.matchmakingQueue.find((name: string) => name == payload.username))
+      throw new WsException('Already in Matchmaking');
+    this.matchmakingQueue.push(payload.username);
+    while (this.matchmakingQueue.length >= 2) {
+      const player1 = this.matchmakingQueue[0];
+      const player2 = this.matchmakingQueue[1];
+      this.server.emit('matchmaking' + player1, { opponent: player2 });
+      this.server.emit('matchmaking' + player2, { opponent: player1 });
+      this.matchmakingQueue.splice(this.matchmakingQueue.indexOf(player1), 1);
+      this.matchmakingQueue.splice(this.matchmakingQueue.indexOf(player2), 1);
+    }
+  }
 
-	@SubscribeMessage('game')
-	async handleGame(client: Socket, payload: {player: string, opponent: string, y: number})
-	{
-		console.log(payload);
-        console.log("receive");
-		this.server.emit(payload.opponent, {mouseY: payload.y})
-	}
+  @SubscribeMessage('cancelMatchmaking')
+  async cancelMatchmaking(client: Socket, payload: { username: string }) {
+    // const user = await this.userService.findOne(payload.username);
+    // if (!user)
+    // throw new WsException("User not found");
+    if (this.matchmakingQueue.find((name: string) => name != payload.username))
+      throw new WsException('Player not in Matchmaking');
+    this.matchmakingQueue.splice(
+      this.matchmakingQueue.indexOf(payload.username),
+      1,
+    );
+  }
+
+  @SubscribeMessage('game')
+  async handleGame(
+    client: Socket,
+    payload: { player: string; opponent: string; y: number },
+  ) {
+    console.log(payload);
+    console.log('receive');
+    this.server.emit(payload.opponent, { mouseY: payload.y });
+  }
 
   @SubscribeMessage('changeUsername')
   async changeUsername(client: Socket, payload: string) {
     console.log('changeusername');
-    const userStatus = await this.usersStatusService.getUserStatusByClientId(client.id);
-    if (!userStatus)
-      return ;
+    const userStatus = await this.usersStatusService.getUserStatusByClientId(
+      client.id,
+    );
+    if (!userStatus) return;
     console.log(userStatus.username);
-    if (userStatus.clientId !== client.id)
-      throw new WsException('Forbidden');
+    if (userStatus.clientId !== client.id) throw new WsException('Forbidden');
     const user = await this.userService.findOne(userStatus.username);
-    if (!user)
-      return ;
+    if (!user) return;
     await this.userService.changeUsername(user, payload);
     await this.usersStatusService.changeUsername(userStatus.username, payload);
     this.server.emit(client.id, {
@@ -662,22 +739,34 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
   async handleConnection(client: Socket, ...args: any[]) {
     console.log(`Client connected: ${client.id}`);
     console.log(client.handshake.headers.cookie);
-    if (client.handshake.headers.cookie.split('=')[1] === 'test') // TODO remove when testUser removed
-    {
-      await this.usersStatusService.addUser(client.id, 'testUser', userStatus.online);
-      return ;
-    }
-    const credential = client.handshake.headers.cookie?.split(';').find((cookie) => cookie.includes('connect.sid'));
-    if (!credential)
-      return ;
-    const connectSid = credential.substring(credential.indexOf('s%3A') + 4, credential.indexOf('.', credential.indexOf('s%3A')))
+    // if (client.handshake.headers.cookie.split('=')[1] === 'test') {
+    //   // TODO remove when testUser removed
+    //   await this.usersStatusService.addUser(
+    //     client.id,
+    //     'testUser',
+    //     userStatus.online,
+    //   );
+    //   return;
+    // }
+    const credential = client.handshake.headers.cookie
+      ?.split(';')
+      .find((cookie) => cookie.includes('connect.sid'));
+    if (!credential) return;
+    const connectSid = credential.substring(
+      credential.indexOf('s%3A') + 4,
+      credential.indexOf('.', credential.indexOf('s%3A')),
+    );
     const session = await this.userService.findOneSession(connectSid);
-    if (!session)
-      return ;
+    if (!session) return;
     const parsedJson = JSON.parse(session.json);
-    const user = await this.userService.findOneByIntraUsername(parsedJson.passport.user.intraUsername);
-    if (!user)
-      return ;
-    await this.usersStatusService.addUser(client.id, user.username, userStatus.online);
+    const user = await this.userService.findOneByIntraUsername(
+      parsedJson.passport.user.intraUsername,
+    );
+    if (!user) return;
+    await this.usersStatusService.addUser(
+      client.id,
+      user.username,
+      userStatus.online,
+    );
   }
 }

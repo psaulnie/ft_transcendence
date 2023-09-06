@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
 import { BlockedList } from 'src/entities/blocked.list.entity';
-import { FriendList } from 'src/entities/friend.list.entity';
 import { TypeormSession } from 'src/entities';
 import { MatchHistory } from 'src/entities/matchHistory.entity';
 import { Statistics } from 'src/entities/stats.entity';
@@ -16,8 +15,6 @@ export class UsersService {
     private usersRepository: Repository<User>,
     @InjectRepository(BlockedList)
     private blockedUserRepository: Repository<BlockedList>,
-    @InjectRepository(FriendList)
-    private friendListRepository: Repository<FriendList>,
     @InjectRepository(TypeormSession)
     private typeormSessionRepository: Repository<TypeormSession>,
     @InjectRepository(MatchHistory)
@@ -57,14 +54,14 @@ export class UsersService {
   async findOneAchievements(name: string): Promise<User> {
     return await this.usersRepository.findOne({
       where: { username: name },
-      relations: [
-        'achievements',
-      ],
+      relations: ['achievements'],
     });
   }
 
   async findOneByIntraUsername(name: string): Promise<User> {
-    return await this.usersRepository.findOne({ where: { intraUsername: name } });
+    return await this.usersRepository.findOne({
+      where: { intraUsername: name },
+    });
   }
 
   async findOneByUsername(name: string): Promise<User> {
@@ -129,21 +126,6 @@ export class UsersService {
     await this.statisticsRepository.save(statistics);
     await this.achievementsRepository.save(achievements);
     await this.usersRepository.save(newUser);
-    console.log('finish');
-
-    // For testing ----
-    // const newUser = {
-    //   id: this.index--,
-    //   username: name,
-    //   password: pass,
-    //   avatar:
-    //     'https://marketplace.canva.com/MAB6vzmEQlA/1/thumbnail_large/canva-robot-electric-avatar-icon-MAB6vzmEQlA.png',
-    // };
-    // this.users.push(newUser);
-    // // End of testing ----
-    // console.log('users in createUser ', this.users);
-    // console.log(`${newUser.username} successfully registered`);
-    // return newUser;
   }
 
   async removeUser(name: string) {
@@ -176,9 +158,6 @@ export class UsersService {
 
   async addFriend(user: User, friend: User) {
     console.log('addfriend');
-    const newFriend = new FriendList();
-    newFriend.user1 = user;
-    newFriend.user2 = friend;
     user.friends.push(friend);
     friend.friends.push(user);
     await this.usersRepository.save(user);
@@ -188,9 +167,11 @@ export class UsersService {
   async removeFriend(user: User, friend: User) {
     console.log('removefriend');
     user.friends = user.friends.filter(
-      (obj) => (obj.username !== friend.username));
+      (obj) => obj.username !== friend.username,
+    );
     friend.friends = friend.friends.filter(
-      (obj) => (obj.username !== user.username));
+      (obj) => obj.username !== user.username,
+    );
     await this.usersRepository.save(user);
     await this.usersRepository.save(friend);
   }
@@ -221,5 +202,69 @@ export class UsersService {
     return await this.typeormSessionRepository.findOne({
       where: { id: sessionId },
     });
+  }
+
+  async isTwoFactorAuthenticated(userId: number): Promise<boolean> {
+    const user = await this.usersRepository.findOne({
+      where: { uid: userId },
+      select: ['isTwoFactorAuthenticated'],
+    });
+    if (!user) {
+      throw new Error('User not found');
+    }
+    return user.isTwoFactorAuthenticated;
+  }
+
+  async setIsTwoFactorAuthenticated(userId: number, value: boolean) {
+    return await this.usersRepository.update(userId, {
+      isTwoFactorAuthenticated: value,
+    });
+  }
+
+  async setTwoFactorAuthSecret(secret: string, userId: number) {
+    return await this.usersRepository.update(userId, {
+      twoFactorAuthSecret: secret,
+    });
+  }
+
+  async turnOnTwoFactorAuth(userId: number) {
+    return await this.usersRepository.update(userId, {
+      isTwoFactorAuthEnabled: true,
+    });
+  }
+
+  async turnOffTwoFactorAuth(userId: number) {
+    return await this.usersRepository.update(userId, {
+      isTwoFactorAuthEnabled: false,
+    });
+  }
+
+  async isTwoFactorAuthEnabled(userId: number): Promise<boolean> {
+    const user = await this.usersRepository.findOne({
+      where: { uid: userId },
+      select: ['isTwoFactorAuthEnabled'],
+    });
+    if (!user) {
+      throw new Error('User not found');
+    }
+    return user.isTwoFactorAuthEnabled;
+  }
+
+  async changeTwoFactorAuthState(userId: number, twoFactorAuthState: boolean) {
+    await this.usersRepository.update(userId, {
+      twoFactorAuthState: twoFactorAuthState,
+    });
+    return twoFactorAuthState;
+  }
+
+  async getTwoFactorAuthState(userId: number) {
+    const user = await this.usersRepository.findOne({
+      where: { uid: userId },
+      select: ['twoFactorAuthState'],
+    });
+    if (!user) {
+      throw new Error('User not found');
+    }
+    return user.twoFactorAuthState;
   }
 }

@@ -22,11 +22,10 @@ import { Gateway } from './gateway/gateway';
 import { UsersService } from './users/users.service';
 
 import { SessionSerializer } from './auth/session/Serializer';
-import { IntraStrategy } from './auth/strategies/intra-auth.strategies';
+import { IntraStrategy } from './auth/strategies/intraAuth.strategy';
 import { AuthService } from './auth/service/auth.service';
 import { HttpModule } from '@nestjs/axios';
 import { UsersStatusService } from './services/users.status.service';
-import { FriendList } from './entities/friend.list.entity';
 import { BlockedList } from './entities/blocked.list.entity';
 import { Statistics } from './entities/stats.entity';
 import { ProfileController } from './profile.controller';
@@ -54,10 +53,9 @@ import { ProfileController } from './profile.controller';
       Achievements,
       MatchHistory,
       Statistics,
-      FriendList,
       BlockedList,
       UsersList,
-      TypeormSession
+      TypeormSession,
     ]),
     CacheModule.register({ isGlobal: true }),
     HttpModule.register({}),

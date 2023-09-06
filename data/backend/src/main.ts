@@ -12,6 +12,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const port = process.env.PORT;
   const sessionRepo = app.get(DataSource).getRepository(TypeormSession);
+  app.use(cookieParser());
   app.use(
     session({
       cookie: {

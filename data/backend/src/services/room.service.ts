@@ -219,8 +219,6 @@ export class RoomService {
   async isUserInRoom(roomName: string, userID: number): Promise<boolean> {
     console.log('isuserinroom');
     const room = await this.findOne(roomName);
-    if (!room || !room.usersList.find((obj) => obj.user.uid == userID))
-      return false;
-    else return true;
+    return !(!room || !room.usersList.find((obj) => obj.user.uid == userID));
   }
 }
