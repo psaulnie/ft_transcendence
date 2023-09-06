@@ -48,7 +48,6 @@ export class UsersStatusService {
 
   async changeUsername(old: string, newUsername: string)
   {
-    console.log("a");
     const userStatusIndex = this.usersStatus.findIndex(
       (user) => user.username === old,
     );

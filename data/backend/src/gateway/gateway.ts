@@ -124,7 +124,7 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
     const user = await this.userService.findOne(payload.source);
     if (!user) throw new WsException('Source user not found');
     const userStatus = await this.usersStatusService.getUserStatus(payload.source);
-    if (!userStatus || userStatus.clientId !== client.id) throw new WsException('Forbidden'); // ici
+    if (!userStatus || userStatus.clientId !== client.id) throw new WsException('Forbidden');
     let hasPassword = false;
     let role = userRole.none;
     if (payload.room.length > 10) payload.room = payload.room.slice(0, 10);

@@ -144,7 +144,6 @@ export default function ChatProcess() {
       } else if (value.action === actionTypes.rightpassword) {
 
       } else if (value.action === actionTypes.wrongpassword) {
-        console.log("A");
         dispatch(removeRoom(value.target));
         setSnackbar("Wrong password", "error");
       } else if (value.action === actionTypes.invited) {
