@@ -17,28 +17,20 @@ export default function Home() {
   const play = () => {
     navigate("/game");
   }
-  useEffect(() => {
-    const username = Cookies.get("username");
-    const accessToken = Cookies.get("accessToken");
-    if (!username || !accessToken)
-      return ;
-    dispatch(setUsername(username));
-    dispatch(login(accessToken));
-  }, [dispatch]);
 
   const {
     data: userProfile,
     isLoading,
     isError,
-  } = useGetUserProfileQuery({username: user.username});
+  } = useGetUserProfileQuery({username: user.username}, {skip: !user.username});
 
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Error</div>; // TODO handle error
   if (userProfile.exist === false) {
     dispatch(logout());
-        window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/logout`;
-
+    window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/logout`;
   }
+
   return (
     <div>
         <Box

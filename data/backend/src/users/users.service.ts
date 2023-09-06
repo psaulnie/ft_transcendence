@@ -62,6 +62,11 @@ export class UsersService {
       ],
     });
   }
+
+  async findOneByIntraUsername(name: string): Promise<User> {
+    return await this.usersRepository.findOne({ where: { intraUsername: name } });
+  }
+
   async findOneByUsername(name: string): Promise<User> {
     return await this.usersRepository.findOne({ where: { username: name } });
   }
@@ -101,7 +106,7 @@ export class UsersService {
 
   async createUser(name: string) {
     console.log('createuser');
-    if (await this.findOneByUsername(name)) {
+    if (await this.findOneByUsername('testUser')) {
       return;
     }
     const newUser = new User();
@@ -207,7 +212,7 @@ export class UsersService {
   }
 
   async changeUsername(user: User, username: string) {
-    console.log('changeusername');
+    console.log('changeusername in service');
     user.username = username;
     await this.usersRepository.save(user);
   }

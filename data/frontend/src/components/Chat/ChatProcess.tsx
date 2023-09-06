@@ -18,6 +18,7 @@ import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import { userRole } from "./chatEnums";
+import { setUsername } from "../../store/user";
 
 export default function ChatProcess() {
   const user = useSelector((state: any) => state.user);
@@ -140,7 +141,10 @@ export default function ChatProcess() {
           "You've been unmuted from this channel: " + value.source,
           "success",
         );
+      } else if (value.action === actionTypes.rightpassword) {
+
       } else if (value.action === actionTypes.wrongpassword) {
+        console.log("A");
         dispatch(removeRoom(value.target));
         setSnackbar("Wrong password", "error");
       } else if (value.action === actionTypes.invited) {
@@ -157,10 +161,15 @@ export default function ChatProcess() {
         setFriendSnackbar(value.source + " wants to be your friend!", "info");
         setTarget(value.source);
       }
+      else if (value.action === actionTypes.newUsername)
+      {
+        setSnackbar("Your username has been changed to " + value.newUsername, "success");
+        dispatch(setUsername(value.newUsername));
+      }
     }
-    webSocketManager.getSocket().on(user.username + "OPTIONS", process);
+    webSocketManager.getSocket().on(webSocketManager.getSocket().id, process);
     return () => {
-      webSocketManager.getSocket().off(user.username + "OPTIONS", process);
+      webSocketManager.getSocket().off(webSocketManager.getSocket().id, process);
     };
   }, [user.username, dispatch, rooms]);
 

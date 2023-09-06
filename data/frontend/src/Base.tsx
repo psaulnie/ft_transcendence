@@ -22,9 +22,7 @@ export default function Base() {
   const user = useSelector((state: any) => state.user);
   const dispatch = useDispatch();
 
-  const [isProfilOpen, setIsProfilOpen] = useState(false);
   const [drawerState, setDrawerState] = useState(false);
-  const [isGameOpen, setIsGameOpen] = useState(false);
   const toggleDrawer =
     (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
       if (
@@ -38,7 +36,8 @@ export default function Base() {
     };
 
   useEffect(() => {
-    if (!user || !user.username) {
+    if (!user || !user.username) 
+    {
       dispatch(logout());
       window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/logout`;
     }

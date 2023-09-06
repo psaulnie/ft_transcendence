@@ -92,6 +92,7 @@ function CreateChannel() {
     <Grid className="createChannel">
       <Typography sx={{marginTop:'2em'}}>Create a new channel</Typography>
       <TextField
+        autoComplete='off'
         error={result.data}
         helperText={result.data ? "This room already exists" : null}
         label="Room name"

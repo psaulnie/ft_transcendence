@@ -53,7 +53,7 @@ function Modification() {
       uploadAvatar(formData);
     }
     if (newUsername !== "" && newUsername.length < 10) {
-      // webSocketManager.getSocket()?.emit('changeUsername', newUsername);
+      webSocketManager.getSocket()?.emit('changeUsername', newUsername);
       setNewUsername("");
     }
   };
@@ -106,6 +106,7 @@ function Modification() {
             <TextField
               placeholder=". . ."
               size="small"
+              autoComplete='off'
               value={newUsername}
               onChange={(e) =>
                 e.target.value.length < 10

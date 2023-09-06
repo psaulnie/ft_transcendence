@@ -10,12 +10,11 @@ function Profile() {
   const urlAvatar = `http://${process.env.REACT_APP_IP}:5000/api/avatar/${username}`;
 
   const navigate = useNavigate();
-
   const {
     data: userProfile,
     isLoading,
     isError,
-  } = useGetUserProfileQuery({username});
+  } = useGetUserProfileQuery({username}, {skip: !username});
 
   const handleAchievementsClick = () => {
     navigate(`/profile/${username}/achievements`);
@@ -80,7 +79,7 @@ function Profile() {
                   variant="h6"
                   sx={{ fontSize: 30, fontWeight: "bold", color: "black" }}
                 >
-                  {username}
+                  {userProfile.username}
                 </Typography>
                 <Typography
                   variant="h6"

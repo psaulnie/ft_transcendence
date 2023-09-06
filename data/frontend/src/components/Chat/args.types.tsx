@@ -23,4 +23,5 @@ export enum actionTypes {
   blockedMsg,
   askBeingFriend,
   acceptBeingFriend,
+  newUsername,
 }

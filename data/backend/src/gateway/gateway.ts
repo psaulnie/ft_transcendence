@@ -62,7 +62,7 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
         (blockedUser) => blockedUser.blockedUser.uid === user.uid,
       )
     ) {
-      this.server.emit(payload.source + 'OPTIONS', {
+      this.server.emit(client.id, {
         source: payload.source,
         target: payload.target,
         action: actionTypes.blockedmsg,
@@ -120,16 +120,17 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
       throw new WsException('Missing parameter');
     if (payload.access == accessStatus.protected && payload.password == null)
       throw new WsException('Missing parameter');
+
     const user = await this.userService.findOne(payload.source);
     if (!user) throw new WsException('Source user not found');
     const userStatus = await this.usersStatusService.getUserStatus(payload.source);
-    if (!userStatus || userStatus.clientId !== client.id) throw new WsException('Forbidden');
+    if (!userStatus || userStatus.clientId !== client.id) throw new WsException('Forbidden'); // ici
     let hasPassword = false;
     let role = userRole.none;
     if (payload.room.length > 10) payload.room = payload.room.slice(0, 10);
-
     // If room doesn't exist
-    if ((await this.roomService.findOne(payload.room)) == null) {
+    const room = await this.roomService.findOne(payload.room);
+    if (!room) {
       if (payload.access != accessStatus.protected)
         await this.roomService.createRoom(
           payload.room,
@@ -138,6 +139,7 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
           '',
         );
       else {
+
         hasPassword = true;
         const hashedPassword = await hashPassword(payload.password);
         await this.roomService.createRoom(
@@ -150,10 +152,11 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
       role = userRole.owner;
     } else {
       // If room exists
-      if (payload.access == accessStatus.protected) {
+
+      if (room.access == accessStatus.protected) {
         const roomPassword = await this.roomService.getPassword(payload.room);
         if (!(await comparePassword(payload.password, roomPassword))) {
-          this.server.emit(payload.source + 'OPTIONS', {
+          this.server.emit(client.id, {
             source: payload.source,
             target: payload.room,
             action: actionTypes.wrongpassword,
@@ -164,7 +167,7 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
       }
       const nbr = await this.roomService.addUser(payload.room, user, false);
       if (nbr == -1) {
-        this.server.emit(payload.source + 'OPTIONS', {
+        this.server.emit(client.id, {
           source: payload.source,
           target: payload.room,
           action: actionTypes.ban,
@@ -172,7 +175,7 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
         return;
       }
       if (nbr == accessStatus.private) {
-        this.server.emit(payload.source + 'OPTIONS', {
+        this.server.emit(client.id, {
           source: payload.source,
           target: payload.room,
           action: actionTypes.private,
@@ -187,13 +190,13 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
         action: actionTypes.join,
       });
     else
-      this.server.emit(payload.source + 'OPTIONS', {
+      this.server.emit(client.id, {
         source: payload.source,
         target: payload.room,
         action: actionTypes.mute,
       });
     if (hasPassword == true)
-      this.server.emit(payload.source + 'OPTIONS', {
+      this.server.emit(client.id, {
         source: payload.source,
         target: payload.room,
         action: actionTypes.rightpassword,
@@ -269,7 +272,8 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
       target: payload.room,
       action: actionTypes.left,
     });
-    this.server.emit(payload.target + 'OPTIONS', {
+    const targetStatus = await this.usersStatusService.getUserStatus(payload.target);
+    this.server.emit(targetStatus.clientId, {
       source: payload.source,
       target: payload.room,
       action: actionTypes.kick,
@@ -305,7 +309,8 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
       target: payload.room,
       action: actionTypes.left,
     });
-    this.server.emit(payload.target + 'OPTIONS', {
+    const targetStatus = await this.usersStatusService.getUserStatus(payload.target);
+    this.server.emit(targetStatus.clientId, {
       source: payload.source,
       target: payload.room,
       action: actionTypes.ban,
@@ -368,7 +373,8 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
     if ((await this.roomService.getRole(room, admin.uid)) == userRole.none)
       throw new WsException('Source user is not admin of the room');
     await this.roomService.addAdmin(payload.room, user);
-    this.server.emit(payload.target + 'OPTIONS', {
+    const targetStatus = await this.usersStatusService.getUserStatus(payload.target);
+    this.server.emit(targetStatus.clientId, {
       source: payload.room,
       target: payload.target,
       action: actionTypes.admin,
@@ -395,7 +401,8 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
     if ((await this.roomService.getRole(room, admin.uid)) == userRole.none)
       throw new WsException('Source user is not admin of the room');
     await this.roomService.addToMutedList(payload.room, user);
-    this.server.emit(payload.target + 'OPTIONS', {
+    const targetStatus = await this.usersStatusService.getUserStatus(payload.target);
+    this.server.emit(targetStatus.clientId, {
       source: payload.room,
       target: payload.target,
       action: actionTypes.mute,
@@ -423,7 +430,8 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
     if ((await this.roomService.getRole(room, admin.uid)) == userRole.none)
       throw new WsException('Source user is not admin of the room');
     await this.roomService.removeFromMutedList(payload.room, user);
-    this.server.emit(payload.target + 'OPTIONS', {
+    const targetStatus = await this.usersStatusService.getUserStatus(payload.target);
+    this.server.emit(targetStatus.clientId, {
       source: payload.room,
       target: payload.target,
       action: actionTypes.unmute,
@@ -542,7 +550,8 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
       throw new WsException('Target user blocked source user');
     if (sourceUser.blockedUsers.some(blockedUser => blockedUser.blockedUser.uid === targetUser.uid))
       throw new WsException('Source user blocked target user');
-    this.server.emit(payload.target + 'OPTIONS', {
+      const targetStatus = await this.usersStatusService.getUserStatus(payload.target);
+      this.server.emit(targetStatus.clientId, {
       source: payload.source,
       target: payload.target,
       action: actionTypes.askBeingFriend,
@@ -621,16 +630,24 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
 		this.server.emit(payload.opponent, {mouseY: payload.y})
 	}
 
+  @SubscribeMessage('changeUsername')
   async changeUsername(client: Socket, payload: string) {
+    console.log('changeusername');
     const userStatus = await this.usersStatusService.getUserStatusByClientId(client.id);
     if (!userStatus)
       return ;
+    console.log(userStatus.username);
     if (userStatus.clientId !== client.id)
       throw new WsException('Forbidden');
     const user = await this.userService.findOne(userStatus.username);
     if (!user)
       return ;
     await this.userService.changeUsername(user, payload);
+    await this.usersStatusService.changeUsername(userStatus.username, payload);
+    this.server.emit(client.id, {
+      newUsername: payload,
+      action: actionTypes.newUsername,
+    });
   }
 
   async afterInit(server: Server) {
@@ -644,6 +661,7 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
 
   async handleConnection(client: Socket, ...args: any[]) {
     console.log(`Client connected: ${client.id}`);
+    console.log(client.handshake.headers.cookie);
     if (client.handshake.headers.cookie.split('=')[1] === 'test') // TODO remove when testUser removed
     {
       await this.usersStatusService.addUser(client.id, 'testUser', userStatus.online);
@@ -657,9 +675,9 @@ export class Gateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDis
     if (!session)
       return ;
     const parsedJson = JSON.parse(session.json);
-    const user = await this.userService.findOne(parsedJson.passport.user.intraUsername);
+    const user = await this.userService.findOneByIntraUsername(parsedJson.passport.user.intraUsername);
     if (!user)
       return ;
-    await this.usersStatusService.addUser(client.id, parsedJson.passport.user.intraUsername, userStatus.online);
+    await this.usersStatusService.addUser(client.id, user.username, userStatus.online);
   }
 }

@@ -43,12 +43,12 @@ function Navigation({ setDrawerState }: { setDrawerState: any }) {
     dispatch(logout());
     window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/logout`;
   }
-  
+
   const {
     data: userLevel,
     isLoading,
     isError,
-  } = useGetUserLevelQuery({username: user.username});
+  } = useGetUserLevelQuery({username: user.username}, {skip: !user.username});
   
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Error</div>; // TODO handle error

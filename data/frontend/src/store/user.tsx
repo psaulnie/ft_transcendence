@@ -19,8 +19,6 @@ const initialUser: UserState = localStorage.getItem("user")
       accessToken: "",
       isUserBlocked: false,
       blockedUsers: [],
-      isMuted: false,
-      mutedTime: null,
       isError: false,
       error: '',
     };
@@ -55,6 +53,7 @@ export const userSlice = createSlice({
     },
     setUsername: (state, action: PayloadAction<string>) => {
       state.username = action.payload;
+      localStorage.setItem("user", JSON.stringify(state));
     },
     addBlockedUser: (state, action: PayloadAction<string>) => {
       const nbr = state.blockedUsers.indexOf(action.payload);
