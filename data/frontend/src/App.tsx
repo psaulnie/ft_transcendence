@@ -40,7 +40,7 @@ function App() {
     }
     dispatch(setUsername(username));
     dispatch(login(accessToken));
-    Cookies.remove("username");
+    Cookies.remove("username", {sameSite: 'none', secure: false});
   }, [dispatch]);
 
   return (

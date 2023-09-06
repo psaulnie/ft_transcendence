@@ -47,8 +47,8 @@ export const userSlice = createSlice({
       window.location.href = "/login";
       state.username = "";
       state.isLoggedIn = false;
-      Cookies.remove("accessToken");
-      Cookies.remove("username");
+      Cookies.remove("accessToken", {sameSite: 'none', secure: false});
+      Cookies.remove("username", {sameSite: 'none', secure: false});
       localStorage.removeItem("user");
     },
     setUsername: (state, action: PayloadAction<string>) => {
