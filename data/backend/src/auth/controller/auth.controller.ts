@@ -1,4 +1,4 @@
-import { Controller, Get, Req, Res, UseGuards, Session } from '@nestjs/common';
+import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { Request, Response } from 'express';
 import {
   AuthenticatedGuard,
@@ -128,7 +128,6 @@ export class AuthController {
         throw err;
       }
 
-      console.log('ICI');
       res.cookie('accessToken', userTest.accessToken, {
         httpOnly: false,
         secure: false,
@@ -137,7 +136,6 @@ export class AuthController {
         httpOnly: false,
         secure: false,
       });
-      console.log('LA');
 
       req.session.save((err) => {
         if (err) {
