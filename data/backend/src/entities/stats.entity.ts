@@ -14,9 +14,6 @@ export class Statistics {
   @Column({ default: 0 })
   matchNumber: number;
 
-  @Column({ default: 1 })
-  level: number;
-
   @Column({ default: 0 })
   rank: number;
 }

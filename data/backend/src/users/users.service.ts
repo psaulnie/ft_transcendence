@@ -70,7 +70,16 @@ export class UsersService {
   }
 
   async findOneById(id: number): Promise<User> {
-    return await this.usersRepository.findOne({ where: { uid: id } });
+    return await this.usersRepository.findOne({
+      where: { uid: id },
+      relations: [
+        'friends',
+        'matchHistory',
+        'matchHistory.user1',
+        'matchHistory.user2',
+        'statistics',
+      ],
+    });
   }
 
   async findOneByAccessToken(accessToken: string): Promise<User> {
