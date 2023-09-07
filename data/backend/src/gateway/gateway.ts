@@ -857,16 +857,16 @@ export class Gateway
 
   async handleConnection(client: Socket, ...args: any[]) {
     console.log(`Client connected: ${client.id}`);
-    console.log(client.handshake.headers.cookie);
-    if (client?.handshake?.headers?.cookie?.split('=')[1] === 'test') {
-      // TODO remove when testUser removed
-      await this.usersStatusService.addUser(
-        client.id,
-        'testUser',
-        userStatus.online,
-      );
-      return;
-    }
+    // console.log(client.handshake.headers.cookie);
+    // if (client?.handshake?.headers?.cookie?.split('=')[1] === 'test') {
+    //   // TODO remove when testUser removed
+    //   await this.usersStatusService.addUser(
+    //     client.id,
+    //     'testUser',
+    //     userStatus.online,
+    //   );
+    //   return;
+    // }
     const credential = client.handshake.headers.cookie
       ?.split(';')
       .find((cookie) => cookie.includes('connect.sid'));
