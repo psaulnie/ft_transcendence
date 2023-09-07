@@ -4,12 +4,15 @@ import { Button, Snackbar } from "@mui/material";
 import { Alert } from "@mui/material";
 
 import CachedIcon from "@mui/icons-material/Cached";
+import { useDispatch } from "react-redux";
+import { logout } from "../../store/user";
 
 export default function ErrorSnackbar({ error }: { error: any }) {
   const [message, setMessage] = useState("Unknown error");
   const [errorCode, setErrorCode] = useState(0);
   const [open, setOpen] = useState(true);
 
+  const dispatch = useDispatch();
   const handleClose = (
     event?: React.SyntheticEvent | Event,
     reason?: string
@@ -28,8 +31,14 @@ export default function ErrorSnackbar({ error }: { error: any }) {
     if (error && error.status) setErrorCode(error.status);
     if (error && error.data && error.data.message)
       setMessage(error.data.message);
+    console.log(errorCode);
   }, []);
 
+  if (errorCode === 403)
+  {
+    dispatch(logout());
+    window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/logout`;
+  }
   return (
     <Snackbar
       open={open}

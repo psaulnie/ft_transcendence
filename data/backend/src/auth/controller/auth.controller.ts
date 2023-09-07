@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import {
   AuthenticatedGuard,
   IntraAuthGuard,
+  IntraAuthenticatedGuard,
 } from '../guards/intraAuthGuard.service';
 import { User } from '../../entities';
 import { HttpService as NestHttpService } from '@nestjs/axios';
@@ -63,7 +64,7 @@ export class AuthController {
    * Logging the user out
    */
   @Get('logout')
-  @UseGuards(AuthenticatedGuard)
+  @UseGuards(IntraAuthenticatedGuard)
   async logout(
     @Req() request: RequestWithUser,
     @Req() req: Request,
