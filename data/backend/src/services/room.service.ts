@@ -88,7 +88,7 @@ export class RoomService {
     return accessStatus.public;
   }
 
-  async removeUser(roomName: string, userId: number) {
+  async removeUser(roomName: string, userId: number): Promise<User> {
     console.log('removeuser');
     const room = await this.findOne(roomName);
     if (!room) return;
@@ -111,6 +111,7 @@ export class RoomService {
       await this.usersListRepository.save(room.usersList[0]);
     }
     await this.roomsRepository.save(room);
+    return (room.owner);
   }
 
   async removeRoom(name: string) {

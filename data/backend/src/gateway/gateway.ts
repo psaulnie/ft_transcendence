@@ -226,7 +226,14 @@ export class Gateway
       throw new WsException('Forbidden');
     const user = await this.userService.findOne(payload.source);
     if (!user) throw new WsException('Source user not found');
-    await this.roomService.removeUser(payload.room, user.uid);
+    const owner = await this.roomService.removeUser(payload.room, user.uid);
+    const ownerStatus = await this.usersStatusService.getUserStatus(owner?.username);
+    if (ownerStatus && ownerStatus.username === owner.username) {
+      this.server.emit(ownerStatus.clientId, {
+        source: payload.room,
+        action: actionTypes.owner,
+      });
+    }
     this.server.emit(payload.room, {
       source: payload.source,
       target: payload.room,
