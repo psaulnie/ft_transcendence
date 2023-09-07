@@ -770,14 +770,22 @@ export class Gateway
   @SubscribeMessage('changeUsername')
   async changeUsername(client: Socket, payload: string) {
     console.log('changeusername');
-    if (payload.length > 10)
-      payload = payload.substring(0, 10);
+    if (payload.length > 10) payload = payload.substring(0, 10);
     const userStatus = await this.usersStatusService.getUserStatusByClientId(
       client.id,
     );
     if (!userStatus) return;
     console.log(userStatus.username);
-    if (await this.userService.findOne(payload)) return;
+    console.log("A");
+    console.log(await this.userService.findOne(payload));
+    console.log("B");
+    if (await this.userService.findOne(payload)) {
+      this.server.emit(client.id, {
+        action: actionTypes.usernameAlreadyTaken,
+        newUsername: payload,
+      });
+      return ;
+    }
     if (userStatus.clientId !== client.id) throw new WsException('Forbidden');
     const user = await this.userService.findOne(userStatus.username);
     if (!user) return;

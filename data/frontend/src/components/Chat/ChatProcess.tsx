@@ -163,6 +163,8 @@ export default function ChatProcess() {
         setSnackbar("Your username has been changed to " + value.newUsername, "success");
         dispatch(setUsername(value.newUsername));
       }
+      else if (value.action === actionTypes.usernameAlreadyTaken)
+        setSnackbar("Username is already taken " + value.newUsername, "error")
     }
     webSocketManager.getSocket().on(webSocketManager.getSocket().id, process);
     return () => {
