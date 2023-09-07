@@ -443,18 +443,6 @@ export class Gateway
     const targetStatus = await this.usersStatusService.getUserStatus(
       payload.target,
     );
-    setTimeout(async () => { // TODO test
-      await this.roomService.removeFromMutedList(payload.room, user);
-      const targetStatus = await this.usersStatusService.getUserStatus(
-        payload.target,
-      );
-      this.server.emit(targetStatus.clientId, {
-        source: payload.room,
-        target: payload.target,
-        action: actionTypes.unmute,
-        role: userRole.none,
-      });
-    }, 5 * 600000);
     this.server.emit(targetStatus.clientId, {
       source: payload.room,
       target: payload.target,
