@@ -40,7 +40,7 @@ function Chat() {
     }
 
     if (blockedUsers.status === "uninitialized") {
-      fetchBlockedUsers({ username: user.username });
+      fetchBlockedUsers({});
     }
 
     if (blockedUsers.isSuccess && blockedUsers.data) {
@@ -50,7 +50,7 @@ function Chat() {
     }
 
     if (userRoomList.status === "uninitialized") {
-      fetchUserRoomList({ username: user.username });
+      fetchUserRoomList({});
     }
 
     if (userRoomList.isSuccess && userRoomList.data) {

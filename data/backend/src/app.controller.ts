@@ -33,6 +33,8 @@ import { UnauthorizedException } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { UsersStatusService } from './services/users.status.service';
 import { userStatus } from './users/userStatus';
+import RequestWithUser from './auth/service/requestWithUser.interface';
+import { User } from './entities';
 
 const fileInterceptorOptions = {
   fileFilter: (req, file, cb) => {
@@ -76,15 +78,11 @@ export class AppController {
   async uploadAvatar(
     @Body() body: any,
     @UploadedFile() file: Express.Multer.File,
-    @Req() context: any,
+    @Req() req: RequestWithUser,
   ) {
-    if (body && file && body.username) {
-      const user = await this.userService.findOne(body.username);
-      if (context.headers.authorization != 'Bearer ' + user.accessToken)
-        // TODO replace with the connect.sid cookie (using usersStatus array?)
-        return new HttpException('Unauthorized', 401);
+    const user = req.user as User;
+    if (body && file) {
       if (user) {
-        console.log('upload');
         await this.userService.updateAvatar(user, file.path, false);
       } else throw new HttpException('Unprocessable Entity', 422);
     } else throw new HttpException('Bad Request', 400);

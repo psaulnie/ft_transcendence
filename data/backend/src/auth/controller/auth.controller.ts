@@ -37,12 +37,12 @@ export class AuthController {
     console.log('‣ accessToken : ', user.accessToken);
     res.cookie('accessToken', user.accessToken, {
       httpOnly: false,
-      secure: false,
+      secure: true,
       sameSite: 'none'
     }); // Set accessToken in cookie
     res.cookie('username', user.username, {
       httpOnly: false,
-      secure: false,
+      secure: true,
       sameSite: 'none'
     }); // Set username in cookie
     res.redirect(`http://${process.env.IP}:3000/2fa`);
@@ -105,11 +105,11 @@ export class AuthController {
     this.usersService.createUser('testUser');
     res.cookie('accessToken', 'test', {
       httpOnly: false,
-      secure: false,
+      secure: true,
     }); // Set accessToken in cookie
     res.cookie('username', 'testUser', {
       httpOnly: false,
-      secure: false,
+      secure: true,
     }); // Set username in cookie
     res.redirect(`http://${process.env.IP}:3000/home`);
   }

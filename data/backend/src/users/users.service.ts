@@ -34,6 +34,7 @@ export class UsersService {
         'achievements',
         'blockedUsers.blockedUser',
         'blockedUsers.user',
+        'statistics',
       ],
     });
   }

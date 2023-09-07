@@ -38,6 +38,7 @@ function CreateChannel() {
   else if (result.isLoading) return (<Loading />);
 
   function updateNewRoomName(e: any) {
+    e.preventDefault();
     if (e.target.value.length > 0) trigger({ roomName: e.target.value });
     if (e.target.value.length <= 10) {
       setNewRoomName(e.target.value);
