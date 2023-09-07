@@ -34,12 +34,16 @@ export default function Base() {
     };
 
   useEffect(() => {
+    webSocketManager.getSocket()?.on('disconnect', function () {
+      dispatch(logout());
+      window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/logout`;
+    })
     if (!user || !user.username)
     {
       dispatch(logout());
       window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/logout`;
     }
-  }, []);
+  }, [dispatch, logout, user, user.username]);
 
   webSocketManager.initializeWebSocket();
 

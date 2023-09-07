@@ -1,9 +1,12 @@
 import { Navigate, Outlet } from "react-router";
 import { useEffect, useState } from "react";
-import Cookies from "js-cookie";
 import Loading from "./Loading";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../../store/user";
 
 export default function PrivateRoute() {
+  const user = useSelector((state: any) => state.user);
+  const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(true);
   const [isOk, setIsOk] = useState(false);
 
@@ -22,6 +25,10 @@ export default function PrivateRoute() {
       .catch(() => {
         setIsLoading(false);
       });
+    if (!user || !user.username) {
+      dispatch(logout());
+      window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/logout`;
+    }
   };
 
   useEffect(() => {
@@ -30,7 +37,6 @@ export default function PrivateRoute() {
 
   if (isLoading) return <Loading />
   if (isOk) {
-    // TODO remove when testUser no longer needed
     return <Outlet />;
   }
   // return (null);

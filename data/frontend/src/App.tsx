@@ -29,7 +29,6 @@ const theme = createTheme({
 });
 
 function App() {
-  useSelector((state: any) => state.user);
   const dispatch = useDispatch();
 
   useEffect(() => {

@@ -51,7 +51,7 @@ export class AuthController {
    */
   @Get('status')
   status(@Req() req: Request) {
-    return req.isAuthenticated();
+    return (req.isAuthenticated());
   }
 
   /**
