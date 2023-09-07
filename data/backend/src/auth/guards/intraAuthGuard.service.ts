@@ -31,10 +31,10 @@ export class AuthenticatedGuard implements CanActivate {
     const req = context.switchToHttp().getRequest();
     console.log('‣ isAuthenticated: ', req.isAuthenticated());
     // TODO REMOVE -------
-    const [type, token] = req.headers['authorization']?.split(' ') ?? [];
-    if (type && type === 'Bearer' && token && token === 'test') {
-      return true;
-    }
+    // const [type, token] = req.headers['authorization']?.split(' ') ?? [];
+    // if (type && type === 'Bearer' && token && token === 'test') {
+    //   return true;
+    // }
     // ------------------
 
     if (!req.isAuthenticated()) {
@@ -65,10 +65,10 @@ export class IntraAuthenticatedGuard implements CanActivate {
     const req = context.switchToHttp().getRequest();
     console.log('‣ isAuthenticated: ', req.isAuthenticated());
     // TODO REMOVE -------
-    const [type, token] = req.headers['authorization']?.split(' ') ?? [];
-    if (type && type === 'Bearer' && token && token === 'test') {
-      return true;
-    }
+    // const [type, token] = req.headers['authorization']?.split(' ') ?? [];
+    // if (type && type === 'Bearer' && token && token === 'test') {
+    //   return true;
+    // }
     // ------------------
 
     return req.isAuthenticated();
