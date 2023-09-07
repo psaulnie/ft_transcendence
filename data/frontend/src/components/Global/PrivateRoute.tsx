@@ -25,17 +25,18 @@ export default function PrivateRoute() {
       .catch(() => {
         setIsLoading(false);
       });
-    if (!user || !user.username) {
-      dispatch(logout());
-      window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/logout`;
-    }
+    // TODO add when removing testUser
+    // if (!user || !user.username) {
+    //   dispatch(logout());
+    //   window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/logout`;
+    // }
   };
 
   useEffect(() => {
     fetchData();
   }, []);
 
-  if (isLoading) return <Loading />
+  if (isLoading) return <Loading />;
   if (isOk) {
     return <Outlet />;
   }
