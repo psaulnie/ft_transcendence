@@ -25,14 +25,14 @@ export default function ErrorSnackbar({ error }: { error: any }) {
   } // TODO
 
   useEffect(() => {
-    if (error && error.statusCode) setErrorCode(error.statusCode);
-    if (error && error.message) setMessage(error.message);
+    if (error && error.status) setErrorCode(error.status);
+    if (error && error.data && error.data.message)
+      setMessage(error.data.message);
   }, []);
 
   return (
     <Snackbar
       open={open}
-      autoHideDuration={10000}
       anchorOrigin={{ vertical: "top", horizontal: "right" }}
       onClose={handleClose}
     >
@@ -47,7 +47,7 @@ export default function ErrorSnackbar({ error }: { error: any }) {
           </Button>
         }
       >
-        {errorCode === 0 ? message : `${errorCode}: ${message}`}
+        Error {errorCode === 0 ? message : `${errorCode}: ${message}`}
       </Alert>
     </Snackbar>
   );

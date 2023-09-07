@@ -3,11 +3,14 @@ import {
   Get,
   HttpException,
   Param,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 
 import { UsersService } from './users/users.service';
 import { AuthenticatedGuard } from './auth/guards/intraAuthGuard.service';
+import RequestWithUser from './auth/service/requestWithUser.interface';
+import { User } from './entities';
 
 @Controller('/api/profile')
 export class ProfileController {
@@ -53,12 +56,14 @@ export class ProfileController {
     };
   }
 
-  @Get('/:username/level')
+  @Get('/user/rank')
   @UseGuards(AuthenticatedGuard)
-  async getUserLevel(@Param('username') username: string) {
-    if (!username) throw new HttpException('No username provided', 400);
-    const user = await this.userService.findOneProfile(username);
-    if (!user) throw new HttpException('Unprocessable entity', 422);
-    return user.statistics.level;
+  async getUserRank(
+    @Req() req: RequestWithUser,
+  ) {
+    const user = req.user as User;
+    const cUser = await this.userService.findOneById(user.uid);
+    if (!user || !cUser) throw new HttpException('Unprocessable entity', 422);
+    return cUser.statistics.rank;
   }
 }

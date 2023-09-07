@@ -72,7 +72,7 @@ export default function UsersList({
             }
           : null,
       );
-      trigger({username: user.username});
+      trigger({});
     }
   };
 

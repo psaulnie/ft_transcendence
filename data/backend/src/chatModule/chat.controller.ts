@@ -16,6 +16,7 @@ import { User } from 'src/entities';
 import { userRole } from './chatEnums';
 import { UsersStatusService } from 'src/services/users.status.service';
 import { userStatus } from 'src/users/userStatus';
+import RequestWithUser from 'src/auth/service/requestWithUser.interface';
 
 @Controller('/api/chat/')
 export class ChatController {
@@ -43,11 +44,13 @@ export class ChatController {
 
   @UseInterceptors(CacheInterceptor)
   @UseGuards(AuthenticatedGuard)
-  @Get(':username/blocked')
-  async getBlockedUser(@Param('username') username: string): Promise<string[]> {
+  @Get('user/blocked')
+  async getBlockedUser(@Req() req: RequestWithUser): Promise<string[]> {
     console.log('getBlockedUser');
-    if (username == null) throw new HttpException('Bad request', 400);
-    const user = await this.userService.findOne(username);
+    const user = req.user as User;
+
+    // if (username == null) throw new HttpException('Bad request', 400);
+    // const user = await this.userService.findOne(username);
     if (!user) throw new HttpException('Unprocessable Entity', 422);
     const usersList = [];
     const blockedUsers = user.blockedUsers;
@@ -85,9 +88,11 @@ export class ChatController {
   @UseGuards(AuthenticatedGuard)
   @Get(':roomName/users')
   async getUsersInRoom(
-    @Query() data: any,
+    @Req() req: RequestWithUser,
     @Param('roomName') roomName: string,
   ): Promise<any[]> {
+    const cUser = req.user as User;
+    if (!cUser) throw new HttpException('Unprocessable Entity', 422);
     if (roomName == null) throw new HttpException('Bad request', 400);
     const room = await this.roomService.findOne(roomName);
     if (!room) throw new HttpException('Unprocessable Entity', 422);
@@ -108,16 +113,14 @@ export class ChatController {
 
   @UseInterceptors(CacheInterceptor)
   @UseGuards(AuthenticatedGuard)
-  @Get(':username/rooms/list')
+  @Get('user/rooms/list')
   async getUserRoomsList(
-    @Query() data: any,
-    @Param('username') username: string,
+    @Req() req: RequestWithUser,
   ): Promise<any[]> {
-    if (username == null) throw new HttpException('Bad request', 400);
+    const user = req.user as User;
+    if (!user) throw new HttpException('Unprocessable Entity', 422);
     const rooms = await this.roomService.findAll();
     if (!rooms) throw new HttpException('Unprocessable Entity', 422);
-    const user = await this.userService.findOne(username);
-    if (!user) throw new HttpException('Unprocessable Entity', 422);
     const roomsList = [];
     for (const element of rooms) {
       const userInfo = element.usersList.find(
@@ -181,16 +184,16 @@ export class ChatController {
 
   @UseInterceptors(CacheInterceptor)
   @UseGuards(AuthenticatedGuard)
-  @Get(':username/:roomName/status')
+  @Get('user/:roomName/status')
   async getUserStatusInRoom(
-    @Param('username') username: string,
     @Param('roomName') roomName: string,
+    @Req() req: RequestWithUser,
   ): Promise<any> {
-    if (username == null || roomName == null)
+    if (roomName == null)
       throw new HttpException('Bad request', 400);
     const room = await this.roomService.findOne(roomName);
     if (!room) throw new HttpException('Unprocessable Entity', 422);
-    const user = await this.userService.findOne(username);
+    const user = req.user as User;
     if (!user) throw new HttpException('Unprocessable Entity', 422);
     const userInRoom = room.usersList.find((obj) => obj.user.uid == user.uid);
     if (!userInRoom) throw new HttpException('Unprocessable Entity', 422);
@@ -226,19 +229,15 @@ export class ChatController {
 
   @UseInterceptors(CacheInterceptor)
   @UseGuards(AuthenticatedGuard)
-  @Get(':username/friends')
-  async getUserFriendsList(@Param('username') username: string): Promise<{}[]> {
-    if (username == null) throw new HttpException('Bad request', 400);
-    const user = await this.userService.findOne(username);
+  @Get('user/friends')
+  async getUserFriendsList(@Req() req: RequestWithUser): Promise<{}[]> {
+    const user = req.user as User;
     if (!user) throw new HttpException('Unprocessable Entity', 422);
     const friendList = [];
-    console.log('user', user);
     for (const element of user.friends) {
       if (element) {
-        // console.log('user1', element.user1);
-        // console.log('user2', element.user2);
-        if (element.username != username) friendList.push(element.username);
-        else if (element.username != username)
+        if (element.username != user.username) friendList.push(element.username);
+        else if (element.username != user.username)
           friendList.push(element.username);
         console.log('friendlist', friendList);
       }

@@ -18,8 +18,8 @@ export const apiSlice = createApi({
       }),
     }),
     getBlockedUsers: builder.query({
-      query: ({ username = null }) => ({
-        url: "/api/chat/" + username + "/blocked",
+      query: () => ({
+        url: "/api/chat/user/blocked",
         method: "GET",
         headers: {
           Authorization: "Bearer " + Cookies.get("accessToken"),
@@ -45,8 +45,8 @@ export const apiSlice = createApi({
       }),
     }),
     getUserRoomList: builder.query({
-      query: ({ username = null }) => ({
-        url: "/api/chat/" + username + "/rooms/list",
+      query: () => ({
+        url: "/api/chat/user/rooms/list",
         method: "GET",
         headers: {
           Authorization: "Bearer " + Cookies.get("accessToken"),
@@ -63,8 +63,8 @@ export const apiSlice = createApi({
       }),
     }),
     getUserStatusInRoom: builder.query({
-      query: ({ username = null, roomName = null }) => ({
-        url: "/api/chat/" + username + "/" + roomName + "/status",
+      query: ({ roomName = null }) => ({
+        url: "/api/chat/user/" + roomName + "/status",
         method: "GET",
         headers: {
           Authorization: "Bearer " + Cookies.get("accessToken"),
@@ -90,8 +90,8 @@ export const apiSlice = createApi({
       }),
     }),
     getUserFriendsList: builder.query({
-      query: ({ username = null }) => ({
-        url: "/api/chat/" + username + "/friends",
+      query: () => ({
+        url: "/api/chat/user/friends",
         method: "GET",
         headers: {
           Authorization: "Bearer " + Cookies.get("accessToken"),
@@ -116,9 +116,9 @@ export const apiSlice = createApi({
         },
       }),
     }),
-    getUserLevel: builder.query({
-      query: ({ username = null }) => ({
-        url: "/api/profile/" + username + "/level",
+    getUserRank: builder.query({
+      query: () => ({
+        url: "/api/profile/user/rank",
         method: "GET",
         headers: {
           Authorization: "Bearer " + Cookies.get("accessToken"),
@@ -158,5 +158,5 @@ export const {
   useLazyGetUserRoomListQuery,
   useGetUserProfileQuery,
   useGetUserAchievementsQuery,
-  useGetUserLevelQuery,
+  useGetUserRankQuery,
 } = apiSlice;

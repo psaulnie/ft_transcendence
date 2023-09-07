@@ -28,7 +28,8 @@ export default function Home() {
 
   if (isLoading) return (<Loading />);
   if (isError) return <ErrorSnackbar error={error} />;
-  if (userProfile.exist === false) {
+
+  if (!userProfile || userProfile.exist === false) {
     dispatch(logout());
     window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/logout`;
   }

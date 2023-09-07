@@ -34,6 +34,7 @@ export class UsersService {
         'achievements',
         'blockedUsers.blockedUser',
         'blockedUsers.user',
+        'statistics',
       ],
     });
   }
@@ -69,7 +70,16 @@ export class UsersService {
   }
 
   async findOneById(id: number): Promise<User> {
-    return await this.usersRepository.findOne({ where: { uid: id } });
+    return await this.usersRepository.findOne({
+      where: { uid: id },
+      relations: [
+        'friends',
+        'matchHistory',
+        'matchHistory.user1',
+        'matchHistory.user2',
+        'statistics',
+      ],
+    });
   }
 
   async findOneByAccessToken(accessToken: string): Promise<User> {
@@ -113,6 +123,12 @@ export class UsersService {
     ) {
       return;
     }
+    user.friends = user.friends.filter(
+      (obj) => obj.uid !== blockedUser.uid,
+    );
+    user.blockedUsers = user.blockedUsers.filter(
+      (obj) => obj.blockedUser.uid !== blockedUser.uid,
+    ); // TODO test, remove the blockedUser from the friendList
     block.user = user;
     block.blockedUser = blockedUser;
     user.blockedUsers.push(block);
