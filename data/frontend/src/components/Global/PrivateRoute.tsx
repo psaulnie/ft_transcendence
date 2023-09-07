@@ -10,9 +10,6 @@ export default function PrivateRoute() {
   const fetchData = () => {
     fetch(`http://${process.env.REACT_APP_IP}:5000/auth/status`, {
       credentials: "include",
-      headers: {
-        authorization: "Bearer " + Cookies.get("accessToken"),
-      },
     })
       .then((response) => {
         return response.json();
@@ -23,10 +20,6 @@ export default function PrivateRoute() {
         setIsLoading(false);
       })
       .catch(() => {
-        if (Cookies.get("accessToken") === "test")
-          // TODO remove when testUser no longer needed
-          setIsOk(true);
-        else setIsOk(false);
         setIsLoading(false);
       });
   };
@@ -36,7 +29,7 @@ export default function PrivateRoute() {
   }, []);
 
   if (isLoading) return <Loading />
-  if (isOk || Cookies.get("accessToken") === "test") {
+  if (isOk) {
     // TODO remove when testUser no longer needed
     return <Outlet />;
   }
