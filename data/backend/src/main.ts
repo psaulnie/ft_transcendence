@@ -24,7 +24,6 @@ async function bootstrap() {
       store: new TypeormStore().connect(sessionRepo),
     }),
   );
-  app.use(cookieParser());
   app.use(passport.initialize());
   app.use(passport.session());
   app.enableCors({

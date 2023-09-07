@@ -101,33 +101,6 @@ export class UsersService {
     return await this.usersRepository.save(user);
   }
 
-  async createUser(name: string) {
-    console.log('createuser');
-    if (await this.findOneByUsername('testUser')) {
-      return;
-    }
-    const newUser = new User();
-    const statistics = new Statistics();
-    const achievements = new Achievements();
-
-    newUser.urlAvatar = '';
-    newUser.username = name;
-    newUser.accessToken = 'test';
-    newUser.refreshToken = '';
-    newUser.blockedUsers = [];
-    newUser.intraId = '';
-    newUser.intraUsername = name;
-    newUser.friends = [];
-    newUser.matchHistory = [];
-    newUser.statistics = statistics;
-    newUser.achievements = achievements;
-
-    console.log('before');
-    await this.statisticsRepository.save(statistics);
-    await this.achievementsRepository.save(achievements);
-    await this.usersRepository.save(newUser);
-  }
-
   async removeUser(name: string) {
     return await this.usersRepository.delete({ username: name });
   }
