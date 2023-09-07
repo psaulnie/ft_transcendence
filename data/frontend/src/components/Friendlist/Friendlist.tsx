@@ -13,6 +13,8 @@ function Friendlist() {
     isError,
   } = useGetFriendsListQuery({});
 
+  console.log('friendlist: ', userFriendsList);
+
   const handleProfileClick = () => {
     navigate("/profile");
   };

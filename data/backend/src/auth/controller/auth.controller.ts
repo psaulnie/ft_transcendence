@@ -38,12 +38,10 @@ export class AuthController {
     res.cookie('accessToken', user.accessToken, {
       httpOnly: false,
       secure: false,
-      sameSite: 'none',
     }); // Set accessToken in cookie
     res.cookie('username', user.username, {
       httpOnly: false,
       secure: false,
-      sameSite: 'none',
     }); // Set accessToken in cookie
     res.redirect(`http://${process.env.IP}:3000/2fa`);
     // res.sendStatus(200);

@@ -45,7 +45,7 @@ function inGameStatus({username}: {username: string}) {
                ></Box>
              </Grid>
 
-             <Grid item marginLeft="-0.3em">
+             <Grid>
                <Typography
                  variant="h6"
                  sx={{
@@ -54,6 +54,7 @@ function inGameStatus({username}: {username: string}) {
                    color: "black",
                    marginLeft: "auto",
                    marginRight: "1em",
+                   marginTop: "5px",
                    transform: "translate(0%, 14%)",
                  }}
                >
@@ -77,7 +78,7 @@ function inGameStatus({username}: {username: string}) {
                </Typography>
              </Grid>
 
-             <Grid item marginLeft="-0.2em">
+             <Grid>
                <Button
                  sx={{
                    backgroundColor: "#D9D9D9",
