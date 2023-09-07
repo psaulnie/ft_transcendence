@@ -8,7 +8,6 @@ import {
   Zoom,
   TextField,
   Autocomplete,
-  Skeleton,
   DialogContent,
 } from "@mui/material";
 import { TransitionProps } from "@mui/material/transitions";
@@ -16,6 +15,8 @@ import { TransitionProps } from "@mui/material/transitions";
 import { useSelector } from "react-redux";
 
 import { useGetInvitedUsersListQuery } from "../../store/api";
+import ErrorSnackbar from "../Global/ErrorSnackbar";
+import Loading from "../Global/Loading";
 
 type arg = {
   open: boolean;
@@ -60,6 +61,7 @@ export default function SelectUserDialog({ open, setOpen, roomName }: arg) {
     data: usersList,
     isLoading,
     isError,
+    error,
     refetch,
   } = useGetInvitedUsersListQuery({
     username: user.username,
@@ -70,8 +72,8 @@ export default function SelectUserDialog({ open, setOpen, roomName }: arg) {
     refetch();
   }, [refetch]);
 
-  if (isError) throw new (Error as any)("API call error");
-  if (isLoading) return <Skeleton variant="rectangular" />;
+  if (isError) return <ErrorSnackbar error={error} />;
+  if (isLoading) return <Loading />;
 
   return (
     <Dialog

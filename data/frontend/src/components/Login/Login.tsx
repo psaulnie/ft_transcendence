@@ -2,6 +2,7 @@ import { useLocation } from "react-router";
 import { SyntheticEvent, useEffect, useState } from "react";
 import { Navigate } from "react-router";
 import { Button, Typography } from "@mui/material";
+import Loading from "../Global/Loading";
 
 function Login() {
   const location = useLocation();
@@ -48,7 +49,7 @@ function Login() {
     fetchData();
   }, []);
 
-  if (isLoading) return <div>Loading...</div>; // TODO : add a loading component
+  if (isLoading) return <Loading />;
   if (isOk) return <Navigate to="/home" />;
   return (
     <div className="main">

@@ -55,20 +55,23 @@ export class AuthService implements AuthProvider {
     console.log('CREATE USER SERVICE');
     console.log('‣ UserDetails', details);
 
-    const url = await firstValueFrom(
-      this.httpService
-        .get('https://api.intra.42.fr/v2/me', {
-          headers: {
-            Authorization: `Bearer ${details.accessToken}`,
-          },
-        })
-        .pipe(
-          catchError(() => {
-            throw new UnauthorizedException();
-          }),
-        ),
-    );
-    details.urlAvatar = url.data.image.versions.small;
+    // TODO remove condition, it's only for userTest
+    if (details.username !== 'userTest') {
+      const url = await firstValueFrom(
+        this.httpService
+          .get('https://api.intra.42.fr/v2/me', {
+            headers: {
+              Authorization: `Bearer ${details.accessToken}`,
+            },
+          })
+          .pipe(
+            catchError(() => {
+              throw new UnauthorizedException();
+            }),
+          ),
+      );
+      details.urlAvatar = url.data.image.versions.small;
+    }
 
     const achievements = new Achievements();
     const statistics = new Statistics();

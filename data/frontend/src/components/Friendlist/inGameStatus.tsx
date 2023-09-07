@@ -1,8 +1,10 @@
-import {Box, Button, Grid, Typography} from "@mui/material";
-import {Delete, VideogameAsset} from "@mui/icons-material";
+import { Avatar, Box, Button, Grid, Typography } from "@mui/material";
+import { Delete, VideogameAsset } from "@mui/icons-material";
 
 function inGameStatus({username}: {username: string}) {
- return (
+  const urlAvatar = `http://${process.env.REACT_APP_IP}:5000/api/avatar/${username}`;
+
+  return (
    <Grid
        container
        spacing={0}
@@ -30,20 +32,19 @@ function inGameStatus({username}: {username: string}) {
              justifyContent="flex-start"
              alignItems="center"
            >
-             <Grid item>
-               <Box
-                 sx={{
-                   backgroundColor: "#D9D9D9",
-                   border: "black solid",
-                   borderWidth: "1px",
-                   height: "2.5em",
-                   width: "2.5em",
-                   borderRadius: "3em",
-                   marginLeft: "0.3em",
-                   marginRight: "0.3em",
-                 }}
-               ></Box>
-             </Grid>
+             <Avatar
+               src={urlAvatar}
+               alt="User Avatar"
+               sx={{
+                 width: "2em",
+                 height: "2em",
+                 border: "black solid",
+                 borderWidth: "1px",
+                 borderRadius: "3em",
+                 marginLeft: "0.3em",
+                 marginRight: "0.3em",
+               }}
+             />
 
              <Grid>
                <Typography

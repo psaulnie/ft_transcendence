@@ -219,6 +219,11 @@ export class Gateway
       payload.source == null
     )
       throw new WsException('Missing parameter');
+    const userStatus = await this.usersStatusService.getUserStatus(
+      payload.source,
+    );
+    if (!userStatus || userStatus.clientId !== client.id)
+      throw new WsException('Forbidden');
     const user = await this.userService.findOne(payload.source);
     if (!user) throw new WsException('Source user not found');
     await this.roomService.removeUser(payload.room, user.uid);
@@ -438,6 +443,19 @@ export class Gateway
     const targetStatus = await this.usersStatusService.getUserStatus(
       payload.target,
     );
+    setTimeout(async () => {
+      // TODO test
+      await this.roomService.removeFromMutedList(payload.room, user);
+      const targetStatus = await this.usersStatusService.getUserStatus(
+        payload.target,
+      );
+      this.server.emit(targetStatus.clientId, {
+        source: payload.room,
+        target: payload.target,
+        action: actionTypes.unmute,
+        role: userRole.none,
+      });
+    }, 5 * 600000);
     this.server.emit(targetStatus.clientId, {
       source: payload.room,
       target: payload.target,
@@ -558,9 +576,13 @@ export class Gateway
     );
     if (!userStatus || userStatus.clientId !== client.id)
       throw new WsException('Forbidden');
+    const invitedUserStatus = await this.usersStatusService.getUserStatus(
+      payload.username,
+    );
+    if (!invitedUserStatus) throw new WsException('Invited user not found');
     const room = await this.roomService.findOne(payload.roomName);
     if (!room) throw new WsException('Room not found');
-    this.server.emit(payload.username + 'OPTIONS', {
+    this.server.emit(invitedUserStatus.clientId, {
       source: payload.roomName,
       target: payload.username,
       action: actionTypes.invited,
@@ -766,11 +788,22 @@ export class Gateway
   @SubscribeMessage('changeUsername')
   async changeUsername(client: Socket, payload: string) {
     console.log('changeusername');
+    if (payload.length > 10) payload = payload.substring(0, 10);
     const userStatus = await this.usersStatusService.getUserStatusByClientId(
       client.id,
     );
     if (!userStatus) return;
     console.log(userStatus.username);
+    console.log('A');
+    console.log(await this.userService.findOne(payload));
+    console.log('B');
+    if (await this.userService.findOne(payload)) {
+      this.server.emit(client.id, {
+        action: actionTypes.usernameAlreadyTaken,
+        newUsername: payload,
+      });
+      return;
+    }
     if (userStatus.clientId !== client.id) throw new WsException('Forbidden');
     const user = await this.userService.findOne(userStatus.username);
     if (!user) return;
@@ -825,16 +858,16 @@ export class Gateway
 
   async handleConnection(client: Socket, ...args: any[]) {
     console.log(`Client connected: ${client.id}`);
-    console.log(client.handshake.headers.cookie);
-    if (client?.handshake?.headers?.cookie?.split('=')[1] === 'test') {
-      // TODO remove when testUser removed
-      await this.usersStatusService.addUser(
-        client.id,
-        'testUser',
-        userStatus.online,
-      );
-      return;
-    }
+    // console.log(client.handshake.headers.cookie);
+    // if (client?.handshake?.headers?.cookie?.split('=')[1] === 'test') {
+    //   // TODO remove when testUser removed
+    //   await this.usersStatusService.addUser(
+    //     client.id,
+    //     'testUser',
+    //     userStatus.online,
+    //   );
+    //   return;
+    // }
     const credential = client.handshake.headers.cookie
       ?.split(';')
       .find((cookie) => cookie.includes('connect.sid'));

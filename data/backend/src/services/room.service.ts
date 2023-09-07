@@ -93,7 +93,8 @@ export class RoomService {
     const room = await this.findOne(roomName);
     if (!room) return;
     console.log('-1 user in ' + roomName);
-    room.usersNumber--;
+    if (room.usersList.find((obj) => obj.user.uid == userId))
+      room.usersNumber--;
     console.log('number of users:' + room.usersNumber);
     if (room.usersNumber <= 0) {
       console.log('room deleted');
@@ -104,6 +105,11 @@ export class RoomService {
       if (user.user && user.user.uid) return user.user.uid !== userId;
       return true;
     });
+    if (room.owner.uid == userId) {
+      room.owner = room.usersList[0].user;
+      room.usersList[0].role = userRole.owner;
+      await this.usersListRepository.save(room.usersList[0]);
+    }
     await this.roomsRepository.save(room);
   }
 

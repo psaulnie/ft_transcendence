@@ -2,7 +2,8 @@ import { Box, Grid, Button, Avatar, Typography } from "@mui/material";
 import { useSelector } from "react-redux";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { useGetUserProfileQuery } from "../../store/api";
-
+import Loading from "./Loading";
+import ErrorSnackbar from "./ErrorSnackbar";
 
 function Profile() {
   const { username } = useParams();
@@ -13,8 +14,9 @@ function Profile() {
   const {
     data: userProfile,
     isLoading,
+    error,
     isError,
-  } = useGetUserProfileQuery({username}, {skip: !username});
+  } = useGetUserProfileQuery({ username }, { skip: !username });
 
   const handleAchievementsClick = () => {
     navigate(`/profile/${username}/achievements`);
@@ -27,13 +29,10 @@ function Profile() {
   const handleModificationClick = () => {
     navigate(`/edit`);
   };
-
-  if (isLoading) return <div>Loading...</div>;
-  if (isError) return <div>Error</div>; // TODO handle error
-  if (userProfile.exist === false)
-    return <Navigate to="/home" />
-
-    return (
+  if (isLoading) return <Loading />;
+  if (isError) return <ErrorSnackbar error={error} />;
+  if (userProfile.exist === false) return <Navigate to="/home" />;
+  return (
     <div>
       <Box
         sx={{
@@ -73,7 +72,11 @@ function Profile() {
               <Grid
                 item
                 xs={6}
-                sx={{ backgroundColor: "", marginTop: "0.2em", transform: "translate(-7%, 0%)", }}
+                sx={{
+                  backgroundColor: "",
+                  marginTop: "0.2em",
+                  transform: "translate(-7%, 0%)",
+                }}
               >
                 <Typography
                   variant="h6"
@@ -168,64 +171,254 @@ function Profile() {
                 gap: "0.5em",
               }}
             >
-              <Box sx={{ backgroundColor: "#454545", color: "black", height:'1.5em'}}>
-                <Grid
-                container
-                spacing={0}
-                >
-                    <Box sx={{backgroundColor: "#D9D9D9", border:'black solid', borderWidth:'1px', height: "1.5em", width: "1.5em", borderRadius:'3em', marginLeft:'2.2em' }}></Box>
-                    <Typography sx={{ color:'#1ABAFF', marginLeft:'2em', fontSize: 20,}}> 4 </Typography>
-                    <Typography sx={{ marginLeft:'0.4em', fontSize: 20, color: "black" }}> : </Typography>
-                    <Typography sx={{ marginLeft:'0.5em', fontSize: 20, color: "#FC7D07" }}> 2 </Typography>
-                    <Box sx={{backgroundColor: "#D9D9D9", border:'black solid', borderWidth:'1px', height: "1.5em", width: "1.5em", borderRadius:'3em', marginLeft:'2.4em' }}></Box>
+              <Box
+                sx={{
+                  backgroundColor: "#454545",
+                  color: "black",
+                  height: "1.5em",
+                }}
+              >
+                <Grid container spacing={0}>
+                  <Box
+                    sx={{
+                      backgroundColor: "#D9D9D9",
+                      border: "black solid",
+                      borderWidth: "1px",
+                      height: "1.5em",
+                      width: "1.5em",
+                      borderRadius: "3em",
+                      marginLeft: "2.2em",
+                    }}
+                  ></Box>
+                  <Typography
+                    sx={{ color: "#1ABAFF", marginLeft: "2em", fontSize: 20 }}
+                  >
+                    {" "}
+                    4{" "}
+                  </Typography>
+                  <Typography
+                    sx={{ marginLeft: "0.4em", fontSize: 20, color: "black" }}
+                  >
+                    {" "}
+                    :{" "}
+                  </Typography>
+                  <Typography
+                    sx={{ marginLeft: "0.5em", fontSize: 20, color: "#FC7D07" }}
+                  >
+                    {" "}
+                    2{" "}
+                  </Typography>
+                  <Box
+                    sx={{
+                      backgroundColor: "#D9D9D9",
+                      border: "black solid",
+                      borderWidth: "1px",
+                      height: "1.5em",
+                      width: "1.5em",
+                      borderRadius: "3em",
+                      marginLeft: "2.4em",
+                    }}
+                  ></Box>
                 </Grid>
               </Box>
-              <Box sx={{ backgroundColor: "#454545", color: "black", height:'1.5em'}}>
-                <Grid
-                container
-                spacing={0}
-                >
-                    <Box sx={{backgroundColor: "#D9D9D9", border:'black solid', borderWidth:'1px', height: "1.5em", width: "1.5em", borderRadius:'3em', marginLeft:'2.2em' }}></Box>
-                    <Typography sx={{ color:'#1ABAFF', marginLeft:'2em', fontSize: 20,}}> 9 </Typography>
-                    <Typography sx={{ marginLeft:'0.4em', fontSize: 20, color: "black" }}> : </Typography>
-                    <Typography sx={{ marginLeft:'0.5em', fontSize: 20, color: "#FC7D07" }}> 0 </Typography>
-                    <Box sx={{backgroundColor: "#D9D9D9", border:'black solid', borderWidth:'1px', height: "1.5em", width: "1.5em", borderRadius:'3em', marginLeft:'2.4em' }}></Box>
+              <Box
+                sx={{
+                  backgroundColor: "#454545",
+                  color: "black",
+                  height: "1.5em",
+                }}
+              >
+                <Grid container spacing={0}>
+                  <Box
+                    sx={{
+                      backgroundColor: "#D9D9D9",
+                      border: "black solid",
+                      borderWidth: "1px",
+                      height: "1.5em",
+                      width: "1.5em",
+                      borderRadius: "3em",
+                      marginLeft: "2.2em",
+                    }}
+                  ></Box>
+                  <Typography
+                    sx={{ color: "#1ABAFF", marginLeft: "2em", fontSize: 20 }}
+                  >
+                    {" "}
+                    9{" "}
+                  </Typography>
+                  <Typography
+                    sx={{ marginLeft: "0.4em", fontSize: 20, color: "black" }}
+                  >
+                    {" "}
+                    :{" "}
+                  </Typography>
+                  <Typography
+                    sx={{ marginLeft: "0.5em", fontSize: 20, color: "#FC7D07" }}
+                  >
+                    {" "}
+                    0{" "}
+                  </Typography>
+                  <Box
+                    sx={{
+                      backgroundColor: "#D9D9D9",
+                      border: "black solid",
+                      borderWidth: "1px",
+                      height: "1.5em",
+                      width: "1.5em",
+                      borderRadius: "3em",
+                      marginLeft: "2.4em",
+                    }}
+                  ></Box>
                 </Grid>
               </Box>
-              <Box sx={{ backgroundColor: "#454545", color: "black", height:'1.5em'}}>
-                <Grid
-                container
-                spacing={0}
-                >
-                    <Box sx={{backgroundColor: "#D9D9D9", border:'black solid', borderWidth:'1px', height: "1.5em", width: "1.5em", borderRadius:'3em', marginLeft:'2.2em' }}></Box>
-                    <Typography sx={{ color:'#FC7D07', marginLeft:'2em', fontSize: 20,}}> 3 </Typography>
-                    <Typography sx={{ marginLeft:'0.4em', fontSize: 20, color: "black" }}> : </Typography>
-                    <Typography sx={{ marginLeft:'0.5em', fontSize: 20, color: "#1ABAFF" }}> 4 </Typography>
-                    <Box sx={{backgroundColor: "#D9D9D9", border:'black solid', borderWidth:'1px', height: "1.5em", width: "1.5em", borderRadius:'3em', marginLeft:'2.4em' }}></Box>
+              <Box
+                sx={{
+                  backgroundColor: "#454545",
+                  color: "black",
+                  height: "1.5em",
+                }}
+              >
+                <Grid container spacing={0}>
+                  <Box
+                    sx={{
+                      backgroundColor: "#D9D9D9",
+                      border: "black solid",
+                      borderWidth: "1px",
+                      height: "1.5em",
+                      width: "1.5em",
+                      borderRadius: "3em",
+                      marginLeft: "2.2em",
+                    }}
+                  ></Box>
+                  <Typography
+                    sx={{ color: "#FC7D07", marginLeft: "2em", fontSize: 20 }}
+                  >
+                    {" "}
+                    3{" "}
+                  </Typography>
+                  <Typography
+                    sx={{ marginLeft: "0.4em", fontSize: 20, color: "black" }}
+                  >
+                    {" "}
+                    :{" "}
+                  </Typography>
+                  <Typography
+                    sx={{ marginLeft: "0.5em", fontSize: 20, color: "#1ABAFF" }}
+                  >
+                    {" "}
+                    4{" "}
+                  </Typography>
+                  <Box
+                    sx={{
+                      backgroundColor: "#D9D9D9",
+                      border: "black solid",
+                      borderWidth: "1px",
+                      height: "1.5em",
+                      width: "1.5em",
+                      borderRadius: "3em",
+                      marginLeft: "2.4em",
+                    }}
+                  ></Box>
                 </Grid>
               </Box>
-              <Box sx={{ backgroundColor: "#454545", color: "black", height:'1.5em'}}>
-                <Grid
-                container
-                spacing={0}
-                >
-                    <Box sx={{backgroundColor: "#D9D9D9", border:'black solid', borderWidth:'1px', height: "1.5em", width: "1.5em", borderRadius:'3em', marginLeft:'2.2em' }}></Box>
-                    <Typography sx={{ color:'#1ABAFF', marginLeft:'2em', fontSize: 20,}}> 4 </Typography>
-                    <Typography sx={{ marginLeft:'0.4em', fontSize: 20, color: "black" }}> : </Typography>
-                    <Typography sx={{ marginLeft:'0.5em', fontSize: 20, color: "#FC7D07" }}> 2 </Typography>
-                    <Box sx={{backgroundColor: "#D9D9D9", border:'black solid', borderWidth:'1px', height: "1.5em", width: "1.5em", borderRadius:'3em', marginLeft:'2.4em' }}></Box>
+              <Box
+                sx={{
+                  backgroundColor: "#454545",
+                  color: "black",
+                  height: "1.5em",
+                }}
+              >
+                <Grid container spacing={0}>
+                  <Box
+                    sx={{
+                      backgroundColor: "#D9D9D9",
+                      border: "black solid",
+                      borderWidth: "1px",
+                      height: "1.5em",
+                      width: "1.5em",
+                      borderRadius: "3em",
+                      marginLeft: "2.2em",
+                    }}
+                  ></Box>
+                  <Typography
+                    sx={{ color: "#1ABAFF", marginLeft: "2em", fontSize: 20 }}
+                  >
+                    {" "}
+                    4{" "}
+                  </Typography>
+                  <Typography
+                    sx={{ marginLeft: "0.4em", fontSize: 20, color: "black" }}
+                  >
+                    {" "}
+                    :{" "}
+                  </Typography>
+                  <Typography
+                    sx={{ marginLeft: "0.5em", fontSize: 20, color: "#FC7D07" }}
+                  >
+                    {" "}
+                    2{" "}
+                  </Typography>
+                  <Box
+                    sx={{
+                      backgroundColor: "#D9D9D9",
+                      border: "black solid",
+                      borderWidth: "1px",
+                      height: "1.5em",
+                      width: "1.5em",
+                      borderRadius: "3em",
+                      marginLeft: "2.4em",
+                    }}
+                  ></Box>
                 </Grid>
               </Box>
-              <Box sx={{ backgroundColor: "454545", color: "black", height:'1.5em'}}>
-                <Grid
-                container
-                spacing={0}
-                >
-                    <Box sx={{backgroundColor: "#D9D9D9", border:'black solid', borderWidth:'1px', height: "1.5em", width: "1.5em", borderRadius:'3em', marginLeft:'2.2em' }}></Box>
-                    <Typography sx={{ color:'#1ABAFF', marginLeft:'2em', fontSize: 20,}}> 4 </Typography>
-                    <Typography sx={{ marginLeft:'0.4em', fontSize: 20, color: "black" }}> : </Typography>
-                    <Typography sx={{ marginLeft:'0.5em', fontSize: 20, color: "#FC7D07" }}> 2 </Typography>
-                    <Box sx={{backgroundColor: "#D9D9D9", border:'black solid', borderWidth:'1px', height: "1.5em", width: "1.5em", borderRadius:'3em', marginLeft:'2.4em' }}></Box>
+              <Box
+                sx={{
+                  backgroundColor: "454545",
+                  color: "black",
+                  height: "1.5em",
+                }}
+              >
+                <Grid container spacing={0}>
+                  <Box
+                    sx={{
+                      backgroundColor: "#D9D9D9",
+                      border: "black solid",
+                      borderWidth: "1px",
+                      height: "1.5em",
+                      width: "1.5em",
+                      borderRadius: "3em",
+                      marginLeft: "2.2em",
+                    }}
+                  ></Box>
+                  <Typography
+                    sx={{ color: "#1ABAFF", marginLeft: "2em", fontSize: 20 }}
+                  >
+                    {" "}
+                    4{" "}
+                  </Typography>
+                  <Typography
+                    sx={{ marginLeft: "0.4em", fontSize: 20, color: "black" }}
+                  >
+                    {" "}
+                    :{" "}
+                  </Typography>
+                  <Typography
+                    sx={{ marginLeft: "0.5em", fontSize: 20, color: "#FC7D07" }}
+                  >
+                    {" "}
+                    2{" "}
+                  </Typography>
+                  <Box
+                    sx={{
+                      backgroundColor: "#D9D9D9",
+                      border: "black solid",
+                      borderWidth: "1px",
+                      height: "1.5em",
+                      width: "1.5em",
+                      borderRadius: "3em",
+                      marginLeft: "2.4em",
+                    }}
+                  ></Box>
                 </Grid>
               </Box>
             </Box>
@@ -257,64 +450,60 @@ function Profile() {
       >
         Achievements
       </Button>
-      {
-        user.username === username ?
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={handleFriendsClick}
-        sx={{
-          textTransform: "none",
-          fontWeight: "bold",
-          fontSize: "20px",
-          width: "10em",
-          height: "1.4em",
-          position: "fixed",
-          transform: "translate(-50%, 0%)",
-          backgroundColor: "rgba(220, 220, 220, 0.9)",
-          border: "2px solid #000000",
-          borderRadius: "1em",
-          top: "80.5%",
-          color: "black",
-          "&:hover": {
-            backgroundColor: "grey",
-            borderColor: "red",
-          },
-        }}
-      >
-        Friends
-      </Button>
-      : null
-      }
-      {
-        user.username === username ?
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleModificationClick}
-            sx={{
-              textTransform: "none",
-              fontWeight: "bold",
-              fontSize: "20px",
-              width: "10em",
-              height: "1.4em",
-              position: "fixed",
-              transform: "translate(-50%, 0%)",
-              backgroundColor: "rgba(220, 220, 220, 0.9)",
-              border: "2px solid #000000",
-              borderRadius: "1em",
-              top: "87%",
-              color: "black",
-              "&:hover": {
-                backgroundColor: "grey",
-                borderColor: "red",
-              },
-            }}
-          >
-            Change profile
-          </Button>
-        : null
-      }
+      {user.username === username ? (
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleFriendsClick}
+          sx={{
+            textTransform: "none",
+            fontWeight: "bold",
+            fontSize: "20px",
+            width: "10em",
+            height: "1.4em",
+            position: "fixed",
+            transform: "translate(-50%, 0%)",
+            backgroundColor: "rgba(220, 220, 220, 0.9)",
+            border: "2px solid #000000",
+            borderRadius: "1em",
+            top: "80.5%",
+            color: "black",
+            "&:hover": {
+              backgroundColor: "grey",
+              borderColor: "red",
+            },
+          }}
+        >
+          Friends
+        </Button>
+      ) : null}
+      {user.username === username ? (
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleModificationClick}
+          sx={{
+            textTransform: "none",
+            fontWeight: "bold",
+            fontSize: "20px",
+            width: "10em",
+            height: "1.4em",
+            position: "fixed",
+            transform: "translate(-50%, 0%)",
+            backgroundColor: "rgba(220, 220, 220, 0.9)",
+            border: "2px solid #000000",
+            borderRadius: "1em",
+            top: "87%",
+            color: "black",
+            "&:hover": {
+              backgroundColor: "grey",
+              borderColor: "red",
+            },
+          }}
+        >
+          Change profile
+        </Button>
+      ) : null}
     </div>
   );
 }

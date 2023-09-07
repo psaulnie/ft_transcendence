@@ -4,6 +4,7 @@ import { useGetFriendsListQuery } from "../../store/api";
 import InGameStatus from "./inGameStatus";
 import OnlineStatus from "./onlineStatus";
 import OfflineStatus from "./offlineStatus";
+import { userStatus } from "./userStatus";
 
 function Friendlist() {
   const navigate = useNavigate();
@@ -48,12 +49,26 @@ function Friendlist() {
           alignItems="center"
         >
 
-          <InGameStatus username='inGame1' />
-          <InGameStatus username='inGame2' />
-          <OnlineStatus username='online1' />
-          <OnlineStatus username='online2' />
-          <OfflineStatus username='offline1' />
-          <OfflineStatus username='offline2' />
+
+          {/*<InGameStatus username='inGame1' />*/}
+          {/*<InGameStatus username='inGame2' />*/}
+          {/*<OnlineStatus username='online1' />*/}
+          {/*<OnlineStatus username='online2' />*/}
+          {/*<OfflineStatus username='offline1' />*/}
+          {/*<OfflineStatus username='offline2' />*/}
+
+          {userFriendsList.map((friend: any) => {
+            switch (friend.status) {
+              case userStatus.playing:
+                return <InGameStatus key={friend.username} username={friend.username} />;
+              case userStatus.online:
+                return <OnlineStatus key={friend.username} username={friend.username} />;
+              case userStatus.offline:
+                return <OfflineStatus key={friend.username} username={friend.username} />;
+              default:
+                return null;
+            }
+          })}
 
           <Grid
             item

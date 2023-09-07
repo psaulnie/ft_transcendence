@@ -34,6 +34,7 @@ export class UsersService {
         'achievements',
         'blockedUsers.blockedUser',
         'blockedUsers.user',
+        'statistics',
       ],
     });
   }
@@ -69,7 +70,16 @@ export class UsersService {
   }
 
   async findOneById(id: number): Promise<User> {
-    return await this.usersRepository.findOne({ where: { uid: id } });
+    return await this.usersRepository.findOne({
+      where: { uid: id },
+      relations: [
+        'friends',
+        'matchHistory',
+        'matchHistory.user1',
+        'matchHistory.user2',
+        'statistics',
+      ],
+    });
   }
 
   async findOneByAccessToken(accessToken: string): Promise<User> {
@@ -101,33 +111,6 @@ export class UsersService {
     return await this.usersRepository.save(user);
   }
 
-  async createUser(name: string) {
-    console.log('createuser');
-    if (await this.findOneByUsername('testUser')) {
-      return;
-    }
-    const newUser = new User();
-    const statistics = new Statistics();
-    const achievements = new Achievements();
-
-    newUser.urlAvatar = '';
-    newUser.username = name;
-    newUser.accessToken = 'test';
-    newUser.refreshToken = '';
-    newUser.blockedUsers = [];
-    newUser.intraId = '';
-    newUser.intraUsername = name;
-    newUser.friends = [];
-    newUser.matchHistory = [];
-    newUser.statistics = statistics;
-    newUser.achievements = achievements;
-
-    console.log('before');
-    await this.statisticsRepository.save(statistics);
-    await this.achievementsRepository.save(achievements);
-    await this.usersRepository.save(newUser);
-  }
-
   async removeUser(name: string) {
     return await this.usersRepository.delete({ username: name });
   }
@@ -140,6 +123,10 @@ export class UsersService {
     ) {
       return;
     }
+    user.friends = user.friends.filter((obj) => obj.uid !== blockedUser.uid);
+    user.blockedUsers = user.blockedUsers.filter(
+      (obj) => obj.blockedUser.uid !== blockedUser.uid,
+    ); // TODO test, remove the blockedUser from the friendList
     block.user = user;
     block.blockedUser = blockedUser;
     user.blockedUsers.push(block);

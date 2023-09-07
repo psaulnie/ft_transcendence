@@ -3,32 +3,30 @@ import { Controller, Get, Req, UseGuards } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { AuthenticatedGuard } from '../auth/guards/intraAuthGuard.service';
 import RequestWithUser from '../auth/service/requestWithUser.interface';
+import { UsersStatusService } from '../services/users.status.service';
 
 @Controller('/friends')
 export class FriendListController {
-  constructor(private readonly userService: UsersService) {}
+  constructor(
+    private readonly userService: UsersService,
+    private readonly usersStatusService: UsersStatusService,
+  ) {}
 
   @Get('/list')
   @UseGuards(AuthenticatedGuard)
   async getFriendsList(@Req() request: RequestWithUser) {
     const user = await this.userService.findOne(request.user.username);
     const friendList = [];
-    console.log('user', user);
     for (const element of user.friends) {
       if (element) {
         if (element.username != user.username) {
-          friendList.push(element.username);
+          const status = await this.usersStatusService.getUserStatus(
+            element.username,
+          );
+          friendList.push(status);
         }
-        console.log('friendlist', friendList);
       }
     }
-    console.log(friendList);
     return friendList;
-  }
-
-  @Get('/status')
-  @UseGuards(AuthenticatedGuard)
-  async getFriendsStatus() {
-    return;
   }
 }

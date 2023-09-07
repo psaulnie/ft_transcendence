@@ -1,19 +1,21 @@
 import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { Request, Response } from 'express';
 import {
-  AuthenticatedGuard,
   IntraAuthGuard,
+  IntraAuthenticatedGuard,
 } from '../guards/intraAuthGuard.service';
 import { User } from '../../entities';
 import { HttpService as NestHttpService } from '@nestjs/axios';
 import { UsersService } from 'src/users/users.service';
 import RequestWithUser from '../service/requestWithUser.interface';
+import { AuthService } from '../service/auth.service';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly httpService: NestHttpService,
     private readonly usersService: UsersService,
+    private readonly authService: AuthService,
   ) {}
 
   /**
@@ -42,7 +44,7 @@ export class AuthController {
     res.cookie('username', user.username, {
       httpOnly: false,
       secure: false,
-    }); // Set accessToken in cookie
+    }); // Set username in cookie
     res.redirect(`http://${process.env.IP}:3000/2fa`);
     // res.sendStatus(200);
   }
@@ -61,7 +63,7 @@ export class AuthController {
    * Logging the user out
    */
   @Get('logout')
-  @UseGuards(AuthenticatedGuard)
+  @UseGuards(IntraAuthenticatedGuard)
   async logout(
     @Req() request: RequestWithUser,
     @Req() req: Request,
@@ -93,22 +95,54 @@ export class AuthController {
 
     // Delete cookie 'connect.sid' on client side
     res.clearCookie('connect.sid');
+    res.clearCookie('username');
+    res.clearCookie('accessToken');
 
     // Redirect on login page
     res.redirect(`http://${process.env.IP}:3000/login`);
   }
 
   @Get('testlogin')
-  async testlogin(@Res() res: Response) {
-    await this.usersService.createUser('testUser');
-    res.cookie('accessToken', 'test', {
-      httpOnly: false,
-      secure: false,
-    }); // Set accessToken in cookie
-    res.cookie('username', 'testUser', {
-      httpOnly: false,
-      secure: false,
-    }); // Set username in cookie
-    res.redirect(`http://${process.env.IP}:3000/home`);
+  async testLogin(@Res() res: Response, @Req() req: Request) {
+    const userTest = {
+      intraId: '987654',
+      username: 'userTest',
+      accessToken: 'accessToken',
+      refreshToken: 'refreshToken',
+      urlAvatar: '',
+      intraUsername: 'userTest',
+    };
+
+    const usr = await this.authService.findUser(userTest.intraId);
+    console.log(usr);
+    if (!usr) {
+      await this.authService.createUser(userTest);
+    }
+
+    // Use passport to connect userTest
+    req.logIn(userTest, (err) => {
+      if (err) {
+        console.error('Error logging in:', err);
+        throw err;
+      }
+
+      res.cookie('accessToken', userTest.accessToken, {
+        httpOnly: false,
+        secure: false,
+      });
+      res.cookie('username', userTest.username, {
+        httpOnly: false,
+        secure: false,
+      });
+
+      req.session.save((err) => {
+        if (err) {
+          console.error('Error saving session:', err);
+          throw err;
+        }
+
+        res.redirect(`http://${process.env.IP}:3000/home`);
+      });
+    });
   }
 }

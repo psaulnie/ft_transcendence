@@ -47,8 +47,6 @@ export class UsersStatusService {
   }
 
   async getUserStatusByClientId(clientId: string) {
-    console.log(clientId);
-    console.log(this.usersStatus);
     return this.usersStatus.find((user) => user.clientId === clientId);
   }
 

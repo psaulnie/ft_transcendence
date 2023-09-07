@@ -141,8 +141,6 @@ export default function ChatProcess() {
           "You've been unmuted from this channel: " + value.source,
           "success",
         );
-      } else if (value.action === actionTypes.rightpassword) {
-
       } else if (value.action === actionTypes.wrongpassword) {
         dispatch(removeRoom(value.target));
         setSnackbar("Wrong password", "error");
@@ -165,6 +163,8 @@ export default function ChatProcess() {
         setSnackbar("Your username has been changed to " + value.newUsername, "success");
         dispatch(setUsername(value.newUsername));
       }
+      else if (value.action === actionTypes.usernameAlreadyTaken)
+        setSnackbar("Username is already taken " + value.newUsername, "error")
     }
     webSocketManager.getSocket().on(webSocketManager.getSocket().id, process);
     return () => {
