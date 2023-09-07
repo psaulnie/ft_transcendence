@@ -219,6 +219,11 @@ export class Gateway
       payload.source == null
     )
       throw new WsException('Missing parameter');
+    const userStatus = await this.usersStatusService.getUserStatus(
+      payload.source,
+    );
+    if (!userStatus || userStatus.clientId !== client.id)
+      throw new WsException('Forbidden');
     const user = await this.userService.findOne(payload.source);
     if (!user) throw new WsException('Source user not found');
     await this.roomService.removeUser(payload.room, user.uid);
@@ -438,6 +443,18 @@ export class Gateway
     const targetStatus = await this.usersStatusService.getUserStatus(
       payload.target,
     );
+    setTimeout(async () => { // TODO test
+      await this.roomService.removeFromMutedList(payload.room, user);
+      const targetStatus = await this.usersStatusService.getUserStatus(
+        payload.target,
+      );
+      this.server.emit(targetStatus.clientId, {
+        source: payload.room,
+        target: payload.target,
+        action: actionTypes.unmute,
+        role: userRole.none,
+      });
+    }, 5 * 600000);
     this.server.emit(targetStatus.clientId, {
       source: payload.room,
       target: payload.target,

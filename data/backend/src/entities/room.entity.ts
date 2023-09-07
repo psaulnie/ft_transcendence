@@ -32,7 +32,6 @@ export class Room {
 
   @ManyToOne(() => User, (user) => user.uid)
   @JoinColumn({ name: 'owner' })
-  // @Column()
   owner: User;
 
   @Column()

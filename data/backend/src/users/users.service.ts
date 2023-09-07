@@ -150,6 +150,12 @@ export class UsersService {
     ) {
       return;
     }
+    user.friends = user.friends.filter(
+      (obj) => obj.uid !== blockedUser.uid,
+    );
+    user.blockedUsers = user.blockedUsers.filter(
+      (obj) => obj.blockedUser.uid !== blockedUser.uid,
+    ); // TODO test, remove the blockedUser from the friendList
     block.user = user;
     block.blockedUser = blockedUser;
     user.blockedUsers.push(block);
