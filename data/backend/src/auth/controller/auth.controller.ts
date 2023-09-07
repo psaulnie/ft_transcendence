@@ -38,10 +38,12 @@ export class AuthController {
     res.cookie('accessToken', user.accessToken, {
       httpOnly: false,
       secure: false,
+      sameSite: 'none',
     }); // Set accessToken in cookie
     res.cookie('username', user.username, {
       httpOnly: false,
       secure: false,
+      sameSite: 'none',
     }); // Set accessToken in cookie
     res.redirect(`http://${process.env.IP}:3000/2fa`);
     // res.sendStatus(200);
@@ -100,7 +102,7 @@ export class AuthController {
 
   @Get('testlogin')
   async testlogin(@Res() res: Response) {
-    this.usersService.createUser('testUser');
+    await this.usersService.createUser('testUser');
     res.cookie('accessToken', 'test', {
       httpOnly: false,
       secure: false,

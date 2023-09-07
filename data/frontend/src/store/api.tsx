@@ -136,6 +136,15 @@ export const apiSlice = createApi({
         },
       }),
     }),
+    getFriendsList: builder.query({
+      query: ({ username = null }) => ({
+        url: "/friends/list",
+        method: "GET",
+        headers: {
+          Authorization: "Bearer " + Cookies.get("accessToken"),
+        },
+      }),
+    }),
   }),
 });
 
@@ -159,4 +168,5 @@ export const {
   useGetUserProfileQuery,
   useGetUserAchievementsQuery,
   useGetUserLevelQuery,
+  useGetFriendsListQuery,
 } = apiSlice;

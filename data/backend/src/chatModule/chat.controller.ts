@@ -223,8 +223,8 @@ export class ChatController {
         // console.log('user1', element.user1);
         // console.log('user2', element.user2);
         if (element.username != username) friendList.push(element.username);
-        else if (element.username != username)
-          friendList.push(element.username);
+        // else if (element.username != username)
+        //   friendList.push(element.username);
         console.log('friendlist', friendList);
       }
     }

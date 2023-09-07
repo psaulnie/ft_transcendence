@@ -826,9 +826,8 @@ export class Gateway
   async handleConnection(client: Socket, ...args: any[]) {
     console.log(`Client connected: ${client.id}`);
     console.log(client.handshake.headers.cookie);
-    if (client.handshake.headers.cookie.split('=')[1] === 'test') {
+    if (client?.handshake?.headers?.cookie?.split('=')[1] === 'test') {
       // TODO remove when testUser removed
-      console.log("A")
       await this.usersStatusService.addUser(
         client.id,
         'testUser',

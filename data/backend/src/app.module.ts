@@ -30,7 +30,8 @@ import { BlockedList } from './entities/blocked.list.entity';
 import { Statistics } from './entities/stats.entity';
 import { GameModule } from './game/game.module';
 import { GameService } from './services/game.service';
-import { ProfileController } from './profile.controller';
+import { ProfileController } from './controllers/profile.controller';
+import { FriendListController } from './controllers/friendlist.controller';
 
 @Module({
   imports: [
@@ -63,7 +64,12 @@ import { ProfileController } from './profile.controller';
     HttpModule.register({}),
     GameModule,
   ],
-  controllers: [AppController, ChatController, ProfileController],
+  controllers: [
+    AppController,
+    ChatController,
+    ProfileController,
+    FriendListController,
+  ],
   providers: [
     UsersService,
     GameService,

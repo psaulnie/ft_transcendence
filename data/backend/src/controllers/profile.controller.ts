@@ -6,8 +6,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 
-import { UsersService } from './users/users.service';
-import { AuthenticatedGuard } from './auth/guards/intraAuthGuard.service';
+import { UsersService } from '../users/users.service';
+import { AuthenticatedGuard } from '../auth/guards/intraAuthGuard.service';
 
 @Controller('/api/profile')
 export class ProfileController {
