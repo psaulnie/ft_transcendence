@@ -25,4 +25,6 @@ export enum actionTypes {
   acceptBeingFriend,
   newUsername,
   newBackground,
+  usernameAlreadyTaken,
+  owner,
 }

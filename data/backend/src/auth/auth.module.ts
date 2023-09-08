@@ -27,6 +27,7 @@ import { Achievements } from 'src/entities/achievements.entity';
     UsersService,
     TwoFactorAuthService,
     ConfigService,
+    AuthService,
   ],
   imports: [
     TypeOrmModule.forFeature([

@@ -1,8 +1,9 @@
 import { Box, Grid, Button } from "@mui/material";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
-import { useGetUserAchievementsQuery } from "../../../store/api";
+import { useGetUserAchievementsQuery } from "../../store/api";
 import Completed from "./Completed";
 import ToComplete from "./ToComplete";
+import Loading from "../Global/Loading";
 
 function Achievements() {
   const navigate = useNavigate();
@@ -18,7 +19,7 @@ function Achievements() {
     isError,
   } = useGetUserAchievementsQuery({ username });
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <Loading />;
   if (isError) return <div>Error</div>; // TODO handle error
   if (userAchievements.exist === false) return <Navigate to="/home" />;
 

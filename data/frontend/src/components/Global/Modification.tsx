@@ -46,14 +46,14 @@ function Modification() {
 
   const saveChanges = () => {
     const formData = new FormData();
-    if (selectedFile !== undefined) {
-      formData.append("username", user.username);
-      formData.append("file", selectedFile);
-      uploadAvatar(formData);
-    }
     if (newUsername !== "" && newUsername.length < 10) {
       webSocketManager.getSocket()?.emit('changeUsername', newUsername);
       setNewUsername("");
+    }
+    if (selectedFile !== undefined) {
+      formData.append("file", selectedFile);
+      uploadAvatar(formData);
+      window.location.reload();
     }
   };
 

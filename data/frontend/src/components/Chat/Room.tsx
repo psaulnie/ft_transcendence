@@ -64,7 +64,7 @@ function Room({ roomName }: { roomName: string }) {
               height: "100%",
               width: "100%",
               padding: "2px",
-              overflow: "scroll",
+              overflow: "auto",
             }}
           >
             <div ref={messagesContainerRef}>

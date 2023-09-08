@@ -132,6 +132,16 @@ export default function ChatProcess() {
           }),
         );
         setSnackbar("You are now admin in " + value.source, "success");
+      } else if (value.action === actionTypes.owner) {
+        dispatch(
+          changeRole({
+            name: value.source,
+            role: userRole.owner,
+            isDirectMsg: false,
+            hasPassword: false,
+          }),
+        );
+        setSnackbar("You are now the owner of " + value.source, "success")
       } else if (value.action === actionTypes.mute) {
         dispatch(mute(value.source));
         setSnackbar("You are mute from this channel: " + value.source, "error");
@@ -141,8 +151,6 @@ export default function ChatProcess() {
           "You've been unmuted from this channel: " + value.source,
           "success",
         );
-      } else if (value.action === actionTypes.rightpassword) {
-
       } else if (value.action === actionTypes.wrongpassword) {
         dispatch(removeRoom(value.target));
         setSnackbar("Wrong password", "error");
@@ -169,7 +177,9 @@ export default function ChatProcess() {
       {
         setSnackbar("Background successfully changed", "success");
       }
-    }
+      else if (value.action === actionTypes.usernameAlreadyTaken)
+        setSnackbar("Username is already taken " + value.newUsername, "error");
+      }
     webSocketManager.getSocket().on(webSocketManager.getSocket().id, process);
     return () => {
       webSocketManager.getSocket().off(webSocketManager.getSocket().id, process);

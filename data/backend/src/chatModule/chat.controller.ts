@@ -14,12 +14,16 @@ import { UsersService } from '../users/users.service';
 import { AuthenticatedGuard } from '../auth/guards/intraAuthGuard.service';
 import { User } from 'src/entities';
 import { userRole } from './chatEnums';
+import { UsersStatusService } from 'src/services/users.status.service';
+import { userStatus } from 'src/users/userStatus';
+import RequestWithUser from 'src/auth/service/requestWithUser.interface';
 
 @Controller('/api/chat/')
 export class ChatController {
   constructor(
     private readonly roomService: RoomService,
     private readonly userService: UsersService,
+    private readonly usersStatusService: UsersStatusService,
   ) {}
 
   @UseInterceptors(CacheInterceptor)
@@ -40,11 +44,13 @@ export class ChatController {
 
   @UseInterceptors(CacheInterceptor)
   @UseGuards(AuthenticatedGuard)
-  @Get(':username/blocked')
-  async getBlockedUser(@Param('username') username: string): Promise<string[]> {
+  @Get('user/blocked')
+  async getBlockedUser(@Req() req: RequestWithUser): Promise<string[]> {
     console.log('getBlockedUser');
-    if (username == null) throw new HttpException('Bad request', 400);
-    const user = await this.userService.findOne(username);
+    const user = req.user as User;
+
+    // if (username == null) throw new HttpException('Bad request', 400);
+    // const user = await this.userService.findOne(username);
     if (!user) throw new HttpException('Unprocessable Entity', 422);
     const usersList = [];
     const blockedUsers = user.blockedUsers;
@@ -82,9 +88,11 @@ export class ChatController {
   @UseGuards(AuthenticatedGuard)
   @Get(':roomName/users')
   async getUsersInRoom(
-    @Query() data: any,
+    @Req() req: RequestWithUser,
     @Param('roomName') roomName: string,
   ): Promise<any[]> {
+    const cUser = req.user as User;
+    if (!cUser) throw new HttpException('Unprocessable Entity', 422);
     if (roomName == null) throw new HttpException('Bad request', 400);
     const room = await this.roomService.findOne(roomName);
     if (!room) throw new HttpException('Unprocessable Entity', 422);
@@ -105,16 +113,12 @@ export class ChatController {
 
   @UseInterceptors(CacheInterceptor)
   @UseGuards(AuthenticatedGuard)
-  @Get(':username/rooms/list')
-  async getUserRoomsList(
-    @Query() data: any,
-    @Param('username') username: string,
-  ): Promise<any[]> {
-    if (username == null) throw new HttpException('Bad request', 400);
+  @Get('user/rooms/list')
+  async getUserRoomsList(@Req() req: RequestWithUser): Promise<any[]> {
+    const user = req.user as User;
+    if (!user) throw new HttpException('Unprocessable Entity', 422);
     const rooms = await this.roomService.findAll();
     if (!rooms) throw new HttpException('Unprocessable Entity', 422);
-    const user = await this.userService.findOne(username);
-    if (!user) throw new HttpException('Unprocessable Entity', 422);
     const roomsList = [];
     for (const element of rooms) {
       const userInfo = element.usersList.find(
@@ -147,40 +151,38 @@ export class ChatController {
   @UseInterceptors(CacheInterceptor)
   @UseGuards(AuthenticatedGuard)
   @Get('users/list')
-  async getUsersList(@Req() req: Request): Promise<string[]> {
-    let [type, token] = req.headers['authorization']?.split(' ') ?? [];
-    if (type !== 'Bearer') {
-      token = undefined;
-    }
-    if (!token) {
-      throw new HttpException('Unauthorized', 401);
-    }
-    const cUser = await this.userService.findOneByAccessToken(token);
-    // const cUser = await this.userService.findOne('testUser');
+  async getUsersList(@Req() req: RequestWithUser): Promise<string[]> {
+    const cUser = req.user as User;
     if (!cUser) {
       throw new HttpException('Unauthorized', 401);
     }
     const users = await this.userService.findAll();
     const usersList: string[] = [];
-    users.forEach((element) => {
+    for (const element of users) {
+      const cUserStatus = await this.usersStatusService.getUserStatus(
+        element.username,
+      );
+      if (!cUserStatus) continue;
+      if (cUserStatus && cUserStatus.status === userStatus.offline) {
+        continue;
+      }
       if (!element.blockedUsers.find((obj) => obj.blockedUser.uid == cUser.uid))
         usersList.push(element.username);
-    });
+    }
     return usersList;
   }
 
   @UseInterceptors(CacheInterceptor)
   @UseGuards(AuthenticatedGuard)
-  @Get(':username/:roomName/status')
+  @Get('user/:roomName/status')
   async getUserStatusInRoom(
-    @Param('username') username: string,
     @Param('roomName') roomName: string,
+    @Req() req: RequestWithUser,
   ): Promise<any> {
-    if (username == null || roomName == null)
-      throw new HttpException('Bad request', 400);
+    if (roomName == null) throw new HttpException('Bad request', 400);
     const room = await this.roomService.findOne(roomName);
     if (!room) throw new HttpException('Unprocessable Entity', 422);
-    const user = await this.userService.findOne(username);
+    const user = req.user as User;
     if (!user) throw new HttpException('Unprocessable Entity', 422);
     const userInRoom = room.usersList.find((obj) => obj.user.uid == user.uid);
     if (!userInRoom) throw new HttpException('Unprocessable Entity', 422);
@@ -200,6 +202,11 @@ export class ChatController {
     const usersList: {}[] = [];
 
     for (const element of users) {
+      const cUsersStatus = await this.usersStatusService.getUserStatus(
+        element.username,
+      );
+      if (!cUsersStatus) continue;
+      if (cUsersStatus && cUsersStatus.status === userStatus.offline) continue;
       if (
         element.username != username &&
         (await this.roomService.isUserInRoom(roomName, element.uid)) == false
@@ -211,19 +218,16 @@ export class ChatController {
 
   @UseInterceptors(CacheInterceptor)
   @UseGuards(AuthenticatedGuard)
-  @Get(':username/friends')
-  async getUserFriendsList(@Param('username') username: string): Promise<{}[]> {
-    if (username == null) throw new HttpException('Bad request', 400);
-    const user = await this.userService.findOne(username);
+  @Get('user/friends')
+  async getUserFriendsList(@Req() req: RequestWithUser): Promise<{}[]> {
+    const user = req.user as User;
     if (!user) throw new HttpException('Unprocessable Entity', 422);
     const friendList = [];
-    console.log('user', user);
     for (const element of user.friends) {
       if (element) {
-        // console.log('user1', element.user1);
-        // console.log('user2', element.user2);
-        if (element.username != username) friendList.push(element.username);
-        else if (element.username != username)
+        if (element.username != user.username)
+          friendList.push(element.username);
+        else if (element.username != user.username)
           friendList.push(element.username);
         console.log('friendlist', friendList);
       }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import webSocketManager from "../../webSocket";
 import { accessStatus, userRole } from "./chatEnums";
@@ -16,10 +16,11 @@ import {
   SelectChangeEvent,
   IconButton,
   InputLabel,
-  Skeleton,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import PasswordDialog from "./PasswordDialog";
+import ErrorSnackbar from "../Global/ErrorSnackbar";
+import Loading from "../Global/Loading";
 
 function CreateChannel() {
   const user = useSelector((state: any) => state.user);
@@ -32,20 +33,17 @@ function CreateChannel() {
 
   const [trigger, result] = useLazyGetIsRoomNameTakenQuery();
 
-  if (result.isError) throw new (Error as any)("API call error");
-  else if (result.isLoading)
-    return (
-      <div>
-        <Skeleton variant="text" />
-        <Skeleton variant="rectangular" />
-      </div>
-    );
+  if (result.isError) return <ErrorSnackbar error={result.error} />;
+  else if (result.isLoading) return (<Loading />);
 
   function updateNewRoomName(e: any) {
+    e.preventDefault();
     if (e.target.value.length > 0) trigger({ roomName: e.target.value });
     if (e.target.value.length <= 10) {
       setNewRoomName(e.target.value);
+      console.log("New room name:", newRoomName); // Pour déboguer
     }
+
   }
 
   function changeAccess(event: SelectChangeEvent) {
@@ -97,6 +95,7 @@ function CreateChannel() {
         label="Room name"
         value={newRoomName}
         onChange={updateNewRoomName}
+        autoFocus
       />
       <FormControl sx={{ height: "80%" }}>
         <InputLabel>Access</InputLabel>
@@ -124,6 +123,7 @@ function CreateChannel() {
           roomName={newRoomName}
           role={userRole.owner}
           createRoom={true}
+          setNewRoomName={setNewRoomName}
         />
       ) : null}
       {result.data === true ? <p>This room already exist</p> : null}

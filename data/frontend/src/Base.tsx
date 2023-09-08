@@ -11,10 +11,11 @@ import Options from "./components/Global/Options";
 import Profile from "./components/Global/Profile";
 import Home from "./components/Home/Home";
 import Chat from "./components/Chat/Chat";
-import Achievements from "./components/Global/Achievements/Achievements";
+import Achievements from "./components/Achievements/Achievements";
 import Modification from "./components/Global/Modification";
-import Friendlist from "./components/Global/Friendlist";
+import Friendlist from "./components/Friendlist/Friendlist";
 import webSocketManager from "./webSocket";
+import TwoFactorLogin from "./components/Login/TwoFactorLogin";
 
 export default function Base() {
   const user = useSelector((state: any) => state.user);
@@ -34,12 +35,16 @@ export default function Base() {
     };
 
   useEffect(() => {
+    webSocketManager.getSocket()?.on('disconnect', function () {
+      localStorage.removeItem("user");
+      window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/logout`;
+    })
     if (!user || !user.username)
     {
-      dispatch(logout());
+      localStorage.removeItem("user");
       window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/logout`;
     }
-  }, []);
+  }, [dispatch, logout, user, user.username]);
 
   webSocketManager.initializeWebSocket();
 
@@ -49,6 +54,7 @@ export default function Base() {
       <NavDrawer state={drawerState} toggleDrawer={toggleDrawer} />
       <Routes>
         <Route path="*" element={<Navigate to="/home" />}></Route>
+        <Route path="/2fa" element={<TwoFactorLogin />}></Route>
         <Route path="/home" element={<Home />}></Route>
         <Route path="/profile/:username" element={<Profile />}></Route>
         <Route path="/game" element={<Game />}></Route>

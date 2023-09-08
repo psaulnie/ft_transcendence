@@ -33,6 +33,8 @@ import { UnauthorizedException } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { UsersStatusService } from './services/users.status.service';
 import { userStatus } from './users/userStatus';
+import RequestWithUser from './auth/service/requestWithUser.interface';
+import { User } from './entities';
 
 const fileInterceptorOptions = {
   fileFilter: (req, file, cb) => {
@@ -76,46 +78,14 @@ export class AppController {
   async uploadAvatar(
     @Body() body: any,
     @UploadedFile() file: Express.Multer.File,
-    @Req() context: any,
+    @Req() req: RequestWithUser,
   ) {
-    if (body && file && body.username) {
-      const user = await this.userService.findOne(body.username);
-      if (context.headers.authorization != 'Bearer ' + user.accessToken)
-        // TODO replace with the connect.sid cookie (using usersStatus array?)
-        return new HttpException('Unauthorized', 401);
+    const user = req.user as User;
+    if (body && file) {
       if (user) {
-        console.log('upload');
         await this.userService.updateAvatar(user, file.path, false);
       } else throw new HttpException('Unprocessable Entity', 422);
     } else throw new HttpException('Bad Request', 400);
-  }
-
-  @Get('/avatar/remove')
-  @UseGuards(AuthenticatedGuard)
-  async removeAvatar(@Req() context: any, @Query('username') username: string) {
-    if (!username) return new HttpException('Bad Request', 400);
-    const user = await this.userService.findOne(username);
-    if (context.headers.authorization != 'Bearer ' + user.accessToken)
-      // TODO replace with the connect.sid cookie (using usersStatus array?)
-      return new HttpException('Unauthorized', 401);
-    const url = await firstValueFrom(
-      this.httpService
-        .get('https://api.intra.42.fr/v2/me', {
-          headers: {
-            Authorization: `${context.headers.authorization}`,
-          },
-        })
-        .pipe(
-          catchError(() => {
-            throw new UnauthorizedException();
-          }),
-        ),
-    );
-    await this.userService.updateAvatar(
-      user,
-      url.data.image.versions.small,
-      true,
-    );
   }
 
   @Get('/avatar/')
@@ -142,35 +112,43 @@ export class AppController {
       throw new HttpException('Bad Request', 400);
     }
 
-    const user = await this.userService.findOne(username);
-    if (user) {
-      const path = user.urlAvatar;
-      if (isUrl(path)) {
-        res.redirect(path);
-        return;
+    try {
+      const user = await this.userService.findOne(username);
+      if (user) {
+        const path = user.urlAvatar;
+        if (isUrl(path)) {
+          res.redirect(path);
+          return;
+        }
+        if (path) {
+          const file = createReadStream(join(process.cwd(), '..' + path));
+          if (file) {
+            const mime = require('mime');
+            const mime_type = mime.getType(path);
+            if (!mime_type) throw new HttpException('Internal Server Error', 500);
+            res.set({
+              'Content-Type': mime_type,
+            });
+            file.pipe(res);
+            return new StreamableFile(file);
+          } else throw new HttpException('Internal Server Error', 500);
+        }
       }
-      if (path) {
-        const file = createReadStream(join(process.cwd(), '..' + path));
-        if (file) {
-          const mime = require('mime');
-          const mime_type = mime.getType(path);
-          if (!mime_type) throw new HttpException('Internal Server Error', 500);
-          res.set({
-            'Content-Type': mime_type,
-          });
-          return new StreamableFile(file);
-        } else throw new HttpException('Internal Server Error', 500);
-      }
+      const file = createReadStream(
+        join(process.cwd(), '../avatars/default.jpg'),
+      );
+      if (file) {
+        res.set({
+          'Content-Type': 'image/jpg',
+        });
+        file.pipe(res);
+  
+        return new StreamableFile(file);
+      } else throw new HttpException('Internal Server Error', 500);
     }
-    const file = createReadStream(
-      join(process.cwd(), '../avatars/default.jpg'),
-    );
-    if (file) {
-      res.set({
-        'Content-Type': 'image/jpg',
-      });
-      return new StreamableFile(file);
-    } else throw new HttpException('Internal Server Error', 500);
+    catch (e) {
+      console.log(e);
+    }
   }
 
   @Get(':username/status')
