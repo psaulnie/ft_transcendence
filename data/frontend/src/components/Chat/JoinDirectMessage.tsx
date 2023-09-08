@@ -15,7 +15,6 @@ import {
   MenuItem,
   SelectChangeEvent,
   IconButton,
-  Skeleton,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { userRole } from "./chatEnums";

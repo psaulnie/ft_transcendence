@@ -114,9 +114,7 @@ export class ChatController {
   @UseInterceptors(CacheInterceptor)
   @UseGuards(AuthenticatedGuard)
   @Get('user/rooms/list')
-  async getUserRoomsList(
-    @Req() req: RequestWithUser,
-  ): Promise<any[]> {
+  async getUserRoomsList(@Req() req: RequestWithUser): Promise<any[]> {
     const user = req.user as User;
     if (!user) throw new HttpException('Unprocessable Entity', 422);
     const rooms = await this.roomService.findAll();
@@ -160,13 +158,13 @@ export class ChatController {
     }
     const users = await this.userService.findAll();
     const usersList: string[] = [];
-    for (const element of users)
-    {
-      const cUserStatus = await this.usersStatusService.getUserStatus(element.username);
-      if (!cUserStatus)
-        continue ;
+    for (const element of users) {
+      const cUserStatus = await this.usersStatusService.getUserStatus(
+        element.username,
+      );
+      if (!cUserStatus) continue;
       if (cUserStatus && cUserStatus.status === userStatus.offline) {
-        continue ;
+        continue;
       }
       if (!element.blockedUsers.find((obj) => obj.blockedUser.uid == cUser.uid))
         usersList.push(element.username);
@@ -181,8 +179,7 @@ export class ChatController {
     @Param('roomName') roomName: string,
     @Req() req: RequestWithUser,
   ): Promise<any> {
-    if (roomName == null)
-      throw new HttpException('Bad request', 400);
+    if (roomName == null) throw new HttpException('Bad request', 400);
     const room = await this.roomService.findOne(roomName);
     if (!room) throw new HttpException('Unprocessable Entity', 422);
     const user = req.user as User;
@@ -205,11 +202,11 @@ export class ChatController {
     const usersList: {}[] = [];
 
     for (const element of users) {
-      const cUsersStatus = await this.usersStatusService.getUserStatus(element.username);
-      if (!cUsersStatus)
-        continue ;
-      if (cUsersStatus && cUsersStatus.status === userStatus.offline)
-        continue ;
+      const cUsersStatus = await this.usersStatusService.getUserStatus(
+        element.username,
+      );
+      if (!cUsersStatus) continue;
+      if (cUsersStatus && cUsersStatus.status === userStatus.offline) continue;
       if (
         element.username != username &&
         (await this.roomService.isUserInRoom(roomName, element.uid)) == false
@@ -228,7 +225,8 @@ export class ChatController {
     const friendList = [];
     for (const element of user.friends) {
       if (element) {
-        if (element.username != user.username) friendList.push(element.username);
+        if (element.username != user.username)
+          friendList.push(element.username);
         else if (element.username != user.username)
           friendList.push(element.username);
         console.log('friendlist', friendList);

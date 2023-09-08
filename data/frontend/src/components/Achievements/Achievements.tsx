@@ -1,9 +1,9 @@
 import { Box, Grid, Button } from "@mui/material";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
-import { useGetUserAchievementsQuery } from "../../../store/api";
+import { useGetUserAchievementsQuery } from "../../store/api";
 import Completed from "./Completed";
 import ToComplete from "./ToComplete";
-import Loading from "../Loading";
+import Loading from "../Global/Loading";
 
 function Achievements() {
   const navigate = useNavigate();

@@ -13,7 +13,7 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ChatProcess from "./ChatProcess";
 
-import { Skeleton, Box, Grid, Button, Slide, Snackbar } from "@mui/material";
+import { Box, Grid, Button, Slide } from "@mui/material";
 
 import RoomTabs from "./RoomTabs";
 import { addRoom, setRoomIndex } from "../../store/rooms";

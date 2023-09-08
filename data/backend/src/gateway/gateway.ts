@@ -42,6 +42,7 @@ export class Gateway
   @SubscribeMessage('sendPrivateMsg')
   async sendPrivateMessage(client: Socket, payload: sendMsgArgs) {
     if (
+      //TODO duplicated fragment of code (9lines), try to avoid duplicates
       payload.data == null ||
       payload.source == null ||
       payload.target == null ||
@@ -190,7 +191,7 @@ export class Gateway
         return;
       }
     }
-    if (this.roomService.isMuted(payload.room, user))
+    if (await this.roomService.isMuted(payload.room, user))
       this.server.emit(payload.room, {
         source: payload.source,
         target: payload.room,
@@ -227,7 +228,9 @@ export class Gateway
     const user = await this.userService.findOne(payload.source);
     if (!user) throw new WsException('Source user not found');
     const owner = await this.roomService.removeUser(payload.room, user.uid);
-    const ownerStatus = await this.usersStatusService.getUserStatus(owner?.username);
+    const ownerStatus = await this.usersStatusService.getUserStatus(
+      owner?.username,
+    );
     if (ownerStatus && ownerStatus.username === owner.username) {
       this.server.emit(ownerStatus.clientId, {
         source: payload.room,
@@ -788,9 +791,7 @@ export class Gateway
     );
     if (!userStatus) return;
     console.log(userStatus.username);
-    console.log('A');
     console.log(await this.userService.findOne(payload));
-    console.log('B');
     if (await this.userService.findOne(payload)) {
       this.server.emit(client.id, {
         action: actionTypes.usernameAlreadyTaken,

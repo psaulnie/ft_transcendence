@@ -100,6 +100,15 @@ export const apiSlice = createApi({
         formData: true,
       }),
     }),
+    getFriendsList: builder.query({
+      query: () => ({
+        url: "/friends/list",
+        method: "GET",
+        headers: {
+          Authorization: "Bearer " + Cookies.get("accessToken"),
+        },
+      }),
+    }),
   }),
 });
 
@@ -124,4 +133,5 @@ export const {
   useGetUserProfileQuery,
   useGetUserAchievementsQuery,
   useGetUserRankQuery,
+  useGetFriendsListQuery,
 } = apiSlice;

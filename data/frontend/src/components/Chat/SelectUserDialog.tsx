@@ -8,7 +8,6 @@ import {
   Zoom,
   TextField,
   Autocomplete,
-  Skeleton,
   DialogContent,
 } from "@mui/material";
 import { TransitionProps } from "@mui/material/transitions";

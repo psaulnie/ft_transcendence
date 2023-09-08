@@ -11,9 +11,9 @@ import Options from "./components/Global/Options";
 import Profile from "./components/Global/Profile";
 import Home from "./components/Home/Home";
 import Chat from "./components/Chat/Chat";
-import Achievements from "./components/Global/Achievements/Achievements";
+import Achievements from "./components/Achievements/Achievements";
 import Modification from "./components/Global/Modification";
-import Friendlist from "./components/Global/Friendlist";
+import Friendlist from "./components/Friendlist/Friendlist";
 import webSocketManager from "./webSocket";
 import TwoFactorLogin from "./components/Login/TwoFactorLogin";
 

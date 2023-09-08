@@ -7,10 +7,10 @@ import {
   UseGuards,
 } from '@nestjs/common';
 
-import { UsersService } from './users/users.service';
-import { AuthenticatedGuard } from './auth/guards/intraAuthGuard.service';
-import RequestWithUser from './auth/service/requestWithUser.interface';
-import { User } from './entities';
+import { UsersService } from '../users/users.service';
+import { AuthenticatedGuard } from '../auth/guards/intraAuthGuard.service';
+import RequestWithUser from '../auth/service/requestWithUser.interface';
+import { User } from '../entities';
 
 @Controller('/api/profile')
 export class ProfileController {
@@ -86,9 +86,7 @@ export class ProfileController {
 
   @Get('/user/rank')
   @UseGuards(AuthenticatedGuard)
-  async getUserRank(
-    @Req() req: RequestWithUser,
-  ) {
+  async getUserRank(@Req() req: RequestWithUser) {
     const user = req.user as User;
     const cUser = await this.userService.findOneById(user.uid);
     if (!user || !cUser) throw new HttpException('Unprocessable entity', 422);

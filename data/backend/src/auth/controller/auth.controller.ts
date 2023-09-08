@@ -1,7 +1,6 @@
 import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { Request, Response } from 'express';
 import {
-  AuthenticatedGuard,
   IntraAuthGuard,
   IntraAuthenticatedGuard,
 } from '../guards/intraAuthGuard.service';
