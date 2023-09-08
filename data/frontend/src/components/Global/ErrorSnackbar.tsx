@@ -24,21 +24,19 @@ export default function ErrorSnackbar({ error }: { error: any }) {
   };
 
   function reload(e: any) {
-    window.location.reload();
-  } // TODO
+    if (errorCode === 403) {
+      localStorage.removeItem("user");
+      window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/login`;
+    }
+    window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/logout`;
+  }
 
   useEffect(() => {
     if (error && error.status) setErrorCode(error.status);
     if (error && error.data && error.data.message)
       setMessage(error.data.message);
-    console.log(errorCode);
   }, []);
 
-  if (errorCode === 403)
-  {
-    dispatch(logout());
-    window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/logout`;
-  }
   return (
     <Snackbar
       open={open}

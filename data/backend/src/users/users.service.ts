@@ -82,19 +82,6 @@ export class UsersService {
     });
   }
 
-  async findOneByAccessToken(accessToken: string): Promise<User> {
-    return await this.usersRepository.findOne({
-      where: { accessToken: accessToken },
-      relations: [
-        'blockedUsers',
-        'friends',
-        'achievements',
-        'blockedUsers.blockedUser',
-        'blockedUsers.user',
-      ],
-    });
-  }
-
   async findAll(): Promise<User[]> {
     return await this.usersRepository.find({
       relations: [

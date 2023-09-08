@@ -29,17 +29,15 @@ const theme = createTheme({
 });
 
 function App() {
-  useSelector((state: any) => state.user);
   const dispatch = useDispatch();
 
   useEffect(() => {
     const username = Cookies.get("username");
-    const accessToken = Cookies.get("accessToken");
-    if (!username || !accessToken) {
+    if (!username) {
       return;
     }
     dispatch(setUsername(username));
-    dispatch(login(accessToken));
+    dispatch(login());
     Cookies.remove("username", {sameSite: 'none', secure: true});
   }, [dispatch]);
 
@@ -50,7 +48,7 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/login" element={<Login />}></Route>
-            <Route path="/2fa" element={<TwoFactorLogin />}></Route>
+            
             <Route path="*" element={<PrivateRoute />}>
               <Route path="*" element={<Base />} />
             </Route>

@@ -36,11 +36,6 @@ export class AuthController {
   @UseGuards(IntraAuthGuard)
   redirect(@Res() res: Response, @Req() req: Request) {
     const user = req.user as User;
-    console.log('‣ accessToken : ', user.accessToken);
-    res.cookie('accessToken', user.accessToken, {
-      httpOnly: false,
-      secure: false,
-    }); // Set accessToken in cookie
     res.cookie('username', user.username, {
       httpOnly: false,
       secure: false,
@@ -55,7 +50,7 @@ export class AuthController {
    */
   @Get('status')
   status(@Req() req: Request) {
-    return req.isAuthenticated();
+    return (req.isAuthenticated());
   }
 
   /**
@@ -70,7 +65,6 @@ export class AuthController {
     @Res() res: Response,
   ) {
     console.log('LOGOUT CONTROLLER');
-
     // Set 2FA authenticated to false in DB to indicate user is not connected anymore
     await this.usersService.setIsTwoFactorAuthenticated(
       request.user.uid,
@@ -96,7 +90,6 @@ export class AuthController {
     // Delete cookie 'connect.sid' on client side
     res.clearCookie('connect.sid');
     res.clearCookie('username');
-    res.clearCookie('accessToken');
 
     // Redirect on login page
     res.redirect(`http://${process.env.IP}:3000/login`);
@@ -126,10 +119,6 @@ export class AuthController {
         throw err;
       }
 
-      res.cookie('accessToken', userTest.accessToken, {
-        httpOnly: false,
-        secure: false,
-      });
       res.cookie('username', userTest.username, {
         httpOnly: false,
         secure: false,

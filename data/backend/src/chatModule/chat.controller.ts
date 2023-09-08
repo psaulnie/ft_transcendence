@@ -151,16 +151,8 @@ export class ChatController {
   @UseInterceptors(CacheInterceptor)
   @UseGuards(AuthenticatedGuard)
   @Get('users/list')
-  async getUsersList(@Req() req: Request): Promise<string[]> {
-    let [type, token] = req.headers['authorization']?.split(' ') ?? [];
-    if (type !== 'Bearer') {
-      token = undefined;
-    }
-    if (!token) {
-      throw new HttpException('Unauthorized', 401);
-    }
-    const cUser = await this.userService.findOneByAccessToken(token);
-    // const cUser = await this.userService.findOne('testUser');
+  async getUsersList(@Req() req: RequestWithUser): Promise<string[]> {
+    const cUser = req.user as User;
     if (!cUser) {
       throw new HttpException('Unauthorized', 401);
     }

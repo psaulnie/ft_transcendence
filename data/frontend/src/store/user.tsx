@@ -4,7 +4,6 @@ import Cookies from "js-cookie";
 interface UserState {
   username: string;
   isLoggedIn: boolean;
-  accessToken: string;
   isUserBlocked: boolean;
   blockedUsers: string[];
   isError: boolean;
@@ -16,7 +15,6 @@ const initialUser: UserState = localStorage.getItem("user")
   : {
       username: "",
       isLoggedIn: false,
-      accessToken: "",
       isUserBlocked: false,
       blockedUsers: [],
       isError: false,
@@ -28,7 +26,6 @@ const initialState: UserState = {
   isLoggedIn: initialUser.isLoggedIn,
   isUserBlocked: initialUser.isUserBlocked,
   blockedUsers: initialUser.blockedUsers,
-  accessToken: initialUser.accessToken,
   isError: initialUser.isError,
   error: initialUser.error,
 };
@@ -37,19 +34,16 @@ export const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    login: (state, action: PayloadAction<string>) => {
+    login: (state) => {
       state.isLoggedIn = true;
       state.blockedUsers = [];
-      state.accessToken = action.payload;
       localStorage.setItem("user", JSON.stringify(state));
     },
     logout: (state) => {
-      window.location.href = "/login";
-      state.username = "";
-      state.isLoggedIn = false;
-      Cookies.remove("accessToken", {sameSite: 'none', secure: true});
-      Cookies.remove("username", {sameSite: 'none', secure: true});
-      localStorage.removeItem("user");
+      // state.username = "";
+      // state.isLoggedIn = false;
+      // Cookies.remove("username", {sameSite: 'none', secure: true});
+      // localStorage.removeItem("user");
     },
     setUsername: (state, action: PayloadAction<string>) => {
       state.username = action.payload;

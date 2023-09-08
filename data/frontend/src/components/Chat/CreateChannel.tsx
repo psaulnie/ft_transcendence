@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import webSocketManager from "../../webSocket";
 import { accessStatus, userRole } from "./chatEnums";
@@ -41,7 +41,9 @@ function CreateChannel() {
     if (e.target.value.length > 0) trigger({ roomName: e.target.value });
     if (e.target.value.length <= 10) {
       setNewRoomName(e.target.value);
+      console.log("New room name:", newRoomName); // Pour déboguer
     }
+
   }
 
   function changeAccess(event: SelectChangeEvent) {
@@ -93,6 +95,7 @@ function CreateChannel() {
         label="Room name"
         value={newRoomName}
         onChange={updateNewRoomName}
+        autoFocus
       />
       <FormControl sx={{ height: "80%" }}>
         <InputLabel>Access</InputLabel>

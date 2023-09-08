@@ -1,18 +1,18 @@
 import { Navigate, Outlet } from "react-router";
 import { useEffect, useState } from "react";
-import Cookies from "js-cookie";
 import Loading from "./Loading";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../../store/user";
 
 export default function PrivateRoute() {
+  const user = useSelector((state: any) => state.user);
+  const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(true);
   const [isOk, setIsOk] = useState(false);
 
   const fetchData = () => {
     fetch(`http://${process.env.REACT_APP_IP}:5000/auth/status`, {
       credentials: "include",
-      headers: {
-        authorization: "Bearer " + Cookies.get("accessToken"),
-      },
     })
       .then((response) => {
         return response.json();
@@ -23,21 +23,21 @@ export default function PrivateRoute() {
         setIsLoading(false);
       })
       .catch(() => {
-        if (Cookies.get("accessToken") === "test")
-          // TODO remove when testUser no longer needed
-          setIsOk(true);
-        else setIsOk(false);
         setIsLoading(false);
       });
+    // TODO add when removing testUser
+    // if (!user || !user.username) {
+    //   localStorage.removeItem("user");
+    //   window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/logout`;
+    // }
   };
 
   useEffect(() => {
     fetchData();
   }, []);
 
-  if (isLoading) return <Loading />
-  if (isOk || Cookies.get("accessToken") === "test") {
-    // TODO remove when testUser no longer needed
+  if (isLoading) return <Loading />;
+  if (isOk) {
     return <Outlet />;
   }
   // return (null);

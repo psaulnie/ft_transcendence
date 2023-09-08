@@ -42,6 +42,7 @@ export class Gateway
   @SubscribeMessage('sendPrivateMsg')
   async sendPrivateMessage(client: Socket, payload: sendMsgArgs) {
     if (
+      //TODO duplicated fragment of code (9lines), try to avoid duplicates
       payload.data == null ||
       payload.source == null ||
       payload.target == null ||
@@ -190,7 +191,7 @@ export class Gateway
         return;
       }
     }
-    if (this.roomService.isMuted(payload.room, user))
+    if (await this.roomService.isMuted(payload.room, user))
       this.server.emit(payload.room, {
         source: payload.source,
         target: payload.room,
@@ -226,7 +227,16 @@ export class Gateway
       throw new WsException('Forbidden');
     const user = await this.userService.findOne(payload.source);
     if (!user) throw new WsException('Source user not found');
-    await this.roomService.removeUser(payload.room, user.uid);
+    const owner = await this.roomService.removeUser(payload.room, user.uid);
+    const ownerStatus = await this.usersStatusService.getUserStatus(
+      owner?.username,
+    );
+    if (ownerStatus && ownerStatus.username === owner.username) {
+      this.server.emit(ownerStatus.clientId, {
+        source: payload.room,
+        action: actionTypes.owner,
+      });
+    }
     this.server.emit(payload.room, {
       source: payload.source,
       target: payload.room,
@@ -443,19 +453,6 @@ export class Gateway
     const targetStatus = await this.usersStatusService.getUserStatus(
       payload.target,
     );
-    setTimeout(async () => {
-      // TODO test
-      await this.roomService.removeFromMutedList(payload.room, user);
-      const targetStatus = await this.usersStatusService.getUserStatus(
-        payload.target,
-      );
-      this.server.emit(targetStatus.clientId, {
-        source: payload.room,
-        target: payload.target,
-        action: actionTypes.unmute,
-        role: userRole.none,
-      });
-    }, 5 * 600000);
     this.server.emit(targetStatus.clientId, {
       source: payload.room,
       target: payload.target,
@@ -680,7 +677,6 @@ export class Gateway
     client: Socket,
     payload: { source: string; target: string },
   ) {
-    console.log('RemoveFriend in gateway: ', payload);
     if (payload.source == null || payload.target == null)
       throw new WsException('Missing parameters');
     const sourceUser = await this.userService.findOne(payload.source);
@@ -689,7 +685,6 @@ export class Gateway
     if (!targetUser) throw new WsException('Target user not found');
     if (!sourceUser.friends.some((friend) => friend.uid === targetUser.uid))
       throw new WsException('Not friends');
-    console.log('Just before removing friend in DB');
     await this.userService.removeFriend(sourceUser, targetUser);
   }
 
@@ -796,9 +791,7 @@ export class Gateway
     );
     if (!userStatus) return;
     console.log(userStatus.username);
-    console.log('A');
     console.log(await this.userService.findOne(payload));
-    console.log('B');
     if (await this.userService.findOne(payload)) {
       this.server.emit(client.id, {
         action: actionTypes.usernameAlreadyTaken,
@@ -860,31 +853,30 @@ export class Gateway
 
   async handleConnection(client: Socket, ...args: any[]) {
     console.log(`Client connected: ${client.id}`);
-    // console.log(client.handshake.headers.cookie);
-    // if (client?.handshake?.headers?.cookie?.split('=')[1] === 'test') {
-    //   // TODO remove when testUser removed
-    //   await this.usersStatusService.addUser(
-    //     client.id,
-    //     'testUser',
-    //     userStatus.online,
-    //   );
-    //   return;
-    // }
     const credential = client.handshake.headers.cookie
       ?.split(';')
       .find((cookie) => cookie.includes('connect.sid'));
-    if (!credential) return;
+    if (!credential) {
+      client.disconnect();
+      return;
+    }
     const connectSid = credential.substring(
       credential.indexOf('s%3A') + 4,
       credential.indexOf('.', credential.indexOf('s%3A')),
     );
     const session = await this.userService.findOneSession(connectSid);
-    if (!session) return;
+    if (!session) {
+      client.disconnect();
+      return;
+    }
     const parsedJson = JSON.parse(session.json);
     const user = await this.userService.findOneByIntraUsername(
       parsedJson.passport.user.intraUsername,
     );
-    if (!user) return;
+    if (!user) {
+      client.disconnect();
+      return;
+    }
     await this.usersStatusService.addUser(
       client.id,
       user.username,
