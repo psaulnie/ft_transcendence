@@ -40,10 +40,10 @@ export const userSlice = createSlice({
       localStorage.setItem("user", JSON.stringify(state));
     },
     logout: (state) => {
-      state.username = "";
-      state.isLoggedIn = false;
-      Cookies.remove("username", {sameSite: 'none', secure: true});
-      localStorage.removeItem("user");
+      // state.username = "";
+      // state.isLoggedIn = false;
+      // Cookies.remove("username", {sameSite: 'none', secure: true});
+      // localStorage.removeItem("user");
     },
     setUsername: (state, action: PayloadAction<string>) => {
       state.username = action.payload;
