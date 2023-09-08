@@ -119,7 +119,7 @@ function Chat() {
               height: "30.28em",
               width: "31.28em",
               borderRadius: "2%",
-              opacity: 0.8,
+              opacity: 0.9,
               border: 8,
               borderColor: "#FC7D07",
               marginTop: "auto",
