@@ -851,7 +851,8 @@ export class Gateway
     const userStatus = await this.usersStatusService.getUserStatusByClientId(client.id);
     if (userStatus)
     {
-      const user = await this.userService.changeBackground(userStatus.username, payload);
+      await this.userService.changeBackground(userStatus.username, payload);
+      this.server.emit(client.id, { action: actionTypes.newBackground })
     }
   }
 
