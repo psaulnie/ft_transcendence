@@ -96,7 +96,7 @@ export default function UsersList({
       <List>
         {usersList.map((cUser: any, key: number) => {
           return (
-            <Tooltip
+            <Tooltip key={key}
               title={
                 cUser.role === userRole.owner
                   ? "Owner"
@@ -105,7 +105,7 @@ export default function UsersList({
                   : "User"
               }
             >
-              <ListItem disablePadding dense key={key}>
+              <ListItem disablePadding dense>
                 <ListItemButton
                   onClick={(e) => handleContextMenu(e, cUser.username)}
                 >
