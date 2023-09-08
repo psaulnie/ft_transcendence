@@ -165,6 +165,10 @@ export default function ChatProcess() {
         setSnackbar("Your username has been changed to " + value.newUsername, "success");
         dispatch(setUsername(value.newUsername));
       }
+      else if (value.action === actionTypes.newBackground)
+      {
+        setSnackbar("Background successfully changed", "success");
+      }
     }
     webSocketManager.getSocket().on(webSocketManager.getSocket().id, process);
     return () => {
