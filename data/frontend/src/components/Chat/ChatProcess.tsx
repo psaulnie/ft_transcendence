@@ -19,7 +19,6 @@ import CloseIcon from "@mui/icons-material/Close";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import { userRole } from "./chatEnums";
 import { setUsername } from "../../store/user";
-import { useLazyGetUserFriendsListQuery } from "../../store/api";
 
 export default function ChatProcess() {
   const user = useSelector((state: any) => state.user);
@@ -34,8 +33,6 @@ export default function ChatProcess() {
   const [room, setRoom] = useState("");
   const [target, setTarget] = useState("");
   const [hasPassword, setHasPassword] = useState(false);
-
-  const [fetch, result] = useLazyGetUserFriendsListQuery({});
 
   function setSnackbar(message: string, type: AlertColor) {
     setMessage(message);
@@ -184,7 +181,6 @@ export default function ChatProcess() {
         setSnackbar("Username is already taken " + value.newUsername, "error");
       else if (value.action === actionTypes.acceptBeingFriend) {
         setSnackbar(value.source + " is now your friend!", "success");
-        fetch({});
       }
     }
     webSocketManager.getSocket().on(webSocketManager.getSocket().id, process);
