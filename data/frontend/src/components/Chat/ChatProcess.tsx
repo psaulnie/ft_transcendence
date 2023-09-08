@@ -132,6 +132,16 @@ export default function ChatProcess() {
           }),
         );
         setSnackbar("You are now admin in " + value.source, "success");
+      } else if (value.action === actionTypes.owner) {
+        dispatch(
+          changeRole({
+            name: value.source,
+            role: userRole.owner,
+            isDirectMsg: false,
+            hasPassword: false,
+          }),
+        );
+        setSnackbar("You are now the owner of " + value.source, "success")
       } else if (value.action === actionTypes.mute) {
         dispatch(mute(value.source));
         setSnackbar("You are mute from this channel: " + value.source, "error");

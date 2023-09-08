@@ -18,6 +18,11 @@ export class WebSocketManager {
   }
 
   getSocket() {
+    if (!this.socket)
+    {
+      localStorage.removeItem("user");
+      window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/logout`;
+    }
     return this.socket;
   }
 }

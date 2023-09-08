@@ -29,17 +29,15 @@ const theme = createTheme({
 });
 
 function App() {
-  useSelector((state: any) => state.user);
   const dispatch = useDispatch();
 
   useEffect(() => {
     const username = Cookies.get("username");
-    const accessToken = Cookies.get("accessToken");
-    if (!username || !accessToken) {
+    if (!username) {
       return;
     }
     dispatch(setUsername(username));
-    dispatch(login(accessToken));
+    dispatch(login());
     Cookies.remove("username", {sameSite: 'none', secure: true});
   }, [dispatch]);
 

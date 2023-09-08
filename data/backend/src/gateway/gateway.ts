@@ -226,7 +226,14 @@ export class Gateway
       throw new WsException('Forbidden');
     const user = await this.userService.findOne(payload.source);
     if (!user) throw new WsException('Source user not found');
-    await this.roomService.removeUser(payload.room, user.uid);
+    const owner = await this.roomService.removeUser(payload.room, user.uid);
+    const ownerStatus = await this.usersStatusService.getUserStatus(owner?.username);
+    if (ownerStatus && ownerStatus.username === owner.username) {
+      this.server.emit(ownerStatus.clientId, {
+        source: payload.room,
+        action: actionTypes.owner,
+      });
+    }
     this.server.emit(payload.room, {
       source: payload.source,
       target: payload.room,
@@ -443,18 +450,6 @@ export class Gateway
     const targetStatus = await this.usersStatusService.getUserStatus(
       payload.target,
     );
-    setTimeout(async () => { // TODO test
-      await this.roomService.removeFromMutedList(payload.room, user);
-      const targetStatus = await this.usersStatusService.getUserStatus(
-        payload.target,
-      );
-      this.server.emit(targetStatus.clientId, {
-        source: payload.room,
-        target: payload.target,
-        action: actionTypes.unmute,
-        role: userRole.none,
-      });
-    }, 5 * 600000);
     this.server.emit(targetStatus.clientId, {
       source: payload.room,
       target: payload.target,
@@ -793,15 +788,15 @@ export class Gateway
     );
     if (!userStatus) return;
     console.log(userStatus.username);
-    console.log("A");
+    console.log('A');
     console.log(await this.userService.findOne(payload));
-    console.log("B");
+    console.log('B');
     if (await this.userService.findOne(payload)) {
       this.server.emit(client.id, {
         action: actionTypes.usernameAlreadyTaken,
         newUsername: payload,
       });
-      return ;
+      return;
     }
     if (userStatus.clientId !== client.id) throw new WsException('Forbidden');
     const user = await this.userService.findOne(userStatus.username);
@@ -857,31 +852,30 @@ export class Gateway
 
   async handleConnection(client: Socket, ...args: any[]) {
     console.log(`Client connected: ${client.id}`);
-    // console.log(client.handshake.headers.cookie);
-    // if (client?.handshake?.headers?.cookie?.split('=')[1] === 'test') {
-    //   // TODO remove when testUser removed
-    //   await this.usersStatusService.addUser(
-    //     client.id,
-    //     'testUser',
-    //     userStatus.online,
-    //   );
-    //   return;
-    // }
     const credential = client.handshake.headers.cookie
       ?.split(';')
       .find((cookie) => cookie.includes('connect.sid'));
-    if (!credential) return;
+    if (!credential) {
+      client.disconnect();
+      return;
+    }
     const connectSid = credential.substring(
       credential.indexOf('s%3A') + 4,
       credential.indexOf('.', credential.indexOf('s%3A')),
     );
     const session = await this.userService.findOneSession(connectSid);
-    if (!session) return;
+    if (!session) {
+      client.disconnect();
+      return;
+    }
     const parsedJson = JSON.parse(session.json);
     const user = await this.userService.findOneByIntraUsername(
       parsedJson.passport.user.intraUsername,
     );
-    if (!user) return;
+    if (!user) {
+      client.disconnect();
+      return;
+    }
     await this.usersStatusService.addUser(
       client.id,
       user.username,

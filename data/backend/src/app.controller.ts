@@ -88,34 +88,6 @@ export class AppController {
     } else throw new HttpException('Bad Request', 400);
   }
 
-  @Get('/avatar/remove')
-  @UseGuards(AuthenticatedGuard)
-  async removeAvatar(@Req() context: any, @Query('username') username: string) {
-    if (!username) return new HttpException('Bad Request', 400);
-    const user = await this.userService.findOne(username);
-    if (context.headers.authorization != 'Bearer ' + user.accessToken)
-      // TODO replace with the connect.sid cookie (using usersStatus array?)
-      return new HttpException('Unauthorized', 401);
-    const url = await firstValueFrom(
-      this.httpService
-        .get('https://api.intra.42.fr/v2/me', {
-          headers: {
-            Authorization: `${context.headers.authorization}`,
-          },
-        })
-        .pipe(
-          catchError(() => {
-            throw new UnauthorizedException();
-          }),
-        ),
-    );
-    await this.userService.updateAvatar(
-      user,
-      url.data.image.versions.small,
-      true,
-    );
-  }
-
   @Get('/avatar/')
   async getDefaultAvatar(
     @Res({ passthrough: true }) res: Response,
