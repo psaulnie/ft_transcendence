@@ -1,8 +1,12 @@
 import { Avatar, Box, Button, Grid, Typography } from "@mui/material";
 import { HideSource, Delete } from "@mui/icons-material";
+import webSocketManager from "../../webSocket";
+import {useSelector} from "react-redux";
 
 function offlineStatus({username}: {username: string}) {
   const urlAvatar = `http://${process.env.REACT_APP_IP}:5000/api/avatar/${username}`;
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const user = useSelector((state: any) => state.user);
 
   return (
     <Grid
@@ -21,77 +25,87 @@ function offlineStatus({username}: {username: string}) {
       >
         <Grid
           container
+          direction="row"
           spacing={1}
-          justifyContent="flex-start"
           alignItems="center"
+          sx={{ flexWrap: "nowrap" }}
+          justifyContent="space-between"
         >
-          <Avatar
-            src={urlAvatar}
-            alt="User Avatar"
-            sx={{
-              width: "2em",
-              height: "2em",
-              border: "black solid",
-              borderWidth: "1px",
-              borderRadius: "3em",
-              marginLeft: "0.3em",
-              marginRight: "0.3em",
-            }}
-          />
-
-          <Grid>
-            <Typography
-              variant="h6"
-              sx={{
-                fontSize: 16,
-                fontWeight: "bold",
-                color: "black",
-                marginLeft: "auto",
-                marginRight: "1em",
-                marginTop: "5px",
-                transform: "translate(0%, 14%)",
-              }}
-            >
-              {username}
-            </Typography>
-            <Typography
-              variant="h6"
-              sx={{
-                fontSize: 14,
-                color: "black",
-                marginLeft: "auto",
-                marginTop: "auto",
-                marginRight: "1.4em",
-                transform: "translate(0%, -8%)",
-              }}
-            >
-              <HideSource
+          <Grid
+            container
+            item
+            alignItems="center"
+            spacing={1}
+          >
+            <Grid item>
+              <Avatar
+                src={urlAvatar}
+                alt="User Avatar"
                 sx={{
-                  fontSize: "15px",
-                  transform: "translate(0%, 16%)",
-                  marginRight: "4px" }}
+                  width: "2em",
+                  height: "2em",
+                  border: "black solid",
+                  borderWidth: "1px",
+                  borderRadius: "3em",
+                  marginLeft: "0.3em",
+                  marginRight: "0.3em",
+                }}
               />
-              Offline
-            </Typography>
+            </Grid>
+
+            <Grid item>
+              <Typography
+                variant="h6"
+                align="left"
+                sx={{
+                  fontSize: 16,
+                  fontWeight: "bold",
+                  color: "black",
+                  transform: "translate(0%, 10%)",
+                }}
+              >
+                {username}
+              </Typography>
+              <Typography
+                variant="h6"
+                align="left"
+                sx={{
+                  fontSize: 14,
+                  color: "black",
+                  transform: "translate(0%, -4%)",
+                }}
+              >
+                <HideSource
+                  sx={{
+                    fontSize: "15px",
+                    transform: "translate(0%, 16%)",
+                    marginRight: "4px" }}
+                />
+                Offline
+              </Typography>
+            </Grid>
           </Grid>
 
-          <Grid>
+          <Grid item>
             <Button
+              onClick={() => {
+                webSocketManager.getSocket()?.emit("removeFriend", {
+                  source: user.username,
+                  target: { username },
+                });
+              }}
               sx={{
                 backgroundColor: "#D9D9D9",
                 border: "black solid",
-                borderRadius: "1em",
+                borderRadius: "10px",
                 borderWidth: "1px",
-                fontSize: "10px",
-                width: "4em",
-                height: "2.5em",
+                width: "30px",
+                height: "30px",
                 minWidth: "5px",
-                paddingX: "24px",
+                marginRight: "0.3em",
               }}
             >
-              <Delete
-                sx={{fontSize:20}}
-              />
+              <Delete sx={{ fontSize: 20 }} />
             </Button>
           </Grid>
         </Grid>

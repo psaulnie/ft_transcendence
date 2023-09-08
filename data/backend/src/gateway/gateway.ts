@@ -680,6 +680,7 @@ export class Gateway
     client: Socket,
     payload: { source: string; target: string },
   ) {
+    console.log('RemoveFriend in gateway: ', payload);
     if (payload.source == null || payload.target == null)
       throw new WsException('Missing parameters');
     const sourceUser = await this.userService.findOne(payload.source);
@@ -688,6 +689,7 @@ export class Gateway
     if (!targetUser) throw new WsException('Target user not found');
     if (!sourceUser.friends.some((friend) => friend.uid === targetUser.uid))
       throw new WsException('Not friends');
+    console.log('Just before removing friend in DB');
     await this.userService.removeFriend(sourceUser, targetUser);
   }
 

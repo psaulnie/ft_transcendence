@@ -23,7 +23,7 @@ export class FriendListController {
           const status = await this.usersStatusService.getUserStatus(
             element.username,
           );
-          friendList.push(status);
+          friendList.push({ username: status.username, status: status.status });
         }
       }
     }

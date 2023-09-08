@@ -5,6 +5,7 @@ import InGameStatus from "./inGameStatus";
 import OnlineStatus from "./onlineStatus";
 import OfflineStatus from "./offlineStatus";
 import { userStatus } from "./userStatus";
+import {useEffect} from "react";
 
 function Friendlist() {
   const navigate = useNavigate();
@@ -12,7 +13,12 @@ function Friendlist() {
     data: userFriendsList,
     isLoading,
     isError,
+    refetch,
   } = useGetFriendsListQuery({});
+
+  useEffect(() => {
+    refetch();
+  }, [refetch]);
 
   console.log('friendlist: ', userFriendsList);
 
@@ -34,72 +40,87 @@ function Friendlist() {
           top: "11.5%",
           width: "90%",
           height: "80.5%",
-          padding: "0.9em",
+          padding: "20px",
           borderRadius: "3em",
-          background: "linear-gradient(to right, #ECECEC, #d6d4d4)",
+          overflow: "hidden",
+          background: "#d6d4d4",
           border: "1px solid #000000",
           boxShadow: "0 0 10px rgba(0, 0, 0, 0.3)",
         }}
       >
-        <Grid
-          container
-          spacing={0}
-          direction="column"
-          justifyContent="center"
-          alignItems="center"
+        <Box
+          sx={{
+            height: "100%",
+            overflow: "auto",
+            paddingRight: "12px",
+            marginRight: "-12px",
+          }}
         >
-
-
-          {/*<InGameStatus username='inGame1' />*/}
-          {/*<InGameStatus username='inGame2' />*/}
-          {/*<OnlineStatus username='online1' />*/}
-          {/*<OnlineStatus username='online2' />*/}
-          {/*<OfflineStatus username='offline1' />*/}
-          {/*<OfflineStatus username='offline2' />*/}
-
-          {userFriendsList.map((friend: any) => {
-            switch (friend.status) {
-              case userStatus.playing:
-                return <InGameStatus key={friend.username} username={friend.username} />;
-              case userStatus.online:
-                return <OnlineStatus key={friend.username} username={friend.username} />;
-              case userStatus.offline:
-                return <OfflineStatus key={friend.username} username={friend.username} />;
-              default:
-                return null;
-            }
-          })}
-
           <Grid
-            item
-            xs
-            sx={{ width: "100%", height: "100%", marginTop: "0.25em" }}
+            container
+            spacing={0}
+            direction="column"
+            justifyContent="center"
+            alignItems="center"
           >
-            <Button
-              onClick={handleProfileClick}
-              variant="contained"
-              color="primary"
-              sx={{
-                textTransform: "none",
-                fontWeight: "bold",
-                fontSize: "18px",
-                width: "6em",
-                height: "1.5em",
-                backgroundColor: "rgba(220, 220, 220, 0.9)",
-                border: "1px solid #020202",
-                borderRadius: "1em",
-                marginTop: "0.3em",
-                color: "black",
-                "&:hover": {
-                  backgroundColor: "grey",
-                  borderColor: "red",
-                },
-              }}
+
+            <InGameStatus username='inGame' />
+            <InGameStatus username='A' />
+            <InGameStatus username='Aaaaa' />
+            <InGameStatus username='Aaaaaaaaaa' />
+            <OnlineStatus username='online' />
+            <OnlineStatus username='B' />
+            <OnlineStatus username='Bbbbb' />
+            <OnlineStatus username='Bbbbbbbbbb' />
+            <OfflineStatus username='offline' />
+            <OfflineStatus username='C' />
+            <OfflineStatus username='Ccccc' />
+            <OfflineStatus username='Cccccccccc' />
+
+            {userFriendsList.map((friend: any) => {
+              switch (friend.status) {
+                case userStatus.playing:
+                  return <InGameStatus key={friend.username} username={friend.username} />;
+                case userStatus.online:
+                  return <OnlineStatus key={friend.username} username={friend.username} />;
+                case userStatus.offline:
+                  return <OfflineStatus key={friend.username} username={friend.username} />;
+                default:
+                  return null;
+              }
+            })}
+
+            <Grid
+              item
+              xs
+              sx={{ width: "100%", height: "100%", marginTop: "0.25em" }}
             >
-              Back
-            </Button>
+              <Button
+                onClick={handleProfileClick}
+                variant="contained"
+                color="primary"
+                sx={{
+                  textTransform: "none",
+                  fontWeight: "bold",
+                  fontSize: "18px",
+                  width: "6em",
+                  height: "1.5em",
+                  backgroundColor: "rgba(220, 220, 220, 0.9)",
+                  border: "1px solid #020202",
+                  borderRadius: "1em",
+                  marginTop: "0.3em",
+                  color: "black",
+                  "&:hover": {
+                    backgroundColor: "grey",
+                    borderColor: "red",
+                  },
+                }}
+              >
+                Back
+              </Button>
+            </Grid>
           </Grid>
-        </Grid>
+        </Box>
       </Box>
     </div>
   );
