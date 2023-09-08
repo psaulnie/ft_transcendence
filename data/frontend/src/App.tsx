@@ -48,7 +48,7 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/login" element={<Login />}></Route>
-            <Route path="/2fa" element={<TwoFactorLogin />}></Route>
+            
             <Route path="*" element={<PrivateRoute />}>
               <Route path="*" element={<Base />} />
             </Route>

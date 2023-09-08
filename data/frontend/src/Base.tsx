@@ -15,6 +15,7 @@ import Achievements from "./components/Global/Achievements/Achievements";
 import Modification from "./components/Global/Modification";
 import Friendlist from "./components/Global/Friendlist";
 import webSocketManager from "./webSocket";
+import TwoFactorLogin from "./components/Login/TwoFactorLogin";
 
 export default function Base() {
   const user = useSelector((state: any) => state.user);
@@ -53,6 +54,7 @@ export default function Base() {
       <NavDrawer state={drawerState} toggleDrawer={toggleDrawer} />
       <Routes>
         <Route path="*" element={<Navigate to="/home" />}></Route>
+        <Route path="/2fa" element={<TwoFactorLogin />}></Route>
         <Route path="/home" element={<Home />}></Route>
         <Route path="/profile/:username" element={<Profile />}></Route>
         <Route path="/game" element={<Game />}></Route>
