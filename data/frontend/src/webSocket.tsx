@@ -14,6 +14,11 @@ export class WebSocketManager {
         withCredentials: true,
         transports: ["websocket"],
       });
+
+      this.socket.on("connect_error", (err: any) => {
+        localStorage.removeItem("user");
+        window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/logout`;
+      });
     }
   }
 
