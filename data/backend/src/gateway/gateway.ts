@@ -714,10 +714,12 @@ export class Gateway
       this.server.emit('matchmaking' + player1, {
         opponent: player2,
         gameRoomId: gameRoomId,
+        background: user1.gameBackground,
       });
       this.server.emit('matchmaking' + player2, {
         opponent: player1,
         gameRoomId: gameRoomId,
+        background: user2.gameBackground,
       });
       this.matchmakingQueue.splice(this.matchmakingQueue.indexOf(player1), 1);
       this.matchmakingQueue.splice(this.matchmakingQueue.indexOf(player2), 1);
@@ -840,6 +842,18 @@ export class Gateway
   /*
 -----------------------------------------------------------------
 */
+
+  @SubscribeMessage('changeBackground')
+  async changeBackground(
+    client: Socket,
+    payload: string,
+  ) {
+    const userStatus = await this.usersStatusService.getUserStatusByClientId(client.id);
+    if (userStatus)
+    {
+      const user = await this.userService.changeBackground(userStatus.username, payload);
+    }
+  }
 
   async afterInit(server: Server) {
     console.log('Init');

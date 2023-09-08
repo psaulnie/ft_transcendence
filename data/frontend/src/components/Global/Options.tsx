@@ -1,16 +1,45 @@
 import React, {useEffect, useState} from 'react';
 import { useNavigate } from 'react-router';
 
-import { Box, Grid, Button, Typography } from '@mui/material';
+import { Box, Grid, Button, Typography, Avatar } from '@mui/material';
 
 import Switch from '@mui/material/Switch';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 
+import brickwall from '../Game/img/brickwall.jpg';
+import industrial from '../Game/img/industrial.jpg';
+import medieval from '../Game/img/medieval.jpg';
+import orange from '../Game/img/orange.jpg';
+import scooby from '../Game/img/scooby.jpg';
+
+import webSocketManager from '../../webSocket';
+
 function Options() {
     const [twoFactorAuthState, setTwoFactorAuthState] = useState<boolean>(false);
     const navigate = useNavigate();
+
+    const brickwallStyle = {
+      backgroundImage: 'url(' + brickwall +')',
+      backgroundSize: 'cover'
+    }
+    const industrialStyle = {
+      backgroundImage: 'url(' + industrial +')',
+      backgroundSize: 'cover'
+    }
+    const medievalStyle = {
+      backgroundImage: 'url(' + medieval +')',
+      backgroundSize: 'cover'
+    }
+    const orangeStyle = {
+      backgroundImage: 'url(' + orange +')',
+      backgroundSize: 'cover'
+    }
+    const scoobyStyle = {
+      backgroundImage: 'url(' + scooby +')',
+      backgroundSize: 'cover'
+    }
 
     useEffect(() => {
         async function checkTwoFactorState() {
@@ -108,17 +137,22 @@ function Options() {
             >
               <Grid item xs={4}>
                 <Button
-                  sx={{ backgroundColor: 'red', height: '4em', width: '4em' }}
+                  sx={{ backgroundColor: 'black', height: '4em', width: '4em' }}
+                  onClick={() => { webSocketManager.getSocket().emit('changeBackground', 'canvas')}}
                 ></Button>
               </Grid>
               <Grid item xs={4}>
                 <Button
-                  sx={{ backgroundColor: 'red', height: '4em', width: '4em' }}
+                  sx={{height: '4em', width: '4em' }}
+                  style={brickwallStyle}
+                  onClick={() => { webSocketManager.getSocket().emit('changeBackground', 'brickwall')}}
                 ></Button>
               </Grid>
               <Grid item xs={4}>
                 <Button
-                  sx={{ backgroundColor: 'red', height: '4em', width: '4em' }}
+                  sx={{ height: '4em', width: '4em' }}
+                  style={industrialStyle}
+                  onClick={() => { webSocketManager.getSocket().emit('changeBackground', 'industrial')}}
                 ></Button>
               </Grid>
             </Grid>
@@ -141,17 +175,23 @@ function Options() {
             >
               <Grid item xs={4}>
                 <Button
-                  sx={{ backgroundColor: 'red', height: '4em', width: '4em' }}
+                  sx={{ height: '4em', width: '4em' }}
+                  style={medievalStyle}
+                  onClick={() => { webSocketManager.getSocket().emit('changeBackground', 'medieval')}}
                 ></Button>
               </Grid>
               <Grid item xs={4}>
                 <Button
-                  sx={{ backgroundColor: 'red', height: '4em', width: '4em' }}
+                  sx={{ height: '4em', width: '4em' }}
+                  style={orangeStyle}
+                  onClick={() => { webSocketManager.getSocket().emit('changeBackground', 'orange')}}
                 ></Button>
               </Grid>
               <Grid item xs={4}>
                 <Button
-                  sx={{ backgroundColor: 'red', height: '4em', width: '4em' }}
+                  sx={{ height: '4em', width: '4em' }}
+                  style={scoobyStyle}
+                  onClick={() => { webSocketManager.getSocket().emit('changeBackground', 'scooby')}}
                 ></Button>
               </Grid>
             </Grid>
