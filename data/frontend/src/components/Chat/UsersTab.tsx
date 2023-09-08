@@ -71,7 +71,7 @@ function UsersTab({ roomName }: { roomName: string }) {
           sx={{
             width: "100%",
             height: "100%",
-            background: "linear-gradient(to bottom left, #f26700, #bf0505)",
+            background: "#FE8F29",
             padding: "45px",
           }}
         >
@@ -79,11 +79,10 @@ function UsersTab({ roomName }: { roomName: string }) {
             <h1
               style={{
                 fontWeight: "bold",
-                textDecoration: "underline",
                 fontSize: "42px",
               }}
             >
-              Users:
+              Users
             </h1>
           </Box>
           <Grid container sx={{ marginLeft: "5%" }}>

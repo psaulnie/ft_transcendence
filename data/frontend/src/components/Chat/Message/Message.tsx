@@ -94,7 +94,7 @@ export default function Message({
           friendList={result}
         />
       ) : null}
-      <Box sx={{ flexGrow: 1, overflow: "hidden", px: 3 }}>
+      <Box sx={{ flexGrow: 1, overflow: "hidden", px: 3, opacity: 1 }}>
         <StyledPaper
           sx={{
             my: 1,

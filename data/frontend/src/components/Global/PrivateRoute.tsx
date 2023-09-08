@@ -27,7 +27,7 @@ export default function PrivateRoute() {
       });
     // TODO add when removing testUser
     // if (!user || !user.username) {
-    //   dispatch(logout());
+    //   localStorage.removeItem("user");
     //   window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/logout`;
     // }
   };

@@ -66,7 +66,6 @@ export class AuthController {
     @Res() res: Response,
   ) {
     console.log('LOGOUT CONTROLLER');
-
     // Set 2FA authenticated to false in DB to indicate user is not connected anymore
     await this.usersService.setIsTwoFactorAuthenticated(
       request.user.uid,

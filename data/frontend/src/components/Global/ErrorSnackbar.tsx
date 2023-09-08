@@ -25,7 +25,7 @@ export default function ErrorSnackbar({ error }: { error: any }) {
 
   function reload(e: any) {
     if (errorCode === 403) {
-      dispatch(logout());
+      localStorage.removeItem("user");
       window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/login`;
     }
     window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/logout`;
