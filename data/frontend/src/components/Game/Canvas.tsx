@@ -3,7 +3,7 @@ import './Canvas.css'
 import webSocketManager from '../../webSocket';
 import { Button } from '@mui/material';
 
-export default function Canvas({players, gameRoomId, setFoundUser} : {players: {1: string, 2: string}, gameRoomId: string, setFoundUser: any}) {
+export default function Canvas({players, gameRoomId, setFoundUser, canvasName} : {players: {1: string, 2: string}, gameRoomId: string, setFoundUser: any, canvasName: string}) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [rectPositionP1, setRectPositionP1] = useState<{ x: number; y: number }>({ x: 5, y:  175});
   const [rectPositionP2, setRectPositionP2] = useState<{ x: number; y: number }>({ x: 630, y:  175});
@@ -17,11 +17,11 @@ export default function Canvas({players, gameRoomId, setFoundUser} : {players: {
   const maxScore = 5;
 
   useEffect(() => {
-    const divID = "canvas";
-    const divElement = document.getElementById(divID);
-    if (divElement)
-      divElement.style.cursor = "none";
-    
+    // const divID = "canvas";
+    // const divElement = document.getElementById(divID);
+    // if (divElement)
+    //   divElement.style.cursor = "none";
+
     const handleResize = () => {
       let scale = window.innerWidth * 0.00075;
 
@@ -29,7 +29,7 @@ export default function Canvas({players, gameRoomId, setFoundUser} : {players: {
         scale = 1;
       else if (scale < 0.666)
         scale = 0.666;
-      const gameCanvas = document.querySelector('.canvas') as HTMLElement;
+      const gameCanvas = document.querySelector('.' + canvasName) as HTMLElement;
       if (gameCanvas) {
         gameCanvas.style.transform = `scale(${scale})`;
       }
@@ -87,11 +87,10 @@ export default function Canvas({players, gameRoomId, setFoundUser} : {players: {
 		function process(value: any) {
       if (value.coward !== null) {
         ctx?.clearRect(0, 0, canvas!.width, canvas!.height);
-        console.log("il y a un lache");
         ctx!.fillStyle = 'white';
         ctx!.font = "40px serif";
-        ctx!.textAlign = "start";
-        ctx?.fillText(value.coward + " left the game", 150, 150);
+        ctx!.textAlign = "center";
+        ctx?.fillText(value.coward + " left the game", 320, 212);
         return ; 
       } else {
         ctx!.fillStyle = 'white';
@@ -130,8 +129,8 @@ export default function Canvas({players, gameRoomId, setFoundUser} : {players: {
 
     ctx!.fillStyle = 'white';
     ctx!.font = "40px serif";
-    ctx!.textAlign = "start";
-    ctx?.fillText(name + " Win the game", 150, 150);
+    ctx!.textAlign = "center";
+    ctx?.fillText(name + " Win the game", 320, 190);
   }
 
   function quitGame(gameRoomId: string) {
@@ -139,11 +138,10 @@ export default function Canvas({players, gameRoomId, setFoundUser} : {players: {
     const name = players[1];
     console.log(name);
     webSocketManager.getSocket().emit("leaveGame" , { gameRoomId, coward:name });
-    console.log("bah alors ca veux leave?", players[1]);
   }
 
   return (
-    <div className='canvas' id='canvas'>
+    <div className={canvasName} id='canvas'>
       <canvas ref={canvasRef} width={canvasSize.width} height={canvasSize.height}
               style={{ display: 'block'}}/>
       <Button onClick={() => quitGame(gameRoomId)}>Leave game</Button>

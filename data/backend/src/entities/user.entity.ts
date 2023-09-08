@@ -32,6 +32,9 @@ export class User {
   @Column({ nullable: true })
   urlAvatar: string;
 
+  @Column({ default: 'canvas'})
+  gameBackground: string;
+
   @Column({ name: 'access_token' })
   accessToken: string;
 

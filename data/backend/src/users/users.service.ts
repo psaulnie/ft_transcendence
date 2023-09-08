@@ -197,6 +197,14 @@ export class UsersService {
     user.username = username;
     await this.usersRepository.save(user);
   }
+  
+  async changeBackground(username: string, background: string)
+  {
+    const user = await this.findOneByUsername(username);
+    if (!user) return ;
+    user.gameBackground = background;
+    await this.usersRepository.save(user);
+  }
 
   async findOneSession(sessionId: string): Promise<TypeormSession> {
     return await this.typeormSessionRepository.findOne({

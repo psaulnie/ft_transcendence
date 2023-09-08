@@ -1,5 +1,5 @@
 // import { exit } from 'process';
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 // import { webSocket } from '../../webSocket';
 // import { WidthFull } from '@mui/icons-material';
 import Matchmaking from "./Matchmaking";
@@ -14,11 +14,12 @@ export default function Game() {
   const [foundUser, setFoundUser] = useState(false);
   const [players, setPlayers] = useState<{1: string; 2: string }>({ 1: '', 2: '' });
   const [gameRoomId, setGameRoomId] = useState("");
+  const [canvasName, setBackground] = useState<string>('');
 
   return (
     <div>
       {
-        !foundUser ?  <Matchmaking setFoundUser={setFoundUser} setPlayers={setPlayers} setGameRoomId={setGameRoomId}/> : <Canvas players={players} gameRoomId={gameRoomId} setFoundUser={setFoundUser}/>
+        !foundUser ?  <Matchmaking setFoundUser={setFoundUser} setPlayers={setPlayers} setGameRoomId={setGameRoomId} setBackground={setBackground}/> : <Canvas players={players} gameRoomId={gameRoomId} setFoundUser={setFoundUser} canvasName={canvasName}/>
       }     
     </div>
   );

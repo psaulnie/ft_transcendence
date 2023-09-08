@@ -6,3 +6,39 @@
     background-color: black;
     /* border: 2px solid black; */
 }
+
+.industrial {
+    width: 640px;
+    height: 425px;
+    margin: auto;
+    background-image: url("./img/industrial.jpg");
+}
+
+.medieval {
+    width: 640px;
+    height: 425px;
+    margin: auto;
+    background-image: url("./img/medieval.jpg");
+}
+
+.brickwall {
+    width: 640px;
+    height: 425px;
+    margin: auto;
+    background-image: url("./img/brickwall.jpg");
+}
+
+.scooby {
+    width: 640px;
+    height: 425px;
+    margin: auto;
+    background-image: url("./img/scooby.jpg");
+}
+
+.orange {
+    width: 640px;
+    height: 425px;
+    margin: auto;
+    background-image: url("./img/orange.jpg");
+}
+
