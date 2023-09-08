@@ -616,11 +616,19 @@ export class Gateway
   ) {
     if (payload.source == null || payload.target == null)
       throw new WsException('Missing parameters');
+    const userStatus = await this.usersStatusService.getUserStatus(
+      payload.source,
+    );
+    if (!userStatus || userStatus.clientId !== client.id)
+      throw new WsException('Forbidden');
     const sourceUser = await this.userService.findOne(payload.source);
     if (!sourceUser) throw new WsException('Source user not found');
     const targetUser = await this.userService.findOne(payload.target);
     if (!targetUser) throw new WsException('Target user not found');
-    if (sourceUser.friends.some((friend) => friend.uid === targetUser.uid))
+    if (
+      sourceUser.friends.some((friend) => friend.uid === targetUser.uid) &&
+      targetUser.friends.some((friend) => friend.uid === sourceUser.uid)
+    )
       throw new WsException('Already friends');
     if (
       targetUser.blockedUsers.some(
@@ -637,6 +645,7 @@ export class Gateway
     const targetStatus = await this.usersStatusService.getUserStatus(
       payload.target,
     );
+    if (!targetStatus) throw new WsException('Target user not found');
     this.server.emit(targetStatus.clientId, {
       source: payload.source,
       target: payload.target,
@@ -649,13 +658,24 @@ export class Gateway
     client: Socket,
     payload: { source: string; target: string },
   ) {
+    console.log('acceptBeingFriend');
     if (payload.source == null || payload.target == null)
       throw new WsException('Missing parameters');
+    const userStatus = await this.usersStatusService.getUserStatus(
+      payload.source,
+    );
+    if (!userStatus || userStatus.clientId !== client.id)
+      throw new WsException('Forbidden');
     const sourceUser = await this.userService.findOne(payload.source);
     if (!sourceUser) throw new WsException('Source user not found');
     const targetUser = await this.userService.findOne(payload.target);
     if (!targetUser) throw new WsException('Target user not found');
-    if (sourceUser.friends.some((friend) => friend.uid === targetUser.uid))
+    const targetStatus = await this.usersStatusService.getUserStatus(targetUser.username);
+    if (!targetStatus) throw new WsException('Target user not found');
+    if (
+      sourceUser.friends.some((friend) => friend.uid === targetUser.uid) &&
+      targetUser.friends.some((friend) => friend.uid === sourceUser.uid)
+    )
       throw new WsException('Already friends');
     if (
       targetUser.blockedUsers.some(
@@ -670,6 +690,12 @@ export class Gateway
     )
       throw new WsException('Source user blocked target user');
     await this.userService.addFriend(sourceUser, targetUser);
+    this.server.emit(targetStatus.clientId, {
+      source: payload.source,
+      action: actionTypes.acceptBeingFriend,
+    });
+    this.server.emit(targetStatus.clientId + 'friend');
+    this.server.emit(client.id + 'friend');
   }
 
   @SubscribeMessage('removeFriend')
@@ -679,13 +705,20 @@ export class Gateway
   ) {
     if (payload.source == null || payload.target == null)
       throw new WsException('Missing parameters');
+    const userStatus = await this.usersStatusService.getUserStatus(
+      payload.source,
+    );
+    if (!userStatus || userStatus.clientId !== client.id)
+      throw new WsException('Forbidden');
     const sourceUser = await this.userService.findOne(payload.source);
     if (!sourceUser) throw new WsException('Source user not found');
     const targetUser = await this.userService.findOne(payload.target);
     if (!targetUser) throw new WsException('Target user not found');
-    if (!sourceUser.friends.some((friend) => friend.uid === targetUser.uid))
-      throw new WsException('Not friends');
     await this.userService.removeFriend(sourceUser, targetUser);
+    const targetStatus = await this.usersStatusService.getUserStatus(targetUser.username);
+    if (!targetStatus) throw new WsException('Target user not found');
+    this.server.emit(targetStatus.clientId + 'friend');
+    this.server.emit(client.id + 'friend');
   }
 
   /*
@@ -844,15 +877,13 @@ export class Gateway
 */
 
   @SubscribeMessage('changeBackground')
-  async changeBackground(
-    client: Socket,
-    payload: string,
-  ) {
-    const userStatus = await this.usersStatusService.getUserStatusByClientId(client.id);
-    if (userStatus)
-    {
+  async changeBackground(client: Socket, payload: string) {
+    const userStatus = await this.usersStatusService.getUserStatusByClientId(
+      client.id,
+    );
+    if (userStatus) {
       await this.userService.changeBackground(userStatus.username, payload);
-      this.server.emit(client.id, { action: actionTypes.newBackground })
+      this.server.emit(client.id, { action: actionTypes.newBackground });
     }
   }
 

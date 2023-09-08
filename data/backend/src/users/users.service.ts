@@ -134,8 +134,9 @@ export class UsersService {
     console.log('addfriend');
     user.friends.push(friend);
     friend.friends.push(user);
-    await this.usersRepository.save(user);
+    console.log(await this.usersRepository.save(user));
     await this.usersRepository.save(friend);
+    
   }
 
   async removeFriend(user: User, friend: User) {

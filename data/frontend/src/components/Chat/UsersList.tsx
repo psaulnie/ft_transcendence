@@ -38,7 +38,7 @@ export default function UsersList({
   role: userRole;
 }) {
   const user = useSelector((state: any) => state.user);
-
+  const [selectedUser, setSelectedUser] = useState(null);
   const [contextMenu, setContextMenu] = useState<{
     mouseX: number;
     mouseY: number;
@@ -62,10 +62,11 @@ export default function UsersList({
       { username: roomName, role: userRole.none, isMuted: false },
     ];
 
-  const handleContextMenu = (event: React.MouseEvent, username: string) => {
+  const handleContextMenu = (event: React.MouseEvent, username: string, cUser: any) => {
     event.preventDefault();
     if (!isDirectMessage) refetch();
     if (user.username !== username) {
+      setSelectedUser(cUser);
       setContextMenu(
         contextMenu === null
           ? {
@@ -91,7 +92,7 @@ export default function UsersList({
   if (isError && !isDirectMessage) return <ErrorSnackbar error={error} />;
   if (isLoading && !isDirectMessage) return <Loading />;
   return (
-    <Grid>
+    <Grid sx={{overflow: 'auto'}}>
       <List>
         {usersList.map((cUser: any, key: number) => {
           return (
@@ -106,7 +107,7 @@ export default function UsersList({
             >
               <ListItem disablePadding dense>
                 <ListItemButton
-                  onClick={(e) => handleContextMenu(e, cUser.username)}
+                  onClick={(e) => handleContextMenu(e, cUser.username, cUser)}
                 >
                   <ListItemAvatar>
                     <CustomAvatar username={cUser.username} />
@@ -129,9 +130,9 @@ export default function UsersList({
                       : getRoleIcon(cUser.role)}
                   </ListItemIcon>
                 </ListItemButton>
-                {cUser.username !== user.username ? (
+                {cUser.username !== user.username && selectedUser !== null ? (
                   <UserOptionsMenu
-                    cUser={cUser}
+                    cUser={selectedUser}
                     role={role}
                     roomName={roomName}
                     contextMenu={contextMenu}

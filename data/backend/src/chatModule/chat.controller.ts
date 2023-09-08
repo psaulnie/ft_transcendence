@@ -220,8 +220,10 @@ export class ChatController {
   @UseGuards(AuthenticatedGuard)
   @Get('user/friends')
   async getUserFriendsList(@Req() req: RequestWithUser): Promise<{}[]> {
-    const user = req.user as User;
-    if (!user) throw new HttpException('Unprocessable Entity', 422);
+    const cUser = req.user as User;
+    if (!cUser) throw new HttpException('Unprocessable Entity', 422);
+    const user = await this.userService.findOne(cUser.username);
+    console.log('getuserfriendlist', user.username)
     const friendList = [];
     for (const element of user.friends) {
       if (element) {
