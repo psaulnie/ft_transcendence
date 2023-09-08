@@ -10,6 +10,7 @@ export class UsersStatusService {
     clientId: string;
     username: string;
     status: userStatus;
+    gameRoomId: string;
   }[];
   constructor(
     @InjectRepository(User)
@@ -31,8 +32,9 @@ export class UsersStatusService {
         clientId,
         username,
         status,
+        gameRoomId: '',
       };
-    else this.usersStatus.push({ clientId, username, status });
+    else this.usersStatus.push({ clientId, username, status, gameRoomId: '' });
   }
 
   async changeUsername(old: string, newUsername: string) {
@@ -47,8 +49,8 @@ export class UsersStatusService {
   }
 
   async getUserStatusByClientId(clientId: string) {
-    console.log(clientId);
-    console.log(this.usersStatus);
+    // console.log(clientId);
+    // console.log(this.usersStatus);
     return this.usersStatus.find((user) => user.clientId === clientId);
   }
 
@@ -56,5 +58,23 @@ export class UsersStatusService {
     const user = this.usersStatus.find((user) => user.clientId === clientId);
     if (!user) return;
     user.status = status;
+  }
+
+  async setGameRoomId(clientId: string, gameRoomId: string) {
+    const user = this.usersStatus.find((user) => user.clientId === clientId);
+    if (!user) return;
+    user.gameRoomId = gameRoomId;
+  }
+
+  async getGameRoomId(clientId: string) {
+    const user = this.usersStatus.find((user) => user.clientId === clientId);
+    if (!user) return;
+    return user.gameRoomId;
+  }
+
+  async findClientId(username:string) {
+    const user = this.usersStatus.find((user) => user.username === username);
+    if (!user) return;
+    return user.clientId;
   }
 }

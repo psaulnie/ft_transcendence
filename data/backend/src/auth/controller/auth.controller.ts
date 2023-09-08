@@ -34,7 +34,7 @@ export class AuthController {
   @UseGuards(IntraAuthGuard)
   redirect(@Res() res: Response, @Req() req: Request) {
     const user = req.user as User;
-    console.log('‣ accessToken : ', user.accessToken);
+    // console.log('‣ accessToken : ', user.accessToken);
     res.cookie('accessToken', user.accessToken, {
       httpOnly: false,
       secure: false,

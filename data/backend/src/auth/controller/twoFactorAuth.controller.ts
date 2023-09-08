@@ -39,11 +39,11 @@ export class TwoFactorAuthController {
     @Req() request: RequestWithUser,
     @Body() { twoFactorAuthState },
   ) {
-    console.log(
-      'In State endpoint, 2FaState: ',
-      twoFactorAuthState,
-      typeof twoFactorAuthState,
-    );
+    // console.log(
+    //   'In State endpoint, 2FaState: ',
+    //   twoFactorAuthState,
+    //   typeof twoFactorAuthState,
+    // );
     if (!twoFactorAuthState) {
       await this.usersService.turnOffTwoFactorAuth(request.user.uid);
     }

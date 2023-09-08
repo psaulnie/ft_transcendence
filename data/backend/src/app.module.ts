@@ -30,6 +30,7 @@ import { BlockedList } from './entities/blocked.list.entity';
 import { Statistics } from './entities/stats.entity';
 import { GameModule } from './game/game.module';
 import { GameService } from './services/game.service';
+import { GameServicePU } from './services/gamePU.service';
 import { ProfileController } from './profile.controller';
 
 @Module({
@@ -67,6 +68,7 @@ import { ProfileController } from './profile.controller';
   providers: [
     UsersService,
     GameService,
+    GameServicePU,
     UsersStatusService,
     AppService,
     RoomService,

@@ -3,7 +3,7 @@ import './Canvas.css'
 import webSocketManager from '../../webSocket';
 import { Button } from '@mui/material';
 
-export default function Canvas({players, gameRoomId, setFoundUser} : {players: {1: string, 2: string}, gameRoomId: string, setFoundUser: any}) {
+export default function CanvasPU({playersPU, gameRoomIdPU, setFoundUserPU} : {playersPU: {1: string, 2: string}, gameRoomIdPU: string, setFoundUserPU: any}) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [rectPositionP1, setRectPositionP1] = useState<{ x: number; y: number }>({ x: 5, y:  175});
   const [rectPositionP2, setRectPositionP2] = useState<{ x: number; y: number }>({ x: 630, y:  175});
@@ -12,8 +12,8 @@ export default function Canvas({players, gameRoomId, setFoundUser} : {players: {
   const rectWidth = 5;
   const rectHeight = 75;
   const ballWidth = 10;
-  const player1 = players[1] < players[2] ? players[1] : players[2];
-  const player2 = players[1] < players[2] ? players[2] : players[1];
+  const player1 = playersPU[1] < playersPU[2] ? playersPU[1] : playersPU[2];
+  const player2 = playersPU[1] < playersPU[2] ? playersPU[2] : playersPU[1];
   const maxScore = 5;
 
   useEffect(() => {
@@ -50,12 +50,12 @@ export default function Canvas({players, gameRoomId, setFoundUser} : {players: {
       if (event.repeat)
         return;
       const { key } = event;
-
       if (key === 'ArrowUp' || key === 'w') {
-        webSocketManager.getSocket().emit("pressUp", {player: players[1], gameRoomId: gameRoomId});
+        console.log(playersPU[1], gameRoomIdPU);
+        webSocketManager.getSocket().emit("pressUpPU", {player: playersPU[1], gameRoomIdPU: gameRoomIdPU});
       }
       if (key === 'ArrowDown' || key === 's') {
-        webSocketManager.getSocket().emit("pressDown", {player: players[1], gameRoomId: gameRoomId});
+        webSocketManager.getSocket().emit("pressDownPU", {player: playersPU[1], gameRoomIdPU: gameRoomIdPU});
       }
     };
 
@@ -65,10 +65,10 @@ export default function Canvas({players, gameRoomId, setFoundUser} : {players: {
       const { key } = event;
 
       if (key === 'ArrowUp' || key === 'w') {
-        webSocketManager.getSocket().emit("releaseUp", {player: players[1], gameRoomId: gameRoomId});
+        webSocketManager.getSocket().emit("releaseUpPU", {player: playersPU[1], gameRoomIdPU: gameRoomIdPU});
       }
       if (key === 'ArrowDown' || key === 's') {
-        webSocketManager.getSocket().emit("releaseDown", {player: players[1], gameRoomId: gameRoomId});
+        webSocketManager.getSocket().emit("releaseDownPU", {player: playersPU[1], gameRoomIdPU: gameRoomIdPU});
       }
     };
 
@@ -79,14 +79,13 @@ export default function Canvas({players, gameRoomId, setFoundUser} : {players: {
       document.removeEventListener('keydown', handleKeyDown);
       document.removeEventListener('keyup', handleKeyUp);
     };
-  }, [gameRoomId, players]);
+  }, [gameRoomIdPU, playersPU]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext("2d");
 
 		function process(value: any) {
-      console.log("Canvas");
       if (value.coward !== null) {
         ctx?.clearRect(0, 0, canvas!.width, canvas!.height);
         ctx!.fillStyle = 'white';
@@ -119,11 +118,11 @@ export default function Canvas({players, gameRoomId, setFoundUser} : {players: {
         }
       }
     }
-    webSocketManager.getSocket().on("game" + gameRoomId, process);
+    webSocketManager.getSocket().on("gamePU" + gameRoomIdPU, process);
 		return () => {
-			webSocketManager.getSocket().off("game" + gameRoomId, process);
+			webSocketManager.getSocket().off("gamePU" + gameRoomIdPU, process);
 		};
-  }, [rectPositionP1, rectPositionP2, ballPosition, gameRoomId, player1, player2]);
+  }, [rectPositionP1, rectPositionP2, ballPosition, gameRoomIdPU, player1, player2]);
 
   function endMatch(name: string) {
     const canvas = canvasRef.current;
@@ -135,17 +134,17 @@ export default function Canvas({players, gameRoomId, setFoundUser} : {players: {
     ctx?.fillText(name + " Win the game", 320, 217);
   }
 
-  function quitGame(gameRoomId: string) {
-    setFoundUser(false);
-    const name = players[1];
-    webSocketManager.getSocket().emit("leaveGame" , { gameRoomId, coward:name });
+  function quitGame(gameRoomIdPU: string) {
+    setFoundUserPU(false);
+    const name = playersPU[1];
+    webSocketManager.getSocket().emit("leaveGamePU" , { gameRoomIdPU, coward:name });
   }
 
   return (
     <div className='canvas' id='canvas'>
       <canvas ref={canvasRef} width={canvasSize.width} height={canvasSize.height}
               style={{ display: 'block'}}/>
-      <Button onClick={() => quitGame(gameRoomId)}>Leave game</Button>
+      <Button onClick={() => quitGame(gameRoomIdPU)}>Leave game</Button>
     </div>
   );
 };

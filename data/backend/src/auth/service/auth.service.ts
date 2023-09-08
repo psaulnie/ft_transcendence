@@ -24,7 +24,7 @@ export class AuthService implements AuthProvider {
     console.log('VALIDATE USER SERVICE');
     const { intraId, accessToken, refreshToken } = details;
     const user = await this.userRepo.findOneBy({ intraId });
-    console.log('‣ Found user in db', user);
+    // console.log('‣ Found user in db', user);
     if (user) {
       if (user.urlAvatar === '' || user.urlAvatar === null) {
         const url = await firstValueFrom(
@@ -45,7 +45,7 @@ export class AuthService implements AuthProvider {
       user.accessToken = accessToken;
       user.refreshToken = refreshToken;
       await this.userRepo.save(user); //Update accessToken
-      console.log('‣ User after update : ', user);
+      // console.log('‣ User after update : ', user);
       return user;
     }
     return this.createUser(details);
@@ -53,7 +53,7 @@ export class AuthService implements AuthProvider {
 
   async createUser(details: UserDetails) {
     console.log('CREATE USER SERVICE');
-    console.log('‣ UserDetails', details);
+    // console.log('‣ UserDetails', details);
 
     const url = await firstValueFrom(
       this.httpService

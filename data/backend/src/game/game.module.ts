@@ -5,6 +5,7 @@ import { HttpModule } from '@nestjs/axios';
 import { UsersService } from 'src/users/users.service';
 import { BlockedList } from 'src/entities/blocked.list.entity';
 import { GameService } from 'src/services/game.service';
+import { GameServicePU } from 'src/services/gamePU.service';
 import { Gateway } from 'src/gateway/gateway';
 import { RoomService } from 'src/services/room.service';
 import { UsersStatusService } from 'src/services/users.status.service';
@@ -12,6 +13,7 @@ import { UsersStatusService } from 'src/services/users.status.service';
 @Module({
   providers: [
     GameService,
+    GameServicePU,
   ],
   imports: [
     TypeOrmModule.forFeature([User, BlockedList]),

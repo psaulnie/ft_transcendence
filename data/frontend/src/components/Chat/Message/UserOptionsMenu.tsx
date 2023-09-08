@@ -43,8 +43,8 @@ export default function UserOptionsMenu({ cUser, role, roomName, contextMenu, se
 		throw new (Error as any)('Api call error');
 	if (friendList.isLoading)
 		return (<div>Loading...</div>)
-	if (friendList.isSuccess)
-		console.log((friendList.data));
+	// if (friendList.isSuccess)
+	// 	console.log((friendList.data));
 	return (
 			<Menu open={contextMenu !== null}
 				onClose={handleClose}

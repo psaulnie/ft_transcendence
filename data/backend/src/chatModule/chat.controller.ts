@@ -217,7 +217,7 @@ export class ChatController {
     const user = await this.userService.findOne(username);
     if (!user) throw new HttpException('Unprocessable Entity', 422);
     const friendList = [];
-    console.log('user', user);
+    // console.log('user', user);
     for (const element of user.friends) {
       if (element) {
         // console.log('user1', element.user1);
@@ -225,10 +225,10 @@ export class ChatController {
         if (element.username != username) friendList.push(element.username);
         else if (element.username != username)
           friendList.push(element.username);
-        console.log('friendlist', friendList);
+        // console.log('friendlist', friendList);
       }
     }
-    console.log(friendList);
+    // console.log(friendList);
     return friendList;
   }
 }

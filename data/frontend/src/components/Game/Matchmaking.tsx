@@ -6,11 +6,12 @@ import webSocketManager from "../../webSocket";
 import { Button } from "@mui/material";
 import { useSelector } from "react-redux";
 
-export default function Matchmaking({setFoundUser, setPlayers, setGameRoomId}: {setFoundUser: any, setPlayers: any, setGameRoomId: any}) {
+export default function Matchmaking({setFoundUser, setPlayers, setGameRoomId, setMatchmaking}: {setFoundUser: any, setPlayers: any, setGameRoomId: any, setMatchmaking: any}) {
   const user = useSelector((state: any) => state.user);
   const [bouttonClick, setButtonClick] = useState(false);
 
   function startMatchmaking() {
+    setMatchmaking(true);
     setButtonClick(true);
     webSocketManager
       .getSocket()
@@ -18,6 +19,7 @@ export default function Matchmaking({setFoundUser, setPlayers, setGameRoomId}: {
   }
 
   function cancelMatchmaking() {
+    setMatchmaking(false);
     setButtonClick(false);
     webSocketManager
       .getSocket()
@@ -29,7 +31,7 @@ export default function Matchmaking({setFoundUser, setPlayers, setGameRoomId}: {
       setFoundUser(true);
       setPlayers({1: user.username, 2: value.opponent});
       setGameRoomId(value.gameRoomId);
-      console.log(value);
+      // console.log(value);
     }
 
     webSocketManager.getSocket().on("matchmaking" + user.username, process);
@@ -39,6 +41,6 @@ export default function Matchmaking({setFoundUser, setPlayers, setGameRoomId}: {
   }, [user.username, setFoundUser, setPlayers]);
 
   return (
-      !bouttonClick ? <Button onClick={startMatchmaking}>play</Button> : <div><Button onClick={cancelMatchmaking}>cancel</Button><p>Matchmaking in progress</p></div>
+      !bouttonClick ? <Button onClick={startMatchmaking}>play normal</Button> : <div><Button onClick={cancelMatchmaking}>cancel</Button><p>Matchmaking in progress</p></div>
   );
 }

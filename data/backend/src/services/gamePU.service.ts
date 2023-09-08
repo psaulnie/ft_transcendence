@@ -31,7 +31,7 @@ const paddleSpeed = 10;
 const maxScore = 5;
 
 @Injectable()
-export class GameService {
+export class GameServicePU {
 	
 	
 	private gameRooms: gameRoom[];
@@ -64,7 +64,6 @@ export class GameService {
 			ballSpeedX: 5,
 			ballSpeedY: 5,
 			coward: null,
-			// spectator: [],
 		});
 		this.resetBall(gameRoomId);
 		return (gameRoomId);
@@ -145,6 +144,7 @@ export class GameService {
 	pressUp(player: string, gameRoomId: string)
 	{
 		const roomIndex = this.gameRooms.findIndex((obj) => obj.gameRoomId === gameRoomId);
+		console.log("dans pressUP de gameUP", gameRoomId);
 		if (roomIndex === -1)
 			return ;
 		if (player === this.gameRooms[roomIndex].player1.user.username) {
