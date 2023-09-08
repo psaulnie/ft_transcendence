@@ -1,19 +1,22 @@
-import {Avatar, Box, Button, Grid, Typography} from "@mui/material";
+import { Avatar, Box, Button, Grid, Typography } from "@mui/material";
 import { Adjust, Delete } from "@mui/icons-material";
 import webSocketManager from "../../webSocket";
-import {useSelector} from "react-redux";
+import { useSelector } from "react-redux";
+import { useState } from "react";
 
-function onlineStatus({username}: {username: string}) {
+function OnlineStatus({
+  username,
+  refetch,
+}: {
+  username: string;
+  refetch: any;
+}) {
   const urlAvatar = `http://${process.env.REACT_APP_IP}:5000/api/avatar/${username}`;
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const user = useSelector((state: any) => state.user);
 
   return (
-    <Grid
-      item
-      xs
-      sx={{ backgroundColor: "", width: "100%", height: "90%" }}
-    >
+    <Grid item xs sx={{ backgroundColor: "", width: "100%", height: "90%" }}>
       <Box
         sx={{
           backgroundColor: "#1ABAFF",
@@ -31,12 +34,7 @@ function onlineStatus({username}: {username: string}) {
           sx={{ flexWrap: "nowrap" }}
           justifyContent="space-between"
         >
-          <Grid
-            container
-            item
-            alignItems="center"
-            spacing={1}
-          >
+          <Grid container item alignItems="center" spacing={1}>
             <Grid item>
               <Avatar
                 src={urlAvatar}
@@ -88,7 +86,7 @@ function onlineStatus({username}: {username: string}) {
               onClick={() => {
                 webSocketManager.getSocket()?.emit("removeFriend", {
                   source: user.username,
-                  target: { username },
+                  target: username,
                 });
               }}
               sx={{
@@ -111,4 +109,4 @@ function onlineStatus({username}: {username: string}) {
   );
 }
 
-export default onlineStatus;
+export default OnlineStatus;

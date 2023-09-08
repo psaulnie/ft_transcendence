@@ -179,7 +179,10 @@ export default function ChatProcess() {
       }
       else if (value.action === actionTypes.usernameAlreadyTaken)
         setSnackbar("Username is already taken " + value.newUsername, "error");
+      else if (value.action === actionTypes.acceptBeingFriend) {
+        setSnackbar(value.source + " is now your friend!", "success");
       }
+    }
     webSocketManager.getSocket().on(webSocketManager.getSocket().id, process);
     return () => {
       webSocketManager.getSocket().off(webSocketManager.getSocket().id, process);
