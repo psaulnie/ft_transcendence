@@ -191,7 +191,7 @@ export class Gateway
         return;
       }
     }
-    if (await this.roomService.isMuted(payload.room, user))
+    if (!(await this.roomService.isMuted(payload.room, user)))
       this.server.emit(payload.room, {
         source: payload.source,
         target: payload.room,
