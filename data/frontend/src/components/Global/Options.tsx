@@ -94,11 +94,11 @@ function Options() {
   }
 
   return (
-    <Stack direction={"row"} justifyContent={"center"} alignItems={"center"} sx={{ width: 1, height: "75vh" }}>
+    <Stack direction={"row"} justifyContent={"center"} alignItems={"center"} sx={{ width: 1, height: "85vh" }}>
       <Box
         sx={{
           // top: '25%',
-          width: "30%",
+          width: "50%",
           height: "40%",
           padding: "1em",
           borderRadius: "3em",
@@ -140,7 +140,7 @@ function Options() {
             >
               <Grid item xs={4}>
                 <Button
-                  sx={{ backgroundColor: "black", height: "4em", width: "4em" }}
+                  sx={{ backgroundColor: "black", height: "6em", width: "6em" }}
                   onClick={() => {
                     webSocketManager
                       .getSocket()
@@ -150,7 +150,7 @@ function Options() {
               </Grid>
               <Grid item xs={4}>
                 <Button
-                  sx={{ height: "4em", width: "4em" }}
+                  sx={{ height: "6em", width: "6em" }}
                   style={spongebobStyle}
                   onClick={() => {
                     webSocketManager
@@ -161,7 +161,7 @@ function Options() {
               </Grid>
               <Grid item xs={4}>
                 <Button
-                  sx={{ height: "4em", width: "4em" }}
+                  sx={{ height: "6em", width: "6em" }}
                   style={windowsStyle}
                   onClick={() => {
                     webSocketManager
@@ -190,7 +190,7 @@ function Options() {
             >
               <Grid item xs={4}>
                 <Button
-                  sx={{ height: "4em", width: "4em" }}
+                  sx={{ height: "6em", width: "6em" }}
                   style={orangeStyle}
                   onClick={() => {
                     webSocketManager
@@ -201,7 +201,7 @@ function Options() {
               </Grid>
               <Grid item xs={4}>
                 <Button
-                  sx={{ height: "4em", width: "4em" }}
+                  sx={{ height: "6em", width: "6em" }}
                   style={roadRunnerStyle}
                   onClick={() => {
                     webSocketManager
@@ -212,7 +212,7 @@ function Options() {
               </Grid>
               <Grid item xs={4}>
                 <Button
-                  sx={{ height: "4em", width: "4em" }}
+                  sx={{ height: "6em", width: "6em" }}
                   style={scoobyStyle}
                   onClick={() => {
                     webSocketManager
