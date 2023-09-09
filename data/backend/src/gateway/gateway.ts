@@ -670,7 +670,9 @@ export class Gateway
     if (!sourceUser) throw new WsException('Source user not found');
     const targetUser = await this.userService.findOne(payload.target);
     if (!targetUser) throw new WsException('Target user not found');
-    const targetStatus = await this.usersStatusService.getUserStatus(targetUser.username);
+    const targetStatus = await this.usersStatusService.getUserStatus(
+      targetUser.username,
+    );
     if (!targetStatus) throw new WsException('Target user not found');
     if (
       sourceUser.friends.some((friend) => friend.uid === targetUser.uid) &&
@@ -715,7 +717,9 @@ export class Gateway
     const targetUser = await this.userService.findOne(payload.target);
     if (!targetUser) throw new WsException('Target user not found');
     await this.userService.removeFriend(sourceUser, targetUser);
-    const targetStatus = await this.usersStatusService.getUserStatus(targetUser.username);
+    const targetStatus = await this.usersStatusService.getUserStatus(
+      targetUser.username,
+    );
     if (!targetStatus) throw new WsException('Target user not found');
     this.server.emit(targetStatus.clientId + 'friend');
     this.server.emit(client.id + 'friend');
@@ -882,6 +886,15 @@ export class Gateway
       client.id,
     );
     if (userStatus) {
+      if (
+        payload != 'default' &&
+        payload != 'scooby' &&
+        payload != 'roadrunner' &&
+        payload != 'orange' &&
+        payload != 'windows' &&
+        payload != 'spongebob'
+      )
+        return;
       await this.userService.changeBackground(userStatus.username, payload);
       this.server.emit(client.id, { action: actionTypes.newBackground });
     }

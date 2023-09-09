@@ -41,18 +41,14 @@ export default function NavDrawer({
           position: "fixed",
           paddingTop: "1.4em",
           bgcolor: "#FE8F29",
-          height: "1em",
-          width: "100%",
           opacity: 0.8,
           borderColor: "#FE8F29",
           marginTop: "auto",
           top: "3.5em",
           right: 0,
           zIndex: 9,
-          "@media (max-width: 600px) or (max-height: 700px)": {
-            width: "100%",
-            height: "5em",
-          },
+          width: "100%",
+          height: "5em",
         }}
       >
         <Grid

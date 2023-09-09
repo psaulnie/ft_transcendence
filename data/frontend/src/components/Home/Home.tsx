@@ -30,7 +30,14 @@ export default function Home() {
   if (isError) return <ErrorSnackbar error={error} />;
 
   return (
-    <div>
+    <Grid
+      sx={{
+        position: "absolute",
+        left: "50%",
+        top: "50%",
+        transform: "translate(-50%, -50%)",
+      }}
+    >
       <Box
         sx={{
           display: "flex",
@@ -63,7 +70,7 @@ export default function Home() {
                 height: "1.8em",
                 backgroundColor: "rgba(255, 255, 255, 0.9)",
                 borderColor: "#000000",
-                border: "3px solid",
+                border: "1px solid",
                 borderRadius: "10px",
                 color: "black",
                 "&:hover": {
@@ -85,7 +92,7 @@ export default function Home() {
                 padding: "0.5em",
                 borderRadius: "1.5em",
                 background: "linear-gradient(to right, #ECECEC, #d6d4d4)",
-                border: "2px solid #000000",
+                border: "1px solid #000000",
                 boxShadow: "0 0 10px rgba(0, 0, 0, 0.3)",
               }}
             >
@@ -143,6 +150,6 @@ export default function Home() {
           </Grid>
         </Grid>
       </Box>
-    </div>
+    </Grid>
   );
 }
