@@ -18,7 +18,7 @@ import TwoFactorLogin from "./components/Login/TwoFactorLogin";
 
 const theme = createTheme({
   palette: {
-    mode: "dark",
+    mode: "light",
     primary: {
       main: "#000000", // Red color
     },
