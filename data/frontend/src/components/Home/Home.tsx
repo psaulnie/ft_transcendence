@@ -30,7 +30,13 @@ export default function Home() {
   if (isError) return <ErrorSnackbar error={error} />;
 
   return (
-    <div>
+    <Grid              sx={{
+        position: "absolute",
+        left: "50%",
+        top: "50%",
+        transform: "translate(-50%, -50%)",
+      }}
+    >
       <Box
         sx={{
           display: "flex",
@@ -143,6 +149,6 @@ export default function Home() {
           </Grid>
         </Grid>
       </Box>
-    </div>
+    </Grid>
   );
 }
