@@ -35,7 +35,7 @@ function Achievements() {
           padding: "0.9em",
           borderRadius: "3em",
           background: "linear-gradient(to right, #ECECEC, #d6d4d4)",
-          border: "2px solid #000000",
+          border: "1px solid #000000",
           boxShadow: "0 0 10px rgba(0, 0, 0, 0.3)",
         }}
       >
