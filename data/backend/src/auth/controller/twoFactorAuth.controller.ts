@@ -27,8 +27,9 @@ export class TwoFactorAuthController {
 
   @Post('getState')
   @HttpCode(200)
-  @UseGuards(IntraAuthenticatedGuard)
   async getTwoFactorAuthState(@Req() request: RequestWithUser) {
+    if (!request.isAuthenticated())
+      return (false);
     return await this.usersService.getTwoFactorAuthState(request.user.uid);
   }
 

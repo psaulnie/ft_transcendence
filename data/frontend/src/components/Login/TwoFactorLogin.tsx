@@ -2,11 +2,13 @@ import { Box, Button, Grid, TextField, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import DoneIcon from "@mui/icons-material/Done";
+import Loading from "../Global/Loading";
 
 function TwoFactorLogin() {
   const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
   const [twoFactorTurnOnCode, setTwoFactorTurnOnCode] = useState("");
   const [twoFactorAuthCode, setTwoFactorAuthCode] = useState("");
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<boolean>(false);
   const navigate = useNavigate();
   const [isTwoFactorEnabled, setIsTwoFactorEnabled] = useState<boolean | null>(
@@ -32,10 +34,11 @@ function TwoFactorLogin() {
         } else if (response.ok && data === false) {
           navigate("/home");
         } else {
-          console.error("Failed to fetch state of 2FA");
+          navigate("/login");
         }
+        setIsLoading(false);
       } catch (error) {
-        console.error("Error: ", error);
+        navigate("/login");
       }
     }
     checkTwoFactorAuthState();
@@ -56,6 +59,7 @@ function TwoFactorLogin() {
       }
     } catch (error) {
       console.error("Error: ", error);
+      navigate("/login");
     }
   }
 
@@ -76,6 +80,7 @@ function TwoFactorLogin() {
       setQrCodeUrl(url);
     } catch (error) {
       console.error("Error: ", error);
+      navigate("/login");
     }
   }
 
@@ -94,15 +99,14 @@ function TwoFactorLogin() {
       );
       const data = await response.json();
       if (response.ok && data.status !== "codeError") {
-        console.log("2FA is turned on.");
         setError(false);
         navigate("/home");
       } else {
-        console.log("Wrong authentication code");
         setError(true);
       }
     } catch (error) {
       console.error("Error: ", error);
+      navigate("/login");
     }
   }
 
@@ -130,9 +134,13 @@ function TwoFactorLogin() {
       }
     } catch (error) {
       console.error("Error: ", error);
+      navigate("/login");
     }
   }
 
+  if (isLoading) {
+    return <Loading />;
+  }
   return (
     <Grid
       sx={{
