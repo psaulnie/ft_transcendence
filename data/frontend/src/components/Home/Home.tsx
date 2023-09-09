@@ -30,7 +30,8 @@ export default function Home() {
   if (isError) return <ErrorSnackbar error={error} />;
 
   return (
-    <Grid              sx={{
+    <Grid
+      sx={{
         position: "absolute",
         left: "50%",
         top: "50%",
