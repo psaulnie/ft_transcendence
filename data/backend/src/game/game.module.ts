@@ -12,6 +12,8 @@ import { UsersStatusService } from 'src/services/users.status.service';
 @Module({
   providers: [
     GameService,
+    UsersStatusService,
+    User,
   ],
   imports: [
     TypeOrmModule.forFeature([User, BlockedList]),

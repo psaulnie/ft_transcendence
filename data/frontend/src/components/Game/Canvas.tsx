@@ -25,14 +25,18 @@ export default function Canvas({players, gameRoomId, setFoundUser, canvasName} :
     const handleResize = () => {
       let scale = window.innerWidth * 0.00075;
 
+      // console.log(scale);
       if (scale > 1)
         scale = 1;
-      else if (scale < 0.666)
+      if (scale < 0.666 && scale > 0.5)
         scale = 0.666;
+      if (scale < 0.5)
+        scale = 0.5;
       const gameCanvas = document.querySelector('.' + canvasName) as HTMLElement;
       if (gameCanvas) {
         gameCanvas.style.transform = `scale(${scale})`;
       }
+      // console.log("end", scale);
     };
 
     handleResize();

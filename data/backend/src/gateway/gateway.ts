@@ -19,6 +19,8 @@ import { hashPassword, comparePassword } from './hashPasswords';
 import { UsersStatusService } from 'src/services/users.status.service';
 import { userStatus } from 'src/users/userStatus';
 import { GameService } from 'src/services/game.service';
+import { User } from 'src/entities';
+import { CannotGetEntityManagerNotConnectedError } from 'typeorm';
 
 @WebSocketGateway({
   cors: { origin: '*' },
@@ -28,6 +30,7 @@ export class Gateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
   private matchmakingQueue: string[];
+  private maxScore: number;
 
   constructor(
     private roomService: RoomService,
@@ -36,6 +39,7 @@ export class Gateway
     private gameService: GameService,
   ) {
     this.matchmakingQueue = [];
+    this.maxScore = 5;
   }
   @WebSocketServer() server: Server;
 
@@ -694,9 +698,11 @@ export class Gateway
 
   @SubscribeMessage('matchmaking')
   async handleMatchmaking(client: Socket, payload: { username: string }) {
-    // const user = await this.userService.findOne(payload.username);
-    // if (!user)
-    // throw new WsException("User not found");
+    const userStatus = await this.usersStatusService.getUserStatus(
+      payload.username,
+    );
+    if (!userStatus || userStatus.clientId !== client.id)
+      throw new WsException('Forbidden');
     const ticServ = 16;
     if (this.matchmakingQueue.find((name: string) => name == payload.username))
       throw new WsException('Already in Matchmaking');
@@ -723,13 +729,15 @@ export class Gateway
       });
       this.matchmakingQueue.splice(this.matchmakingQueue.indexOf(player1), 1);
       this.matchmakingQueue.splice(this.matchmakingQueue.indexOf(player2), 1);
-
-      setInterval(() => {
+      const gameRoom = this.gameService.getGameRoom(gameRoomId);
+      if (!gameRoom) return;
+      gameRoom.intervalId = setInterval(() => {
+        if (gameRoom.player1.score === this.maxScore || gameRoom.player2.score === this.maxScore) {
+          console.log("une personne ", payload.username);
+          clearInterval(gameRoom.intervalId);
+          this.endGame(client, {gameRoomId});
+        }
         this.gameService.movePlayer(gameRoomId);
-      }, ticServ);
-      setInterval(() => {
-        const gameRoom = this.gameService.getGameRoom(gameRoomId);
-        if (!gameRoom) return;
         this.server.emit('game' + gameRoomId, {
           playerY: gameRoom.player1.Y,
           enemyY: gameRoom.player2.Y,
@@ -743,81 +751,91 @@ export class Gateway
     }
   }
 
+  async endGame(
+    client: Socket,
+    payload: {gameRoomId: string}
+  ) {
+    //TODO add achivement, match history, rank
+    const gameRoom = this.gameService.getGameRoom(payload.gameRoomId);
+      if (!gameRoom) return;
+    const userW = gameRoom.player1.score === this.maxScore 
+      ? gameRoom.player1.user
+      : gameRoom.player2.user
+    const userL = gameRoom.player1.score === this.maxScore
+      ? gameRoom.player2.user
+      : gameRoom.player1.user
+    // const userStatus = await this.usersStatusService.getUserStatusByClientId(client.id);
+    // console.log("endGame", userStatus.username);
+    // const user = await this.userService.findOne(userStatus.username);
+    this.gameService.updateRank(payload.gameRoomId, userW, userL)
+      // : this.gameService.updateRank(payload.gameRoomId, payload.user2, payload.user1)
+  }
+
   @SubscribeMessage('leaveGame')
   async leaveGame(
     client: Socket,
     payload: { gameRoomId: string; coward: string },
   ) {
-    console.log('dans gateway leaveGame', payload.gameRoomId, payload.coward);
+    const userStatus = await this.usersStatusService.getUserStatus(
+      payload.coward,
+    );
+    if (!userStatus || userStatus.clientId !== client.id)
+      throw new WsException('Forbidden');
     this.gameService.leaveGame(payload.gameRoomId, payload.coward);
-  }
-
-  @SubscribeMessage('pressUp')
-  async pressUp(
-    client: Socket,
-    payload: { player: string; gameRoomId: string },
-  ) {
-    // console.log("press UP");
-    this.gameService.pressUp(payload.player, payload.gameRoomId);
   }
 
   @SubscribeMessage('cancelMatchmaking')
   async cancelMatchmaking(client: Socket, payload: { username: string }) {
-    // const user = await this.userService.findOne(payload.username);
-    // if (!user)
-    // throw new WsException("User not found");
+    const userStatus = await this.usersStatusService.getUserStatus(
+      payload.username,
+      );
+      if (!userStatus || userStatus.clientId !== client.id)
+      throw new WsException('Forbidden');
     if (this.matchmakingQueue.find((name: string) => name != payload.username))
-      throw new WsException('Player not in Matchmaking');
-    this.matchmakingQueue.splice(
-      this.matchmakingQueue.indexOf(payload.username),
+    throw new WsException('Player not in Matchmaking');
+  this.matchmakingQueue.splice(
+    this.matchmakingQueue.indexOf(payload.username),
       1,
-    );
-  }
+      );
+    }
+    
+    @SubscribeMessage('pressUp')
+    async pressUp(
+      client: Socket,
+      payload: { player: string; gameRoomId: string },
+    ) {
+      const userStatus = await this.usersStatusService.getUserStatus(
+        payload.player,
+      );
+      if (!userStatus || userStatus.clientId !== client.id)
+        throw new WsException('Forbidden');
+      this.gameService.pressUp(payload.player, payload.gameRoomId);
+    }
 
   @SubscribeMessage('game')
   async handleGame(
     client: Socket,
     payload: { player: string; opponent: string; y: number },
   ) {
-    console.log(payload);
-    console.log('receive');
+    const userStatus = await this.usersStatusService.getUserStatus(
+      payload.player,
+    );
+    if (!userStatus || userStatus.clientId !== client.id)
+      throw new WsException('Forbidden');
     this.server.emit(payload.opponent, { mouseY: payload.y });
   }
 
-  @SubscribeMessage('changeUsername')
-  async changeUsername(client: Socket, payload: string) {
-    console.log('changeusername');
-    if (payload.length > 10) payload = payload.substring(0, 10);
-    const userStatus = await this.usersStatusService.getUserStatusByClientId(
-      client.id,
-    );
-    if (!userStatus) return;
-    console.log(userStatus.username);
-    console.log(await this.userService.findOne(payload));
-    if (await this.userService.findOne(payload)) {
-      this.server.emit(client.id, {
-        action: actionTypes.usernameAlreadyTaken,
-        newUsername: payload,
-      });
-      return;
-    }
-    if (userStatus.clientId !== client.id) throw new WsException('Forbidden');
-    const user = await this.userService.findOne(userStatus.username);
-    if (!user) return;
-    await this.userService.changeUsername(user, payload);
-    await this.usersStatusService.changeUsername(userStatus.username, payload);
-    this.server.emit(client.id, {
-      newUsername: payload,
-      action: actionTypes.newUsername,
-    });
-  }
-
+  
   @SubscribeMessage('pressDown')
   async pressDown(
     client: Socket,
     payload: { player: string; gameRoomId: string },
   ) {
-    // console.log("press Down");
+    const userStatus = await this.usersStatusService.getUserStatus(
+      payload.player,
+      );
+      if (!userStatus || userStatus.clientId !== client.id)
+      throw new WsException('Forbidden');
     this.gameService.pressDown(payload.player, payload.gameRoomId);
   }
 
@@ -826,22 +844,58 @@ export class Gateway
     client: Socket,
     payload: { player: string; gameRoomId: string },
   ) {
-    // console.log("release KEY");
+    const userStatus = await this.usersStatusService.getUserStatus(
+      payload.player,
+    );
+    if (!userStatus || userStatus.clientId !== client.id)
+      throw new WsException('Forbidden');
     this.gameService.releaseUp(payload.player, payload.gameRoomId);
   }
-
+  
   @SubscribeMessage('releaseDown')
   async releaseDown(
     client: Socket,
     payload: { player: string; gameRoomId: string },
-  ) {
-    // console.log("release KEY");
-    this.gameService.releaseDown(payload.player, payload.gameRoomId);
+    ) {
+      const userStatus = await this.usersStatusService.getUserStatus(
+        payload.player,
+        );
+        if (!userStatus || userStatus.clientId !== client.id)
+        throw new WsException('Forbidden');
+      this.gameService.releaseDown(payload.player, payload.gameRoomId);
   }
 
-  /*
+/*
 -----------------------------------------------------------------
 */
+
+@SubscribeMessage('changeUsername')
+async changeUsername(client: Socket, payload: string) {
+  console.log('changeusername');
+  if (payload.length > 10) payload = payload.substring(0, 10);
+  const userStatus = await this.usersStatusService.getUserStatusByClientId(
+    client.id,
+  );
+  if (!userStatus) return;
+  console.log(userStatus.username);
+  console.log(await this.userService.findOne(payload));
+  if (await this.userService.findOne(payload)) {
+    this.server.emit(client.id, {
+      action: actionTypes.usernameAlreadyTaken,
+      newUsername: payload,
+    });
+    return;
+  }
+  if (userStatus.clientId !== client.id) throw new WsException('Forbidden');
+  const user = await this.userService.findOne(userStatus.username);
+  if (!user) return;
+  await this.userService.changeUsername(user, payload);
+  await this.usersStatusService.changeUsername(userStatus.username, payload);
+  this.server.emit(client.id, {
+    newUsername: payload,
+    action: actionTypes.newUsername,
+  });
+}
 
   @SubscribeMessage('changeBackground')
   async changeBackground(

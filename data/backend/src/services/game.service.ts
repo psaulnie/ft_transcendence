@@ -22,7 +22,7 @@ export interface gameRoom {
 	ballSpeedX: number,
 	ballSpeedY: number,
 	coward: string,
-	// spectators: User[],
+	intervalId: any,
 }
 
 const rectWidth = 5;
@@ -30,6 +30,8 @@ const rectHeight = 75;
 const ballWidth = 10;
 const paddleSpeed = 10;
 const maxScore = 5;
+const demote = 2;
+const promote = 2;
 
 @Injectable()
 export class GameService {
@@ -65,9 +67,10 @@ export class GameService {
 			ballSpeedX: 5,
 			ballSpeedY: 5,
 			coward: null,
-			// spectator: [],
+			intervalId: -1,
 		});
 		this.resetBall(gameRoomId);
+		console.log(this.gameRooms);
 		return (gameRoomId);
 	}
 
@@ -126,9 +129,7 @@ export class GameService {
 		}
 
 		//TODO add to db the match
-		if (this.gameRooms[roomIndex].player1.score === maxScore) {
-			this.resetBall(gameRoomId);
-		} else if (this.gameRooms[roomIndex].player2.score === maxScore) {
+		if (this.gameRooms[roomIndex].player1.score === maxScore || this.gameRooms[roomIndex].player2.score === maxScore) {
 			this.resetBall(gameRoomId);
 		}
 	}
@@ -209,5 +210,25 @@ export class GameService {
 			return ;
 		this.gameRooms[roomIndex].coward = coward;
 		console.log("dans gameService leaveGame");
+	}
+
+	updateRank(gameRoomId: string, userW: User, userL: User) {
+		// const roomIndex = this.gameRooms.findIndex((obj) => obj.gameRoomId === gameRoomId);
+		// console.log(roomIndex);
+		// if (roomIndex === -1)
+		// 	return ;
+		console.log ("W L", userW.username, userL.username);
+		if (userW.statistics.streak < 15) {
+			userW.statistics.streak++;
+			if (userW.statistics.streak % 3 === 0)
+				userW.statistics.rank++;
+		}
+		if (userL.statistics.streak > 0) {
+			userL.statistics.streak--;
+			if (userL.statistics.streak % 3 === 0)
+				userL.statistics.rank--;
+		}
+		console.log("streak W L",userW.statistics.streak, userL.statistics.streak)
+		console.log("rank W L", userW.statistics.rank, userL.statistics.rank);
 	}
 }
