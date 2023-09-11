@@ -1,13 +1,10 @@
-import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { logout } from "../../store/user";
 
-import { Box, Grid, Button, CircularProgress, Backdrop } from "@mui/material";
+import { Box, Grid, Button, Typography } from "@mui/material";
 
-import { useGetMyProfileQuery, useGetUserProfileQuery } from "../../store/api";
+import { useGetMyProfileQuery } from "../../store/api";
 import Loading from "../Global/Loading";
-import webSocketManager from "../../webSocket";
 import ErrorSnackbar from "../Global/ErrorSnackbar";
 
 export default function Home() {
@@ -74,8 +71,8 @@ export default function Home() {
                 borderRadius: "10px",
                 color: "black",
                 "&:hover": {
-                  backgroundColor: "red",
-                  borderColor: "red",
+                  backgroundColor: "gray",
+                  borderColor: "gray",
                 },
               }}
             >
@@ -87,8 +84,8 @@ export default function Home() {
               sx={{
                 top: "56%",
                 left: "25%",
-                width: "12em",
-                height: "10.2em",
+                width: "15em",
+                height: "10em",
                 padding: "0.5em",
                 borderRadius: "1.5em",
                 background: "linear-gradient(to right, #ECECEC, #d6d4d4)",
@@ -96,56 +93,48 @@ export default function Home() {
                 boxShadow: "0 0 10px rgba(0, 0, 0, 0.3)",
               }}
             >
-              <Grid
-                container
-                spacing={0.2}
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Grid
-                  item
+                <Typography
                   sx={{
                     color: "black",
                     fontWeight: "bold",
                     fontSize: "24px",
                   }}
+                  display={'block'}
+
                 >
-                  Welcome
-                </Grid>
-                <Grid
-                  item
+                  Welcome {userProfile.username}
+                </Typography>
+                <Typography
                   sx={{
                     color: "black",
                     fontWeight: "bold",
                     fontSize: "24px",
                   }}
+                  display={'block'}
                 >
                   Wins: {userProfile.wins}
-                </Grid>
-                <Grid
-                  item
+                </Typography>
+                <Typography
                   sx={{
                     color: "black",
                     fontWeight: "bold",
                     fontSize: "24px",
                   }}
+                  display={'block'}
                 >
-                  Loses: {userProfile.loses}
-                </Grid>
-                <Grid
-                  item
+                  Losses: {userProfile.loses}
+                </Typography>
+                <Typography
                   sx={{
                     color: "black",
                     fontWeight: "bold",
                     fontSize: "24px",
                   }}
+                  display={'block'}
+
                 >
                   Rank: {userProfile.rank}
-                </Grid>
-              </Grid>
+                </Typography>
             </Box>
           </Grid>
         </Grid>

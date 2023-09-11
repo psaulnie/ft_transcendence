@@ -114,6 +114,7 @@ export default function Message({
                 style={{
                   color: "black",
                   overflowWrap: "break-word",
+                  wordBreak: "break-word",
                   textAlign: user.username !== message.source ? "start" : "end",
                 }}
               >

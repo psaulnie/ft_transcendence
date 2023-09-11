@@ -46,6 +46,7 @@ function Achievements() {
           direction="column"
           justifyContent="center"
           alignItems="center"
+          overflow="auto"
         >
           {
             userAchievements.achievements.achievement1 === true ? (
