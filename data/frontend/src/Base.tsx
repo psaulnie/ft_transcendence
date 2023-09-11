@@ -2,17 +2,17 @@ import { useEffect, useState } from "react";
 
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { logout } from "./store/user";
+import { logout, setIsPlaying } from "./store/user";
 
 import Navigation from "./components/Navigation/Navigation";
 import NavDrawer from "./components/Navigation/NavDrawer";
 import Game from "./components/Game/Game";
 import Options from "./components/Global/Options";
-import Profile from "./components/Global/Profile";
+import Profile from "./components/Profile/Profile";
 import Home from "./components/Home/Home";
 import Chat from "./components/Chat/Chat";
 import Achievements from "./components/Achievements/Achievements";
-import Modification from "./components/Global/Modification";
+import EditProfile from "./components/Profile/EditProfile";
 import Friendlist from "./components/Friendlist/Friendlist";
 import webSocketManager from "./webSocket";
 
@@ -35,15 +35,16 @@ export default function Base() {
     };
 
   useEffect(() => {
-    webSocketManager.getSocket()?.on("disconnect", function () {
-      localStorage.removeItem("user");
-      window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/logout`;
-    });
+    if (user.isPlaying && location.pathname !== '/game')
+    {
+      dispatch(setIsPlaying(false));
+      webSocketManager.getSocket().emit("leaveGamePage");
+    }
     if (!user || !user.username) {
       localStorage.removeItem("user");
       window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/logout`;
     }
-  }, [dispatch, logout, user, user.username]);
+  }, [dispatch, logout, user, user.username, location]);
 
   webSocketManager.initializeWebSocket();
 
@@ -66,7 +67,7 @@ export default function Base() {
           element={<Achievements />}
         ></Route>
         <Route path="/friendlist" element={<Friendlist />}></Route>
-        <Route path="/edit" element={<Modification />}></Route>
+        <Route path="/editProfile" element={<EditProfile />}></Route>
       </Routes>
       {location.pathname !== "/2fa" ? <Chat /> : null}
     </div>

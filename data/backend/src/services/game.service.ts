@@ -79,7 +79,7 @@ export class GameService {
 				P1: false,
 				score: 0,
 			},
-			ballPos: {x: 310, y: 202},
+			ballPos: {x: 310, y: 212},
 			ballSpeedX: 5,
 			ballSpeedY: 5,
 			coward: null,
@@ -155,7 +155,7 @@ export class GameService {
 		if (roomIndex === -1)
 			return ;
 		this.gameRooms[roomIndex].ballPos.x = 310;
-		this.gameRooms[roomIndex].ballPos.y = 202;
+		this.gameRooms[roomIndex].ballPos.y = 212;
 		this.gameRooms[roomIndex].ballSpeedX = -this.gameRooms[roomIndex].ballSpeedX;
 		this.gameRooms[roomIndex].ballSpeedY = Math.random() * 2 - 1;
 	}
@@ -233,20 +233,26 @@ export class GameService {
 	}
 
 	async updateRank(userW: User, userL: User) {
-		if (userW.statistics.streak < 15) {
-			userW.statistics.streak++;
-			if (userW.statistics.streak % 3 === 0)
-				userW.statistics.rank++;
+		if (userW.statistics.streak <= 15) {
+			if (userW.statistics.streak < 15) {
+				userW.statistics.streak++;
+				if (userW.statistics.streak % 3 === 0)
+					userW.statistics.rank++;
+			}
 			userW.statistics.winNbr++;
 			userW.statistics.matchNumber++;
 		}
-		if (userL.statistics.streak > 0) {
-			if (userL.statistics.streak % 3 === 0)
-				userL.statistics.rank--;
-			userL.statistics.streak--;
+		if (userL.statistics.streak >= 0) {
+			if(userL.statistics.streak > 0) {
+				if (userL.statistics.streak % 3 === 0)
+					userL.statistics.rank--;
+				userL.statistics.streak--;
+			}
 			userL.statistics.loseNbr++;
 			userL.statistics.matchNumber++;
 		}
+		console.log(userW.statistics.streak);
+		console.log(userL.statistics.streak);
 		await this.statsRepository.save(userW.statistics);
 		await this.userRepository.save(userW);
 		await this.statsRepository.save(userL.statistics);

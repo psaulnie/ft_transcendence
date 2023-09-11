@@ -4,11 +4,15 @@ import webSocketManager from "../../webSocket";
 // import { WidthFull } from '@mui/icons-material';
 // import { match } from 'assert';
 import { Button } from "@mui/material";
+
 import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { setIsPlaying } from "../../store/user";
 import { Navigate } from "react-router";
 
 export default function Matchmaking({setFoundUser, setPlayers, setGameRoomId, setBackground}: {setFoundUser: any, setPlayers: any, setGameRoomId: any, setBackground: any}) {
   const user = useSelector((state: any) => state.user);
+  const dispatch = useDispatch();
   const [bouttonClick, setButtonClick] = useState(false);
   const [launchGame, setLaunchGame] = useState(false);
   function startMatchmaking() {
@@ -27,11 +31,13 @@ export default function Matchmaking({setFoundUser, setPlayers, setGameRoomId, se
 
   useEffect(() => {
     function process(value: any) {
+      dispatch(setIsPlaying(true));
       setFoundUser(true);
       setPlayers({1: user.username, 2: value.opponent});
       setGameRoomId(value.gameRoomId);
       setBackground(value.background);
       setLaunchGame(true);
+      dispatch(setIsPlaying(true));
       console.log(value);
     }
 

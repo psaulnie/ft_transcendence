@@ -4,6 +4,7 @@ import Cookies from "js-cookie";
 interface UserState {
   username: string;
   isLoggedIn: boolean;
+  isPlaying: boolean;
   isUserBlocked: boolean;
   blockedUsers: string[];
   isError: boolean;
@@ -16,6 +17,7 @@ const initialUser: UserState = localStorage.getItem("user")
       username: "",
       isLoggedIn: false,
       isUserBlocked: false,
+      isPlaying: false,
       blockedUsers: [],
       isError: false,
       error: '',
@@ -27,6 +29,7 @@ const initialState: UserState = {
   isUserBlocked: initialUser.isUserBlocked,
   blockedUsers: initialUser.blockedUsers,
   isError: initialUser.isError,
+  isPlaying: initialUser.isPlaying,
   error: initialUser.error,
 };
 
@@ -48,6 +51,9 @@ export const userSlice = createSlice({
     setUsername: (state, action: PayloadAction<string>) => {
       state.username = action.payload;
       localStorage.setItem("user", JSON.stringify(state));
+    },
+    setIsPlaying: (state, action: PayloadAction<boolean>) => {
+      state.isPlaying = action.payload;
     },
     addBlockedUser: (state, action: PayloadAction<string>) => {
       const nbr = state.blockedUsers.indexOf(action.payload);
@@ -78,6 +84,7 @@ export const {
   addBlockedUser,
   removeBlockedUser,
   isUserBlocked,
+  setIsPlaying,
   setIsError,
 } = userSlice.actions;
 export default userSlice.reducer;
