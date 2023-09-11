@@ -35,6 +35,7 @@ export class UsersService {
         'blockedUsers.blockedUser',
         'blockedUsers.user',
         'statistics',
+        'matchHistory',
       ],
     });
   }

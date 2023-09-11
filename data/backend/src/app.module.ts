@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CacheModule } from '@nestjs/cache-manager';
@@ -62,7 +62,7 @@ import { FriendListController } from './controllers/friendlist.controller';
     ]),
     CacheModule.register({ isGlobal: true }),
     HttpModule.register({}),
-    GameModule,
+    forwardRef(() => GameModule),
   ],
   controllers: [
     AppController,
@@ -84,5 +84,6 @@ import { FriendListController } from './controllers/friendlist.controller';
       useClass: AuthService,
     },
   ],
+  exports: [UsersStatusService]
 })
 export class AppModule {}

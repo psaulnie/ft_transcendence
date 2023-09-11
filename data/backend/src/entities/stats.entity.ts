@@ -16,4 +16,7 @@ export class Statistics {
 
   @Column({ default: 0 })
   rank: number;
+
+  @Column({ default: 0 })
+  streak: number;
 }
