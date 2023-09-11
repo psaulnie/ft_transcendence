@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../entities';
 import { HttpModule } from '@nestjs/axios';
@@ -8,6 +8,9 @@ import { GameService } from 'src/services/game.service';
 import { Gateway } from 'src/gateway/gateway';
 import { RoomService } from 'src/services/room.service';
 import { UsersStatusService } from 'src/services/users.status.service';
+import { Statistics } from 'src/entities/stats.entity';
+import { MatchHistory } from 'src/entities/matchHistory.entity';
+import { AppModule } from 'src/app.module';
 
 @Module({
   providers: [
@@ -16,8 +19,9 @@ import { UsersStatusService } from 'src/services/users.status.service';
     User,
   ],
   imports: [
-    TypeOrmModule.forFeature([User, BlockedList]),
+    TypeOrmModule.forFeature([User, BlockedList, Statistics, MatchHistory]),
     HttpModule.register({}),
+    forwardRef(() => AppModule)
   ],
 })
 export class GameModule {}

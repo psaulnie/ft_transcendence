@@ -1,9 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { randomUUID } from 'crypto';
 import { UsersService } from 'src/users/users.service';
+import { Statistics } from 'src/entities/stats.entity';
+import { MatchHistory } from 'src/entities/matchHistory.entity';
+import { UsersStatusService } from './users.status.service';
+import { userStatus } from 'src/users/userStatus';
 
 export interface Player {
 	user: User,
@@ -39,7 +43,16 @@ export class GameService {
 	
 	private gameRooms: gameRoom[];
 	
-	constructor() {
+	constructor(
+		@InjectRepository(User)
+		private userRepository: Repository<User>,
+		@InjectRepository(Statistics)
+		private statsRepository: Repository<Statistics>,
+		@InjectRepository(MatchHistory)
+		private matchHistoryRepository: Repository<MatchHistory>,
+		@Inject(UsersStatusService)
+		private usersStatusService: UsersStatusService
+	) {
 		this.gameRooms = [];
 	}
 	
@@ -203,32 +216,55 @@ export class GameService {
 		return (room);
 	}
 
-	leaveGame(gameRoomId: string, coward:string) {
+	async leaveGame(gameRoomId: string, coward:string) {
+		const userStatusTmp = await this.usersStatusService.getUserStatus(
+			coward,
+		);
+		userStatusTmp.gameRoomId = '';
+		userStatusTmp.status = userStatus.online;
 		const roomIndex = this.gameRooms.findIndex((obj) => obj.gameRoomId === gameRoomId);
 		console.log(roomIndex);
 		if (roomIndex === -1)
 			return ;
 		this.gameRooms[roomIndex].coward = coward;
-		console.log("dans gameService leaveGame");
 	}
 
-	updateRank(gameRoomId: string, userW: User, userL: User) {
-		// const roomIndex = this.gameRooms.findIndex((obj) => obj.gameRoomId === gameRoomId);
-		// console.log(roomIndex);
-		// if (roomIndex === -1)
-		// 	return ;
-		console.log ("W L", userW.username, userL.username);
+	async updateRank(userW: User, userL: User) {
 		if (userW.statistics.streak < 15) {
 			userW.statistics.streak++;
 			if (userW.statistics.streak % 3 === 0)
 				userW.statistics.rank++;
+			userW.statistics.winNbr++;
+			userW.statistics.matchNumber++;
 		}
 		if (userL.statistics.streak > 0) {
-			userL.statistics.streak--;
 			if (userL.statistics.streak % 3 === 0)
 				userL.statistics.rank--;
+			userL.statistics.streak--;
+			userL.statistics.loseNbr++;
+			userL.statistics.matchNumber++;
 		}
-		console.log("streak W L",userW.statistics.streak, userL.statistics.streak)
-		console.log("rank W L", userW.statistics.rank, userL.statistics.rank);
+		await this.statsRepository.save(userW.statistics);
+		await this.userRepository.save(userW);
+		await this.statsRepository.save(userL.statistics);
+		await this.userRepository.save(userL);
+	}
+
+//TODO understant why it doen't work
+	async addMatchHistory(gameRoomId: string, userW: User, userL: User) {
+		const roomIndex = this.gameRooms.findIndex((obj) => obj.gameRoomId === gameRoomId);
+		if (roomIndex === -1)
+			return ;
+		const matchHistory = new MatchHistory();
+		matchHistory.user1 = userW;
+		matchHistory.user2 = userL;
+		matchHistory.user1Score = this.gameRooms[roomIndex].player1.user.username === userW.username ? this.gameRooms[roomIndex].player1.score : this.gameRooms[roomIndex].player2.score;
+		matchHistory.user2Score = this.gameRooms[roomIndex].player1.user.username === userW.username ? this.gameRooms[roomIndex].player2.score : this.gameRooms[roomIndex].player1.score;
+		userW.matchHistory.push(matchHistory);
+		userL.matchHistory.push(matchHistory);
+		await this.matchHistoryRepository.save(matchHistory);
+		await this.userRepository.save(userW);
+		// await this.matchHistoryRepository.save(userL.matchHistory);
+		await this.userRepository.save(userL);
 	}
 }
