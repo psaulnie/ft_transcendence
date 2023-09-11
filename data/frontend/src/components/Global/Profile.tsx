@@ -20,27 +20,6 @@ function Profile() {
     isError,
   } = useGetUserProfileQuery({ username }, { skip: !username });
 
-  //For testing TODO remove -----------------------------------
-
-  let matchHistory = [];
-
-  matchHistory.push({ p1: 'dbouron', p2: 'faherrau', scoreP1: 5, scoreP2: 2 });
-  matchHistory.push({ p1: 'dbouron', p2: 'faherrau', scoreP1: 5, scoreP2: 1 });
-  matchHistory.push({ p1: 'dbouron', p2: 'faherrau', scoreP1: 5, scoreP2: 3 });
-  matchHistory.push({ p1: 'dbouron', p2: 'faherrau', scoreP1: 1, scoreP2: 5 });
-  matchHistory.push({ p1: 'dbouron', p2: 'faherrau', scoreP1: 4, scoreP2: 5 });
-  matchHistory.push({ p1: 'dbouron', p2: 'faherrau', scoreP1: 5, scoreP2: 2 });
-  matchHistory.push({ p1: 'dbouron', p2: 'faherrau', scoreP1: 5, scoreP2: 1 });
-  matchHistory.push({ p1: 'dbouron', p2: 'faherrau', scoreP1: 5, scoreP2: 1 });
-  matchHistory.push({ p1: 'dbouron', p2: 'faherrau', scoreP1: 5, scoreP2: 1 });
-  matchHistory.push({ p1: 'dbouron', p2: 'faherrau', scoreP1: 5, scoreP2: 1 });
-
-  let matchStats= { username: 'dbouron', rank: 0, wins: 5, loses: 2, matchHistory: matchHistory };
-
-  console.log("Match History:", matchStats.matchHistory);
-
-  // End of testing ---------------------------------------------
-
   const handleAchievementsClick = () => {
     navigate(`/profile/${username}/achievements`);
   };
@@ -119,9 +98,8 @@ function Profile() {
           </Grid>
 
           <Grid item sx={{ width: '100%', height: '52%', overflow: 'auto' }}>
-            {/*TODO change 'matchStats' by 'userProfile'*/}
-            {matchStats.matchHistory && matchStats.matchHistory.length > 0 ? (
-              matchHistory.map((match, index) => (
+            {userProfile.matchHistory && userProfile.matchHistory.length > 0 ? (
+              userProfile.matchHistory.map((match: any, index: any) => (
                 <Grid container key={index} alignItems="center" justifyContent="center" sx={{ backgroundColor: '#454545', width: '100%', height: '2.5em', marginBottom: '0.5em' }}>
                   <Grid item container alignItems="center" justifyContent="center">
                     <Avatar src={`http://${process.env.REACT_APP_IP}:5000/api/avatar/${match.p1}`} alt="User Avatar" sx={{ width: '30px', height: '30px', margin: '0 30px' }} />
