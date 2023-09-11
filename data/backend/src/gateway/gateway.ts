@@ -815,6 +815,7 @@ export class Gateway
       : gameRoom.player1.user
     await this.gameService.addMatchHistory(payload.gameRoomId, userW, userL);
     await this.gameService.updateRank(userW, userL);
+    this.gameService.updateAchivement(userW, userL);
   }
 
   @SubscribeMessage('leaveGame')
