@@ -63,6 +63,7 @@ function ToComplete({
               sx={{
                 fontSize: 16,
                 color: "black",
+                textAlign: "left",
                 marginLeft: "auto",
                 marginTop: "auto",
               }}

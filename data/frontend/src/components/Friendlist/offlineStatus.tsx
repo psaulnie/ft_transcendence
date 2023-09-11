@@ -2,8 +2,9 @@ import { Avatar, Box, Button, Grid, Typography } from "@mui/material";
 import { HideSource, Delete } from "@mui/icons-material";
 import webSocketManager from "../../webSocket";
 import {useSelector} from "react-redux";
+import { useState } from "react";
 
-function offlineStatus({username}: {username: string}) {
+function OfflineStatus({username, refetch}: {username: string, refetch: any}) {
   const urlAvatar = `http://${process.env.REACT_APP_IP}:5000/api/avatar/${username}`;
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const user = useSelector((state: any) => state.user);
@@ -91,7 +92,7 @@ function offlineStatus({username}: {username: string}) {
               onClick={() => {
                 webSocketManager.getSocket()?.emit("removeFriend", {
                   source: user.username,
-                  target: { username },
+                  target: username,
                 });
               }}
               sx={{
@@ -114,4 +115,4 @@ function offlineStatus({username}: {username: string}) {
   );
 }
 
-export default offlineStatus;
+export default OfflineStatus;

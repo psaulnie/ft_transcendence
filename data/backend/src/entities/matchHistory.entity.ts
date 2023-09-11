@@ -6,13 +6,11 @@ export class MatchHistory {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => User, (user) => user.matchHistory)
-  @JoinColumn({name: 'user1'})
-  user1: User;
+  @Column()
+  user1id: number;
 
-  @ManyToOne(() => User, (user) => user.matchHistory)
-  @JoinColumn({name: 'user2'})
-  user2: User;
+  @Column()
+  user2id: number;
 
   @Column()
   user1Score: number;

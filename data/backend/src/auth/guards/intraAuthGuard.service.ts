@@ -27,9 +27,9 @@ export class AuthenticatedGuard implements CanActivate {
   constructor(private readonly usersService: UsersService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    console.log('AUTHENTICATED GUARD');
+    // console.log('AUTHENTICATED GUARD');
     const req = context.switchToHttp().getRequest();
-    console.log('‣ isAuthenticated: ', req.isAuthenticated());
+    // console.log('‣ isAuthenticated: ', req.isAuthenticated());
 
     if (!req.isAuthenticated()) {
       return false;

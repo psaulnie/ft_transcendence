@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "./store/user";
 
@@ -20,6 +20,7 @@ import TwoFactorLogin from "./components/Login/TwoFactorLogin";
 export default function Base() {
   const user = useSelector((state: any) => state.user);
   const dispatch = useDispatch();
+  const location = useLocation();
 
   const [drawerState, setDrawerState] = useState(false);
   const toggleDrawer =
@@ -35,12 +36,11 @@ export default function Base() {
     };
 
   useEffect(() => {
-    webSocketManager.getSocket()?.on('disconnect', function () {
+    webSocketManager.getSocket()?.on("disconnect", function () {
       localStorage.removeItem("user");
       window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/logout`;
-    })
-    if (!user || !user.username)
-    {
+    });
+    if (!user || !user.username) {
       localStorage.removeItem("user");
       window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/logout`;
     }
@@ -50,11 +50,14 @@ export default function Base() {
 
   return (
     <div className="main">
-      <Navigation setDrawerState={setDrawerState} />
-      <NavDrawer state={drawerState} toggleDrawer={toggleDrawer} />
+      {location.pathname !== "/2fa" ? (
+        <div>
+          <Navigation setDrawerState={setDrawerState} />
+          <NavDrawer state={drawerState} toggleDrawer={toggleDrawer} />
+        </div>
+      ) : null}
       <Routes>
         <Route path="*" element={<Navigate to="/home" />}></Route>
-        <Route path="/2fa" element={<TwoFactorLogin />}></Route>
         <Route path="/home" element={<Home />}></Route>
         <Route path="/profile/:username" element={<Profile />}></Route>
         <Route path="/game" element={<Game />}></Route>
@@ -66,7 +69,7 @@ export default function Base() {
         <Route path="/friendlist" element={<Friendlist />}></Route>
         <Route path="/edit" element={<Modification />}></Route>
       </Routes>
-      <Chat />
+      {location.pathname !== "/2fa" ? <Chat /> : null}
     </div>
   );
 }

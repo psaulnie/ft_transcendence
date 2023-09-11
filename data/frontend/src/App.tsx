@@ -18,7 +18,7 @@ import TwoFactorLogin from "./components/Login/TwoFactorLogin";
 
 const theme = createTheme({
   palette: {
-    mode: "dark",
+    mode: "light",
     primary: {
       main: "#000000", // Red color
     },
@@ -48,7 +48,7 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/login" element={<Login />}></Route>
-            
+            <Route path="/2fa" element={<TwoFactorLogin />}></Route>
             <Route path="*" element={<PrivateRoute />}>
               <Route path="*" element={<Base />} />
             </Route>

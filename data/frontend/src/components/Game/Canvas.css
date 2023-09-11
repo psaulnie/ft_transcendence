@@ -10,25 +10,25 @@
   margin-right: auto;
 }
 
-.industrial {
+.spongebob {
     width: 640px;
     height: 425px;
     margin: auto;
-    background-image: url("./img/industrial.jpg");
+    background-image: url("./img/spongebob.jpg");
 }
 
-.medieval {
+.windows {
     width: 640px;
     height: 425px;
     margin: auto;
-    background-image: url("./img/medieval.jpg");
+    background-image: url("./img/windows.jpg");
 }
 
-.brickwall {
+.roadrunner {
     width: 640px;
     height: 425px;
     margin: auto;
-    background-image: url("./img/brickwall.jpg");
+    background-image: url("./img/roadrunner.jpg");
 }
 
 .scooby {

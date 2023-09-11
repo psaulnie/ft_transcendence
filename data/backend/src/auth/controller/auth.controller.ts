@@ -49,8 +49,26 @@ export class AuthController {
    * Retrieve the auth status
    */
   @Get('status')
-  status(@Req() req: Request) {
-    return (req.isAuthenticated());
+  async status(@Req() req: RequestWithUser) {
+    // return (req.isAuthenticated());
+    if (!req.isAuthenticated()) {
+      return false;
+    }
+
+    // For 2FA -----
+    const isTwoFactorAuthOn = await this.usersService.getTwoFactorAuthState(
+      req.user.uid,
+    );
+    if (isTwoFactorAuthOn) {
+      const isTwoFactorAuthenticated =
+        await this.usersService.isTwoFactorAuthenticated(req.user.uid);
+      if (!isTwoFactorAuthenticated) {
+        return false;
+      }
+    }
+    // -------------
+
+    return true;
   }
 
   /**

@@ -31,6 +31,7 @@ export class Gateway
 {
   private matchmakingQueue: string[];
   private maxScore: number;
+  @WebSocketServer() server: Server;
 
   constructor(
     private roomService: RoomService,
@@ -41,7 +42,6 @@ export class Gateway
     this.matchmakingQueue = [];
     this.maxScore = 5;
   }
-  @WebSocketServer() server: Server;
 
   @SubscribeMessage('sendPrivateMsg')
   async sendPrivateMessage(client: Socket, payload: sendMsgArgs) {
@@ -195,7 +195,7 @@ export class Gateway
         return;
       }
     }
-    if (await this.roomService.isMuted(payload.room, user))
+    if (!(await this.roomService.isMuted(payload.room, user)))
       this.server.emit(payload.room, {
         source: payload.source,
         target: payload.room,
@@ -620,11 +620,19 @@ export class Gateway
   ) {
     if (payload.source == null || payload.target == null)
       throw new WsException('Missing parameters');
+    const userStatus = await this.usersStatusService.getUserStatus(
+      payload.source,
+    );
+    if (!userStatus || userStatus.clientId !== client.id)
+      throw new WsException('Forbidden');
     const sourceUser = await this.userService.findOne(payload.source);
     if (!sourceUser) throw new WsException('Source user not found');
     const targetUser = await this.userService.findOne(payload.target);
     if (!targetUser) throw new WsException('Target user not found');
-    if (sourceUser.friends.some((friend) => friend.uid === targetUser.uid))
+    if (
+      sourceUser.friends.some((friend) => friend.uid === targetUser.uid) &&
+      targetUser.friends.some((friend) => friend.uid === sourceUser.uid)
+    )
       throw new WsException('Already friends');
     if (
       targetUser.blockedUsers.some(
@@ -641,6 +649,7 @@ export class Gateway
     const targetStatus = await this.usersStatusService.getUserStatus(
       payload.target,
     );
+    if (!targetStatus) throw new WsException('Target user not found');
     this.server.emit(targetStatus.clientId, {
       source: payload.source,
       target: payload.target,
@@ -653,13 +662,26 @@ export class Gateway
     client: Socket,
     payload: { source: string; target: string },
   ) {
+    console.log('acceptBeingFriend');
     if (payload.source == null || payload.target == null)
       throw new WsException('Missing parameters');
+    const userStatus = await this.usersStatusService.getUserStatus(
+      payload.source,
+    );
+    if (!userStatus || userStatus.clientId !== client.id)
+      throw new WsException('Forbidden');
     const sourceUser = await this.userService.findOne(payload.source);
     if (!sourceUser) throw new WsException('Source user not found');
     const targetUser = await this.userService.findOne(payload.target);
     if (!targetUser) throw new WsException('Target user not found');
-    if (sourceUser.friends.some((friend) => friend.uid === targetUser.uid))
+    const targetStatus = await this.usersStatusService.getUserStatus(
+      targetUser.username,
+    );
+    if (!targetStatus) throw new WsException('Target user not found');
+    if (
+      sourceUser.friends.some((friend) => friend.uid === targetUser.uid) &&
+      targetUser.friends.some((friend) => friend.uid === sourceUser.uid)
+    )
       throw new WsException('Already friends');
     if (
       targetUser.blockedUsers.some(
@@ -674,6 +696,12 @@ export class Gateway
     )
       throw new WsException('Source user blocked target user');
     await this.userService.addFriend(sourceUser, targetUser);
+    this.server.emit(targetStatus.clientId, {
+      source: payload.source,
+      action: actionTypes.acceptBeingFriend,
+    });
+    this.server.emit(targetStatus.clientId + 'friend');
+    this.server.emit(client.id + 'friend');
   }
 
   @SubscribeMessage('removeFriend')
@@ -683,13 +711,22 @@ export class Gateway
   ) {
     if (payload.source == null || payload.target == null)
       throw new WsException('Missing parameters');
+    const userStatus = await this.usersStatusService.getUserStatus(
+      payload.source,
+    );
+    if (!userStatus || userStatus.clientId !== client.id)
+      throw new WsException('Forbidden');
     const sourceUser = await this.userService.findOne(payload.source);
     if (!sourceUser) throw new WsException('Source user not found');
     const targetUser = await this.userService.findOne(payload.target);
     if (!targetUser) throw new WsException('Target user not found');
-    if (!sourceUser.friends.some((friend) => friend.uid === targetUser.uid))
-      throw new WsException('Not friends');
     await this.userService.removeFriend(sourceUser, targetUser);
+    const targetStatus = await this.usersStatusService.getUserStatus(
+      targetUser.username,
+    );
+    if (!targetStatus) throw new WsException('Target user not found');
+    this.server.emit(targetStatus.clientId + 'friend');
+    this.server.emit(client.id + 'friend');
   }
 
   /*
@@ -907,20 +944,34 @@ async changeUsername(client: Socket, payload: string) {
 }
 
   @SubscribeMessage('changeBackground')
-  async changeBackground(
-    client: Socket,
-    payload: string,
-  ) {
-    const userStatus = await this.usersStatusService.getUserStatusByClientId(client.id);
-    if (userStatus)
-    {
+  async changeBackground(client: Socket, payload: string) {
+    const userStatus = await this.usersStatusService.getUserStatusByClientId(
+      client.id,
+    );
+    if (userStatus) {
+      if (
+        payload != 'default' &&
+        payload != 'scooby' &&
+        payload != 'roadrunner' &&
+        payload != 'orange' &&
+        payload != 'windows' &&
+        payload != 'spongebob'
+      )
+        return;
       await this.userService.changeBackground(userStatus.username, payload);
-      this.server.emit(client.id, { action: actionTypes.newBackground })
+      this.server.emit(client.id, { action: actionTypes.newBackground });
     }
   }
 
   async afterInit(server: Server) {
     console.log('Init');
+    server.on('connection', (client) => {
+      client.on('disconnect', (reason) => {
+        // Gérez la fermeture prématurée ici
+        console.log(`Client disconnected due to: ${reason}`);
+        // Vous pouvez ajouter votre propre logique de gestion d'erreur ici
+      });
+    });
   }
 
   async handleDisconnect(client: Socket) {

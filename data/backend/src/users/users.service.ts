@@ -45,9 +45,6 @@ export class UsersService {
       where: { username: name },
       relations: [
         'friends',
-        'matchHistory',
-        'matchHistory.user1',
-        'matchHistory.user2',
         'statistics',
       ],
     });
@@ -58,6 +55,12 @@ export class UsersService {
       where: { username: name },
       relations: ['achievements'],
     });
+  }
+
+  async findOneMatchHistory(uid: number): Promise<MatchHistory[]> {
+    return (await this.matchHistoryRepository.find({
+      where: [{ user1id: uid }, { user2id: uid }],
+    }));
   }
 
   async findOneByIntraUsername(name: string): Promise<User> {
@@ -135,8 +138,9 @@ export class UsersService {
     console.log('addfriend');
     user.friends.push(friend);
     friend.friends.push(user);
-    await this.usersRepository.save(user);
+    console.log(await this.usersRepository.save(user));
     await this.usersRepository.save(friend);
+    
   }
 
   async removeFriend(user: User, friend: User) {

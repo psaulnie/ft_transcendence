@@ -44,7 +44,10 @@ export class AuthService implements AuthProvider {
       }
       user.accessToken = accessToken;
       user.refreshToken = refreshToken;
-      await this.userRepo.save(user); //Update accessToken
+      await this.userRepo.update(user.uid, {
+        accessToken,
+        refreshToken,
+      }); //Update accessToken
       console.log('‣ User after update : ', user);
       return user;
     }
@@ -85,7 +88,7 @@ export class AuthService implements AuthProvider {
   }
 
   findUser(intraId: string): Promise<User> | undefined {
-    console.log('FIND USER SERVICE');
+    // console.log('FIND USER SERVICE');
     return this.userRepo.findOneBy({ intraId });
   }
 }

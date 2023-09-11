@@ -2,8 +2,9 @@ import { Avatar, Box, Button, Grid, Typography } from "@mui/material";
 import { Delete, VideogameAsset } from "@mui/icons-material";
 import webSocketManager from "../../webSocket";
 import {useSelector} from "react-redux";
+import { useState } from "react";
 
-function inGameStatus({username}: {username: string}) {
+function InGameStatus({username, refetch}: {username: string, refetch: any}) {
   const urlAvatar = `http://${process.env.REACT_APP_IP}:5000/api/avatar/${username}`;
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const user = useSelector((state: any) => state.user);
@@ -88,7 +89,7 @@ function inGameStatus({username}: {username: string}) {
               onClick={() => {
                 webSocketManager.getSocket()?.emit("removeFriend", {
                   source: user.username,
-                  target: { username },
+                  target: username,
                 });
               }}
               sx={{
@@ -111,4 +112,4 @@ function inGameStatus({username}: {username: string}) {
  );
 }
 
-export default inGameStatus;
+export default InGameStatus;
