@@ -66,7 +66,7 @@ export class UsersService {
   }
 
   async findOneByUsername(name: string): Promise<User> {
-    return await this.usersRepository.findOne({ where: { username: name } });
+    return await this.usersRepository.findOne({ where: { username: name }, relations: ['achievements'] });
   }
 
   async findOneById(id: number): Promise<User> {
@@ -177,6 +177,10 @@ export class UsersService {
   {
     const user = await this.findOneByUsername(username);
     if (!user) return ;
+    if (user.gameBackground === 'canvas') {
+      user.achievements.achievement5 = true;
+      await this.achievementsRepository.save(user.achievements);
+    }
     user.gameBackground = background;
     await this.usersRepository.save(user);
   }
