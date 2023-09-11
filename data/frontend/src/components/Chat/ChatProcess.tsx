@@ -20,11 +20,13 @@ import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import { userRole } from "./chatEnums";
 import { setUsername } from "../../store/user";
 import { userStatus } from "../Friendlist/userStatus";
+import { useNavigate } from "react-router";
 
 export default function ChatProcess() {
   const user = useSelector((state: any) => state.user);
   const rooms = useSelector((state: any) => state.rooms);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [open, setOpen] = useState(false);
   const [openInvite, setOpenInvite] = useState(false);
@@ -221,7 +223,18 @@ export default function ChatProcess() {
         setPongSnackbar(value.source + " wants to play with you!", "info");
         setTarget(value.source);
       } else if (value.action === actionTypes.acceptPlay) {
-        setSnackbar(value.source + " accepted to play with you!", "success");
+        if (value.source !== user.username)
+          setSnackbar(value.source + " accepted to play with you!", "success");
+        navigate("/game/play", {
+          state: {
+            players: {
+              1: value.source,
+              2: value.target,
+            },
+            background: value.data.background,
+            gameRoomId: value.data.gameRoomId,
+          },
+        });
       }
     }
     webSocketManager.getSocket().on(webSocketManager.getSocket().id, process);

@@ -1,5 +1,5 @@
 // import { exit } from 'process';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 // import { webSocket } from '../../webSocket';
 // import { WidthFull } from '@mui/icons-material';
 import Matchmaking from "./Matchmaking";
@@ -13,18 +13,54 @@ import { Navigate, Route, Routes, useLocation } from "react-router";
 
 export default function Game() {
   const [foundUser, setFoundUser] = useState(false);
-  const [players, setPlayers] = useState<{1: string; 2: string }>({ 1: '', 2: '' });
+  const [players, setPlayers] = useState<{ 1: string; 2: string }>({
+    1: "",
+    2: "",
+  });
   const [gameRoomId, setGameRoomId] = useState("");
-  const [canvasName, setBackground] = useState<string>('');
+  const [canvasName, setBackground] = useState<string>("");
   const location = useLocation();
 
-  if (location.pathname === "/game/play" && !foundUser) {
-    return (<Navigate to="/game/matchmaking" />)
+  useEffect(() => {
+    if (
+      location.state &&
+      location.state.background &&
+      location.state.gameRoomId &&
+      location.state.players
+    ) {
+      setFoundUser(true);
+      setPlayers(location.state.players);
+      setGameRoomId(location.state.gameRoomId);
+      setBackground(location.state.background);
+    }
+  });
+
+  if (foundUser) {
+    return (
+      <Canvas
+        players={players}
+        gameRoomId={gameRoomId}
+        setFoundUser={setFoundUser}
+        canvasName={canvasName}
+      />
+    );
   }
+  // if (!foundUser && location.pathname !== "/matchmaking") {
+  //   return <Navigate to="/matchmaking" />;
+  // }
   return (
     <Routes>
-        <Route path="*" element={<Matchmaking setFoundUser={setFoundUser} setPlayers={setPlayers} setGameRoomId={setGameRoomId} setBackground={setBackground}/>}></Route>
-        <Route path="/play" element={<Canvas players={players} gameRoomId={gameRoomId} setFoundUser={setFoundUser} canvasName={canvasName}/>}></Route>
+      <Route
+        path="*"
+        element={
+          <Matchmaking
+            setFoundUser={setFoundUser}
+            setPlayers={setPlayers}
+            setGameRoomId={setGameRoomId}
+            setBackground={setBackground}
+          />
+        }
+      ></Route>
     </Routes>
   );
 }

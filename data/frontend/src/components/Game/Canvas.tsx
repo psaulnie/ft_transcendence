@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import './Canvas.css'
 import webSocketManager from '../../webSocket';
 import { Button } from '@mui/material';
+import { useNavigate } from 'react-router';
 
 export default function Canvas({players, gameRoomId, setFoundUser, canvasName} : {players: {1: string, 2: string}, gameRoomId: string, setFoundUser: any, canvasName: string}) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -15,6 +16,7 @@ export default function Canvas({players, gameRoomId, setFoundUser, canvasName} :
   const player1 = players[1] < players[2] ? players[1] : players[2];
   const player2 = players[1] < players[2] ? players[2] : players[1];
   const maxScore = 5;
+  const navigate = useNavigate();
 
   useEffect(() => {
     // const divID = "canvas";
@@ -142,8 +144,8 @@ export default function Canvas({players, gameRoomId, setFoundUser, canvasName} :
     const name = players[1];
     console.log(name);
     webSocketManager.getSocket().emit("leaveGame" , { gameRoomId, coward:name });
+    navigate('/home');
   }
-
   return (
     <div className={canvasName} id='canvas'>
       <canvas ref={canvasRef} width={canvasSize.width} height={canvasSize.height}

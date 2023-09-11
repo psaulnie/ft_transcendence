@@ -771,9 +771,64 @@ export class Gateway
     const opponentStatus = await this.usersStatusService.getUserStatus(payload);
     if (!opponentStatus)
       throw new WsException('Opponent user not found or offline');
-    this.server.emit(opponentStatus.clientId, { action: actionTypes.acceptPlay, source: cUserStatus.username });
-    // TODO create game room
-    // - navigate the two players to the game route in frontend
+    const user1 = await this.userService.findOne(cUserStatus.username);
+    const user2 = await this.userService.findOne(opponentStatus.username);
+    if (!user1 || !user2) throw new WsException('User not found');
+    const gameRoomId =
+      cUserStatus.username < opponentStatus.username
+        ? this.gameService.newGame(user1, user2)
+        : this.gameService.newGame(user2, user1);
+    cUserStatus.status = userStatus.playing;
+    cUserStatus.gameRoomId = gameRoomId;
+    opponentStatus.status = userStatus.playing;
+    opponentStatus.gameRoomId = gameRoomId;
+    const p1 =
+      cUserStatus.username < opponentStatus.username
+        ? cUserStatus.username
+        : opponentStatus.username;
+    const p2 =
+      cUserStatus.username < opponentStatus.username
+        ? opponentStatus.username
+        : cUserStatus.username;
+    this.server.emit(opponentStatus.clientId, {
+      action: actionTypes.acceptPlay,
+      source: opponentStatus.username,
+      target: cUserStatus.username,
+      data: {
+        gameRoomId,
+        background: user2.gameBackground,
+      },
+    });
+    this.server.emit(cUserStatus.clientId, {
+      action: actionTypes.acceptPlay,
+      source: cUserStatus.username,
+      target: opponentStatus.username,
+      data: {
+        gameRoomId,
+        background: user1.gameBackground,
+      },
+    });
+    const gameRoom = this.gameService.getGameRoom(gameRoomId);
+    if (!gameRoom) return;
+    gameRoom.intervalId = setInterval(() => {
+      if (
+        gameRoom.player1.score === this.maxScore ||
+        gameRoom.player2.score === this.maxScore
+      ) {
+        clearInterval(gameRoom.intervalId);
+        this.endGame(client, { gameRoomId });
+      }
+      this.gameService.movePlayer(gameRoomId);
+      this.server.emit('game' + gameRoomId, {
+        playerY: gameRoom.player1.Y,
+        enemyY: gameRoom.player2.Y,
+        ballX: gameRoom.ballPos.x,
+        ballY: gameRoom.ballPos.y,
+        p1Score: gameRoom.player1.score,
+        p2Score: gameRoom.player2.score,
+        coward: gameRoom.coward,
+      });
+    }, 16);
   }
 
   @SubscribeMessage('matchmaking')
@@ -843,7 +898,6 @@ export class Gateway
   }
 
   async endGame(client: Socket, payload: { gameRoomId: string }) {
-    //TODO add achivement, match history
     const gameRoom = this.gameService.getGameRoom(payload.gameRoomId);
     if (!gameRoom) return;
     const userW =
@@ -854,6 +908,12 @@ export class Gateway
       gameRoom.player1.score === this.maxScore
         ? gameRoom.player2.user
         : gameRoom.player1.user;
+    const userWStatus = await this.usersStatusService.getUserStatus(userW.username);
+    const userLStatus = await this.usersStatusService.getUserStatus(userL.username);
+    userWStatus.status = userStatus.online;
+    userWStatus.gameRoomId = null;
+    userLStatus.status = userStatus.online;
+    userLStatus.gameRoomId = null;
     await this.gameService.addMatchHistory(payload.gameRoomId, userW, userL);
     await this.gameService.updateRank(userW, userL);
     this.gameService.updateAchivement(userW, userL);
