@@ -2,8 +2,8 @@ import { Box, Grid, Button, Avatar, Typography } from "@mui/material";
 import { useSelector } from "react-redux";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { useGetUserProfileQuery } from "../../store/api";
-import Loading from "./Loading";
-import ErrorSnackbar from "./ErrorSnackbar";
+import Loading from "../Global/Loading";
+import ErrorSnackbar from "../Global/ErrorSnackbar";
 import BorderColorIcon from '@mui/icons-material/BorderColor';
 import {grey} from "@mui/material/colors";
 
@@ -29,7 +29,7 @@ function Profile() {
   };
 
   const handleModificationClick = () => {
-    navigate(`/edit`);
+    navigate(`/editProfile`);
   };
 
   if (isLoading) return <Loading />;
