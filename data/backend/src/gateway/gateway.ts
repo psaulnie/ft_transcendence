@@ -733,6 +733,49 @@ export class Gateway
 ----------------------------GAME---------------------------------
 */
 
+  @SubscribeMessage('askPlayPong')
+  async askPlayPong(client: Socket, payload: string) {
+    const cUserStatus = await this.usersStatusService.getUserStatusByClientId(
+      client.id,
+    );
+    if (!cUserStatus) throw new WsException('Forbidden');
+    const user = await this.userService.findOne(cUserStatus.username);
+    if (!user) throw new WsException('User not found');
+    const invitedUserStatus = await this.usersStatusService.getUserStatus(
+      payload,
+    );
+    if (!invitedUserStatus || invitedUserStatus.status !== userStatus.online) {
+      this.server.emit(client.id, {
+        action: actionTypes.cantPlay,
+        target: payload,
+        data: !invitedUserStatus
+          ? userStatus.offline
+          : invitedUserStatus.status,
+      });
+      return;
+    }
+    this.server.emit(invitedUserStatus.clientId, {
+      action: actionTypes.askPlay,
+      source: cUserStatus.username,
+    });
+  }
+
+  @SubscribeMessage('acceptPlayPong')
+  async acceptPlayPong(client: Socket, payload: string) {
+    const cUserStatus = await this.usersStatusService.getUserStatusByClientId(
+      client.id,
+    );
+    if (!cUserStatus) throw new WsException('Forbidden');
+    const user = await this.userService.findOne(cUserStatus.username);
+    if (!user) throw new WsException('User not found');
+    const opponentStatus = await this.usersStatusService.getUserStatus(payload);
+    if (!opponentStatus)
+      throw new WsException('Opponent user not found or offline');
+    this.server.emit(opponentStatus.clientId, { action: actionTypes.acceptPlay, source: cUserStatus.username });
+    // TODO create game room
+    // - navigate the two players to the game route in frontend
+  }
+
   @SubscribeMessage('matchmaking')
   async handleMatchmaking(client: Socket, payload: { username: string }) {
     const userStatusTmp = await this.usersStatusService.getUserStatus(
