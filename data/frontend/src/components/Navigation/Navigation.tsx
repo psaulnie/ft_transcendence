@@ -44,7 +44,6 @@ function Navigation({ setDrawerState }: { setDrawerState: any }) {
 
   useEffect(() => {
     if (query.isUninitialized === false && query.isSuccess === true) {
-      console.log("salut");
       setRank(query.data.rank);
     }
   }, [query]);
