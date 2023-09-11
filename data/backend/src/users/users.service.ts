@@ -132,11 +132,11 @@ export class UsersService {
 
   async addFriend(user: User, friend: User) {
     console.log('addfriend');
-    if (user.friends.length === 0) {
+    if (user.friends.length === 0 && user.achievements.achievement3 === false) {
       user.achievements.achievement3 = true;
       await this.achievementsRepository.save(user.achievements);
     }
-    if (friend.friends.length === 0) {
+    if (friend.friends.length === 0 && friend.achievements.achievement3 === false) {
       friend.achievements.achievement3 = true;
       await this.achievementsRepository.save(friend.achievements);
     }
@@ -185,7 +185,7 @@ export class UsersService {
   {
     const user = await this.findOneByUsername(username);
     if (!user) return ;
-    if (user.gameBackground === 'canvas') {
+    if (user.gameBackground === 'canvas' && user.achievements.achievement5 === false) {
       user.achievements.achievement5 = true;
       await this.achievementsRepository.save(user.achievements);
     }
