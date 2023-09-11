@@ -15,7 +15,6 @@ import Achievements from "./components/Achievements/Achievements";
 import Modification from "./components/Global/Modification";
 import Friendlist from "./components/Friendlist/Friendlist";
 import webSocketManager from "./webSocket";
-import TwoFactorLogin from "./components/Login/TwoFactorLogin";
 
 export default function Base() {
   const user = useSelector((state: any) => state.user);
@@ -60,7 +59,7 @@ export default function Base() {
         <Route path="*" element={<Navigate to="/home" />}></Route>
         <Route path="/home" element={<Home />}></Route>
         <Route path="/profile/:username" element={<Profile />}></Route>
-        <Route path="/game" element={<Game />}></Route>
+        <Route path="/game/*" element={<Game />}></Route>
         <Route path="/options" element={<Options />}></Route>
         <Route
           path="/profile/:username/achievements"

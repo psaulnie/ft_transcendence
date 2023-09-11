@@ -1,9 +1,10 @@
 // import { exit } from 'process';
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 // import { webSocket } from '../../webSocket';
 // import { WidthFull } from '@mui/icons-material';
 import Matchmaking from "./Matchmaking";
 import Canvas from "./Canvas";
+import { Navigate, Route, Routes, useLocation } from "react-router";
 
 // interface InterfaceProps{
 //   WidthFrame:string;
@@ -15,12 +16,15 @@ export default function Game() {
   const [players, setPlayers] = useState<{1: string; 2: string }>({ 1: '', 2: '' });
   const [gameRoomId, setGameRoomId] = useState("");
   const [canvasName, setBackground] = useState<string>('');
+  const location = useLocation();
 
+  if (location.pathname === "/game/play" && !foundUser) {
+    return (<Navigate to="/game/matchmaking" />)
+  }
   return (
-    <div>
-      {
-        !foundUser ?  <Matchmaking setFoundUser={setFoundUser} setPlayers={setPlayers} setGameRoomId={setGameRoomId} setBackground={setBackground}/> : <Canvas players={players} gameRoomId={gameRoomId} setFoundUser={setFoundUser} canvasName={canvasName}/>
-      }     
-    </div>
+    <Routes>
+        <Route path="*" element={<Matchmaking setFoundUser={setFoundUser} setPlayers={setPlayers} setGameRoomId={setGameRoomId} setBackground={setBackground}/>}></Route>
+        <Route path="/play" element={<Canvas players={players} gameRoomId={gameRoomId} setFoundUser={setFoundUser} canvasName={canvasName}/>}></Route>
+    </Routes>
   );
 }
