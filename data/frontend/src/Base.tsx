@@ -35,7 +35,7 @@ export default function Base() {
     };
 
   useEffect(() => {
-    if (user.isPlaying && location.pathname !== '/game')
+    if (user.isPlaying && !location.pathname.startsWith('/game'))
     {
       dispatch(setIsPlaying(false));
       webSocketManager.getSocket().emit("leaveGamePage");
@@ -60,7 +60,7 @@ export default function Base() {
         <Route path="*" element={<Navigate to="/home" />}></Route>
         <Route path="/home" element={<Home />}></Route>
         <Route path="/profile/:username" element={<Profile />}></Route>
-        <Route path="/game" element={<Game />}></Route>
+        <Route path="/game/*" element={<Game />}></Route>
         <Route path="/options" element={<Options />}></Route>
         <Route
           path="/profile/:username/achievements"

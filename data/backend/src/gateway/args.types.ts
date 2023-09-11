@@ -22,4 +22,7 @@ export enum actionTypes {
   newBackground,
   usernameAlreadyTaken,
   owner,
+  cantPlay,
+  askPlay,
+  acceptPlay,
 }

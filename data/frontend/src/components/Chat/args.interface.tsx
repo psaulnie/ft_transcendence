@@ -23,7 +23,7 @@ export interface chatResponseArgs {
   source: string;
   target: string;
   action: number;
-  data: string;
+  data: any;
   role: userRole;
   isMuted: boolean;
   hasPassword: boolean;

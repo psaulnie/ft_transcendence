@@ -19,8 +19,6 @@ import { hashPassword, comparePassword } from './hashPasswords';
 import { UsersStatusService } from 'src/services/users.status.service';
 import { userStatus } from 'src/users/userStatus';
 import { GameService } from 'src/services/game.service';
-import { User } from 'src/entities';
-import { CannotGetEntityManagerNotConnectedError } from 'typeorm';
 
 @WebSocketGateway({
   cors: { origin: '*' },
@@ -733,6 +731,98 @@ export class Gateway
 ----------------------------GAME---------------------------------
 */
 
+  @SubscribeMessage('askPlayPong')
+  async askPlayPong(client: Socket, payload: string) {
+    const cUserStatus = await this.usersStatusService.getUserStatusByClientId(
+      client.id,
+    );
+    if (!cUserStatus) throw new WsException('Forbidden');
+    const user = await this.userService.findOne(cUserStatus.username);
+    if (!user) throw new WsException('User not found');
+    const invitedUserStatus = await this.usersStatusService.getUserStatus(
+      payload,
+    );
+    if (!invitedUserStatus || invitedUserStatus.status !== userStatus.online) {
+      this.server.emit(client.id, {
+        action: actionTypes.cantPlay,
+        target: payload,
+        data: !invitedUserStatus
+          ? userStatus.offline
+          : invitedUserStatus.status,
+      });
+      return;
+    }
+    this.server.emit(invitedUserStatus.clientId, {
+      action: actionTypes.askPlay,
+      source: cUserStatus.username,
+    });
+  }
+
+  @SubscribeMessage('acceptPlayPong')
+  async acceptPlayPong(client: Socket, payload: string) {
+    const cUserStatus = await this.usersStatusService.getUserStatusByClientId(
+      client.id,
+    );
+    if (!cUserStatus) throw new WsException('Forbidden');
+    const user = await this.userService.findOne(cUserStatus.username);
+    if (!user) throw new WsException('User not found');
+    const opponentStatus = await this.usersStatusService.getUserStatus(payload);
+    if (!opponentStatus)
+      throw new WsException('Opponent user not found or offline');
+    const user1 = await this.userService.findOne(cUserStatus.username);
+    const user2 = await this.userService.findOne(opponentStatus.username);
+    if (!user1 || !user2) throw new WsException('User not found');
+    const gameRoomId =
+      cUserStatus.username < opponentStatus.username
+        ? this.gameService.newGame(user1, user2)
+        : this.gameService.newGame(user2, user1);
+    this.matchmakingQueue.splice(this.matchmakingQueue.indexOf(cUserStatus.username), 1);
+    this.matchmakingQueue.splice(this.matchmakingQueue.indexOf(opponentStatus.username), 1);
+    cUserStatus.status = userStatus.playing;
+    cUserStatus.gameRoomId = gameRoomId;
+    opponentStatus.status = userStatus.playing;
+    opponentStatus.gameRoomId = gameRoomId;
+    this.server.emit(opponentStatus.clientId, {
+      action: actionTypes.acceptPlay,
+      source: opponentStatus.username,
+      target: cUserStatus.username,
+      data: {
+        gameRoomId,
+        background: user2.gameBackground,
+      },
+    });
+    this.server.emit(cUserStatus.clientId, {
+      action: actionTypes.acceptPlay,
+      source: cUserStatus.username,
+      target: opponentStatus.username,
+      data: {
+        gameRoomId,
+        background: user1.gameBackground,
+      },
+    });
+    const gameRoom = this.gameService.getGameRoom(gameRoomId);
+    if (!gameRoom) return;
+    gameRoom.intervalId = setInterval(() => {
+      if (
+        gameRoom.player1.score === this.maxScore ||
+        gameRoom.player2.score === this.maxScore
+      ) {
+        clearInterval(gameRoom.intervalId);
+        this.endGame(client, { gameRoomId });
+      }
+      this.gameService.movePlayer(gameRoomId);
+      this.server.emit('game' + gameRoomId, {
+        playerY: gameRoom.player1.Y,
+        enemyY: gameRoom.player2.Y,
+        ballX: gameRoom.ballPos.x,
+        ballY: gameRoom.ballPos.y,
+        p1Score: gameRoom.player1.score,
+        p2Score: gameRoom.player2.score,
+        coward: gameRoom.coward,
+      });
+    }, 16);
+  }
+
   @SubscribeMessage('matchmaking')
   async handleMatchmaking(client: Socket, payload: { username: string }) {
     const userStatusTmp = await this.usersStatusService.getUserStatus(
@@ -800,7 +890,6 @@ export class Gateway
   }
 
   async endGame(client: Socket, payload: { gameRoomId: string }) {
-    //TODO add achivement, match history
     const gameRoom = this.gameService.getGameRoom(payload.gameRoomId);
     if (!gameRoom) return;
     const userW =
@@ -811,6 +900,12 @@ export class Gateway
       gameRoom.player1.score === this.maxScore
         ? gameRoom.player2.user
         : gameRoom.player1.user;
+    const userWStatus = await this.usersStatusService.getUserStatus(userW.username);
+    const userLStatus = await this.usersStatusService.getUserStatus(userL.username);
+    userWStatus.status = userStatus.online;
+    userWStatus.gameRoomId = null;
+    userLStatus.status = userStatus.online;
+    userLStatus.gameRoomId = null;
     await this.gameService.addMatchHistory(payload.gameRoomId, userW, userL);
     await this.gameService.updateRank(userW, userL);
     this.gameService.updateAchivement(userW, userL);
