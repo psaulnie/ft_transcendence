@@ -1,15 +1,11 @@
 .canvas {
     width: 640px;
     height: 425px;
-    margin: auto;
-    /* position: absolute;
-    transform: translate(-50%, 0%);
-    left: 50%;
-    top: 10%; */
-    /* background-image: url("./background_v1.png"); */
+    /* margin: auto; */
     background-color: black;
     /* border: 2px solid black; */
 }
+
 .canvas::before {
     content:"";
     position: absolute;

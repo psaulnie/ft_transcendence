@@ -79,7 +79,7 @@ export class GameService {
 				P1: false,
 				score: 0,
 			},
-			ballPos: {x: 310, y: 202},
+			ballPos: {x: 310, y: 212},
 			ballSpeedX: 5,
 			ballSpeedY: 5,
 			coward: null,
@@ -155,7 +155,7 @@ export class GameService {
 		if (roomIndex === -1)
 			return ;
 		this.gameRooms[roomIndex].ballPos.x = 310;
-		this.gameRooms[roomIndex].ballPos.y = 202;
+		this.gameRooms[roomIndex].ballPos.y = 212;
 		this.gameRooms[roomIndex].ballSpeedX = -this.gameRooms[roomIndex].ballSpeedX;
 		this.gameRooms[roomIndex].ballSpeedY = Math.random() * 2 - 1;
 	}
