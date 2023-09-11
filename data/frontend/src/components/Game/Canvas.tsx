@@ -35,8 +35,8 @@ export default function Canvas({players, gameRoomId, setFoundUser, canvasName} :
       const gameCanvas = document.querySelector('.' + canvasName) as HTMLElement;
       if (gameCanvas) {
         gameCanvas.style.transform = `scale(${scale})`;
+        // gameCanvas.style.transform = 'transform-origin(center center)';
       }
-      // console.log("end", scale);
     };
 
     handleResize();

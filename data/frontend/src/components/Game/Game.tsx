@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 // import { WidthFull } from '@mui/icons-material';
 import Matchmaking from "./Matchmaking";
 import Canvas from "./Canvas";
+import './Game.css'
 
 // interface InterfaceProps{
 //   WidthFrame:string;
@@ -20,7 +21,7 @@ export default function Game() {
     <div className="game">
       {
         !foundUser ?  <Matchmaking setFoundUser={setFoundUser} setPlayers={setPlayers} setGameRoomId={setGameRoomId} setBackground={setBackground}/> : <Canvas players={players} gameRoomId={gameRoomId} setFoundUser={setFoundUser} canvasName={canvasName}/>
-      }     
+      }
     </div>
   );
 }
