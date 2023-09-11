@@ -776,18 +776,12 @@ export class Gateway
       cUserStatus.username < opponentStatus.username
         ? this.gameService.newGame(user1, user2)
         : this.gameService.newGame(user2, user1);
+    this.matchmakingQueue.splice(this.matchmakingQueue.indexOf(cUserStatus.username), 1);
+    this.matchmakingQueue.splice(this.matchmakingQueue.indexOf(opponentStatus.username), 1);
     cUserStatus.status = userStatus.playing;
     cUserStatus.gameRoomId = gameRoomId;
     opponentStatus.status = userStatus.playing;
     opponentStatus.gameRoomId = gameRoomId;
-    const p1 =
-      cUserStatus.username < opponentStatus.username
-        ? cUserStatus.username
-        : opponentStatus.username;
-    const p2 =
-      cUserStatus.username < opponentStatus.username
-        ? opponentStatus.username
-        : cUserStatus.username;
     this.server.emit(opponentStatus.clientId, {
       action: actionTypes.acceptPlay,
       source: opponentStatus.username,

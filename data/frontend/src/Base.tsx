@@ -35,7 +35,6 @@ export default function Base() {
     };
 
   useEffect(() => {
-    console.log(location.pathname)
     if (user.isPlaying && !location.pathname.startsWith('/game'))
     {
       dispatch(setIsPlaying(false));
