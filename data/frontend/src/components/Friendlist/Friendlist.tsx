@@ -6,6 +6,9 @@ import OnlineStatus from "./onlineStatus";
 import OfflineStatus from "./offlineStatus";
 import { userStatus } from "./userStatus";
 import {useEffect} from "react";
+import Loading from "../Global/Loading";
+import ErrorSnackbar from "../Global/ErrorSnackbar";
+import webSocketManager from "../../webSocket";
 
 function Friendlist() {
   const navigate = useNavigate();
@@ -13,24 +16,29 @@ function Friendlist() {
     data: userFriendsList,
     isLoading,
     isError,
+    error,
     refetch,
   } = useGetFriendsListQuery({});
 
   useEffect(() => {
-    refetch();
-  }, [refetch]);
-
-  console.log('friendlist: ', userFriendsList);
+    webSocketManager.getSocket().on(webSocketManager.getSocket().id + 'friend', (value: any) => {
+      refetch();
+    });
+    return () => {
+      webSocketManager.getSocket().off(webSocketManager.getSocket().id + 'friend');
+    }
+  });
 
   const handleProfileClick = () => {
     navigate("/profile");
   };
 
-  if (isLoading) return <div>Loading...</div>;
-  if (isError) return <div>Error</div>; // TODO handle error
+  if (isLoading) return <Loading />
+  if (isError) return <ErrorSnackbar error={error} />
   if (!userFriendsList)
     return <Navigate to="/home" />
 
+  console.log('friendlist: ', userFriendsList);
   return (
     <div>
       <Box
@@ -67,11 +75,11 @@ function Friendlist() {
             {userFriendsList.map((friend: any) => {
               switch (friend.status) {
                 case userStatus.playing:
-                  return <InGameStatus key={friend.username} username={friend.username} />;
+                  return <InGameStatus key={friend.username} username={friend.username} refetch={refetch}/>;
                 case userStatus.online:
-                  return <OnlineStatus key={friend.username} username={friend.username} />;
+                  return <OnlineStatus key={friend.username} username={friend.username} refetch={refetch}/>;
                 case userStatus.offline:
-                  return <OfflineStatus key={friend.username} username={friend.username} />;
+                  return <OfflineStatus key={friend.username} username={friend.username} refetch={refetch}/>;
                 default:
                   return null;
               }

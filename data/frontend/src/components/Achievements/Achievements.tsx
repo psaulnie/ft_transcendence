@@ -4,6 +4,7 @@ import { useGetUserAchievementsQuery } from "../../store/api";
 import Completed from "./Completed";
 import ToComplete from "./ToComplete";
 import Loading from "../Global/Loading";
+import ErrorSnackbar from "../Global/ErrorSnackbar";
 
 function Achievements() {
   const navigate = useNavigate();
@@ -20,7 +21,7 @@ function Achievements() {
   } = useGetUserAchievementsQuery({ username });
 
   if (isLoading) return <Loading />;
-  if (isError) return <div>Error</div>; // TODO handle error
+  if (isError) return <ErrorSnackbar error={isError} />;
   if (userAchievements.exist === false) return <Navigate to="/home" />;
 
   return (
@@ -31,11 +32,11 @@ function Achievements() {
           transform: "translate(5%, 0%)",
           top: "11.5%",
           width: "90%",
-          height: "80.5%",
+          height: "52%",
           padding: "0.9em",
           borderRadius: "3em",
           background: "linear-gradient(to right, #ECECEC, #d6d4d4)",
-          border: "2px solid #000000",
+          border: "1px solid #000000",
           boxShadow: "0 0 10px rgba(0, 0, 0, 0.3)",
         }}
       >

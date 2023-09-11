@@ -6,26 +6,22 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { Grid } from "@mui/material";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Button from "@mui/material/Button";
 
 import { useSelector } from "react-redux";
 
 import CustomAvatar from "../Global/CustomAvatar";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { logout } from "../../store/user";
 import { SyntheticEvent } from "react";
-import { useGetUserRankQuery } from "../../store/api";
-import Loading from "../Global/Loading";
-import ErrorSnackbar from "../Global/ErrorSnackbar";
+import { apiSlice } from "../../store/api";
 
-// If logged in, show the account button
 function Navigation({ setDrawerState }: { setDrawerState: any }) {
   const user = useSelector((state: any) => state.user);
+  const query = apiSlice.endpoints.getMyProfile.useQueryState({});
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [rank, setRank] = useState(0);
   const open = Boolean(anchorEl);
 
   const handleBoxClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -46,15 +42,12 @@ function Navigation({ setDrawerState }: { setDrawerState: any }) {
     window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/logout`;
   }
 
-  const {
-    data: userRank,
-    isLoading,
-    isError,
-    error,
-  } = useGetUserRankQuery({}, { skip: !user.username });
-
-  if (isLoading) return <Loading />;
-  if (isError) return <ErrorSnackbar error={error} />;
+  useEffect(() => {
+    if (query.isUninitialized === false && query.isSuccess === true) {
+      console.log("salut");
+      setRank(query.data.rank);
+    }
+  }, [query]);
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar
@@ -85,7 +78,7 @@ function Navigation({ setDrawerState }: { setDrawerState: any }) {
             }}
           >
             <div>{user.username}</div>
-            <div>Rank {userRank}</div>
+            <div>Rank {rank}</div>
           </Grid>
           <Grid item xs={3}>
             <Box

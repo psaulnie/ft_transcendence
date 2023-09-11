@@ -1,7 +1,7 @@
 import { useLocation } from "react-router";
 import { SyntheticEvent, useEffect, useState } from "react";
 import { Navigate } from "react-router";
-import { Button, Typography } from "@mui/material";
+import { Button, Grid, Typography } from "@mui/material";
 import Loading from "../Global/Loading";
 
 function Login() {
@@ -52,7 +52,14 @@ function Login() {
   if (isLoading) return <Loading />;
   if (isOk) return <Navigate to="/home" />;
   return (
-    <div className="main">
+    <Grid
+      sx={{
+        position: "absolute",
+        left: "50%",
+        top: "50%",
+        transform: "translate(-50%, -50%)",
+      }}
+    >
       <Button
         variant="text"
         color="primary"
@@ -61,30 +68,31 @@ function Login() {
           textTransform: "none",
           fontWeight: "bold",
           fontSize: "36px",
-          marginTop: "5em",
           width: "6em",
           height: "1.6em",
           backgroundColor: "rgba(255, 255, 255, 0.9)",
           borderColor: "#000000",
-          border: "2px solid",
+          border: "1px solid",
           borderRadius: "15px",
           lineHeight: "3",
           color: "black",
           "&:hover": {
-            backgroundColor: "red",
-            borderColor: "red",
+            backgroundColor: "gray",
+            borderColor: "gray",
           },
         }}
       >
         <span
           style={{
-            position: "relative",
-            top: "3px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
           Login
         </span>
       </Button>
+      <p></p>
       <button type="button" onClick={testlogin}>
         Log as user test
       </button>
@@ -93,46 +101,7 @@ function Login() {
           La connexion avec Intra42 a été refusée. Veuillez réessayer.
         </div>
       )}
-      <Typography
-        variant="h6"
-        sx={{
-          fontSize: 18,
-          fontWeight: "bold",
-          color: "black",
-          marginTop: "9em",
-        }}
-      >
-        FT_Transcendence by:
-      </Typography>
-      <Typography
-        variant="h6"
-        sx={{ fontSize: 16, fontWeight: "bold", color: "black" }}
-      >
-        {" "}
-        Lbattest{" "}
-      </Typography>
-      <Typography
-        variant="h6"
-        sx={{ fontSize: 16, fontWeight: "bold", color: "black" }}
-      >
-        {" "}
-        Apercebo{" "}
-      </Typography>
-      <Typography
-        variant="h6"
-        sx={{ fontSize: 16, fontWeight: "bold", color: "black" }}
-      >
-        {" "}
-        Psaulnie{" "}
-      </Typography>
-      <Typography
-        variant="h6"
-        sx={{ fontSize: 16, fontWeight: "bold", color: "black" }}
-      >
-        {" "}
-        Dbouron{" "}
-      </Typography>
-    </div>
+    </Grid>
   );
 }
 

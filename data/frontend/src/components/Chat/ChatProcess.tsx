@@ -173,8 +173,15 @@ export default function ChatProcess() {
         setSnackbar("Your username has been changed to " + value.newUsername, "success");
         dispatch(setUsername(value.newUsername));
       }
+      else if (value.action === actionTypes.newBackground)
+      {
+        setSnackbar("Background successfully changed", "success");
+      }
       else if (value.action === actionTypes.usernameAlreadyTaken)
-        setSnackbar("Username is already taken " + value.newUsername, "error")
+        setSnackbar("Username is already taken " + value.newUsername, "error");
+      else if (value.action === actionTypes.acceptBeingFriend) {
+        setSnackbar(value.source + " is now your friend!", "success");
+      }
     }
     webSocketManager.getSocket().on(webSocketManager.getSocket().id, process);
     return () => {

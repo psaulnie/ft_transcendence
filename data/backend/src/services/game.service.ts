@@ -1,9 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { randomUUID } from 'crypto';
 import { UsersService } from 'src/users/users.service';
+import { Statistics } from 'src/entities/stats.entity';
+import { MatchHistory } from 'src/entities/matchHistory.entity';
+import { UsersStatusService } from './users.status.service';
+import { userStatus } from 'src/users/userStatus';
+import { Achievements } from 'src/entities/achievements.entity';
 
 export interface Player {
 	user: User,
@@ -22,7 +27,7 @@ export interface gameRoom {
 	ballSpeedX: number,
 	ballSpeedY: number,
 	coward: string,
-	// spectators: User[],
+	intervalId: any,
 }
 
 const rectWidth = 5;
@@ -30,6 +35,8 @@ const rectHeight = 75;
 const ballWidth = 10;
 const paddleSpeed = 10;
 const maxScore = 5;
+const demote = 2;
+const promote = 2;
 
 @Injectable()
 export class GameService {
@@ -37,7 +44,18 @@ export class GameService {
 	
 	private gameRooms: gameRoom[];
 	
-	constructor() {
+	constructor(
+		@InjectRepository(User)
+		private userRepository: Repository<User>,
+		@InjectRepository(Statistics)
+		private statsRepository: Repository<Statistics>,
+		@InjectRepository(MatchHistory)
+		private matchHistoryRepository: Repository<MatchHistory>,
+		@InjectRepository(Achievements)
+		private AchievementsRepository: Repository<Achievements>,
+		@Inject(UsersStatusService)
+		private usersStatusService: UsersStatusService
+	) {
 		this.gameRooms = [];
 	}
 	
@@ -65,9 +83,10 @@ export class GameService {
 			ballSpeedX: 5,
 			ballSpeedY: 5,
 			coward: null,
-			// spectator: [],
+			intervalId: -1,
 		});
 		this.resetBall(gameRoomId);
+		console.log(this.gameRooms);
 		return (gameRoomId);
 	}
 
@@ -126,9 +145,7 @@ export class GameService {
 		}
 
 		//TODO add to db the match
-		if (this.gameRooms[roomIndex].player1.score === maxScore) {
-			this.resetBall(gameRoomId);
-		} else if (this.gameRooms[roomIndex].player2.score === maxScore) {
+		if (this.gameRooms[roomIndex].player1.score === maxScore || this.gameRooms[roomIndex].player2.score === maxScore) {
 			this.resetBall(gameRoomId);
 		}
 	}
@@ -202,12 +219,62 @@ export class GameService {
 		return (room);
 	}
 
-	leaveGame(gameRoomId: string, coward:string) {
+	async leaveGame(gameRoomId: string, coward:string) {
+		const userStatusTmp = await this.usersStatusService.getUserStatus(
+			coward,
+		);
+		userStatusTmp.gameRoomId = '';
+		userStatusTmp.status = userStatus.online;
 		const roomIndex = this.gameRooms.findIndex((obj) => obj.gameRoomId === gameRoomId);
 		console.log(roomIndex);
 		if (roomIndex === -1)
 			return ;
 		this.gameRooms[roomIndex].coward = coward;
-		console.log("dans gameService leaveGame");
+	}
+
+	async updateRank(userW: User, userL: User) {
+		if (userW.statistics.streak < 15) {
+			userW.statistics.streak++;
+			if (userW.statistics.streak % 3 === 0)
+				userW.statistics.rank++;
+			userW.statistics.winNbr++;
+			userW.statistics.matchNumber++;
+		}
+		if (userL.statistics.streak > 0) {
+			if (userL.statistics.streak % 3 === 0)
+				userL.statistics.rank--;
+			userL.statistics.streak--;
+			userL.statistics.loseNbr++;
+			userL.statistics.matchNumber++;
+		}
+		await this.statsRepository.save(userW.statistics);
+		await this.userRepository.save(userW);
+		await this.statsRepository.save(userL.statistics);
+		await this.userRepository.save(userL);
+	}
+
+	async addMatchHistory(gameRoomId: string, userW: User, userL: User) {
+		const roomIndex = this.gameRooms.findIndex((obj) => obj.gameRoomId === gameRoomId);
+		if (roomIndex === -1)
+			return ;
+		const matchHistory = new MatchHistory();
+		matchHistory.user1id = userW.uid;
+		matchHistory.user2id = userL.uid;
+		matchHistory.user1Score = this.gameRooms[roomIndex].player1.user.username === userW.username ? this.gameRooms[roomIndex].player1.score : this.gameRooms[roomIndex].player2.score;
+		matchHistory.user2Score = this.gameRooms[roomIndex].player1.user.username === userW.username ? this.gameRooms[roomIndex].player2.score : this.gameRooms[roomIndex].player1.score;
+		await this.matchHistoryRepository.save(matchHistory);
+	}
+
+	async updateAchivement(userW: User, userL: User) {
+		if (userW.achievements.achievement1 === false && userW.statistics.winNbr === 1)
+			userW.achievements.achievement1 = true;
+		if (userW.achievements.achievement2 === false && userW.statistics.winNbr === 10)
+			userW.achievements.achievement2 = true;
+		if (userW.achievements.achievement4 === false && userW.statistics.matchNumber === 50)
+			userW.achievements.achievement4 = true;
+		if (userL.achievements.achievement4 === false && userL.statistics.matchNumber === 50)
+			userL.achievements.achievement4 = true;
+		await this.AchievementsRepository.save(userW.achievements);
+		await this.AchievementsRepository.save(userL.achievements);
 	}
 }

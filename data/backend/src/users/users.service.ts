@@ -44,9 +44,6 @@ export class UsersService {
       where: { username: name },
       relations: [
         'friends',
-        'matchHistory',
-        'matchHistory.user1',
-        'matchHistory.user2',
         'statistics',
       ],
     });
@@ -59,6 +56,12 @@ export class UsersService {
     });
   }
 
+  async findOneMatchHistory(uid: number): Promise<MatchHistory[]> {
+    return (await this.matchHistoryRepository.find({
+      where: [{ user1id: uid }, { user2id: uid }],
+    }));
+  }
+
   async findOneByIntraUsername(name: string): Promise<User> {
     return await this.usersRepository.findOne({
       where: { intraUsername: name },
@@ -66,7 +69,7 @@ export class UsersService {
   }
 
   async findOneByUsername(name: string): Promise<User> {
-    return await this.usersRepository.findOne({ where: { username: name } });
+    return await this.usersRepository.findOne({ where: { username: name }, relations: ['achievements'] });
   }
 
   async findOneById(id: number): Promise<User> {
@@ -74,9 +77,6 @@ export class UsersService {
       where: { uid: id },
       relations: [
         'friends',
-        'matchHistory',
-        'matchHistory.user1',
-        'matchHistory.user2',
         'statistics',
       ],
     });
@@ -132,10 +132,19 @@ export class UsersService {
 
   async addFriend(user: User, friend: User) {
     console.log('addfriend');
+    if (user.friends.length === 0 && user.achievements.achievement3 === false) {
+      user.achievements.achievement3 = true;
+      await this.achievementsRepository.save(user.achievements);
+    }
+    if (friend.friends.length === 0 && friend.achievements.achievement3 === false) {
+      friend.achievements.achievement3 = true;
+      await this.achievementsRepository.save(friend.achievements);
+    }
     user.friends.push(friend);
     friend.friends.push(user);
     await this.usersRepository.save(user);
     await this.usersRepository.save(friend);
+    
   }
 
   async removeFriend(user: User, friend: User) {
@@ -176,6 +185,10 @@ export class UsersService {
   {
     const user = await this.findOneByUsername(username);
     if (!user) return ;
+    if (user.gameBackground === 'canvas' && user.achievements.achievement5 === false) {
+      user.achievements.achievement5 = true;
+      await this.achievementsRepository.save(user.achievements);
+    }
     user.gameBackground = background;
     await this.usersRepository.save(user);
   }
