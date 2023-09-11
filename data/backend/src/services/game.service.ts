@@ -8,6 +8,7 @@ import { Statistics } from 'src/entities/stats.entity';
 import { MatchHistory } from 'src/entities/matchHistory.entity';
 import { UsersStatusService } from './users.status.service';
 import { userStatus } from 'src/users/userStatus';
+import { Achievements } from 'src/entities/achievements.entity';
 
 export interface Player {
 	user: User,
@@ -50,6 +51,8 @@ export class GameService {
 		private statsRepository: Repository<Statistics>,
 		@InjectRepository(MatchHistory)
 		private matchHistoryRepository: Repository<MatchHistory>,
+		@InjectRepository(Achievements)
+		private AchievementsRepository: Repository<Achievements>,
 		@Inject(UsersStatusService)
 		private usersStatusService: UsersStatusService
 	) {
@@ -250,21 +253,28 @@ export class GameService {
 		await this.userRepository.save(userL);
 	}
 
-//TODO understant why it doen't work
 	async addMatchHistory(gameRoomId: string, userW: User, userL: User) {
 		const roomIndex = this.gameRooms.findIndex((obj) => obj.gameRoomId === gameRoomId);
 		if (roomIndex === -1)
 			return ;
 		const matchHistory = new MatchHistory();
-		// matchHistory.user1 = userW;
-		// matchHistory.user2 = userL;
-		// matchHistory.user1Score = this.gameRooms[roomIndex].player1.user.username === userW.username ? this.gameRooms[roomIndex].player1.score : this.gameRooms[roomIndex].player2.score;
-		// matchHistory.user2Score = this.gameRooms[roomIndex].player1.user.username === userW.username ? this.gameRooms[roomIndex].player2.score : this.gameRooms[roomIndex].player1.score;
-		// userW.matchHistory.push(matchHistory);
-		// userL.matchHistory.push(matchHistory);
+		matchHistory.user1id = userW.uid;
+		matchHistory.user2id = userL.uid;
+		matchHistory.user1Score = this.gameRooms[roomIndex].player1.user.username === userW.username ? this.gameRooms[roomIndex].player1.score : this.gameRooms[roomIndex].player2.score;
+		matchHistory.user2Score = this.gameRooms[roomIndex].player1.user.username === userW.username ? this.gameRooms[roomIndex].player2.score : this.gameRooms[roomIndex].player1.score;
 		await this.matchHistoryRepository.save(matchHistory);
-		await this.userRepository.save(userW);
-		// await this.matchHistoryRepository.save(userL.matchHistory);
-		await this.userRepository.save(userL);
+	}
+
+	async updateAchivement(userW: User, userL: User) {
+		if (userW.achievements.achievement1 === false && userW.statistics.winNbr === 1)
+			userW.achievements.achievement1 = true;
+		if (userW.achievements.achievement2 === false && userW.statistics.winNbr === 10)
+			userW.achievements.achievement2 = true;
+		if (userW.achievements.achievement4 === false && userW.statistics.matchNumber === 50)
+			userW.achievements.achievement4 = true;
+		if (userL.achievements.achievement4 === false && userL.statistics.matchNumber === 50)
+			userL.achievements.achievement4 = true;
+		await this.AchievementsRepository.save(userW.achievements);
+		await this.AchievementsRepository.save(userL.achievements);
 	}
 }
