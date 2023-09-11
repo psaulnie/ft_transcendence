@@ -1013,7 +1013,6 @@ export class Gateway
     const currentStatus = await this.usersStatusService.getUserStatus(
       user.username,
     );
-    console.log(currentStatus);
     if (
       currentStatus &&
       currentStatus.status === userStatus.online &&
