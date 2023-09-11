@@ -28,6 +28,7 @@ export class Gateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
   private matchmakingQueue: string[];
+  @WebSocketServer() server: Server;
 
   constructor(
     private roomService: RoomService,
@@ -37,7 +38,6 @@ export class Gateway
   ) {
     this.matchmakingQueue = [];
   }
-  @WebSocketServer() server: Server;
 
   @SubscribeMessage('sendPrivateMsg')
   async sendPrivateMessage(client: Socket, payload: sendMsgArgs) {
@@ -902,6 +902,13 @@ export class Gateway
 
   async afterInit(server: Server) {
     console.log('Init');
+    server.on('connection', (client) => {
+      client.on('disconnect', (reason) => {
+        // Gérez la fermeture prématurée ici
+        console.log(`Client disconnected due to: ${reason}`);
+        // Vous pouvez ajouter votre propre logique de gestion d'erreur ici
+      });
+    });
   }
 
   async handleDisconnect(client: Socket) {
