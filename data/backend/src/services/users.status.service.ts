@@ -10,6 +10,7 @@ export class UsersStatusService {
     clientId: string;
     username: string;
     status: userStatus;
+    gameRoomId: string;
   }[];
   constructor(
     @InjectRepository(User)
@@ -31,8 +32,9 @@ export class UsersStatusService {
         clientId,
         username,
         status,
+        gameRoomId: '',
       };
-    else this.usersStatus.push({ clientId, username, status });
+    else this.usersStatus.push({ clientId, username, status, gameRoomId:'' });
   }
 
   async changeUsername(old: string, newUsername: string) {

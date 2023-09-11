@@ -35,6 +35,7 @@ export class UsersService {
         'blockedUsers.blockedUser',
         'blockedUsers.user',
         'statistics',
+        'matchHistory',
       ],
     });
   }
@@ -44,9 +45,6 @@ export class UsersService {
       where: { username: name },
       relations: [
         'friends',
-        'matchHistory',
-        'matchHistory.user1',
-        'matchHistory.user2',
         'statistics',
       ],
     });
@@ -57,6 +55,12 @@ export class UsersService {
       where: { username: name },
       relations: ['achievements'],
     });
+  }
+
+  async findOneMatchHistory(uid: number): Promise<MatchHistory[]> {
+    return (await this.matchHistoryRepository.find({
+      where: [{ user1id: uid }, { user2id: uid }],
+    }));
   }
 
   async findOneByIntraUsername(name: string): Promise<User> {
