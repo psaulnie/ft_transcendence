@@ -21,16 +21,23 @@ export class ProfileController {
   async getUserProfile(@Param('username') username: string) {
     if (!username) throw new HttpException('No username provided', 400);
     const user = await this.userService.findOneProfile(username);
-    const userMatchHistory = await this.userService.findOneMatchHistory(user.uid);
+    const userMatchHistory = await this.userService.findOneMatchHistory(
+      user.uid,
+    );
     if (!user) return { exist: false };
     const matchHistory = [];
-    const iteration = userMatchHistory.length < 10 ? userMatchHistory.length : 10;
+    const iteration =
+      userMatchHistory.length < 15 ? userMatchHistory.length : 15;
 
-    for (let index = 0; index < iteration; index++) {
+    for (let index = iteration - 1; index >= 0; index--) {
       // TODO test when game is finished
-      const user1 = await this.userService.findOneById(userMatchHistory[index].user1id);
-      const user2 = await this.userService.findOneById(userMatchHistory[index].user2id);
-      if (!user1 || !user2) continue ;
+      const user1 = await this.userService.findOneById(
+        userMatchHistory[index].user1id,
+      );
+      const user2 = await this.userService.findOneById(
+        userMatchHistory[index].user2id,
+      );
+      if (!user1 || !user2) continue;
       matchHistory.push({
         p1: user1.username,
         p2: user2.username,
@@ -54,15 +61,22 @@ export class ProfileController {
     if (!req.user) throw new HttpException('Forbidden', 403);
     const user = await this.userService.findOneProfile(req.user.username);
     if (!user) return { exist: false };
-    const userMatchHistory = await this.userService.findOneMatchHistory(user.uid);
+    const userMatchHistory = await this.userService.findOneMatchHistory(
+      user.uid,
+    );
     const matchHistory = [];
-    const iteration = userMatchHistory.length < 10 ? userMatchHistory.length : 10;
+    const iteration =
+      userMatchHistory.length < 10 ? userMatchHistory.length : 10;
 
     for (let index = 0; index < iteration; index++) {
       // TODO test when game is finished
-      const user1 = await this.userService.findOneById(userMatchHistory[index].user1id);
-      const user2 = await this.userService.findOneById(userMatchHistory[index].user2id);
-      if (!user1 || !user2) continue ;
+      const user1 = await this.userService.findOneById(
+        userMatchHistory[index].user1id,
+      );
+      const user2 = await this.userService.findOneById(
+        userMatchHistory[index].user2id,
+      );
+      if (!user1 || !user2) continue;
       matchHistory.push({
         p1: user1.username,
         p2: user2.username,
