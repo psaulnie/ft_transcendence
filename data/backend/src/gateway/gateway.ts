@@ -754,15 +754,11 @@ export class Gateway
         player1 < player2
           ? this.gameService.newGame(user1, user2)
           : this.gameService.newGame(user2, user1);
-      const user1Status = await this.usersStatusService.getUserStatus(
-        player1,
-      );
+      const user1Status = await this.usersStatusService.getUserStatus(player1);
       if (!user1Status) return;
       user1Status.status = userStatus.playing;
       user1Status.gameRoomId = gameRoomId;
-      const user2Status = await this.usersStatusService.getUserStatus(
-        player2,
-      );
+      const user2Status = await this.usersStatusService.getUserStatus(player2);
       if (!user2Status) return;
       user2Status.status = userStatus.playing;
       user2Status.gameRoomId = gameRoomId;
@@ -781,10 +777,13 @@ export class Gateway
       const gameRoom = this.gameService.getGameRoom(gameRoomId);
       if (!gameRoom) return;
       gameRoom.intervalId = setInterval(() => {
-        if (gameRoom.player1.score === this.maxScore || gameRoom.player2.score === this.maxScore) {
-          console.log("une personne ", payload.username);
+        if (
+          gameRoom.player1.score === this.maxScore ||
+          gameRoom.player2.score === this.maxScore
+        ) {
+          console.log('une personne ', payload.username);
           clearInterval(gameRoom.intervalId);
-          this.endGame(client, {gameRoomId});
+          this.endGame(client, { gameRoomId });
         }
         this.gameService.movePlayer(gameRoomId);
         this.server.emit('game' + gameRoomId, {
@@ -800,19 +799,18 @@ export class Gateway
     }
   }
 
-  async endGame(
-    client: Socket,
-    payload: {gameRoomId: string}
-  ) {
+  async endGame(client: Socket, payload: { gameRoomId: string }) {
     //TODO add achivement, match history
     const gameRoom = this.gameService.getGameRoom(payload.gameRoomId);
-      if (!gameRoom) return;
-    const userW = gameRoom.player1.score === this.maxScore 
-      ? gameRoom.player1.user
-      : gameRoom.player2.user
-    const userL = gameRoom.player1.score === this.maxScore
-      ? gameRoom.player2.user
-      : gameRoom.player1.user
+    if (!gameRoom) return;
+    const userW =
+      gameRoom.player1.score === this.maxScore
+        ? gameRoom.player1.user
+        : gameRoom.player2.user;
+    const userL =
+      gameRoom.player1.score === this.maxScore
+        ? gameRoom.player2.user
+        : gameRoom.player1.user;
     await this.gameService.addMatchHistory(payload.gameRoomId, userW, userL);
     await this.gameService.updateRank(userW, userL);
     this.gameService.updateAchivement(userW, userL);
@@ -835,29 +833,29 @@ export class Gateway
   async cancelMatchmaking(client: Socket, payload: { username: string }) {
     const userStatus = await this.usersStatusService.getUserStatus(
       payload.username,
-      );
-      if (!userStatus || userStatus.clientId !== client.id)
+    );
+    if (!userStatus || userStatus.clientId !== client.id)
       throw new WsException('Forbidden');
     if (this.matchmakingQueue.find((name: string) => name != payload.username))
-    throw new WsException('Player not in Matchmaking');
-  this.matchmakingQueue.splice(
-    this.matchmakingQueue.indexOf(payload.username),
+      throw new WsException('Player not in Matchmaking');
+    this.matchmakingQueue.splice(
+      this.matchmakingQueue.indexOf(payload.username),
       1,
-      );
-    }
-    
-    @SubscribeMessage('pressUp')
-    async pressUp(
-      client: Socket,
-      payload: { player: string; gameRoomId: string },
-    ) {
-      const userStatus = await this.usersStatusService.getUserStatus(
-        payload.player,
-      );
-      if (!userStatus || userStatus.clientId !== client.id)
-        throw new WsException('Forbidden');
-      this.gameService.pressUp(payload.player, payload.gameRoomId);
-    }
+    );
+  }
+
+  @SubscribeMessage('pressUp')
+  async pressUp(
+    client: Socket,
+    payload: { player: string; gameRoomId: string },
+  ) {
+    const userStatus = await this.usersStatusService.getUserStatus(
+      payload.player,
+    );
+    if (!userStatus || userStatus.clientId !== client.id)
+      throw new WsException('Forbidden');
+    this.gameService.pressUp(payload.player, payload.gameRoomId);
+  }
 
   // @SubscribeMessage('game')
   // async handleGame(
@@ -872,7 +870,6 @@ export class Gateway
   //   this.server.emit(payload.opponent, { mouseY: payload.y });
   // }
 
-  
   @SubscribeMessage('pressDown')
   async pressDown(
     client: Socket,
@@ -880,8 +877,8 @@ export class Gateway
   ) {
     const userStatus = await this.usersStatusService.getUserStatus(
       payload.player,
-      );
-      if (!userStatus || userStatus.clientId !== client.id)
+    );
+    if (!userStatus || userStatus.clientId !== client.id)
       throw new WsException('Forbidden');
     this.gameService.pressDown(payload.player, payload.gameRoomId);
   }
@@ -898,51 +895,51 @@ export class Gateway
       throw new WsException('Forbidden');
     this.gameService.releaseUp(payload.player, payload.gameRoomId);
   }
-  
+
   @SubscribeMessage('releaseDown')
   async releaseDown(
     client: Socket,
     payload: { player: string; gameRoomId: string },
-    ) {
-      const userStatus = await this.usersStatusService.getUserStatus(
-        payload.player,
-        );
-        if (!userStatus || userStatus.clientId !== client.id)
-        throw new WsException('Forbidden');
-      this.gameService.releaseDown(payload.player, payload.gameRoomId);
+  ) {
+    const userStatus = await this.usersStatusService.getUserStatus(
+      payload.player,
+    );
+    if (!userStatus || userStatus.clientId !== client.id)
+      throw new WsException('Forbidden');
+    this.gameService.releaseDown(payload.player, payload.gameRoomId);
   }
 
-/*
+  /*
 -----------------------------------------------------------------
 */
 
-@SubscribeMessage('changeUsername')
-async changeUsername(client: Socket, payload: string) {
-  console.log('changeusername');
-  if (payload.length > 10) payload = payload.substring(0, 10);
-  const userStatus = await this.usersStatusService.getUserStatusByClientId(
-    client.id,
-  );
-  if (!userStatus) return;
-  console.log(userStatus.username);
-  console.log(await this.userService.findOne(payload));
-  if (await this.userService.findOne(payload)) {
+  @SubscribeMessage('changeUsername')
+  async changeUsername(client: Socket, payload: string) {
+    console.log('changeusername');
+    if (payload.length > 10) payload = payload.substring(0, 10);
+    const userStatus = await this.usersStatusService.getUserStatusByClientId(
+      client.id,
+    );
+    if (!userStatus) return;
+    console.log(userStatus.username);
+    console.log(await this.userService.findOne(payload));
+    if (await this.userService.findOne(payload)) {
+      this.server.emit(client.id, {
+        action: actionTypes.usernameAlreadyTaken,
+        newUsername: payload,
+      });
+      return;
+    }
+    if (userStatus.clientId !== client.id) throw new WsException('Forbidden');
+    const user = await this.userService.findOne(userStatus.username);
+    if (!user) return;
+    await this.userService.changeUsername(user, payload);
+    await this.usersStatusService.changeUsername(userStatus.username, payload);
     this.server.emit(client.id, {
-      action: actionTypes.usernameAlreadyTaken,
       newUsername: payload,
+      action: actionTypes.newUsername,
     });
-    return;
   }
-  if (userStatus.clientId !== client.id) throw new WsException('Forbidden');
-  const user = await this.userService.findOne(userStatus.username);
-  if (!user) return;
-  await this.userService.changeUsername(user, payload);
-  await this.usersStatusService.changeUsername(userStatus.username, payload);
-  this.server.emit(client.id, {
-    newUsername: payload,
-    action: actionTypes.newUsername,
-  });
-}
 
   @SubscribeMessage('changeBackground')
   async changeBackground(client: Socket, payload: string) {
@@ -978,13 +975,13 @@ async changeUsername(client: Socket, payload: string) {
     // TODO call function leaveGame if in game
     const userStatusTmp = await this.usersStatusService.getUserStatusByClientId(
       client.id,
-      );
-      if (!userStatus) return;
-      const user = await this.userService.findOne(userStatusTmp.username);
-      if (userStatusTmp.status === userStatus.playing) {
-        await this.gameService.leaveGame(userStatusTmp.gameRoomId, user.username)
-      }
-      await this.usersStatusService.setUserStatus(client.id, userStatus.offline);
+    );
+    if (!userStatusTmp) return;
+    const user = await this.userService.findOne(userStatusTmp.username);
+    if (userStatusTmp.status === userStatus.playing) {
+      await this.gameService.leaveGame(userStatusTmp.gameRoomId, user.username);
+    }
+    await this.usersStatusService.setUserStatus(client.id, userStatus.offline);
   }
 
   async handleConnection(client: Socket, ...args: any[]) {
@@ -1010,6 +1007,18 @@ async changeUsername(client: Socket, payload: string) {
       parsedJson.passport.user.intraUsername,
     );
     if (!user) {
+      client.disconnect();
+      return;
+    }
+    const currentStatus = await this.usersStatusService.getUserStatus(
+      user.username,
+    );
+    console.log(currentStatus);
+    if (
+      currentStatus &&
+      currentStatus.status === userStatus.online &&
+      client.id !== currentStatus.clientId
+    ) {
       client.disconnect();
       return;
     }

@@ -41,7 +41,6 @@ function CreateChannel() {
     if (e.target.value.length > 0) trigger({ roomName: e.target.value });
     if (e.target.value.length <= 10) {
       setNewRoomName(e.target.value);
-      console.log("New room name:", newRoomName); // Pour déboguer
     }
 
   }
