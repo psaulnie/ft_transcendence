@@ -19,8 +19,6 @@ import { hashPassword, comparePassword } from './hashPasswords';
 import { UsersStatusService } from 'src/services/users.status.service';
 import { userStatus } from 'src/users/userStatus';
 import { GameService } from 'src/services/game.service';
-import { User } from 'src/entities';
-import { CannotGetEntityManagerNotConnectedError } from 'typeorm';
 
 @WebSocketGateway({
   cors: { origin: '*' },

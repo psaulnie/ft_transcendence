@@ -3,6 +3,8 @@ import './Canvas.css'
 import webSocketManager from '../../webSocket';
 import { Button } from '@mui/material';
 import { useNavigate } from 'react-router';
+import { setIsPlaying } from '../../store/user';
+import { useDispatch } from 'react-redux';
 
 export default function Canvas({players, gameRoomId, setFoundUser, canvasName} : {players: {1: string, 2: string}, gameRoomId: string, setFoundUser: any, canvasName: string}) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -17,6 +19,7 @@ export default function Canvas({players, gameRoomId, setFoundUser, canvasName} :
   const player2 = players[1] < players[2] ? players[2] : players[1];
   const maxScore = 5;
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     // const divID = "canvas";
@@ -89,7 +92,7 @@ export default function Canvas({players, gameRoomId, setFoundUser, canvasName} :
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext("2d");
-
+    dispatch(setIsPlaying(true));
 		function process(value: any) {
       if (value.coward !== null) {
         ctx?.clearRect(0, 0, canvas!.width, canvas!.height);

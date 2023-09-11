@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 // import { WidthFull } from '@mui/icons-material';
 import Matchmaking from "./Matchmaking";
 import Canvas from "./Canvas";
-import { Navigate, Route, Routes, useLocation } from "react-router";
+import { Route, Routes, useLocation } from "react-router";
 
 // interface InterfaceProps{
 //   WidthFrame:string;

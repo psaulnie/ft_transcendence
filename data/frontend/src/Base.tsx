@@ -35,7 +35,8 @@ export default function Base() {
     };
 
   useEffect(() => {
-    if (user.isPlaying && location.pathname !== '/game')
+    console.log(location.pathname)
+    if (user.isPlaying && !location.pathname.startsWith('/game'))
     {
       dispatch(setIsPlaying(false));
       webSocketManager.getSocket().emit("leaveGamePage");

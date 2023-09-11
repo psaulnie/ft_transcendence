@@ -1,8 +1,5 @@
-// import { exit } from 'process';
 import { useState, useEffect } from "react";
 import webSocketManager from "../../webSocket";
-// import { WidthFull } from '@mui/icons-material';
-// import { match } from 'assert';
 import { Button } from "@mui/material";
 
 import { useSelector } from "react-redux";
