@@ -9,8 +9,10 @@ import {useEffect} from "react";
 import Loading from "../Global/Loading";
 import ErrorSnackbar from "../Global/ErrorSnackbar";
 import webSocketManager from "../../webSocket";
+import { useSelector } from "react-redux";
 
 function Friendlist() {
+  const user = useSelector((state: any) => state.user);
   const navigate = useNavigate();
   const {
     data: userFriendsList,
@@ -30,7 +32,7 @@ function Friendlist() {
   });
 
   const handleProfileClick = () => {
-    navigate("/profile");
+    navigate(`/profile/${user.username}`);
   };
 
   if (isLoading) return <Loading />
