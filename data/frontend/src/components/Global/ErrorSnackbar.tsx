@@ -24,17 +24,18 @@ export default function ErrorSnackbar({ error }: { error: any }) {
   };
 
   function reload(e: any) {
-    if (errorCode === 403) {
-      localStorage.removeItem("user");
-      window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/login`;
-    }
-    window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/logout`;
+    localStorage.removeItem("user");
+    window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/login`;
   }
 
   useEffect(() => {
     if (error && error.status) setErrorCode(error.status);
     if (error && error.data && error.data.message)
       setMessage(error.data.message);
+    if (error && error.status === 403) {
+      localStorage.removeItem("user");
+      window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/login`;
+    }
   }, []);
 
   return (
