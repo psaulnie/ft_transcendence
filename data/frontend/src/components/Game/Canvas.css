@@ -1,13 +1,23 @@
 .canvas {
     width: 640px;
     height: 425px;
-    /* margin: auto; */
+    margin: auto;
+    /* position: absolute;
+    transform: translate(-50%, 0%);
+    left: 50%;
+    top: 10%; */
     /* background-image: url("./background_v1.png"); */
     background-color: black;
     /* border: 2px solid black; */
-    
-  margin-left: auto;
-  margin-right: auto;
+}
+.canvas::before {
+    content:"";
+    position: absolute;
+    z-index: -1;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    border-left: 2px dotted #ffffff;
 }
 
 .spongebob {

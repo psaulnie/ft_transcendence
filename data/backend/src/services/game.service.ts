@@ -233,20 +233,26 @@ export class GameService {
 	}
 
 	async updateRank(userW: User, userL: User) {
-		if (userW.statistics.streak < 15) {
-			userW.statistics.streak++;
-			if (userW.statistics.streak % 3 === 0)
-				userW.statistics.rank++;
+		if (userW.statistics.streak <= 15) {
+			if (userW.statistics.streak < 15) {
+				userW.statistics.streak++;
+				if (userW.statistics.streak % 3 === 0)
+					userW.statistics.rank++;
+			}
 			userW.statistics.winNbr++;
 			userW.statistics.matchNumber++;
 		}
-		if (userL.statistics.streak > 0) {
-			if (userL.statistics.streak % 3 === 0)
-				userL.statistics.rank--;
-			userL.statistics.streak--;
+		if (userL.statistics.streak >= 0) {
+			if(userL.statistics.streak > 0) {
+				if (userL.statistics.streak % 3 === 0)
+					userL.statistics.rank--;
+				userL.statistics.streak--;
+			}
 			userL.statistics.loseNbr++;
 			userL.statistics.matchNumber++;
 		}
+		console.log(userW.statistics.streak);
+		console.log(userL.statistics.streak);
 		await this.statsRepository.save(userW.statistics);
 		await this.userRepository.save(userW);
 		await this.statsRepository.save(userL.statistics);

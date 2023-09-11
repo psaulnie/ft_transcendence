@@ -19,6 +19,10 @@ export class WebSocketManager {
         localStorage.removeItem("user");
         window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/logout`;
       });
+      this.socket.on("disconnect", function () {
+        localStorage.removeItem("user");
+        window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/logout`;
+      });
     }
   }
 

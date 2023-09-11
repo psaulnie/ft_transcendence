@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { logout } from "./store/user";
+import { logout, setIsPlaying } from "./store/user";
 
 import Navigation from "./components/Navigation/Navigation";
 import NavDrawer from "./components/Navigation/NavDrawer";
@@ -36,15 +36,16 @@ export default function Base() {
     };
 
   useEffect(() => {
-    webSocketManager.getSocket()?.on("disconnect", function () {
-      localStorage.removeItem("user");
-      window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/logout`;
-    });
+    if (user.isPlaying && location.pathname !== '/game')
+    {
+      dispatch(setIsPlaying(false));
+      webSocketManager.getSocket().emit("leaveGamePage");
+    }
     if (!user || !user.username) {
       localStorage.removeItem("user");
       window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/logout`;
     }
-  }, [dispatch, logout, user, user.username]);
+  }, [dispatch, logout, user, user.username, location]);
 
   webSocketManager.initializeWebSocket();
 

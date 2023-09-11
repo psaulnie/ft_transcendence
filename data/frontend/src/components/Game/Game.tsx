@@ -17,7 +17,7 @@ export default function Game() {
   const [canvasName, setBackground] = useState<string>('');
 
   return (
-    <div>
+    <div className="game">
       {
         !foundUser ?  <Matchmaking setFoundUser={setFoundUser} setPlayers={setPlayers} setGameRoomId={setGameRoomId} setBackground={setBackground}/> : <Canvas players={players} gameRoomId={gameRoomId} setFoundUser={setFoundUser} canvasName={canvasName}/>
       }     
