@@ -16,7 +16,6 @@ import { useNavigate } from "react-router-dom";
 import { SyntheticEvent } from "react";
 import { apiSlice } from "../../store/api";
 
-// If logged in, show the account button
 function Navigation({ setDrawerState }: { setDrawerState: any }) {
   const user = useSelector((state: any) => state.user);
   const query = apiSlice.endpoints.getMyProfile.useQueryState({});

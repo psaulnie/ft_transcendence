@@ -967,9 +967,7 @@ async changeUsername(client: Socket, payload: string) {
     console.log('Init');
     server.on('connection', (client) => {
       client.on('disconnect', (reason) => {
-        // Gérez la fermeture prématurée ici
         console.log(`Client disconnected due to: ${reason}`);
-        // Vous pouvez ajouter votre propre logique de gestion d'erreur ici
       });
     });
   }

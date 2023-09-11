@@ -132,9 +132,17 @@ export class UsersService {
 
   async addFriend(user: User, friend: User) {
     console.log('addfriend');
+    if (user.friends.length === 0) {
+      user.achievements.achievement3 = true;
+      await this.achievementsRepository.save(user.achievements);
+    }
+    if (friend.friends.length === 0) {
+      friend.achievements.achievement3 = true;
+      await this.achievementsRepository.save(friend.achievements);
+    }
     user.friends.push(friend);
     friend.friends.push(user);
-    console.log(await this.usersRepository.save(user));
+    await this.usersRepository.save(user);
     await this.usersRepository.save(friend);
     
   }
