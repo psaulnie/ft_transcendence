@@ -129,7 +129,6 @@ export class AppController {
             res.set({
               'Content-Type': mime_type,
             });
-            file.pipe(res);
             return new StreamableFile(file);
           } else throw new HttpException('Internal Server Error', 500);
         }
@@ -140,9 +139,7 @@ export class AppController {
       if (file) {
         res.set({
           'Content-Type': 'image/jpg',
-        });
-        file.pipe(res);
-  
+        });  
         return new StreamableFile(file);
       } else throw new HttpException('Internal Server Error', 500);
     }
