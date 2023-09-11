@@ -909,7 +909,22 @@ export class Gateway
     this.gameService.releaseDown(payload.player, payload.gameRoomId);
   }
 
-  /*
+  @SubscribeMessage('leaveGamePage')
+  async leaveGamePage(client: Socket)
+  {
+    const cUserStatus = await this.usersStatusService.getUserStatusByClientId(client.id);
+    if (!cUserStatus ||cUserStatus.status !== userStatus.playing) return ;
+    this.gameService.leaveGame(cUserStatus.gameRoomId, cUserStatus.username);
+
+    // const userStatus = await this.usersStatusService.getUserStatus(
+    //   payload.coward,
+    // );
+    // if (!userStatus || userStatus.clientId !== client.id)
+    //   throw new WsException('Forbidden');
+    // this.gameService.leaveGame(payload.gameRoomId, payload.coward);
+  }
+
+/*
 -----------------------------------------------------------------
 */
 
@@ -972,7 +987,6 @@ export class Gateway
 
   async handleDisconnect(client: Socket) {
     console.log(`Client disconnected: ${client.id}`);
-    // TODO call function leaveGame if in game
     const userStatusTmp = await this.usersStatusService.getUserStatusByClientId(
       client.id,
     );
