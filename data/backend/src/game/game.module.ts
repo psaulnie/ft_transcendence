@@ -11,6 +11,7 @@ import { UsersStatusService } from 'src/services/users.status.service';
 import { Statistics } from 'src/entities/stats.entity';
 import { MatchHistory } from 'src/entities/matchHistory.entity';
 import { AppModule } from 'src/app.module';
+import { Achievements } from 'src/entities/achievements.entity';
 
 @Module({
   providers: [
@@ -19,7 +20,7 @@ import { AppModule } from 'src/app.module';
     User,
   ],
   imports: [
-    TypeOrmModule.forFeature([User, BlockedList, Statistics, MatchHistory]),
+    TypeOrmModule.forFeature([User, BlockedList, Statistics, MatchHistory, Achievements]),
     HttpModule.register({}),
     forwardRef(() => AppModule)
   ],
