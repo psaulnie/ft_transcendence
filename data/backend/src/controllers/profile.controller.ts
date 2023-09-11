@@ -47,7 +47,7 @@ export class ProfileController {
   @Get('/user/me')
   @UseGuards(AuthenticatedGuard)
   async getMyProfile(@Req() req: RequestWithUser) {
-    if (!req.user) throw new HttpException("Forbidden", 403);
+    if (!req.user) throw new HttpException('Forbidden', 403);
     const user = await this.userService.findOneProfile(req.user.username);
     if (!user) return { exist: false };
     const matchHistory = [];

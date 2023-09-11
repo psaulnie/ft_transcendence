@@ -64,19 +64,6 @@ function Friendlist() {
             alignItems="center"
           >
 
-            <InGameStatus username='inGame' />
-            <InGameStatus username='A' />
-            <InGameStatus username='Aaaaa' />
-            <InGameStatus username='Aaaaaaaaaa' />
-            <OnlineStatus username='online' />
-            <OnlineStatus username='B' />
-            <OnlineStatus username='Bbbbb' />
-            <OnlineStatus username='Bbbbbbbbbb' />
-            <OfflineStatus username='offline' />
-            <OfflineStatus username='C' />
-            <OfflineStatus username='Ccccc' />
-            <OfflineStatus username='Cccccccccc' />
-
             {userFriendsList.map((friend: any) => {
               switch (friend.status) {
                 case userStatus.playing:
