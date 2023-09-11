@@ -44,9 +44,6 @@ export class UsersService {
       where: { username: name },
       relations: [
         'friends',
-        'matchHistory',
-        'matchHistory.user1',
-        'matchHistory.user2',
         'statistics',
       ],
     });
