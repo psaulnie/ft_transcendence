@@ -256,12 +256,12 @@ export class GameService {
 		if (roomIndex === -1)
 			return ;
 		const matchHistory = new MatchHistory();
-		matchHistory.user1 = userW;
-		matchHistory.user2 = userL;
-		matchHistory.user1Score = this.gameRooms[roomIndex].player1.user.username === userW.username ? this.gameRooms[roomIndex].player1.score : this.gameRooms[roomIndex].player2.score;
-		matchHistory.user2Score = this.gameRooms[roomIndex].player1.user.username === userW.username ? this.gameRooms[roomIndex].player2.score : this.gameRooms[roomIndex].player1.score;
-		userW.matchHistory.push(matchHistory);
-		userL.matchHistory.push(matchHistory);
+		// matchHistory.user1 = userW;
+		// matchHistory.user2 = userL;
+		// matchHistory.user1Score = this.gameRooms[roomIndex].player1.user.username === userW.username ? this.gameRooms[roomIndex].player1.score : this.gameRooms[roomIndex].player2.score;
+		// matchHistory.user2Score = this.gameRooms[roomIndex].player1.user.username === userW.username ? this.gameRooms[roomIndex].player2.score : this.gameRooms[roomIndex].player1.score;
+		// userW.matchHistory.push(matchHistory);
+		// userL.matchHistory.push(matchHistory);
 		await this.matchHistoryRepository.save(matchHistory);
 		await this.userRepository.save(userW);
 		// await this.matchHistoryRepository.save(userL.matchHistory);

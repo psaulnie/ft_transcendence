@@ -20,7 +20,6 @@ import { apiSlice } from "../../store/api";
 function Navigation({ setDrawerState }: { setDrawerState: any }) {
   const user = useSelector((state: any) => state.user);
   const query = apiSlice.endpoints.getMyProfile.useQueryState({});
-  console.log(query);
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [rank, setRank] = useState(0);

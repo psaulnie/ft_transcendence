@@ -950,7 +950,7 @@ async changeUsername(client: Socket, payload: string) {
     );
     if (userStatus) {
       if (
-        payload != 'default' &&
+        payload != 'canvas' &&
         payload != 'scooby' &&
         payload != 'roadrunner' &&
         payload != 'orange' &&

@@ -35,7 +35,6 @@ export class UsersService {
         'blockedUsers.blockedUser',
         'blockedUsers.user',
         'statistics',
-        'matchHistory',
       ],
     });
   }
@@ -78,9 +77,6 @@ export class UsersService {
       where: { uid: id },
       relations: [
         'friends',
-        'matchHistory',
-        'matchHistory.user1',
-        'matchHistory.user2',
         'statistics',
       ],
     });
