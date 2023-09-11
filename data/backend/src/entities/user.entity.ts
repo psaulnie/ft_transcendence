@@ -60,9 +60,6 @@ export class User {
   @JoinTable()
   friends: User[];
 
-  @OneToMany(() => MatchHistory, (matchHistory) => matchHistory.user1)
-  matchHistory: MatchHistory[];
-
   @OneToOne(() => Statistics)
   @JoinColumn()
   statistics: Statistics;
@@ -75,6 +72,5 @@ export class User {
   async nullCheck() {
     if (!this.blockedUsers) this.blockedUsers = [];
     if (!this.friends) this.friends = [];
-    if (!this.matchHistory) this.matchHistory = [];
   }
 }

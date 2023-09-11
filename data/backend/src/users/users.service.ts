@@ -59,6 +59,12 @@ export class UsersService {
     });
   }
 
+  async findOneMatchHistory(uid: number): Promise<MatchHistory[]> {
+    return (await this.matchHistoryRepository.find({
+      where: [{ user1id: uid }, { user2id: uid }],
+    }));
+  }
+
   async findOneByIntraUsername(name: string): Promise<User> {
     return await this.usersRepository.findOne({
       where: { intraUsername: name },
