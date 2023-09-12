@@ -109,7 +109,6 @@ function Friendlist() {
                   color: "black",
                   "&:hover": {
                     backgroundColor: "grey",
-                    borderColor: "red",
                   },
                 }}
               >

@@ -130,13 +130,12 @@ function Achievements() {
                 width: "6em",
                 height: "1.5em",
                 backgroundColor: "rgba(220, 220, 220, 0.9)",
-                border: "2px solid #020202",
+                border: "1px solid #020202",
                 borderRadius: "1em",
                 marginTop: "0.3em",
                 color: "black",
                 "&:hover": {
                   backgroundColor: "grey",
-                  borderColor: "red",
                 },
               }}
             >
