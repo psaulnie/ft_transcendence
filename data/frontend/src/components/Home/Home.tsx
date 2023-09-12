@@ -26,7 +26,8 @@ export default function Home() {
   } = useGetMyProfileQuery({});
 
   useEffect(() => {
-    refetch();
+    if (localStorage.getItem('user'))
+      refetch();
   });
 
   if (isLoading) return <Loading />;
