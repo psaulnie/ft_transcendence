@@ -234,7 +234,6 @@ export class ChatController {
         console.log('friendlist', friendList);
       }
     }
-    console.log(friendList);
     return friendList;
   }
 }

@@ -29,7 +29,7 @@ function Profile() {
   };
 
   const handleModificationClick = () => {
-    navigate(`/editProfile`);
+    navigate(`/edit`);
   };
 
   if (isLoading) return <Loading />;

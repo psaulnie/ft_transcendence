@@ -67,7 +67,7 @@ export default function Base() {
           element={<Achievements />}
         ></Route>
         <Route path="/friendlist" element={<Friendlist />}></Route>
-        <Route path="/editProfile" element={<EditProfile />}></Route>
+        <Route path="/edit" element={<EditProfile />}></Route>
       </Routes>
       {location.pathname !== "/2fa" ? <Chat /> : null}
     </div>
