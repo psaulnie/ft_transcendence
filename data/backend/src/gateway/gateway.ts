@@ -28,6 +28,9 @@ export class Gateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
   private matchmakingQueue: string[];
+  private invitedChat: Array<{id: string, value: string}>;
+  private invitedPong: Array<{id: string, value: string}>;
+  private askFriend: Array<{id: string, value: string}>;
   private maxScore: number;
   @WebSocketServer() server: Server;
 
@@ -38,6 +41,9 @@ export class Gateway
     private gameService: GameService,
   ) {
     this.matchmakingQueue = [];
+    this.invitedChat = [];
+    this.invitedPong = [];
+    this.askFriend = [];
     this.maxScore = 5;
   }
 
@@ -581,6 +587,7 @@ export class Gateway
     if (!invitedUserStatus) throw new WsException('Invited user not found');
     const room = await this.roomService.findOne(payload.roomName);
     if (!room) throw new WsException('Room not found');
+    this.invitedChat.push({id: invitedUserStatus.clientId, value: payload.roomName});
     this.server.emit(invitedUserStatus.clientId, {
       source: payload.roomName,
       target: payload.username,
@@ -596,6 +603,9 @@ export class Gateway
   ) {
     if (payload.roomName == null || payload.username == null)
       throw new WsException('Missing parameters');
+    if (!this.invitedChat.find((obj) => obj.id === client.id && obj.value === payload.roomName))
+      throw new WsException('Forbidden');
+    this.invitedChat = this.invitedChat.filter((obj) => obj.id !== client.id && obj.value !== payload.roomName);
     const user = await this.userService.findOne(payload.username);
     if (!user) throw new WsException('User not found');
     const userStatus = await this.usersStatusService.getUserStatus(
@@ -648,6 +658,7 @@ export class Gateway
       payload.target,
     );
     if (!targetStatus) throw new WsException('Target user not found');
+    this.askFriend.push({id : targetStatus.clientId, value: payload.source});
     this.server.emit(targetStatus.clientId, {
       source: payload.source,
       target: payload.target,
@@ -668,6 +679,9 @@ export class Gateway
     );
     if (!userStatus || userStatus.clientId !== client.id)
       throw new WsException('Forbidden');
+    if (!this.askFriend.find((obj) => obj.id === client.id && obj.value === payload.target))
+      throw new WsException('Forbidden');
+    this.askFriend = this.askFriend.filter((obj) => obj.id !== client.id && obj.value !== payload.target);
     const sourceUser = await this.userService.findOne(payload.source);
     if (!sourceUser) throw new WsException('Source user not found');
     const targetUser = await this.userService.findOne(payload.target);
@@ -752,6 +766,7 @@ export class Gateway
       });
       return;
     }
+    this.invitedPong.push({id: invitedUserStatus.clientId, value: cUserStatus.username});
     this.server.emit(invitedUserStatus.clientId, {
       action: actionTypes.askPlay,
       source: cUserStatus.username,
@@ -763,6 +778,9 @@ export class Gateway
     const cUserStatus = await this.usersStatusService.getUserStatusByClientId(
       client.id,
     );
+    if (!this.invitedPong.find((obj) => obj.id === client.id && obj.value === payload))
+      throw new WsException('Forbidden');
+    this.invitedPong = this.invitedPong.filter((obj) => obj.id !== client.id && obj.value !== payload);
     if (!cUserStatus) throw new WsException('Forbidden');
     const user = await this.userService.findOne(cUserStatus.username);
     if (!user) throw new WsException('User not found');
@@ -776,8 +794,14 @@ export class Gateway
       cUserStatus.username < opponentStatus.username
         ? this.gameService.newGame(user1, user2)
         : this.gameService.newGame(user2, user1);
-    this.matchmakingQueue.splice(this.matchmakingQueue.indexOf(cUserStatus.username), 1);
-    this.matchmakingQueue.splice(this.matchmakingQueue.indexOf(opponentStatus.username), 1);
+    this.matchmakingQueue.splice(
+      this.matchmakingQueue.indexOf(cUserStatus.username),
+      1,
+    );
+    this.matchmakingQueue.splice(
+      this.matchmakingQueue.indexOf(opponentStatus.username),
+      1,
+    );
     cUserStatus.status = userStatus.playing;
     cUserStatus.gameRoomId = gameRoomId;
     opponentStatus.status = userStatus.playing;
@@ -900,8 +924,12 @@ export class Gateway
       gameRoom.player1.score === this.maxScore
         ? gameRoom.player2.user
         : gameRoom.player1.user;
-    const userWStatus = await this.usersStatusService.getUserStatus(userW.username);
-    const userLStatus = await this.usersStatusService.getUserStatus(userL.username);
+    const userWStatus = await this.usersStatusService.getUserStatus(
+      userW.username,
+    );
+    const userLStatus = await this.usersStatusService.getUserStatus(
+      userL.username,
+    );
     userWStatus.status = userStatus.online;
     userWStatus.gameRoomId = null;
     userLStatus.status = userStatus.online;
@@ -1005,10 +1033,11 @@ export class Gateway
   }
 
   @SubscribeMessage('leaveGamePage')
-  async leaveGamePage(client: Socket)
-  {
-    const cUserStatus = await this.usersStatusService.getUserStatusByClientId(client.id);
-    if (!cUserStatus ||cUserStatus.status !== userStatus.playing) return ;
+  async leaveGamePage(client: Socket) {
+    const cUserStatus = await this.usersStatusService.getUserStatusByClientId(
+      client.id,
+    );
+    if (!cUserStatus || cUserStatus.status !== userStatus.playing) return;
     this.gameService.leaveGame(cUserStatus.gameRoomId, cUserStatus.username);
 
     // const userStatus = await this.usersStatusService.getUserStatus(
@@ -1019,7 +1048,7 @@ export class Gateway
     // this.gameService.leaveGame(payload.gameRoomId, payload.coward);
   }
 
-/*
+  /*
 -----------------------------------------------------------------
 */
 
@@ -1090,6 +1119,9 @@ export class Gateway
     if (userStatusTmp.status === userStatus.playing) {
       await this.gameService.leaveGame(userStatusTmp.gameRoomId, user.username);
     }
+    this.askFriend = this.askFriend.filter((obj) => obj.id !== client.id);
+    this.invitedChat = this.invitedChat.filter((obj) => obj.id !== client.id);
+    this.invitedPong = this.invitedPong.filter((obj) => obj.id !== client.id);
     await this.usersStatusService.setUserStatus(client.id, userStatus.offline);
   }
 
