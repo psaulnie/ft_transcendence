@@ -115,7 +115,7 @@ export default function Matchmaking({
           >
             Cancel
           </Button>
-          <p>Looking for a game...</p>
+          <p>Looking for an opponent...</p>
           <LinearProgress />
         </div>
       )}
