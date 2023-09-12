@@ -40,7 +40,6 @@ export default function Canvas({players, gameRoomId, setFoundUser, canvasName} :
         scale = 0.5;
       const gameCanvas = document.querySelector('.' + canvasName) as HTMLElement;
       if (gameCanvas) {
-        // gameCanvas.style.transform = `scale(${scale})`;
         if (scale < 0.5)
           gameCanvas.style.transform = `scale(${scale}) translate(-90%, 0)`;
         else if (scale < 0.666) {
@@ -183,7 +182,6 @@ export default function Canvas({players, gameRoomId, setFoundUser, canvasName} :
           width: "100%",
           display: 'block',
           margin: '0 auto',
-          border: '1px solid #000000',
         }}
       >
           <div className={canvasName} id="canvas">
