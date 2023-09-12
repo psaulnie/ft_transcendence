@@ -114,4 +114,35 @@ export class ProfileController {
     if (!user || !cUser) throw new HttpException('Unprocessable entity', 422);
     return cUser.statistics.rank;
   }
+  
+  @Get('/general/leaderboard')
+  @UseGuards(AuthenticatedGuard)
+  async getLeaderboard() {
+    const users = await this.userService.findAll();
+    const bestUsers = users.sort((a, b) => {
+      if (a.statistics.rank < b.statistics.rank) return 1;
+      if (a.statistics.rank > b.statistics.rank) return -1;
+      if (a.statistics.rank === b.statistics.rank && a.statistics.streak < b.statistics.streak) return 1;
+      else if (a.statistics.rank === b.statistics.rank && a.statistics.streak > b.statistics.streak) return -1;
+      return 0;
+    });
+    console.log(bestUsers);
+    const leaderboard = [];
+    if (users.length > 0)
+      leaderboard.push({
+        username: bestUsers[0].username,
+        score: bestUsers[0].statistics.rank * 15 + bestUsers[0].statistics.streak,
+      });
+    if (users.length > 1)
+      leaderboard.push({
+        username: bestUsers[1].username,
+        score: bestUsers[1].statistics.rank * 15 + bestUsers[1].statistics.streak,
+      });
+    if (users.length > 2)
+      leaderboard.push({
+        username: bestUsers[2].username,
+        score: bestUsers[2].statistics.rank * 15 + bestUsers[2].statistics.streak,
+      });
+    return leaderboard;
+  }
 }

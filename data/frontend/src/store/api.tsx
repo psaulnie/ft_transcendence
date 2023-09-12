@@ -92,6 +92,12 @@ export const apiSlice = createApi({
         method: "GET",
       }),
     }),
+    getLeaderboard: builder.query({
+      query: () => ({
+        url: "/api/profile/general/leaderboard",
+        method: "GET",
+      }),
+    }),
     uploadAvatar: builder.mutation({
       query: (body: FormData) => ({
         url: "/api/avatar/upload",
@@ -133,5 +139,6 @@ export const {
   useGetUserProfileQuery,
   useGetUserAchievementsQuery,
   useGetUserRankQuery,
+  useGetLeaderboardQuery,
   useGetFriendsListQuery,
 } = apiSlice;
