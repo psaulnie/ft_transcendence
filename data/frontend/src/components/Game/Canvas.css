@@ -1,9 +1,8 @@
 .canvas {
     width: 640px;
     height: 425px;
-    /* margin: auto; */
+    margin: auto;
     background-color: black;
-    /* border: 2px solid black; */
 }
 
 .canvas::before {
