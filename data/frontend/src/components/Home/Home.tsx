@@ -51,180 +51,173 @@ export default function Home() {
         left: "50%",
         top: "50%",
         transform: "translate(-50%, -50%)",
+        border: "1px solid #000000",
       }}
     >
-      <Box
+      <Grid
+        container
+        direction="column"
+        spacing={2}
         sx={{
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          height: "50vh",
         }}
       >
-        <Grid
-          container
-          direction="column"
-          spacing={2}
+        <Typography
           sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            marginTop: "50%",
+            color: "black",
+            fontWeight: "bold",
+            fontSize: "30px",
           }}
         >
-          <Grid item sx={{ marginBottom: "1em" }}>
-            <Button
-              variant="text"
-              color="primary"
-              onClick={play}
-              sx={{
-                textTransform: "none",
-                fontWeight: "bold",
-                fontSize: "36px",
-                width: "6em",
-                height: "1.8em",
-                backgroundColor: "rgba(255, 255, 255, 0.9)",
-                borderColor: "#000000",
-                border: "1px solid",
-                borderRadius: "10px",
-                color: "black",
-                "&:hover": {
-                  backgroundColor: "gray",
-                  borderColor: "gray",
-                },
-              }}
-            >
-              Play
-            </Button>
-          </Grid>
-          <Grid item>
-            <Box
-              sx={{
-                top: "56%",
-                left: "25%",
-                width: "15em",
-                height: "10em",
-                padding: "0.5em",
-                borderRadius: "1.5em",
-                background: "linear-gradient(to right, #ECECEC, #d6d4d4)",
-                border: "1px solid #000000",
-                boxShadow: "0 0 10px rgba(0, 0, 0, 0.3)",
-              }}
-            >
-              <Typography
-                sx={{
-                  color: "black",
-                  fontWeight: "bold",
-                  fontSize: "24px",
-                }}
-                display={"block"}
-              >
-                Welcome {userProfile.username}
-              </Typography>
-              <Typography
-                sx={{
-                  color: "black",
-                  fontWeight: "bold",
-                  fontSize: "24px",
-                }}
-                display={"block"}
-              >
-                Wins: {userProfile.wins}
-              </Typography>
-              <Typography
-                sx={{
-                  color: "black",
-                  fontWeight: "bold",
-                  fontSize: "24px",
-                }}
-                display={"block"}
-              >
-                Losses: {userProfile.loses}
-              </Typography>
-              <Typography
-                sx={{
-                  color: "black",
-                  fontWeight: "bold",
-                  fontSize: "24px",
-                }}
-                display={"block"}
-              >
-                Rank: {userProfile.rank}
-              </Typography>
-            </Box>
-          </Grid>
-          <Grid item>
-            <Box
-              sx={{
-                top: "56%",
-                left: "25%",
-                width: "15em",
-                height: "10em",
-                padding: "0.5em",
-                borderRadius: "1.5em",
-                background: "linear-gradient(to right, #ECECEC, #d6d4d4)",
-                border: "1px solid #000000",
-                boxShadow: "0 0 10px rgba(0, 0, 0, 0.3)",
-              }}
-            >
-              <Typography
-                sx={{
-                  color: "black",
-                  fontWeight: "bold",
-                  fontSize: "24px",
-                }}
-                display={"block"}
-              >
-                Leaderboard
-              </Typography>
-              <Grid sx={{ overflow: "auto" }}>
-                {leaderboard.map((user: any, index: number) => {
-                  return (
-                    <Grid item key={index} sx={{display: 'block'}}>
-                      <Box
-                        // alignItems={"center"}
-                        // justifyContent={"center"}
-                        sx={{
-                          // display: "flex",
-                          justifyContent: "center",
-                          alignItems: "center",
-                          backgroundColor: "#454545",
-                          marginTop: "1%",
-                        }}
-                      >
-                        <Avatar
-                          src={`http://${process.env.REACT_APP_IP}:5000/api/avatar/${user.username}`}
-                        />
-                        <Typography color={"black"}>{user.username}</Typography>
-                        {index === 0 ? (
-                          <Typography color={"black"} display={"inline"}>👑</Typography>
-                        ) : (
-                          <></>
-                        )}
-                        {index === 1 ? (
-                          <Typography color={"black"} display={"inline"}>🥈</Typography>
-                        ) : (
-                          <></>
-                        )}
-                        {index === 2 ? (
-                          <Typography color={"black"} display={"inline"}>🥉</Typography>
-                        ) : (
-                          <></>
-                        )}
-                        <div>
-                          <Typography color={"black"} display={"block"}>
-                            Score: {user.score}
-                          </Typography>
-                        </div>
-                      </Box>
-                    </Grid>
-                  );
-                })}
-              </Grid>
-            </Box>
-          </Grid>
+          Welcome {userProfile.username}
+        </Typography>
+
+        <Grid item sx={{ marginBottom: "1em" }}>
+          <Button
+            variant="text"
+            color="primary"
+            onClick={play}
+            sx={{
+              textTransform: "none",
+              fontWeight: "bold",
+              fontSize: "36px",
+              width: "6em",
+              height: "1.8em",
+              backgroundColor: "#FC7D07",
+              borderColor: "#000000",
+              border: "1px solid",
+              borderRadius: "10px",
+              color: "black",
+              "&:hover": {
+                backgroundColor: "#d6d4d4",
+              },
+            }}
+          >
+            Play
+          </Button>
         </Grid>
-      </Box>
+
+        <Grid item>
+          <Box
+            sx={{
+              width: "13.5em",
+              height: "8em",
+              padding: "0.5em",
+              borderRadius: "1.5em",
+              background: "#d6d4d4",
+              border: "1px solid #000000",
+              boxShadow: "0 0 10px rgba(0, 0, 0, 0.3)",
+            }}
+          >
+            <Typography
+              sx={{
+                color: "black",
+                fontWeight: "bold",
+                fontSize: "24px",
+              }}
+              align="left"
+            >
+              Wins: {userProfile.wins}
+            </Typography>
+            <Typography
+              sx={{
+                color: "black",
+                fontWeight: "bold",
+                fontSize: "24px",
+              }}
+              align="left"
+            >
+              Losses: {userProfile.loses}
+            </Typography>
+            <Typography
+              sx={{
+                color: "black",
+                fontWeight: "bold",
+                fontSize: "24px",
+              }}
+              align="left"
+            >
+              Rank: {userProfile.rank}
+            </Typography>
+          </Box>
+        </Grid>
+
+        <Grid item>
+          <Box
+            sx={{
+              top: "56%",
+              left: "25%",
+              width: "15em",
+              height: "10em",
+              padding: "0.5em",
+              borderRadius: "1.5em",
+              background: "linear-gradient(to right, #ECECEC, #d6d4d4)",
+              border: "1px solid #000000",
+              boxShadow: "0 0 10px rgba(0, 0, 0, 0.3)",
+            }}
+          >
+            <Typography
+              sx={{
+                color: "black",
+                fontWeight: "bold",
+                fontSize: "24px",
+              }}
+              display={"block"}
+            >
+              Leaderboard
+            </Typography>
+
+            <Grid sx={{ overflow: "auto" }}>
+              {leaderboard.map((user: any, index: number) => {
+                return (
+                  <Grid item key={index} sx={{display: 'block'}}>
+                    <Box
+                      // alignItems={"center"}
+                      // justifyContent={"center"}
+                      sx={{
+                        // display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        backgroundColor: "#454545",
+                        marginTop: "1%",
+                      }}
+                    >
+                      <Avatar
+                        src={`http://${process.env.REACT_APP_IP}:5000/api/avatar/${user.username}`}
+                      />
+                      <Typography color={"black"}>{user.username}</Typography>
+                      {index === 0 ? (
+                        <Typography color={"black"} display={"inline"}>👑</Typography>
+                      ) : (
+                        <></>
+                      )}
+                      {index === 1 ? (
+                        <Typography color={"black"} display={"inline"}>🥈</Typography>
+                      ) : (
+                        <></>
+                      )}
+                      {index === 2 ? (
+                        <Typography color={"black"} display={"inline"}>🥉</Typography>
+                      ) : (
+                        <></>
+                      )}
+                      <div>
+                        <Typography color={"black"} display={"block"}>
+                          Score: {user.score}
+                        </Typography>
+                      </div>
+                    </Box>
+                  </Grid>
+                );
+              })}
+            </Grid>
+
+          </Box>
+        </Grid>
+
+      </Grid>
     </Grid>
   );
 }
