@@ -6,6 +6,7 @@ import { Box, Grid, Button, Typography } from "@mui/material";
 import { useGetMyProfileQuery } from "../../store/api";
 import Loading from "../Global/Loading";
 import ErrorSnackbar from "../Global/ErrorSnackbar";
+import { useEffect } from "react";
 
 export default function Home() {
   const user = useSelector((state: any) => state.user);
@@ -21,7 +22,12 @@ export default function Home() {
     isLoading,
     isError,
     error,
+    refetch,
   } = useGetMyProfileQuery({});
+
+  useEffect(() => {
+    refetch();
+  });
 
   if (isLoading) return <Loading />;
   if (isError) return <ErrorSnackbar error={error} />;
