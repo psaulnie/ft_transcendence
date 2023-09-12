@@ -4,6 +4,7 @@ import { UsersService } from '../users/users.service';
 import { AuthenticatedGuard } from '../auth/guards/intraAuthGuard.service';
 import RequestWithUser from '../auth/service/requestWithUser.interface';
 import { UsersStatusService } from '../services/users.status.service';
+import { userStatus } from 'src/users/userStatus';
 
 @Controller('/friends')
 export class FriendListController {
@@ -23,7 +24,7 @@ export class FriendListController {
           const status = await this.usersStatusService.getUserStatus(
             element.username,
           );
-          friendList.push({ username: status.username, status: status.status });
+          friendList.push({ username: element.username, status: status ? status.status : userStatus.offline });
         }
       }
     }
