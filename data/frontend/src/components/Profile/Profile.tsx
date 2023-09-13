@@ -44,7 +44,7 @@ function Profile() {
     position: 'fixed',
     transform: 'translate(-50%, 0%)',
     backgroundColor: '#d6d4d4',
-    border: '1px solid #000000',
+    border: '1px solid #00000088',
     borderRadius: '1em',
     color: 'black',
     '&:hover': {
@@ -62,7 +62,7 @@ function Profile() {
 
   return (
     <div>
-      <Box sx={{ overflowX: 'hidden', overflowY: 'auto', position: 'absolute', left: '50%', top: '12%', transform: 'translate(-50%, 0%)', width: '92.5%', height: '70%', borderRadius: '3em', background: '#d6d4d450', backdropFilter: 'blur(8px)', border: '1px solid #000000', boxShadow: '0 0 10px rgba(0, 0, 0, 0.3)' }}>
+      <Box sx={{ overflowX: 'hidden', overflowY: 'auto', position: 'absolute', left: '50%', top: '12%', transform: 'translate(-50%, 0%)', width: '92.5%', height: '70%', borderRadius: '3em', background: '#d6d4d450', backdropFilter: 'blur(8px)', border: '1px solid #00000088', boxShadow: '0 0 10px rgba(0, 0, 0, 0.3)' }}>
         <Grid alignItems='center' sx={{ width: '100%', height: '100%' }}>
 
           <Grid item sx={{ width: '100%', height: '35%', marginTop: '1em', marginLeft: '1em', marginRight: '-1em' }}>
@@ -99,7 +99,19 @@ function Profile() {
           <Grid item sx={{ width: '100%', height: '52%', overflow: 'auto' }}>
             {userProfile.matchHistory && userProfile.matchHistory.length > 0 ? (
               userProfile.matchHistory.map((match: any, index: any) => (
-                <Grid container key={index} alignItems="center" justifyContent="center" sx={{ backgroundColor: '#454545', width: '100%', height: '2.5em', marginBottom: '0.5em' }}>
+                <Grid container key={index} alignItems="center" justifyContent="center"
+                  sx={{
+                    background: 'linear-gradient(90deg, #45454500, #454545AA, #454545FF, #454545AA, #45454500)',
+                    boxShadow: "0 0 10px rgba(0, 0, 0, 0.3)",
+                    borderWidth: '1px 0',
+                    borderStyle: 'solid',
+                    borderImage: 'linear-gradient(to right, #00000000, #d6d4d4, #00000000)',
+                    borderImageSlice: '1 0',
+                    width: '100%',
+                    height: '2.5em',
+                    marginBottom: '0.5em',
+                  }}
+                >
                   <Grid item container alignItems="center" justifyContent="center">
                     <Avatar src={`http://${process.env.REACT_APP_IP}:5000/api/avatar/${match.p1}`} alt="User Avatar" sx={{ width: '30px', height: '30px', margin: '0 30px' }} />
                     <Typography sx={{ color: match.scoreP1 > match.scoreP2 ? '#1ABAFF' : '#FC7D07', fontSize: 20, margin: '0 10px' }}>{match.scoreP1}</Typography>

@@ -93,7 +93,7 @@ export default function Home() {
             height: "14em",
             borderRadius: "1.5em",
             background: "#d6d4d450",
-            border: "1px solid #00000032",
+            border: "1px solid #00000088",
             paddingTop: '10px',
             boxShadow: "0 0 10px rgba(0, 0, 0, 0.3)",
             backdropFilter: 'blur(8px)',
@@ -104,15 +104,16 @@ export default function Home() {
           <Grid sx={{ overflow: "auto" }}>
             {leaderboard.map((user: any, index: number) => {
               return (
-                <Grid container key={index} alignItems="center" justifyContent="center" sx={{
-                  background: "linear-gradient(90deg, #45454500, #454545AA, #454545FF, #454545AA, #45454500)",
-                  borderWidth: '1px 0',
-                  borderStyle: 'solid',
-                  borderImage: 'linear-gradient(to right, #00000000, #d6d4d4, #00000000)',
-                  borderImageSlice: '1 0',
-                  boxShadow: "0 0 10px rgba(0, 0, 0, 0.3)",
-                  marginBottom: '0.5em'
-                }}
+                <Grid container key={index} alignItems="center" justifyContent="center"
+                  sx={{
+                    background: "linear-gradient(90deg, #45454500, #454545AA, #454545FF, #454545AA, #45454500)",
+                    borderWidth: '1px 0',
+                    borderStyle: 'solid',
+                    borderImage: 'linear-gradient(to right, #00000000, #d6d4d4, #00000000)',
+                    borderImageSlice: '1 0',
+                    boxShadow: "0 0 10px rgba(0, 0, 0, 0.3)",
+                    marginBottom: '0.5em'
+                  }}
                 >
                   <Grid item container alignItems="center" justifyContent="center">
                     <Avatar src={`http://${process.env.REACT_APP_IP}:5000/api/avatar/${user.username}`}/>
