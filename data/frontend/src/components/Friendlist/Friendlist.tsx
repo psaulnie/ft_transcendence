@@ -91,21 +91,6 @@ function Friendlist() {
             alignItems="center"
           >
 
-            {/*For testing ----------------------------*/}
-            <InGameStatus username={'Game'} refetch={refetch}/>
-            <OnlineStatus username={'Online'} refetch={refetch}/>
-            <OfflineStatus username={'Offline'} refetch={refetch}/>
-            <InGameStatus username={'Game'} refetch={refetch}/>
-            <OnlineStatus username={'Online'} refetch={refetch}/>
-            <OfflineStatus username={'Offline'} refetch={refetch}/>
-            <InGameStatus username={'Game'} refetch={refetch}/>
-            <OnlineStatus username={'Online'} refetch={refetch}/>
-            <OfflineStatus username={'Offline'} refetch={refetch}/>
-            <InGameStatus username={'Game'} refetch={refetch}/>
-            <OnlineStatus username={'Online'} refetch={refetch}/>
-            <OfflineStatus username={'Offline'} refetch={refetch}/>
-            {/*-----------------------------------------*/}
-
             {userFriendsList.length === 0 ? (
               <Typography color="black">
                 Your friends will appear here
