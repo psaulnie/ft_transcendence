@@ -53,17 +53,16 @@ function Profile() {
   };
 
   const editButtonStyle = {
-    backgroundColor: '#d6d4d4',
-    borderRadius: '5em',
+    backgroundColor: '#00000000',
     '&:hover': {
-      backgroundColor: '#d6d4d4',
+      backgroundColor: '#00000000',
     },
-    transform: 'translate(-2%, 25%)',
+    transform: 'translate(-10%, 25%)',
   };
 
   return (
     <div>
-      <Box sx={{ overflowX: 'hidden', overflowY: 'auto', position: 'absolute', left: '50%', top: '12%', transform: 'translate(-50%, 0%)', width: '92.5%', height: '70%', borderRadius: '3em', background: '#d6d4d4', border: '1px solid #000000', boxShadow: '0 0 10px rgba(0, 0, 0, 0.3)' }}>
+      <Box sx={{ overflowX: 'hidden', overflowY: 'auto', position: 'absolute', left: '50%', top: '12%', transform: 'translate(-50%, 0%)', width: '92.5%', height: '70%', borderRadius: '3em', background: '#d6d4d450', backdropFilter: 'blur(8px)', border: '1px solid #000000', boxShadow: '0 0 10px rgba(0, 0, 0, 0.3)' }}>
         <Grid alignItems='center' sx={{ width: '100%', height: '100%' }}>
 
           <Grid item sx={{ width: '100%', height: '35%', marginTop: '1em', marginLeft: '1em', marginRight: '-1em' }}>
@@ -78,7 +77,7 @@ function Profile() {
                   </Grid>
                   {user.username === username && (
                     <Grid>
-                      <Button onClick={handleModificationClick} sx={{ ...editButtonStyle }} startIcon={<BorderColorIcon sx={{ color: grey[500] }} />} />
+                      <Button onClick={handleModificationClick} sx={{ ...editButtonStyle }} startIcon={<BorderColorIcon sx={{ color: grey[400] }} />} />
                     </Grid>
                   )}
                 </Grid>

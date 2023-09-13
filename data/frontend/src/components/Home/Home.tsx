@@ -46,8 +46,6 @@ export default function Home() {
   if (isErrorLeaderboard) return <ErrorSnackbar error={errorLeaderboard} />;
 
   return (
-
-
     <Grid
       container
       direction='column'
@@ -98,7 +96,7 @@ export default function Home() {
             width: "30em",
             height: "14em",
             borderRadius: "1.5em",
-            background: "#FFFFFF32",
+            background: "#d6d4d450",
             border: "1px solid #00000032",
             paddingTop: '10px',
             boxShadow: "0 0 10px rgba(0, 0, 0, 0.3)",

@@ -7,7 +7,7 @@ import { logout, setIsPlaying } from "./store/user";
 import Navigation from "./components/Navigation/Navigation";
 import NavDrawer from "./components/Navigation/NavDrawer";
 import Game from "./components/Game/Game";
-import Options from "./components/Global/Options";
+import Settings from "./components/Global/Settings";
 import Profile from "./components/Profile/Profile";
 import Home from "./components/Home/Home";
 import Chat from "./components/Chat/Chat";
@@ -61,7 +61,7 @@ export default function Base() {
         <Route path="/home" element={<Home />}></Route>
         <Route path="/profile/:username" element={<Profile />}></Route>
         <Route path="/game/*" element={<Game />}></Route>
-        <Route path="/options" element={<Options />}></Route>
+        <Route path="/options" element={<Settings />}></Route>
         <Route
           path="/profile/:username/achievements"
           element={<Achievements />}
