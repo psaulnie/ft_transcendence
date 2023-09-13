@@ -3,6 +3,7 @@ import { Adjust, Delete } from "@mui/icons-material";
 import webSocketManager from "../../webSocket";
 import { useSelector } from "react-redux";
 import { useState } from "react";
+import { useNavigate } from "react-router";
 
 function OnlineStatus({
   username,
@@ -14,6 +15,7 @@ function OnlineStatus({
   const urlAvatar = `http://${process.env.REACT_APP_IP}:5000/api/avatar/${username}`;
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const user = useSelector((state: any) => state.user);
+  const navigate = useNavigate();
 
   return (
     <Grid item xs sx={{ backgroundColor: "", width: "100%", height: "90%" }}>
@@ -47,7 +49,9 @@ function OnlineStatus({
                   borderRadius: "3em",
                   marginLeft: "0.3em",
                   marginRight: "0.3em",
+                  cursor: 'pointer',
                 }}
+                onClick={() => {navigate(`/profile/${username}`)}}
               />
             </Grid>
 
@@ -60,7 +64,9 @@ function OnlineStatus({
                   fontWeight: "bold",
                   color: "black",
                   transform: "translate(0%, 10%)",
+                  cursor: 'pointer',
                 }}
+                onClick={() => {navigate(`/profile/${username}`)}}
               >
                 {username}
               </Typography>
