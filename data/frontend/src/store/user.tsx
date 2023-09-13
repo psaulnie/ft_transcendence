@@ -6,8 +6,6 @@ interface UserState {
   isPlaying: boolean;
   isUserBlocked: boolean;
   blockedUsers: string[];
-  isError: boolean;
-  error: string;
 }
 
 const initialUser: UserState = localStorage.getItem("user")
@@ -17,17 +15,13 @@ const initialUser: UserState = localStorage.getItem("user")
       isUserBlocked: false,
       isPlaying: false,
       blockedUsers: [],
-      isError: false,
-      error: '',
     };
 
 const initialState: UserState = {
   username: initialUser.username,
   isUserBlocked: initialUser.isUserBlocked,
   blockedUsers: initialUser.blockedUsers,
-  isError: initialUser.isError,
   isPlaying: initialUser.isPlaying,
-  error: initialUser.error,
 };
 
 export const userSlice = createSlice({
@@ -57,13 +51,6 @@ export const userSlice = createSlice({
       const nbr = state.blockedUsers.indexOf(state.username);
       state.isUserBlocked = (nbr !== -1);
     },
-    setIsError: (state, error: PayloadAction<string>) => {
-      state.isError = !state.isError;
-      if (state.isError === true && error.payload !== '')
-        state.error = error.payload;
-      else
-        state.error = '';
-    }
   },
 });
 
@@ -74,6 +61,5 @@ export const {
   removeBlockedUser,
   isUserBlocked,
   setIsPlaying,
-  setIsError,
 } = userSlice.actions;
 export default userSlice.reducer;
