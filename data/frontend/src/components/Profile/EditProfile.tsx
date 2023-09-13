@@ -123,7 +123,7 @@ function EditProfile() {
 
             <Grid item>
               <Typography variant="h6" sx={textStyle}>Username</Typography>
-              <TextField placeholder="new username" size="small" autoComplete="off" value={newUsername} onChange={(e) => e.target.value.length < 10 ? setNewUsername(e.target.value) : null} sx={{ backgroundColor: "#F8F8F8", "& input": { color: "grey" } }}/>
+              <TextField placeholder="New username" size="small" autoComplete="off" value={newUsername} onChange={(e) => e.target.value.length < 10 ? setNewUsername(e.target.value) : null} sx={{ backgroundColor: "#F8F8F8", "& input": { color: "grey" } }}/>
             </Grid>
 
             <Grid item>

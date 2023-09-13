@@ -125,7 +125,6 @@ export class AuthController {
     };
 
     const usr = await this.authService.findUser(userTest.intraId);
-    console.log(usr);
     if (!usr) {
       await this.authService.createUser(userTest);
     }
