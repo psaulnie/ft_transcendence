@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './Canvas.css'
 import webSocketManager from '../../webSocket';
-import { Button } from '@mui/material';
+import { Button, Container, Grid } from '@mui/material';
 import { useNavigate } from 'react-router';
 import { setIsPlaying } from '../../store/user';
 import { useDispatch } from 'react-redux';
@@ -29,25 +29,32 @@ export default function Canvas({players, gameRoomId, setFoundUser, canvasName} :
 
     const handleResize = () => {
       let scale = window.innerWidth * 0.00075;
-
-      // console.log(scale);
+    
       if (scale > 1)
         scale = 1;
       if (scale < 0.666 && scale > 0.5)
         scale = 0.666;
-      if (scale < 0.5)
+      if (scale < 0.3)
+        scale = 0.3;
+      else if (scale < 0.5)
         scale = 0.5;
       const gameCanvas = document.querySelector('.' + canvasName) as HTMLElement;
       if (gameCanvas) {
-        gameCanvas.style.transform = `scale(${scale})`;
-        // gameCanvas.style.transform = 'transform-origin(center center)';
+        if (scale < 0.5)
+          gameCanvas.style.transform = `scale(${scale}) translate(-90%, 0)`;
+        else if (scale < 0.666) {
+          console.log(window.innerWidth);
+          gameCanvas.style.transform = `scale(${scale}) translate(-50%, 0)`;
+        } else {
+          gameCanvas.style.transform = `scale(${scale}) translate(0, 0)`;
+        }
       }
     };
-
+    
     handleResize();
-
+    
     window.addEventListener("resize", handleResize);
-
+    
     return () => {
       window.removeEventListener("resize", handleResize);
     };
@@ -150,10 +157,68 @@ export default function Canvas({players, gameRoomId, setFoundUser, canvasName} :
     navigate('/home');
   }
   return (
-    <div className={canvasName} id='canvas'>
-      <canvas ref={canvasRef} width={canvasSize.width} height={canvasSize.height}
-              style={{ display: 'block'}}/>
-      <Button onClick={() => quitGame(gameRoomId)}>Leave game</Button>
-    </div>
+    <Grid
+      container
+      alignItems="center"
+      sx={{
+        overflowX: "hidden",
+        overflowY: "auto",
+        position: "absolute",
+        left: "50%",
+        top: "12%",
+        transform: "translate(-50%, 0%)",
+        width: "92.5%",
+        height: "70%",
+        borderRadius: "3em",
+        background: "#d6d4d4",
+        border: "1px solid #000000",
+        boxShadow: "0 0 10px rgba(0, 0, 0, 0.3)",
+      }}
+    >
+      <Grid
+        alignItems="center"
+        justifyContent="center"
+        sx={{
+          width: "100%",
+          display: 'block',
+          margin: '0 auto',
+        }}
+      >
+          <div className={canvasName} id="canvas">
+            <canvas
+              ref={canvasRef}
+              width={canvasSize.width}
+              height={canvasSize.height}
+              style={{
+                display: "block",
+              }}
+            />
+            <Button
+              onClick={() => quitGame(gameRoomId)}
+              variant="text"
+              color="primary"
+              sx={{
+                textTransform: "none",
+                fontWeight: "bold",
+                fontSize: "20px",
+                width: "8em",
+                height: "2em",
+                marginTop: "1em",
+                backgroundColor: "rgba(255, 255, 255, 0.9)",
+                borderColor: "#000000",
+                border: "1px solid",
+                borderRadius: "10px",
+                color: "black",
+                "&:hover": {
+                  backgroundColor: "gray",
+                  borderColor: "gray",
+                },
+              }}
+            >
+              Leave game
+            </Button>
+          </div>
+      </Grid>
+    </Grid>
   );
 };

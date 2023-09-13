@@ -30,7 +30,6 @@ export class ProfileController {
       userMatchHistory.length < 15 ? userMatchHistory.length : 15;
 
     for (let index = iteration - 1; index >= 0; index--) {
-      // TODO test when game is finished
       const user1 = await this.userService.findOneById(
         userMatchHistory[index].user1id,
       );
@@ -69,7 +68,6 @@ export class ProfileController {
       userMatchHistory.length < 10 ? userMatchHistory.length : 10;
 
     for (let index = 0; index < iteration; index++) {
-      // TODO test when game is finished
       const user1 = await this.userService.findOneById(
         userMatchHistory[index].user1id,
       );
@@ -126,7 +124,6 @@ export class ProfileController {
       else if (a.statistics.rank === b.statistics.rank && a.statistics.streak > b.statistics.streak) return -1;
       return 0;
     });
-    console.log(bestUsers);
     const leaderboard = [];
     if (users.length > 0)
       leaderboard.push({

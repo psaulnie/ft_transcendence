@@ -34,6 +34,7 @@ export default function Home() {
   } = useGetLeaderboardQuery({});
 
   useEffect(() => {
+    console.log("A");
     if (localStorage.getItem("user")) {
       refetch();
       refetchLeaderboard();

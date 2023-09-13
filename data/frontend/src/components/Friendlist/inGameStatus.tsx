@@ -3,11 +3,13 @@ import { Delete, VideogameAsset } from "@mui/icons-material";
 import webSocketManager from "../../webSocket";
 import {useSelector} from "react-redux";
 import { useState } from "react";
+import { useNavigate } from "react-router";
 
 function InGameStatus({username, refetch}: {username: string, refetch: any}) {
   const urlAvatar = `http://${process.env.REACT_APP_IP}:5000/api/avatar/${username}`;
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const user = useSelector((state: any) => state.user);
+  const navigate = useNavigate();
 
   return (
     <Grid
@@ -50,7 +52,9 @@ function InGameStatus({username, refetch}: {username: string, refetch: any}) {
                   borderRadius: "3em",
                   marginLeft: "0.3em",
                   marginRight: "0.3em",
+                  cursor: 'pointer',
                 }}
+                onClick={() => {navigate(`/profile/${username}`)}}
               />
             </Grid>
 
@@ -63,7 +67,9 @@ function InGameStatus({username, refetch}: {username: string, refetch: any}) {
                   fontWeight: "bold",
                   color: "black",
                   transform: "translate(0%, 10%)",
+                  cursor: 'pointer',
                 }}
+                onClick={() => {navigate(`/profile/${username}`)}}
               >
                 {username}
               </Typography>
