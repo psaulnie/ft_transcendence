@@ -69,20 +69,23 @@ function EditProfile() {
   const urlAvatar = `http://${process.env.REACT_APP_IP}:5000/api/avatar/${user.username}`;
 
   const mainBoxStyle = {
-    position: "fixed",
-    transform: "translate(5%, 0%)",
-    top: "25%",
-    width: "90%",
-    height: "40%",
+    position: "absolute",
+    transform: "translate(-50%, -50%)",
+    top: "50%",
+    left: '50%',
+    width: "35em",
+    height: "20em",
     borderRadius: "3em",
-    background: "#d6d4d4",
-    border: "1px solid #000000",
+    background: "#d6d4d450",
+    backdropFilter: 'blur(8px)',
+    border: "1px solid #00000088",
     boxShadow: "0 0 10px rgba(0, 0, 0, 0.3)"
   };
 
   const textStyle = {
-    fontSize: 16,
+    fontSize: 20,
     color: "black",
+    fontWeight: 'bold',
   };
 
   const buttonStyle = {

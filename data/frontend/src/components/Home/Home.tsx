@@ -93,10 +93,10 @@ export default function Home() {
             height: "14em",
             borderRadius: "1.5em",
             background: "#d6d4d450",
+            backdropFilter: 'blur(8px)',
             border: "1px solid #00000088",
             paddingTop: '10px',
             boxShadow: "0 0 10px rgba(0, 0, 0, 0.3)",
-            backdropFilter: 'blur(8px)',
           }}
         >
           <Typography sx={{ color: "black", fontWeight: "bold", fontSize: "24px", marginBottom: '10px' }}>Leaderboard</Typography>
