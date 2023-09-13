@@ -87,7 +87,6 @@ export class AppController {
         try {
           await fs.writeFile(path + name, file.buffer);
         } catch (err) {
-          console.log(err);
           throw new HttpException('Internal Server Error', 500);
         }
         await this.userService.updateAvatar(user, path + name, false);
@@ -198,7 +197,6 @@ function validImage(file: Express.Multer.File): boolean {
     )
       return false;
   } else if (file.mimetype === 'image/gif') {
-    console.log("salut");
     if (
       file.buffer[0] !== 0x47 ||
       file.buffer[1] !== 0x49 ||

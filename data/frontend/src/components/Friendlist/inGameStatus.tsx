@@ -2,7 +2,6 @@ import { Avatar, Box, Button, Grid, Typography } from "@mui/material";
 import { Delete, VideogameAsset } from "@mui/icons-material";
 import webSocketManager from "../../webSocket";
 import {useSelector} from "react-redux";
-import { useState } from "react";
 import { useNavigate } from "react-router";
 
 function InGameStatus({username, refetch}: {username: string, refetch: any}) {

@@ -1060,8 +1060,6 @@ export class Gateway
       client.id,
     );
     if (!userStatus) return;
-    console.log(userStatus.username);
-    console.log(await this.userService.findOne(payload));
     if (await this.userService.findOne(payload)) {
       this.server.emit(client.id, {
         action: actionTypes.usernameAlreadyTaken,

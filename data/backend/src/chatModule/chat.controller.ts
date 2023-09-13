@@ -231,7 +231,6 @@ export class ChatController {
           friendList.push(element.username);
         else if (element.username != user.username)
           friendList.push(element.username);
-        console.log('friendlist', friendList);
       }
     }
     return friendList;

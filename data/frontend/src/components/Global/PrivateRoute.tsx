@@ -1,11 +1,8 @@
 import { Navigate, Outlet } from "react-router";
 import { useEffect, useState } from "react";
 import Loading from "./Loading";
-import { useDispatch, useSelector } from "react-redux";
 
 export default function PrivateRoute() {
-  const user = useSelector((state: any) => state.user);
-  const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(true);
   const [isOk, setIsOk] = useState(false);
 

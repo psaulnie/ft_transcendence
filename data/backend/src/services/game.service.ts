@@ -251,8 +251,6 @@ export class GameService {
 			userL.statistics.loseNbr++;
 			userL.statistics.matchNumber++;
 		}
-		console.log(userW.statistics.streak);
-		console.log(userL.statistics.streak);
 		await this.statsRepository.save(userW.statistics);
 		await this.userRepository.save(userW);
 		await this.statsRepository.save(userL.statistics);

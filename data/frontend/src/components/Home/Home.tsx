@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
 
 import { Box, Grid, Button, Typography, Avatar } from "@mui/material";
 
@@ -9,8 +8,6 @@ import ErrorSnackbar from "../Global/ErrorSnackbar";
 import { useEffect } from "react";
 
 export default function Home() {
-  const user = useSelector((state: any) => state.user);
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const play = () => {
