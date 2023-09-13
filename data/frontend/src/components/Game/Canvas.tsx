@@ -43,8 +43,7 @@ export default function Canvas({players, gameRoomId, setFoundUser, canvasName} :
         if (scale < 0.5)
           gameCanvas.style.transform = `scale(${scale}) translate(-90%, 0)`;
         else if (scale < 0.666) {
-          console.log(window.innerWidth);
-          gameCanvas.style.transform = `scale(${scale}) translate(-50%, 0)`;
+          gameCanvas.style.transform = `scale(${scale}) translate(-35%, 0)`;
         } else {
           gameCanvas.style.transform = `scale(${scale}) translate(0, 0)`;
         }
