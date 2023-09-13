@@ -34,11 +34,12 @@ export default function Home() {
   } = useGetLeaderboardQuery({});
 
   useEffect(() => {
+    console.log("A");
     if (localStorage.getItem("user")) {
       refetch();
       refetchLeaderboard();
     }
-  });
+  }, [refetch, refetchLeaderboard]);
 
   if (isLoading || isLoadingLeaderboard) return <Loading />;
   if (isError) return <ErrorSnackbar error={error} />;
