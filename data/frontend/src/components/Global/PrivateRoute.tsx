@@ -2,7 +2,6 @@ import { Navigate, Outlet } from "react-router";
 import { useEffect, useState } from "react";
 import Loading from "./Loading";
 import { useDispatch, useSelector } from "react-redux";
-import { logout } from "../../store/user";
 
 export default function PrivateRoute() {
   const user = useSelector((state: any) => state.user);

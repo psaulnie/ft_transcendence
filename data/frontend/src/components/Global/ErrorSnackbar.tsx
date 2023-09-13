@@ -5,7 +5,6 @@ import { Alert } from "@mui/material";
 
 import CachedIcon from "@mui/icons-material/Cached";
 import { useDispatch } from "react-redux";
-import { logout } from "../../store/user";
 
 export default function ErrorSnackbar({ error }: { error: any }) {
   const [message, setMessage] = useState("Unknown error");

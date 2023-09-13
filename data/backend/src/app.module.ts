@@ -32,10 +32,15 @@ import { GameModule } from './game/game.module';
 import { GameService } from './services/game.service';
 import { ProfileController } from './controllers/profile.controller';
 import { FriendListController } from './controllers/friendlist.controller';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
+    ThrottlerModule.forRoot([{
+      ttl: 2000,
+      limit: 10,
+    }]),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'database',
@@ -84,6 +89,6 @@ import { FriendListController } from './controllers/friendlist.controller';
       useClass: AuthService,
     },
   ],
-  exports: [UsersStatusService]
+  exports: [UsersStatusService],
 })
 export class AppModule {}

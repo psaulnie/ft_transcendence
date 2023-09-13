@@ -3,7 +3,6 @@ import Cookies from "js-cookie";
 
 interface UserState {
   username: string;
-  isLoggedIn: boolean;
   isPlaying: boolean;
   isUserBlocked: boolean;
   blockedUsers: string[];
@@ -15,7 +14,6 @@ const initialUser: UserState = localStorage.getItem("user")
   ? JSON.parse(localStorage.getItem("user") || "{}")
   : {
       username: "",
-      isLoggedIn: false,
       isUserBlocked: false,
       isPlaying: false,
       blockedUsers: [],
@@ -25,7 +23,6 @@ const initialUser: UserState = localStorage.getItem("user")
 
 const initialState: UserState = {
   username: initialUser.username,
-  isLoggedIn: initialUser.isLoggedIn,
   isUserBlocked: initialUser.isUserBlocked,
   blockedUsers: initialUser.blockedUsers,
   isError: initialUser.isError,
@@ -38,15 +35,8 @@ export const userSlice = createSlice({
   initialState,
   reducers: {
     login: (state) => {
-      state.isLoggedIn = true;
       state.blockedUsers = [];
       localStorage.setItem("user", JSON.stringify(state));
-    },
-    logout: (state) => {
-      // state.username = "";
-      // state.isLoggedIn = false;
-      // Cookies.remove("username", {sameSite: 'none', secure: true});
-      // localStorage.removeItem("user");
     },
     setUsername: (state, action: PayloadAction<string>) => {
       state.username = action.payload;
@@ -79,7 +69,6 @@ export const userSlice = createSlice({
 
 export const {
   login,
-  logout,
   setUsername,
   addBlockedUser,
   removeBlockedUser,
