@@ -89,9 +89,7 @@ function Navigation({ setDrawerState }: { setDrawerState: any }) {
               }}
               onClick={handleBoxClick}
             >
-              {user.isLoggedIn ? (
                 <CustomAvatar username={user.username} />
-              ) : null}
             </Box>
             <Menu
               anchorEl={anchorEl}

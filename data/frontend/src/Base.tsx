@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { logout, setIsPlaying } from "./store/user";
+import { setIsPlaying } from "./store/user";
 
 import Navigation from "./components/Navigation/Navigation";
 import NavDrawer from "./components/Navigation/NavDrawer";
@@ -44,7 +44,7 @@ export default function Base() {
       localStorage.removeItem("user");
       window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/logout`;
     }
-  }, [dispatch, logout, user, user.username, location]);
+  }, [dispatch, user, user.username, location]);
 
   webSocketManager.initializeWebSocket();
 

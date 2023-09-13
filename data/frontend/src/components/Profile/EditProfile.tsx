@@ -19,7 +19,7 @@ function EditProfile() {
   const [newUsername, setNewUsername] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | undefined>(undefined);
   const [fileUrl, setFileUrl] = useState("");
-  const [uploadAvatar] = useUploadAvatarMutation();
+  const [uploadAvatar, isSuccess] = useUploadAvatarMutation();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.[0] !== undefined) {
@@ -38,8 +38,13 @@ function EditProfile() {
         setSelectedFile(undefined);
         setFileUrl("");
       } else {
+        const formData = new FormData();
         setSelectedFile(e.target.files[0]);
         setFileUrl(URL.createObjectURL(e.target.files[0]));
+        formData.append("file", e.target.files[0]);
+        uploadAvatar(formData);
+        if (isSuccess)
+          window.location.reload();
       }
     }
   };

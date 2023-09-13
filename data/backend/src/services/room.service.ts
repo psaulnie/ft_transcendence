@@ -48,7 +48,6 @@ export class RoomService {
     room.usersNumber = 1;
     room.access = access;
     room.password = password;
-    console.log('hash: ', room.password);
     if (!room.usersList) room.usersList = [];
     room.usersList.push(await this.usersListRepository.save(usersList));
     return await this.roomsRepository.save(room);

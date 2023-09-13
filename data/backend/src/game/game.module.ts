@@ -12,17 +12,23 @@ import { Statistics } from 'src/entities/stats.entity';
 import { MatchHistory } from 'src/entities/matchHistory.entity';
 import { AppModule } from 'src/app.module';
 import { Achievements } from 'src/entities/achievements.entity';
+import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerGuard } from '@nestjs/throttler';
 
 @Module({
   providers: [
     GameService,
     UsersStatusService,
     User,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard
+    }
   ],
   imports: [
     TypeOrmModule.forFeature([User, BlockedList, Statistics, MatchHistory, Achievements]),
     HttpModule.register({}),
-    forwardRef(() => AppModule)
+    forwardRef(() => AppModule),
   ],
 })
 export class GameModule {}

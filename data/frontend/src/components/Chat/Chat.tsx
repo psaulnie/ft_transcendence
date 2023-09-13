@@ -35,10 +35,6 @@ function Chat() {
   const [fetchBlockedUsers, blockedUsers] = useLazyGetBlockedUsersQuery();
 
   useEffect(() => {
-    if (!user.isLoggedIn) {
-      return;
-    }
-
     if (blockedUsers.status === "uninitialized") {
       fetchBlockedUsers({});
     }
@@ -74,7 +70,6 @@ function Chat() {
   }, [
     blockedUsers,
     userRoomList,
-    user.isLoggedIn,
     user.username,
     dispatch,
     fetchBlockedUsers,
