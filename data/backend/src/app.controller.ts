@@ -74,6 +74,7 @@ export class AppController {
     file: Express.Multer.File,
     @Req() req: RequestWithUser,
   ) {
+    console.log('changeAvatar');
     const user = req.user as User;
     if (body && file) {
       if (!validImage(file)) {
