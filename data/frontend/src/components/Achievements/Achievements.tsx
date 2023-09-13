@@ -24,6 +24,22 @@ function Achievements() {
   if (isError) return <ErrorSnackbar error={isError} />;
   if (userAchievements.exist === false) return <Navigate to="/home" />;
 
+  const buttonStyle = {
+    textTransform: 'none',
+    fontSize: '18px',
+    width: '5em',
+    height: '1.5em',
+    position: 'fixed',
+    transform: 'translate(-50%, 0%)',
+    backgroundColor: '#d6d4d4',
+    border: '1px solid #00000088',
+    borderRadius: '1em',
+    color: 'black',
+    '&:hover': {
+      backgroundColor: 'grey',
+    }
+  };
+
   return (
     <div>
       <Box
@@ -33,11 +49,11 @@ function Achievements() {
           left: '50%',
           top: "50%",
           transform: "translate(-50%, -50%)",
-          width: "90%",
-          height: "60%",
+          width: "35em",
+          height: "30em",
           paddingTop: '1.3em',
           borderRadius: "3em",
-          background: "#d6d4d450",
+          background: "#d6d4d470",
           backdropFilter: 'blur(8px)',
           border: "1px solid #00000088",
           boxShadow: "0 0 10px rgba(0, 0, 0, 0.3)",
@@ -114,32 +130,13 @@ function Achievements() {
               />
             )
           }
-
-          <Grid item xs sx={{ width: "100%", height: "100%", marginTop: "0.25em" }}>
-            <Button
-              onClick={handleProfileClick}
-              variant="contained"
-              color="primary"
-              sx={{
-                textTransform: "none",
-                fontSize: "18px",
-                width: "6em",
-                height: "1.5em",
-                backgroundColor: "#d6d4d4",
-                border: "1px solid #00000088",
-                borderRadius: "1em",
-                marginTop: "0.8em",
-                color: "black",
-                "&:hover": {
-                  backgroundColor: "grey",
-                },
-              }}
-            >
-              Back
-            </Button>
-          </Grid>
         </Grid>
       </Box>
+
+      <Button onClick={handleProfileClick} variant="contained" sx={{ ...buttonStyle, bottom: '10%' }}>
+        Back
+      </Button>
+
     </div>
   );
 }

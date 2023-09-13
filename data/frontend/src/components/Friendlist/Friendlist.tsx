@@ -42,6 +42,23 @@ function Friendlist() {
   if (isLoading) return <Loading />;
   if (isError) return <ErrorSnackbar error={error} />;
   if (!userFriendsList) return <Navigate to="/home" />;
+
+  const buttonStyle = {
+    textTransform: 'none',
+    fontSize: '18px',
+    width: '5em',
+    height: '1.5em',
+    position: 'fixed',
+    transform: 'translate(-50%, 0%)',
+    backgroundColor: '#d6d4d4',
+    border: '1px solid #00000088',
+    borderRadius: '1em',
+    color: 'black',
+    '&:hover': {
+      backgroundColor: 'grey',
+    }
+  };
+
   return (
     <div>
       <Box
@@ -50,21 +67,20 @@ function Friendlist() {
           transform: "translate(5%, 0%)",
           top: "11.5%",
           width: "90%",
-          height: "80.5%",
-          padding: "20px",
+          height: "70%",
+          padding: "1.3em 0 1.3em 0",
           borderRadius: "3em",
           overflow: "hidden",
-          background: "#d6d4d4",
-          border: "1px solid #000000",
+          background: "#d6d4d470",
+          border: "1px solid #00000032",
           boxShadow: "0 0 10px rgba(0, 0, 0, 0.3)",
+          backdropFilter: 'blur(8px)',
         }}
       >
         <Box
           sx={{
             height: "100%",
             overflow: "auto",
-            paddingRight: "12px",
-            marginRight: "-12px",
           }}
         >
           <Grid
@@ -74,6 +90,22 @@ function Friendlist() {
             justifyContent="center"
             alignItems="center"
           >
+
+            {/*For testing ----------------------------*/}
+            <InGameStatus username={'Game'} refetch={refetch}/>
+            <OnlineStatus username={'Online'} refetch={refetch}/>
+            <OfflineStatus username={'Offline'} refetch={refetch}/>
+            <InGameStatus username={'Game'} refetch={refetch}/>
+            <OnlineStatus username={'Online'} refetch={refetch}/>
+            <OfflineStatus username={'Offline'} refetch={refetch}/>
+            <InGameStatus username={'Game'} refetch={refetch}/>
+            <OnlineStatus username={'Online'} refetch={refetch}/>
+            <OfflineStatus username={'Offline'} refetch={refetch}/>
+            <InGameStatus username={'Game'} refetch={refetch}/>
+            <OnlineStatus username={'Online'} refetch={refetch}/>
+            <OfflineStatus username={'Offline'} refetch={refetch}/>
+            {/*-----------------------------------------*/}
+
             {userFriendsList.length === 0 ? (
               <Typography color="black">
                 Your friends will appear here
@@ -110,37 +142,15 @@ function Friendlist() {
               }
             })}
 
-            <Grid
-              item
-              xs
-              sx={{ width: "100%", height: "100%", marginTop: "0.25em" }}
-            >
-              <Button
-                onClick={handleProfileClick}
-                variant="contained"
-                color="primary"
-                sx={{
-                  textTransform: "none",
-                  fontWeight: "bold",
-                  fontSize: "18px",
-                  width: "6em",
-                  height: "1.5em",
-                  backgroundColor: "rgba(220, 220, 220, 0.9)",
-                  border: "1px solid #020202",
-                  borderRadius: "1em",
-                  marginTop: "0.3em",
-                  color: "black",
-                  "&:hover": {
-                    backgroundColor: "grey",
-                  },
-                }}
-              >
-                Back
-              </Button>
-            </Grid>
+
           </Grid>
         </Box>
       </Box>
+
+      <Button onClick={handleProfileClick} variant="contained" sx={{ ...buttonStyle, bottom: '10%' }}>
+        Back
+      </Button>
+
     </div>
   );
 }

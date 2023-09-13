@@ -78,7 +78,7 @@ export default function Home() {
             borderRadius: "10px",
             color: "black",
             "&:hover": {
-              backgroundColor: "#FC7D07",
+              backgroundColor: "#FE8F29",
             },
           }}
         >
@@ -106,7 +106,7 @@ export default function Home() {
               return (
                 <Grid container key={index} alignItems="center" justifyContent="center"
                   sx={{
-                    background: "linear-gradient(90deg, #45454500, #454545AA, #454545FF, #454545AA, #45454500)",
+                    background: "linear-gradient(to right, #45454500, #454545AA, #454545FF, #454545AA, #45454500)",
                     borderWidth: '1px 0',
                     borderStyle: 'solid',
                     borderImage: 'linear-gradient(to right, #00000000, #d6d4d4, #00000000)',

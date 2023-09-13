@@ -109,7 +109,7 @@ function Settings() {
             width: "30em",
             height: "27em",
             borderRadius: "1.5em",
-            background: "#d6d4d450",
+            background: "#d6d4d470",
             border: "1px solid #00000032",
             paddingTop: '10px',
             boxShadow: "0 0 10px rgba(0, 0, 0, 0.3)",

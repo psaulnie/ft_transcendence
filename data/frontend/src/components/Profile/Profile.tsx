@@ -36,7 +36,7 @@ function Profile() {
   if (isError) return <ErrorSnackbar error={error} />;
   if (userProfile.exist === false) return <Navigate to="/home" />;
 
-  const sameButtonStyle = {
+  const buttonStyle = {
     textTransform: 'none',
     fontSize: '18px',
     width: '10em',
@@ -128,12 +128,12 @@ function Profile() {
       </Box>
 
       {user.username === username && (
-        <Button variant="contained" onClick={handleFriendsClick} sx={{ ...sameButtonStyle, bottom: '14%' }}>
+        <Button variant="contained" onClick={handleFriendsClick} sx={{ ...buttonStyle, bottom: '14%' }}>
           Friends
         </Button>
       )}
 
-      <Button variant="contained" onClick={handleAchievementsClick} sx={{ ...sameButtonStyle, bottom: '10%' }}>
+      <Button variant="contained" onClick={handleAchievementsClick} sx={{ ...buttonStyle, bottom: '10%' }}>
         Achievements
       </Button>
 

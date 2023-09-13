@@ -76,7 +76,7 @@ function EditProfile() {
     width: "35em",
     height: "20em",
     borderRadius: "3em",
-    background: "#d6d4d450",
+    background: "#d6d4d470",
     backdropFilter: 'blur(8px)',
     border: "1px solid #00000088",
     boxShadow: "0 0 10px rgba(0, 0, 0, 0.3)"

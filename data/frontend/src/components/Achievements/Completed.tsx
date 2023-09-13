@@ -40,7 +40,7 @@ function Completed({
             >
               <Box
                 sx={{
-                  backgroundColor: "#FC7D07",
+                  backgroundColor: "#FE8F29",
                   margin: "0.45em",
                   border: "1px solid #000000",
                   height: "2em",
