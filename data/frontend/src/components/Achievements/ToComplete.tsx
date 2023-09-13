@@ -8,21 +8,16 @@ function ToComplete({
   description: string;
 }) {
   return (
-    <Grid
-      item
-      xs
-      sx={{
-        backgroundColor: "",
-        width: "100%",
-        height: "90%",
-        marginTop: "-0.5em",
-      }}
-    >
+    <Grid item xs sx={{ width: "100%", height: "100%" }}>
       <Box
         sx={{
-          backgroundColor: "#919191",
-          marginTop: "1em",
-          borderRadius: "0.5em",
+          background: "linear-gradient(90deg, #454545FF, #454545AA, #45454500)",
+          borderWidth: '1px 0',
+          borderStyle: 'solid',
+          borderImage: 'linear-gradient(to right, #d6d4d4, #00000000)',
+          borderImageSlice: '1 0',
+          boxShadow: "0 0 10px rgba(0, 0, 0, 0.3)",
+          marginTop: "0.8em",
           padding: "0.4em",
         }}
       >
@@ -35,37 +30,35 @@ function ToComplete({
           <Grid item>
             <Box
               sx={{
-                backgroundColor: "#D9D9D9",
-                border: "black solid",
-                borderWidth: "2px",
+                backgroundColor: "#d6d4d4",
+                border: "1px solid #000000",
                 height: "3em",
                 width: "3em",
                 borderRadius: "0.4em",
-                marginLeft: "0.3em",
+                marginLeft: "1em",
               }}
             ></Box>
           </Grid>
           <Grid item>
             <Typography
               variant="h6"
+              align='left'
               sx={{
                 fontSize: 20,
                 fontWeight: "bold",
                 color: "black",
-                marginLeft: "auto",
                 marginRight: "3.2em",
               }}
             >
-            {title}:
+            {title}
             </Typography>
             <Typography
               variant="h6"
+              align='left'
               sx={{
                 fontSize: 16,
                 color: "black",
                 textAlign: "left",
-                marginLeft: "auto",
-                marginTop: "auto",
               }}
             >
             {description}

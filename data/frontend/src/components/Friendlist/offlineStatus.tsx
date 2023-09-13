@@ -14,15 +14,18 @@ function OfflineStatus({username, refetch}: {username: string, refetch: any}) {
     <Grid
       item
       xs
-      sx={{ backgroundColor: "", width: "100%", height: "90%" }}
+      sx={{ width: "100%", height: "90%" }}
     >
       <Box
         sx={{
-          backgroundColor: "#919191",
+          background: "linear-gradient(to right, #454545, #5C5C5C, #454545)",
+          borderWidth: '1px 0',
+          borderStyle: 'solid',
+          borderImage: 'linear-gradient(to right, #d6d4d4, #00000000, #d6d4d4)',
+          borderImageSlice: '1 0',
+          boxShadow: "0 0 10px rgba(0, 0, 0, 0.3)",
           marginTop: "0.5em",
-          borderRadius: "0.5em",
           padding: "0.1em",
-          paddingX: "0.4em",
         }}
       >
         <Grid
@@ -49,7 +52,7 @@ function OfflineStatus({username, refetch}: {username: string, refetch: any}) {
                   border: "black solid",
                   borderWidth: "1px",
                   borderRadius: "3em",
-                  marginLeft: "0.3em",
+                  marginLeft: "1.5em",
                   marginRight: "0.3em",
                   cursor: 'pointer',
                 }}
@@ -101,14 +104,14 @@ function OfflineStatus({username, refetch}: {username: string, refetch: any}) {
                 });
               }}
               sx={{
-                backgroundColor: "#D9D9D9",
+                backgroundColor: "#d4d4d4",
                 border: "black solid",
                 borderRadius: "10px",
                 borderWidth: "1px",
                 width: "30px",
                 height: "30px",
                 minWidth: "5px",
-                marginRight: "0.3em",
+                marginRight: "2em",
               }}
             >
               <Delete sx={{ fontSize: 20 }} />

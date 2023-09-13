@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
-import { Box, Grid, Button, Typography, Avatar } from "@mui/material";
+import {Box, Grid, Button, Typography, Avatar} from "@mui/material";
 
 import { useGetLeaderboardQuery, useGetMyProfileQuery } from "../../store/api";
 import Loading from "../Global/Loading";
@@ -43,185 +43,103 @@ export default function Home() {
 
   return (
     <Grid
+      container
+      direction='column'
       sx={{
         position: "absolute",
-        left: "50%",
-        top: "50%",
-        transform: "translate(-50%, -50%)",
+        height: '94%',
+        width: '100%',
       }}
     >
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "50vh",
-        }}
-      >
-        <Grid
-          container
-          direction="column"
-          spacing={2}
+      <Grid item sx={{ borderLeft: '2px solid', borderImage: 'linear-gradient(to bottom, #00000000, #d6d4d4, #00000000) 1 100%', marginLeft: '1em', marginTop: '1em' }}>
+        <Typography align="left" sx={{ color: "black", fontWeight: "bold", fontSize: "30px", marginLeft: '0.2em' }}>Welcome {userProfile.username}</Typography>
+
+        <Grid sx={{ marginLeft: '0.5em' }}>
+          <Typography align="left" sx={{ color: "black", fontSize: "16px", marginBottom: '-5px' }}>‣ Rank: {userProfile.rank}</Typography>
+          <Typography align="left" sx={{ color: "black", fontSize: "16px", marginBottom: '-5px' }}>‣ Wins: {userProfile.wins}</Typography>
+          <Typography align="left" sx={{ color: "black", fontSize: "16px" }}>‣ Losses: {userProfile.loses}</Typography>
+        </Grid>
+      </Grid>
+
+      <Grid item sx={{ position: 'absolute', left: '50%', top: '30%', transform: 'translate(-50%, 0%)' }}>
+        <Button
+          variant="text"
+          color="primary"
+          onClick={play}
           sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            marginTop: "50%",
+            textTransform: "none",
+            fontWeight: "bold",
+            fontSize: "36px",
+            width: "6em",
+            height: "1.8em",
+            backgroundColor: "#d6d4d4",
+            border: "1px solid #00000088",
+            boxShadow: "0 0 10px rgba(0, 0, 0, 0.3)",
+            borderRadius: "10px",
+            color: "black",
+            "&:hover": {
+              backgroundColor: "#FE8F29",
+            },
           }}
         >
-          <Grid item sx={{ marginBottom: "1em" }}>
-            <Button
-              variant="text"
-              color="primary"
-              onClick={play}
-              sx={{
-                textTransform: "none",
-                fontWeight: "bold",
-                fontSize: "36px",
-                width: "6em",
-                height: "1.8em",
-                backgroundColor: "rgba(255, 255, 255, 0.9)",
-                borderColor: "#000000",
-                border: "1px solid",
-                borderRadius: "10px",
-                color: "black",
-                "&:hover": {
-                  backgroundColor: "gray",
-                  borderColor: "gray",
-                },
-              }}
-            >
-              Play
-            </Button>
+          Play
+        </Button>
+      </Grid>
+
+      <Grid item sx={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, 0%)' }}>
+        <Box
+          sx={{
+            width: "30em",
+            height: "14em",
+            borderRadius: "1.5em",
+            background: "#d6d4d450",
+            backdropFilter: 'blur(8px)',
+            border: "1px solid #00000088",
+            paddingTop: '10px',
+            boxShadow: "0 0 10px rgba(0, 0, 0, 0.3)",
+          }}
+        >
+          <Typography sx={{ color: "black", fontWeight: "bold", fontSize: "24px", marginBottom: '10px' }}>Leaderboard</Typography>
+
+          <Grid sx={{ overflow: "auto" }}>
+            {leaderboard.map((user: any, index: number) => {
+              return (
+                <Grid container key={index} alignItems="center" justifyContent="center"
+                  sx={{
+                    background: "linear-gradient(to right, #45454500, #454545AA, #454545FF, #454545AA, #45454500)",
+                    borderWidth: '1px 0',
+                    borderStyle: 'solid',
+                    borderImage: 'linear-gradient(to right, #00000000, #d6d4d4, #00000000)',
+                    borderImageSlice: '1 0',
+                    boxShadow: "0 0 10px rgba(0, 0, 0, 0.3)",
+                    marginBottom: '0.5em'
+                  }}
+                >
+                  <Grid item container alignItems="center" justifyContent="center">
+                    <Avatar src={`http://${process.env.REACT_APP_IP}:5000/api/avatar/${user.username}`}/>
+                    <Typography color="black" sx={{ margin: '0 8px 0 18px' }}>{user.username}</Typography>
+                    {(() => {
+                      switch (index) {
+                        case 0:
+                          return <Typography color="black" sx={{ margin: '0 8px' }}>👑</Typography>;
+                        case 1:
+                          return <Typography color="black" sx={{ margin: '0 8px' }}>🥈</Typography>;
+                        case 2:
+                          return <Typography color="black" sx={{ margin: '0 8px' }}>🥉</Typography>;
+                        default:
+                          return null;
+                      }
+                    })()}
+                    <Typography color="black" sx={{ margin: '0 8px' }}>Score: {user.score}</Typography>
+                  </Grid>
+                </Grid>
+              );
+            })}
           </Grid>
-          <Grid item>
-            <Box
-              sx={{
-                top: "56%",
-                left: "25%",
-                width: "15em",
-                height: "10em",
-                padding: "0.5em",
-                borderRadius: "1.5em",
-                background: "linear-gradient(to right, #ECECEC, #d6d4d4)",
-                border: "1px solid #000000",
-                boxShadow: "0 0 10px rgba(0, 0, 0, 0.3)",
-              }}
-            >
-              <Typography
-                sx={{
-                  color: "black",
-                  fontWeight: "bold",
-                  fontSize: "24px",
-                }}
-                display={"block"}
-              >
-                Welcome {userProfile.username}
-              </Typography>
-              <Typography
-                sx={{
-                  color: "black",
-                  fontWeight: "bold",
-                  fontSize: "24px",
-                }}
-                display={"block"}
-              >
-                Wins: {userProfile.wins}
-              </Typography>
-              <Typography
-                sx={{
-                  color: "black",
-                  fontWeight: "bold",
-                  fontSize: "24px",
-                }}
-                display={"block"}
-              >
-                Losses: {userProfile.loses}
-              </Typography>
-              <Typography
-                sx={{
-                  color: "black",
-                  fontWeight: "bold",
-                  fontSize: "24px",
-                }}
-                display={"block"}
-              >
-                Rank: {userProfile.rank}
-              </Typography>
-            </Box>
-          </Grid>
-          <Grid item>
-            <Box
-              sx={{
-                top: "56%",
-                left: "25%",
-                width: "15em",
-                height: "10em",
-                padding: "0.5em",
-                borderRadius: "1.5em",
-                background: "linear-gradient(to right, #ECECEC, #d6d4d4)",
-                border: "1px solid #000000",
-                boxShadow: "0 0 10px rgba(0, 0, 0, 0.3)",
-              }}
-            >
-              <Typography
-                sx={{
-                  color: "black",
-                  fontWeight: "bold",
-                  fontSize: "24px",
-                }}
-                display={"block"}
-              >
-                Leaderboard
-              </Typography>
-              <Grid sx={{ overflow: "auto" }}>
-                {leaderboard.map((user: any, index: number) => {
-                  return (
-                    <Grid item key={index} sx={{display: 'block'}}>
-                      <Box
-                        // alignItems={"center"}
-                        // justifyContent={"center"}
-                        sx={{
-                          // display: "flex",
-                          justifyContent: "center",
-                          alignItems: "center",
-                          backgroundColor: "#454545",
-                          marginTop: "1%",
-                        }}
-                      >
-                        <Avatar
-                          src={`http://${process.env.REACT_APP_IP}:5000/api/avatar/${user.username}`}
-                        />
-                        <Typography color={"black"}>{user.username}</Typography>
-                        {index === 0 ? (
-                          <Typography color={"black"} display={"inline"}>👑</Typography>
-                        ) : (
-                          <></>
-                        )}
-                        {index === 1 ? (
-                          <Typography color={"black"} display={"inline"}>🥈</Typography>
-                        ) : (
-                          <></>
-                        )}
-                        {index === 2 ? (
-                          <Typography color={"black"} display={"inline"}>🥉</Typography>
-                        ) : (
-                          <></>
-                        )}
-                        <div>
-                          <Typography color={"black"} display={"block"}>
-                            Score: {user.score}
-                          </Typography>
-                        </div>
-                      </Box>
-                    </Grid>
-                  );
-                })}
-              </Grid>
-            </Box>
-          </Grid>
-        </Grid>
-      </Box>
+
+        </Box>
+      </Grid>
+
     </Grid>
   );
 }
