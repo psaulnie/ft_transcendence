@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
-import {Box, Grid, Button, Typography, Avatar, imageListClasses} from "@mui/material";
+import {Box, Grid, Button, Typography, Avatar} from "@mui/material";
 
 import { useGetLeaderboardQuery, useGetMyProfileQuery } from "../../store/api";
 import Loading from "../Global/Loading";
@@ -38,7 +38,7 @@ export default function Home() {
       refetch();
       refetchLeaderboard();
     }
-  });
+  }, [refetch, refetchLeaderboard]);
 
   if (isLoading || isLoadingLeaderboard) return <Loading />;
   if (isError) return <ErrorSnackbar error={error} />;
@@ -120,23 +120,20 @@ export default function Home() {
                 >
                   <Grid item container alignItems="center" justifyContent="center">
                     <Avatar src={`http://${process.env.REACT_APP_IP}:5000/api/avatar/${user.username}`}/>
-                    <Typography color="black">{user.username}</Typography>
-                    {index === 0 ? (
-                      <Typography color="black" display="inline">👑</Typography>
-                    ) : (
-                      <></>
-                    )}
-                    {index === 1 ? (
-                      <Typography color="black" display="inline">🥈</Typography>
-                    ) : (
-                      <></>
-                    )}
-                    {index === 2 ? (
-                      <Typography color="black" display="inline">🥉</Typography>
-                    ) : (
-                      <></>
-                    )}
-                    <Typography color={"black"}>Score: {user.score}</Typography>
+                    <Typography color="black" sx={{ margin: '0 10px' }}>{user.username}</Typography>
+                    {(() => {
+                      switch (index) {
+                        case 0:
+                          return <Typography color="black" sx={{ margin: '0 10px' }}>👑</Typography>;
+                        case 1:
+                          return <Typography color="black" sx={{ margin: '0 10px' }}>🥈</Typography>;
+                        case 2:
+                          return <Typography color="black" sx={{ margin: '0 10px' }}>🥉</Typography>;
+                        default:
+                          return null;
+                      }
+                    })()}
+                    <Typography color="black" sx={{ margin: '0 10px' }}>Score: {user.score}</Typography>
                   </Grid>
                 </Grid>
               );
