@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './Canvas.css'
 import webSocketManager from '../../webSocket';
-import { Button, Container, Grid } from '@mui/material';
+import { Button, Grid } from '@mui/material';
 import { useNavigate } from 'react-router';
 import { setIsPlaying } from '../../store/user';
 import { useDispatch } from 'react-redux';
@@ -22,11 +22,6 @@ export default function Canvas({players, gameRoomId, setFoundUser, canvasName} :
   const dispatch = useDispatch();
 
   useEffect(() => {
-    // const divID = "canvas";
-    // const divElement = document.getElementById(divID);
-    // if (divElement)
-    //   divElement.style.cursor = "none";
-
     const handleResize = () => {
       let scale = window.innerWidth * 0.00075;
     
@@ -57,7 +52,7 @@ export default function Canvas({players, gameRoomId, setFoundUser, canvasName} :
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  }, []);
+  }, [canvasName]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -136,7 +131,7 @@ export default function Canvas({players, gameRoomId, setFoundUser, canvasName} :
 		return () => {
 			webSocketManager.getSocket().off("game" + gameRoomId, process);
 		};
-  }, [rectPositionP1, rectPositionP2, ballPosition, gameRoomId, player1, player2]);
+  }, [rectPositionP1, rectPositionP2, ballPosition, gameRoomId, player1, player2, dispatch]);
 
   function endMatch(name: string) {
     const canvas = canvasRef.current;
@@ -151,7 +146,6 @@ export default function Canvas({players, gameRoomId, setFoundUser, canvasName} :
   function quitGame(gameRoomId: string) {
     setFoundUser(false);
     const name = players[1];
-    console.log(name);
     webSocketManager.getSocket().emit("leaveGame" , { gameRoomId, coward:name });
     navigate('/home');
   }

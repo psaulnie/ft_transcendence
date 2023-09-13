@@ -1,11 +1,11 @@
-import { Box, Grid, Button } from "@mui/material";
+import { Box, Grid, Button, Typography } from "@mui/material";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useGetFriendsListQuery } from "../../store/api";
 import InGameStatus from "./inGameStatus";
 import OnlineStatus from "./onlineStatus";
 import OfflineStatus from "./offlineStatus";
 import { userStatus } from "./userStatus";
-import {useEffect} from "react";
+import { useEffect } from "react";
 import Loading from "../Global/Loading";
 import ErrorSnackbar from "../Global/ErrorSnackbar";
 import webSocketManager from "../../webSocket";
@@ -23,24 +23,25 @@ function Friendlist() {
   } = useGetFriendsListQuery({});
 
   useEffect(() => {
-    webSocketManager.getSocket().on(webSocketManager.getSocket().id + 'friend', (value: any) => {
-      refetch();
-    });
+    webSocketManager
+      .getSocket()
+      .on(webSocketManager.getSocket().id + "friend", (value: any) => {
+        refetch();
+      });
     return () => {
-      webSocketManager.getSocket().off(webSocketManager.getSocket().id + 'friend');
-    }
+      webSocketManager
+        .getSocket()
+        .off(webSocketManager.getSocket().id + "friend");
+    };
   });
 
   const handleProfileClick = () => {
     navigate(`/profile/${user.username}`);
   };
 
-  if (isLoading) return <Loading />
-  if (isError) return <ErrorSnackbar error={error} />
-  if (!userFriendsList)
-    return <Navigate to="/home" />
-
-  console.log('friendlist: ', userFriendsList);
+  if (isLoading) return <Loading />;
+  if (isError) return <ErrorSnackbar error={error} />;
+  if (!userFriendsList) return <Navigate to="/home" />;
   return (
     <div>
       <Box
@@ -73,15 +74,37 @@ function Friendlist() {
             justifyContent="center"
             alignItems="center"
           >
-
+            {userFriendsList.length === 0 ? (
+              <Typography color="black">
+                Your friends will appear here
+              </Typography>
+            ) : null}
             {userFriendsList.map((friend: any) => {
               switch (friend.status) {
                 case userStatus.playing:
-                  return <InGameStatus key={friend.username} username={friend.username} refetch={refetch}/>;
+                  return (
+                    <InGameStatus
+                      key={friend.username}
+                      username={friend.username}
+                      refetch={refetch}
+                    />
+                  );
                 case userStatus.online:
-                  return <OnlineStatus key={friend.username} username={friend.username} refetch={refetch}/>;
+                  return (
+                    <OnlineStatus
+                      key={friend.username}
+                      username={friend.username}
+                      refetch={refetch}
+                    />
+                  );
                 case userStatus.offline:
-                  return <OfflineStatus key={friend.username} username={friend.username} refetch={refetch}/>;
+                  return (
+                    <OfflineStatus
+                      key={friend.username}
+                      username={friend.username}
+                      refetch={refetch}
+                    />
+                  );
                 default:
                   return null;
               }

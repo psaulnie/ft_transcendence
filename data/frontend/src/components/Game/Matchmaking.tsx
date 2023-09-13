@@ -45,7 +45,6 @@ export default function Matchmaking({
       setBackground(value.background);
       setLaunchGame(true);
       dispatch(setIsPlaying(true));
-      console.log(value);
     }
 
     webSocketManager.getSocket().on("matchmaking" + user.username, process);
