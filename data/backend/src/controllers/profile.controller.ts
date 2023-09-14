@@ -54,44 +54,6 @@ export class ProfileController {
     };
   }
 
-  @Get('/user/me')
-  @UseGuards(AuthenticatedGuard)
-  async getMyProfile(@Req() req: RequestWithUser) {
-    if (!req.user) throw new HttpException('Forbidden', 403);
-    const user = await this.userService.findOneProfile(req.user.username);
-    if (!user) return { exist: false };
-    const userMatchHistory = await this.userService.findOneMatchHistory(
-      user.uid,
-    );
-    const matchHistory = [];
-    const iteration =
-      userMatchHistory.length < 10 ? userMatchHistory.length : 10;
-
-    for (let index = 0; index < iteration; index++) {
-      const user1 = await this.userService.findOneById(
-        userMatchHistory[index].user1id,
-      );
-      const user2 = await this.userService.findOneById(
-        userMatchHistory[index].user2id,
-      );
-      if (!user1 || !user2) continue;
-      matchHistory.push({
-        p1: user1.username,
-        p2: user2.username,
-        scoreP1: userMatchHistory[index].user1Score,
-        scoreP2: userMatchHistory[index].user2Score,
-      });
-    }
-    return {
-      exist: true,
-      username: user.username,
-      rank: user.statistics.rank,
-      wins: user.statistics.winNbr,
-      loses: user.statistics.loseNbr,
-      matchHistory: matchHistory,
-    };
-  }
-
   @Get('/:username/achievements')
   @UseGuards(AuthenticatedGuard)
   async getUserAchievements(@Param('username') username: string) {
@@ -112,7 +74,7 @@ export class ProfileController {
     if (!user || !cUser) throw new HttpException('Unprocessable entity', 422);
     return cUser.statistics.rank;
   }
-  
+
   @Get('/general/leaderboard')
   @UseGuards(AuthenticatedGuard)
   async getLeaderboard() {
@@ -120,25 +82,36 @@ export class ProfileController {
     const bestUsers = users.sort((a, b) => {
       if (a.statistics.rank < b.statistics.rank) return 1;
       if (a.statistics.rank > b.statistics.rank) return -1;
-      if (a.statistics.rank === b.statistics.rank && a.statistics.streak < b.statistics.streak) return 1;
-      else if (a.statistics.rank === b.statistics.rank && a.statistics.streak > b.statistics.streak) return -1;
+      if (
+        a.statistics.rank === b.statistics.rank &&
+        a.statistics.streak < b.statistics.streak
+      )
+        return 1;
+      else if (
+        a.statistics.rank === b.statistics.rank &&
+        a.statistics.streak > b.statistics.streak
+      )
+        return -1;
       return 0;
     });
     const leaderboard = [];
     if (users.length > 0)
       leaderboard.push({
         username: bestUsers[0].username,
-        score: bestUsers[0].statistics.rank * 15 + bestUsers[0].statistics.streak,
+        score:
+          bestUsers[0].statistics.rank * 15 + bestUsers[0].statistics.streak,
       });
     if (users.length > 1)
       leaderboard.push({
         username: bestUsers[1].username,
-        score: bestUsers[1].statistics.rank * 15 + bestUsers[1].statistics.streak,
+        score:
+          bestUsers[1].statistics.rank * 15 + bestUsers[1].statistics.streak,
       });
     if (users.length > 2)
       leaderboard.push({
         username: bestUsers[2].username,
-        score: bestUsers[2].statistics.rank * 15 + bestUsers[2].statistics.streak,
+        score:
+          bestUsers[2].statistics.rank * 15 + bestUsers[2].statistics.streak,
       });
     return leaderboard;
   }

@@ -1,7 +1,7 @@
 import { useLocation } from "react-router";
 import { SyntheticEvent, useEffect, useState } from "react";
 import { Navigate } from "react-router";
-import { Button, Grid, Typography } from "@mui/material";
+import { Button, Grid } from "@mui/material";
 import Loading from "../Global/Loading";
 
 function Login() {
@@ -51,8 +51,13 @@ function Login() {
 
   if (isLoading) return <Loading />;
   if (isOk) return <Navigate to="/home" />;
+
   return (
     <Grid
+      container
+      direction="column"
+      justifyContent="center"
+      alignItems="center"
       sx={{
         position: "absolute",
         left: "50%",
@@ -62,7 +67,6 @@ function Login() {
     >
       <Button
         variant="text"
-        color="primary"
         onClick={logIn}
         sx={{
           textTransform: "none",
@@ -70,32 +74,41 @@ function Login() {
           fontSize: "36px",
           width: "6em",
           height: "1.6em",
-          backgroundColor: "rgba(255, 255, 255, 0.9)",
-          borderColor: "#000000",
-          border: "1px solid",
+          backgroundColor: "#D4D4D4",
+          border: "1px solid #00000088",
+          boxShadow: "0 0 10px rgba(0, 0, 0, 0.3)",
           borderRadius: "15px",
           lineHeight: "3",
           color: "black",
           "&:hover": {
             backgroundColor: "gray",
-            borderColor: "gray",
           },
         }}
       >
-        <span
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          Login
-        </span>
+        Login
       </Button>
-      <p></p>
-      <button type="button" onClick={testlogin}>
+      <Button
+        variant='contained'
+        onClick={testlogin}
+        sx={{
+          textTransform: "none",
+          fontSize: "16px",
+          width: "12em",
+          height: "1.6em",
+          backgroundColor: "#D4D4D4",
+          border: "1px solid #00000088",
+          boxShadow: "0 0 10px rgba(0, 0, 0, 0.3)",
+          borderRadius: "10px",
+          color: "black",
+          "&:hover": {
+            backgroundColor: "gray",
+          },
+          marginTop: '2em',
+        }}
+      >
         Log as user test
-      </button>
+      </Button>
+
       {refused === "true" && (
         <div className="alert alert-warning">
           La connexion avec Intra42 a été refusée. Veuillez réessayer.

@@ -2,25 +2,19 @@ import { useNavigate } from "react-router-dom";
 
 import {Box, Grid, Button, Typography, Avatar} from "@mui/material";
 
-import { useGetLeaderboardQuery, useGetMyProfileQuery } from "../../store/api";
+import { useGetLeaderboardQuery } from "../../store/api";
 import Loading from "../Global/Loading";
 import ErrorSnackbar from "../Global/ErrorSnackbar";
 import { useEffect } from "react";
+import {useSelector} from "react-redux";
 
 export default function Home() {
   const navigate = useNavigate();
+  const user = useSelector((state: any) => state.user);
 
   const play = () => {
     navigate("/game");
   };
-
-  const {
-    data: userProfile,
-    isLoading,
-    isError,
-    error,
-    refetch,
-  } = useGetMyProfileQuery({});
 
   const {
     data: leaderboard,
@@ -32,13 +26,11 @@ export default function Home() {
 
   useEffect(() => {
     if (localStorage.getItem("user")) {
-      refetch();
       refetchLeaderboard();
     }
-  }, [refetch, refetchLeaderboard]);
+  }, [refetchLeaderboard]);
 
-  if (isLoading || isLoadingLeaderboard) return <Loading />;
-  if (isError) return <ErrorSnackbar error={error} />;
+  if (isLoadingLeaderboard) return <Loading />;
   if (isErrorLeaderboard) return <ErrorSnackbar error={errorLeaderboard} />;
 
   return (
@@ -52,13 +44,7 @@ export default function Home() {
       }}
     >
       <Grid item sx={{ borderLeft: '2px solid', borderImage: 'linear-gradient(to bottom, #00000000, #d6d4d4, #00000000) 1 100%', marginLeft: '1em', marginTop: '1em' }}>
-        <Typography align="left" sx={{ color: "black", fontWeight: "bold", fontSize: "30px", marginLeft: '0.2em' }}>Welcome {userProfile.username}</Typography>
-
-        <Grid sx={{ marginLeft: '0.5em' }}>
-          <Typography align="left" sx={{ color: "black", fontSize: "16px", marginBottom: '-5px' }}>‣ Rank: {userProfile.rank}</Typography>
-          <Typography align="left" sx={{ color: "black", fontSize: "16px", marginBottom: '-5px' }}>‣ Wins: {userProfile.wins}</Typography>
-          <Typography align="left" sx={{ color: "black", fontSize: "16px" }}>‣ Losses: {userProfile.loses}</Typography>
-        </Grid>
+        <Typography align="left" sx={{ color: "#D4D4D4", textShadow: '1px 1px 4px #000000', fontWeight: "bold", fontSize: "30px", marginLeft: '0.2em' }}>Welcome {user.username}</Typography>
       </Grid>
 
       <Grid item sx={{ position: 'absolute', left: '50%', top: '30%', transform: 'translate(-50%, 0%)' }}>

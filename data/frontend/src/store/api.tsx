@@ -74,12 +74,6 @@ export const apiSlice = createApi({
         method: "GET",
       }),
     }),
-    getMyProfile: builder.query({
-      query: () => ({
-        url: "/api/profile/user/me",
-        method: "GET",
-      }),
-    }),
     getUserAchievements: builder.query({
       query: ({ username = null }) => ({
         url: "/api/profile/" + username + "/achievements",
@@ -119,17 +113,11 @@ export const apiSlice = createApi({
 });
 
 export const {
-  useGetMyProfileQuery,
-  useGetRoleQuery,
-  useGetBlockedUsersQuery,
   useGetRoomsListQuery,
-  useGetUserRoomListQuery,
-  useGetIsRoomNameTakenQuery,
   useGetUsersListQuery,
   useGetUserStatusInRoomQuery,
   useGetUsersInRoomQuery,
   useGetInvitedUsersListQuery,
-  useGetUserFriendsListQuery,
   useLazyGetUserFriendsListQuery,
   useUploadAvatarMutation,
   useLazyGetIsRoomNameTakenQuery,
@@ -138,7 +126,6 @@ export const {
   useLazyGetUserRoomListQuery,
   useGetUserProfileQuery,
   useGetUserAchievementsQuery,
-  useGetUserRankQuery,
   useGetLeaderboardQuery,
   useGetFriendsListQuery,
 } = apiSlice;
