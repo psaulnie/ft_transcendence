@@ -1,10 +1,12 @@
-version: 2
+dversion: 2
 updates:
     - package-ecosystem: "composer"
       directory: "/data/backend"
+      target-branch: "libraries_update"
       schedule:
           interval: "daily"
     - package-ecosystem: "npm"
       directory: "/data/frontend"
+      target-branch: "libraries_update"
       schedule:
           interval: "daily"
