@@ -50,10 +50,13 @@ function EditProfile() {
       webSocketManager.getSocket()?.emit('changeUsername', newUsername);
       setNewUsername("");
     }
+    console.log(selectedFile);
     if (selectedFile !== undefined) {
       formData.append("file", selectedFile);
       uploadAvatar(formData);
-      window.location.reload();
+      setTimeout(() => {
+        window.location.reload();
+      }, 300);
     }
   };
 
