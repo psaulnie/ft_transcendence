@@ -50,7 +50,7 @@ export default function Base() {
     }
     if (!user || !user.username) {
       localStorage.removeItem("user");
-      window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/logout`;
+      window.location.href = `http://${import.meta.env.VITE_IP}:5000/auth/logout`;
     }
     trigger({});
   }, [dispatch, user, user.username, location]);

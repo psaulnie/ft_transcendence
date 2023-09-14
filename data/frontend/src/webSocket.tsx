@@ -1,6 +1,6 @@
 import { io } from "socket.io-client";
 
-const URL = `ws://${process.env.REACT_APP_IP}:5000/gateway`;
+const URL = `ws://${import.meta.env.VITE_IP}:5000/gateway`;
 export class WebSocketManager {
   private socket: any;
 
@@ -17,11 +17,11 @@ export class WebSocketManager {
 
       this.socket.on("connect_error", (err: any) => {
         localStorage.removeItem("user");
-        window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/logout`;
+        window.location.href = `http://${import.meta.env.VITE_IP}:5000/auth/logout`;
       });
       this.socket.on("disconnect", function () {
         localStorage.removeItem("user");
-        window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/logout`;
+        window.location.href = `http://${import.meta.env.VITE_IP}:5000/auth/logout`;
       });
     }
   }
@@ -30,7 +30,7 @@ export class WebSocketManager {
     if (!this.socket)
     {
       localStorage.removeItem("user");
-      window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/logout`;
+      window.location.href = `http://${import.meta.env.VITE_IP}:5000/auth/logout`;
     }
     return this.socket;
   }

@@ -63,7 +63,7 @@ function EditProfile() {
     navigate(`/profile/${user.username}`);
   };
 
-  const urlAvatar = `http://${process.env.REACT_APP_IP}:5000/api/avatar/${user.username}`;
+  const urlAvatar = `http://${import.meta.env.VITE_IP}:5000/api/avatar/${user.username}`;
 
   const mainBoxStyle = {
     position: "absolute",

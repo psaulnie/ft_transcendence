@@ -7,7 +7,7 @@ export default function PrivateRoute() {
   const [isOk, setIsOk] = useState(false);
 
   const fetchData = () => {
-    fetch(`http://${process.env.REACT_APP_IP}:5000/auth/status`, {
+    fetch(`http://${import.meta.env.VITE_IP}:5000/auth/status`, {
       credentials: "include",
     })
       .then((response) => {
@@ -24,7 +24,7 @@ export default function PrivateRoute() {
     // TODO add when removing testUser
     // if (!user || !user.username) {
     //   localStorage.removeItem("user");
-    //   window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/logout`;
+    //   window.location.href = `http://${import.meta.env.VITE_IP}:5000/auth/logout`;
     // }
   };
 

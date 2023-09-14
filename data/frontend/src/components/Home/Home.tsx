@@ -102,7 +102,7 @@ export default function Home() {
                   }}
                 >
                   <Grid item container alignItems="center" justifyContent="center">
-                    <Avatar src={`http://${process.env.REACT_APP_IP}:5000/api/avatar/${user.username}`}/>
+                    <Avatar src={`http://${import.meta.env.VITE_IP}:5000/api/avatar/${user.username}`}/>
                     <Typography color="black" sx={{ margin: '0 8px 0 18px' }}>{user.username}</Typography>
                     {(() => {
                       switch (index) {

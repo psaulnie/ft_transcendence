@@ -16,7 +16,7 @@ export class FriendListController {
   @Get('/list')
   @UseGuards(AuthenticatedGuard)
   async getFriendsList(@Req() request: RequestWithUser) {
-    const user = await this.userService.findOne(request.user.username);
+    const user = await this.userService.findOneById(request.user.uid);
     const friendList = [];
     for (const element of user.friends) {
       if (element) {

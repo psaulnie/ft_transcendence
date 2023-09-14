@@ -5,7 +5,7 @@ import {useSelector} from "react-redux";
 import { useNavigate } from "react-router";
 
 function OfflineStatus({username, refetch}: {username: string, refetch: any}) {
-  const urlAvatar = `http://${process.env.REACT_APP_IP}:5000/api/avatar/${username}`;
+  const urlAvatar = `http://${import.meta.env.VITE_IP}:5000/api/avatar/${username}`;
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const user = useSelector((state: any) => state.user);
   const navigate = useNavigate();

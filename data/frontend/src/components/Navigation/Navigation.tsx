@@ -39,7 +39,7 @@ function Navigation({ setDrawerState }: { setDrawerState: any }) {
   function logoutButton(e: SyntheticEvent) {
     e.preventDefault();
     localStorage.removeItem("user");
-    window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/logout`;
+    window.location.href = `http://${import.meta.env.VITE_IP}:5000/auth/logout`;
   }
 
   useEffect(() => {
