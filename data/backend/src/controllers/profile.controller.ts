@@ -21,10 +21,10 @@ export class ProfileController {
   async getUserProfile(@Param('username') username: string) {
     if (!username) throw new HttpException('No username provided', 400);
     const user = await this.userService.findOneProfile(username);
+    if (!user) return { exist: false };
     const userMatchHistory = await this.userService.findOneMatchHistory(
       user.uid,
     );
-    if (!user) return { exist: false };
     const matchHistory = [];
     const iteration =
       userMatchHistory.length < 15 ? userMatchHistory.length : 15;
