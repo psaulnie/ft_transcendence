@@ -3,6 +3,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 interface UserState {
   username: string;
   isPlaying: boolean;
+  isInMatchmaking: boolean;
   isUserBlocked: boolean;
   blockedUsers: string[];
 }
@@ -13,6 +14,7 @@ const initialUser: UserState = localStorage.getItem("user")
       username: "",
       isUserBlocked: false,
       isPlaying: false,
+      isInMatchmaking: false,
       blockedUsers: [],
     };
 
@@ -21,6 +23,7 @@ const initialState: UserState = {
   isUserBlocked: initialUser.isUserBlocked,
   blockedUsers: initialUser.blockedUsers,
   isPlaying: initialUser.isPlaying,
+  isInMatchmaking: initialUser.isInMatchmaking,
 };
 
 export const userSlice = createSlice({
@@ -37,6 +40,9 @@ export const userSlice = createSlice({
     },
     setIsPlaying: (state, action: PayloadAction<boolean>) => {
       state.isPlaying = action.payload;
+    },
+    setIsInMatchmaking: (state, action: PayloadAction<boolean>) => {
+      state.isInMatchmaking = action.payload;
     },
     addBlockedUser: (state, action: PayloadAction<string>) => {
       const nbr = state.blockedUsers.indexOf(action.payload);
@@ -60,5 +66,6 @@ export const {
   removeBlockedUser,
   isUserBlocked,
   setIsPlaying,
+  setIsInMatchmaking
 } = userSlice.actions;
 export default userSlice.reducer;

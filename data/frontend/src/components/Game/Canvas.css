@@ -8,14 +8,14 @@
     overflow: hidden;
   }
   
-  .canvas {
+.canvas {
     width: 640px;
     height: 425px;
     transform-origin: center center;
     transform: scale(1);
     transition: transform 0.3s ease;
     background-color: black;
-  }
+}
 
 .spongebob {
     width: 640px;
