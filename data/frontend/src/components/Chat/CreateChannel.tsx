@@ -19,26 +19,17 @@ import {
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import PasswordDialog from "./PasswordDialog";
-import ErrorSnackbar from "../Global/ErrorSnackbar";
-import Loading from "../Global/Loading";
 
 function CreateChannel() {
   const user = useSelector((state: any) => state.user);
   const rooms = useSelector((state: any) => state.rooms);
-  const dispatch = useDispatch();
 
   const [newRoomName, setNewRoomName] = useState("");
   const [access, setAccess] = useState(accessStatus.public);
   const [showDialog, setShowDialog] = useState(false);
 
-  const [trigger, result] = useLazyGetIsRoomNameTakenQuery();
-
-  if (result.isError) return <ErrorSnackbar error={result.error} />;
-  else if (result.isLoading) return (<Loading />);
-
   function updateNewRoomName(e: any) {
     e.preventDefault();
-    if (e.target.value.length > 0) trigger({ roomName: e.target.value });
     if (e.target.value.length <= 10) {
       setNewRoomName(e.target.value);
     }
@@ -60,22 +51,11 @@ function CreateChannel() {
         (obj: { name: string; role: userRole }) => obj.name === newRoomName,
       )
     ) {
-      let hasPassword = false;
       if (access === accessStatus.protected) {
         setShowDialog(true);
         return;
       }
-      dispatch(
-        addRoom({
-          name: newRoomName,
-          role: userRole.owner,
-          isDirectMsg: false,
-          hasPassword: hasPassword,
-          openTab: true,
-          isMuted: false,
-        }),
-      );
-      webSocketManager.getSocket().emit("joinRoom", {
+      webSocketManager.getSocket().emit("createRoom", {
         source: user.username,
         room: newRoomName,
         access: access,
@@ -89,8 +69,6 @@ function CreateChannel() {
       <Typography sx={{ marginTop: "2em" }}>Create a new channel</Typography>
       <TextField
         autoComplete='off'
-        error={result.data}
-        helperText={result.data ? "This room already exists" : null}
         label="Room name"
         value={newRoomName}
         onChange={updateNewRoomName}
@@ -103,13 +81,12 @@ function CreateChannel() {
             Public
           </MenuItem>
           <MenuItem value="private">Private</MenuItem>
-          <MenuItem value="password">Password-protected</MenuItem>
+          <MenuItem value="password">Password</MenuItem>
         </Select>
         <FormHelperText>Channel access</FormHelperText>
       </FormControl>
       <IconButton
         name="rooms"
-        disabled={result.data === true || newRoomName === ""}
         onClick={createRoom}
         sx={{ transform: "translate(0%, 18%)" }}
       >
@@ -125,7 +102,6 @@ function CreateChannel() {
           setNewRoomName={setNewRoomName}
         />
       ) : null}
-      {result.data === true ? <p>This room already exist</p> : null}
     </Grid>
   );
 }

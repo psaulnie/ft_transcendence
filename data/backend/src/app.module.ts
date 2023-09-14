@@ -39,7 +39,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
     ConfigModule.forRoot(),
     ThrottlerModule.forRoot([{
       ttl: 2000,
-      limit: 10,
+      limit: 20,
     }]),
     TypeOrmModule.forRoot({
       type: 'postgres',

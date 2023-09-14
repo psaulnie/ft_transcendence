@@ -1,19 +1,21 @@
 .canvas {
+    position: relative;
+    width: 100%;
+    height: 75vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; /* Empêche le débordement du contenu lors de la mise à l'échelle */
+  }
+  
+  .content {
     width: 640px;
     height: 425px;
-    margin: auto;
+    transform-origin: center center; /* Centre l'origine de la transformation */
+    transform: scale(1); /* Échelle initiale, vous pouvez ajuster selon vos besoins */
+    transition: transform 0.3s ease; /* Ajoute une transition en douceur */
     background-color: black;
-}
-
-.canvas::before {
-    content:"";
-    position: absolute;
-    z-index: -1;
-    top: 0;
-    bottom: 0;
-    left: 50%;
-    border-left: 2px dotted #ffffff;
-}
+  }
 
 .spongebob {
     width: 640px;

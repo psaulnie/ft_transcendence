@@ -124,6 +124,22 @@ export class Gateway
     });
   }
 
+  @SubscribeMessage('createRoom')
+  async createRoom(client: Socket, payload: any) {
+    if (
+      payload.access == null ||
+      payload.room == null ||
+      payload.source == null
+    )
+      throw new WsException('Missing parameter');
+    const room = await this.roomService.findOne(payload.room)
+    if (!room) this.joinRoom(client, payload);
+    else this.server.emit(client.id, {
+      action: actionTypes.roomAlreadyExist,
+      target: payload.room,
+    })
+  }
+
   @SubscribeMessage('joinRoom')
   async joinRoom(client: Socket, payload: any) {
     if (
@@ -199,12 +215,19 @@ export class Gateway
         return;
       }
     }
-    if (!(await this.roomService.isMuted(payload.room, user)))
+    if (!(await this.roomService.isMuted(payload.room, user))) {
+      this.server.emit(client.id, {
+        action: actionTypes.joinRoom,
+        target: payload.room,
+        hasPassword: hasPassword,
+        role: role,
+      });
       this.server.emit(payload.room, {
         source: payload.source,
         target: payload.room,
         action: actionTypes.join,
       });
+    }
     else
       this.server.emit(client.id, {
         source: payload.source,

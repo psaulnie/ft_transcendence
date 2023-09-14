@@ -132,7 +132,21 @@ export default function ChatProcess() {
 
   useEffect(() => {
     function process(value: chatResponseArgs) {
-      if (value.action === actionTypes.kick) {
+      if (value.action === actionTypes.joinRoom) {
+        dispatch(
+          addRoom({
+            name: value.target,
+            role: value.role,
+            isDirectMsg: false,
+            hasPassword: value.hasPassword,
+            openTab: true,
+            isMuted: false,
+          })
+        );
+      } else if (value.action === actionTypes.roomAlreadyExist) {
+        setSnackbar("This room already exists: " + value.target, 'error');
+      } 
+      else if (value.action === actionTypes.kick) {
         dispatch(removeRoom(value.target));
         setSnackbar(
           "You've been kicked from this channel: " + value.target,
