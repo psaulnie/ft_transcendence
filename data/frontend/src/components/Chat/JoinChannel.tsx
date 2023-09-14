@@ -51,16 +51,6 @@ function JoinChannel() {
         setShowDialog(true);
         return;
       }
-      dispatch(
-        addRoom({
-          name: newRoomName,
-          role: userRole.none,
-          isDirectMsg: false,
-          hasPassword: access === accessStatus.protected,
-          openTab: true,
-          isMuted: false,
-        }),
-      );
       webSocketManager.getSocket().emit("joinRoom", {
         source: user.username,
         room: newRoomName,

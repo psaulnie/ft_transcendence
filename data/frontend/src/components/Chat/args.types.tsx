@@ -30,4 +30,7 @@ export enum actionTypes {
   cantPlay,
   askPlay,
   acceptPlay,
+  joinRoom,
+  roomAlreadyExist,
+  cantJoin
 }

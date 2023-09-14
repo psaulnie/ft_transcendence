@@ -58,16 +58,6 @@ export default function PasswordDialog({
     e.preventDefault();
     if (password !== "") {
       if (createRoom) {
-        dispatch(
-          addRoom({
-            name: roomName,
-            role: role,
-            isDirectMsg: false,
-            hasPassword: true,
-            openTab: true,
-            isMuted: false,
-          }),
-        );
         webSocketManager.getSocket().emit("joinRoom", {
           source: user.username,
           room: roomName,
