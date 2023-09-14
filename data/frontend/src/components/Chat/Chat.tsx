@@ -89,18 +89,16 @@ function Chat() {
           onClick={toggleBox}
           sx={{
             position: "fixed",
-            bottom: isOpen ? "35.9em" : "0em",
-
+            bottom: isOpen ? "34.8em" : "0em",
             right: 0,
-            width: "35.55em",
+            width: "36em",
             backgroundColor: "#ff8700",
             "&:hover": {
               backgroundColor: "#ffab4c",
-              borderColor: "red",
             },
             "@media (max-width: 600px) or (max-height: 700px)": {
               width: "22.82em",
-              bottom: isOpen ? "34.55em" : "0em",
+              bottom: isOpen ? "34.8em" : "0em",
             },
           }}
         >
@@ -112,11 +110,10 @@ function Chat() {
               position: "fixed",
               bgcolor: "#FE8F29",
               height: "30.28em",
-              width: "31.28em",
+              width: "31.5em",
               borderRadius: "2%",
               opacity: 0.9,
-              border: 8,
-              borderColor: "#FC7D07",
+              boxShadow: "0 0 10px rgba(0, 0, 0, 0.3)",
               marginTop: "auto",
               bottom: 0,
               right: 0,
