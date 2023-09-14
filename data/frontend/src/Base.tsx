@@ -15,6 +15,7 @@ import Achievements from "./components/Achievements/Achievements";
 import EditProfile from "./components/Profile/EditProfile";
 import Friendlist from "./components/Friendlist/Friendlist";
 import webSocketManager from "./webSocket";
+import { useLazyGetUserRankQuery } from "./store/api";
 
 export default function Base() {
   const user = useSelector((state: any) => state.user);
@@ -34,6 +35,8 @@ export default function Base() {
       setDrawerState(open);
     };
 
+  const [trigger] = useLazyGetUserRankQuery();
+
   useEffect(() => {
     if (user.isPlaying && !location.pathname.startsWith("/game")) {
       dispatch(setIsPlaying(false));
@@ -49,6 +52,7 @@ export default function Base() {
       localStorage.removeItem("user");
       window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/logout`;
     }
+    trigger({});
   }, [dispatch, user, user.username, location]);
 
   webSocketManager.initializeWebSocket();
