@@ -43,7 +43,7 @@ export default function Home() {
         width: '100%',
       }}
     >
-      <Grid item sx={{ borderLeft: '2px solid', borderImage: 'linear-gradient(to bottom, #00000000, #d6d4d4, #00000000) 1 100%', marginLeft: '1em', marginTop: '1em' }}>
+      <Grid item sx={{ marginLeft: '1em', marginTop: '1em' }}>
         <Typography align="left" sx={{ color: "#D4D4D4", textShadow: '1px 1px 4px #000000', fontWeight: "bold", fontSize: "30px", marginLeft: '0.2em' }}>Welcome {user.username}</Typography>
       </Grid>
 
