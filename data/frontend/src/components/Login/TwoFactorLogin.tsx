@@ -152,13 +152,13 @@ function TwoFactorLogin() {
     >
       <Box
         sx={{
-          // top: '25%',
           width: "100%",
           height: "60%",
           padding: "2em",
           borderRadius: "3em",
-          background: "linear-gradient(to right, #ECECEC, #d6d4d4)",
-          border: "1px solid #000000",
+          background: "#d6d4d450",
+          backdropFilter: 'blur(8px)',
+          border: "1px solid #00000088",
           boxShadow: "0 0 10px rgba(0, 0, 0, 0.3)",
         }}
       >
