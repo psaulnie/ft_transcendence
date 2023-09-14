@@ -128,4 +128,5 @@ export const {
   useGetUserAchievementsQuery,
   useGetLeaderboardQuery,
   useGetFriendsListQuery,
+  useLazyGetUserRankQuery,
 } = apiSlice;
