@@ -45,7 +45,7 @@ function Settings() {
     async function checkTwoFactorState() {
       try {
         const response = await fetch(
-          `http://${process.env.REACT_APP_IP}:5000/2fa/getState`,
+          `http://${import.meta.env.VITE_IP}:5000/2fa/getState`,
           {
             method: "post",
             credentials: "include",
@@ -72,7 +72,7 @@ function Settings() {
       const newState = !twoFactorAuthState;
       setTwoFactorAuthState(newState);
       const response = await fetch(
-        `http://${process.env.REACT_APP_IP}:5000/2fa/changeState`,
+        `http://${import.meta.env.VITE_IP}:5000/2fa/changeState`,
         {
           method: "post",
           credentials: "include",

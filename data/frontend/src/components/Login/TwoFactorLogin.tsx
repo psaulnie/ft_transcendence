@@ -19,7 +19,7 @@ function TwoFactorLogin() {
     async function checkTwoFactorAuthState() {
       try {
         const response = await fetch(
-          `http://${process.env.REACT_APP_IP}:5000/2fa/getState`,
+          `http://${import.meta.env.VITE_IP}:5000/2fa/getState`,
           {
             method: "post",
             credentials: "include",
@@ -47,7 +47,7 @@ function TwoFactorLogin() {
   async function checkTwoFactorStatus() {
     try {
       const response = await fetch(
-        `http://${process.env.REACT_APP_IP}:5000/2fa/status`,
+        `http://${import.meta.env.VITE_IP}:5000/2fa/status`,
         {
           credentials: "include",
         }
@@ -66,7 +66,7 @@ function TwoFactorLogin() {
   async function fetchQrCode() {
     try {
       const response = await fetch(
-        `http://${process.env.REACT_APP_IP}:5000/2fa/generate`,
+        `http://${import.meta.env.VITE_IP}:5000/2fa/generate`,
         {
           method: "post",
           credentials: "include",
@@ -87,7 +87,7 @@ function TwoFactorLogin() {
   async function validateTwoFactorTurnOnCode() {
     try {
       const response = await fetch(
-        `http://${process.env.REACT_APP_IP}:5000/2fa/turn-on`,
+        `http://${import.meta.env.VITE_IP}:5000/2fa/turn-on`,
         {
           method: "post",
           credentials: "include",
@@ -113,7 +113,7 @@ function TwoFactorLogin() {
   async function validateTwoFactorAuthCode() {
     try {
       const response = await fetch(
-        `http://${process.env.REACT_APP_IP}:5000/2fa/authenticate`,
+        `http://${import.meta.env.VITE_IP}:5000/2fa/authenticate`,
         {
           method: "post",
           credentials: "include",

@@ -10,7 +10,7 @@ import {grey} from "@mui/material/colors";
 function Profile() {
   const { username } = useParams();
   const user = useSelector((state: any) => state.user);
-  const urlAvatar = `http://${process.env.REACT_APP_IP}:5000/api/avatar/${username}`;
+  const urlAvatar = `http://${import.meta.env.VITE_IP}:5000/api/avatar/${username}`;
 
   const navigate = useNavigate();
   const {
@@ -113,11 +113,11 @@ function Profile() {
                   }}
                 >
                   <Grid item container alignItems="center" justifyContent="center">
-                    <Avatar src={`http://${process.env.REACT_APP_IP}:5000/api/avatar/${match.p1}`} alt="User Avatar" sx={{ width: '30px', height: '30px', margin: '0 30px' }} />
+                    <Avatar src={`http://${import.meta.env.VITE_IP}:5000/api/avatar/${match.p1}`} alt="User Avatar" sx={{ width: '30px', height: '30px', margin: '0 30px' }} />
                     <Typography sx={{ color: match.scoreP1 > match.scoreP2 ? '#1ABAFF' : '#FC7D07', fontSize: 20, margin: '0 10px' }}>{match.scoreP1}</Typography>
                     <Typography sx={{ fontSize: 20, color: 'black', margin: '0 5px' }}>:</Typography>
                     <Typography sx={{ color: match.scoreP2 > match.scoreP1 ? '#1ABAFF' : '#FC7D07', fontSize: 20, margin: '0 10px' }}>{match.scoreP2}</Typography>
-                    <Avatar src={`http://${process.env.REACT_APP_IP}:5000/api/avatar/${match.p2}`} alt="User Avatar" sx={{ width: '30px', height: '30px', margin: '0 30px' }} />
+                    <Avatar src={`http://${import.meta.env.VITE_IP}:5000/api/avatar/${match.p2}`} alt="User Avatar" sx={{ width: '30px', height: '30px', margin: '0 30px' }} />
                   </Grid>
                 </Grid>
               ))
