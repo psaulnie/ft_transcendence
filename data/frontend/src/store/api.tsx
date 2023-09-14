@@ -4,7 +4,7 @@ import Cookies from "js-cookie";
 export const apiSlice = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
-    baseUrl: `http://${process.env.REACT_APP_IP}:5000`,
+    baseUrl: `http://${import.meta.env.VITE_IP}:5000`,
     credentials: "include",
   }),
   endpoints: (builder) => ({
