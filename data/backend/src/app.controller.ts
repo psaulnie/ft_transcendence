@@ -32,10 +32,10 @@ import { userStatus } from './users/userStatus';
 import RequestWithUser from './auth/service/requestWithUser.interface';
 import { User } from './entities';
 import { promises as fs } from 'fs';
+import * as stream from 'stream';
 
 const fileInterceptorOptions = {
   fileFilter: function fileFilter(req, file: Express.Multer.File, cb) {
-    console.log('fileinterceptor');
     const whitelist = [
       'image/png',
       'image/jpeg',
@@ -108,6 +108,13 @@ export class AppController {
     const file = createReadStream(
       join(process.cwd(), '../avatars/default.jpg'),
     );
+    stream.finished(file, (err) => {
+      if (err) {
+        console.error('Stream failed.', err);
+      } else {
+        console.log('Stream is done reading.');
+      }
+    });
     if (file) {
       res.set({
         'Content-Type': 'image/jpg',
@@ -135,6 +142,13 @@ export class AppController {
         }
         if (path) {
           const file = createReadStream(join(process.cwd(), '..' + path));
+          stream.finished(file, (err) => {
+            if (err) {
+              console.error('Stream failed.', err);
+            } else {
+              console.log('Stream is done reading.');
+            }
+          });
           if (file) {
             const mime = require('mime');
             const mime_type = mime.getType(path);
@@ -150,6 +164,13 @@ export class AppController {
       const file = createReadStream(
         join(process.cwd(), '../avatars/default.jpg'),
       );
+      stream.finished(file, (err) => {
+        if (err) {
+          console.error('Stream failed.', err);
+        } else {
+          console.log('Stream is done reading.');
+        }
+      });
       if (file) {
         res.set({
           'Content-Type': 'image/jpg',
