@@ -24,7 +24,7 @@ export default function Canvas({players, gameRoomId, setFoundUser, canvasName} :
   useEffect(() => {
     const handleResize = () => {
       let scale = window.innerWidth * 0.00075;
-    
+
       if (scale > 1)
         scale = 1;
       if (scale < 0.666 && scale > 0.5)
@@ -44,11 +44,11 @@ export default function Canvas({players, gameRoomId, setFoundUser, canvasName} :
         }
       }
     };
-    
+
     handleResize();
-    
+
     window.addEventListener("resize", handleResize);
-    
+
     return () => {
       window.removeEventListener("resize", handleResize);
     };
@@ -94,14 +94,14 @@ export default function Canvas({players, gameRoomId, setFoundUser, canvasName} :
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext("2d");
     dispatch(setIsPlaying(true));
-		function process(value: any) {
+    function process(value: any) {
       if (value.coward !== null) {
         ctx?.clearRect(0, 0, canvas!.width, canvas!.height);
         ctx!.fillStyle = 'white';
         ctx!.font = "40px serif";
         ctx!.textAlign = "center";
         ctx?.fillText(value.coward + " left the game", 320, 212);
-        return ; 
+        return ;
       } else {
         ctx!.fillStyle = 'white';
         ctx!.font = "20px serif";
@@ -110,7 +110,7 @@ export default function Canvas({players, gameRoomId, setFoundUser, canvasName} :
         setRectPositionP1((prevPosition) => ({ ...prevPosition, y: value.playerY}));
         ctx?.fillRect(rectPositionP1.x, rectPositionP1.y, rectWidth, rectHeight);
         setRectPositionP2((prevPosition) => ({ ...prevPosition, y: value.enemyY}));
-        ctx?.fillRect(rectPositionP2.x, rectPositionP2.y, rectWidth, rectHeight);  
+        ctx?.fillRect(rectPositionP2.x, rectPositionP2.y, rectWidth, rectHeight);
 
         setBallPosition({x: value.ballX, y: value.ballY});
         ctx?.fillRect(ballPosition.x, ballPosition.y, ballWidth, ballWidth);
@@ -128,9 +128,9 @@ export default function Canvas({players, gameRoomId, setFoundUser, canvasName} :
       }
     }
     webSocketManager.getSocket().on("game" + gameRoomId, process);
-		return () => {
-			webSocketManager.getSocket().off("game" + gameRoomId, process);
-		};
+    return () => {
+      webSocketManager.getSocket().off("game" + gameRoomId, process);
+    };
   }, [rectPositionP1, rectPositionP2, ballPosition, gameRoomId, player1, player2, dispatch]);
 
   function endMatch(name: string) {
@@ -150,68 +150,39 @@ export default function Canvas({players, gameRoomId, setFoundUser, canvasName} :
     navigate('/home');
   }
   return (
-    <Grid
-      container
-      alignItems="center"
-      sx={{
-        overflowX: "hidden",
-        overflowY: "auto",
-        position: "absolute",
-        left: "50%",
-        top: "12%",
-        transform: "translate(-50%, 0%)",
-        width: "92.5%",
-        height: "70%",
-        borderRadius: "3em",
-        background: "#d6d4d4",
-        border: "1px solid #000000",
-        boxShadow: "0 0 10px rgba(0, 0, 0, 0.3)",
-      }}
-    >
-      <Grid
-        alignItems="center"
-        justifyContent="center"
+    <div className={canvasName} id="canvas">
+      <canvas
+        ref={canvasRef}
+        width={canvasSize.width}
+        height={canvasSize.height}
+        style={{
+          display: "block",
+        }}
+      />
+      <Button
+        onClick={() => quitGame(gameRoomId)}
+        variant="text"
+        color="primary"
         sx={{
-          width: "100%",
-          display: 'block',
-          margin: '0 auto',
+          textTransform: "none",
+          fontWeight: "bold",
+          fontSize: "20px",
+          width: "8em",
+          height: "2em",
+          marginTop: "1em",
+          backgroundColor: "rgba(255, 255, 255, 0.9)",
+          borderColor: "#000000",
+          border: "1px solid",
+          borderRadius: "10px",
+          color: "black",
+          "&:hover": {
+            backgroundColor: "gray",
+            borderColor: "gray",
+          },
         }}
       >
-          <div className={canvasName} id="canvas">
-            <canvas
-              ref={canvasRef}
-              width={canvasSize.width}
-              height={canvasSize.height}
-              style={{
-                display: "block",
-              }}
-            />
-            <Button
-              onClick={() => quitGame(gameRoomId)}
-              variant="text"
-              color="primary"
-              sx={{
-                textTransform: "none",
-                fontWeight: "bold",
-                fontSize: "20px",
-                width: "8em",
-                height: "2em",
-                marginTop: "1em",
-                backgroundColor: "rgba(255, 255, 255, 0.9)",
-                borderColor: "#000000",
-                border: "1px solid",
-                borderRadius: "10px",
-                color: "black",
-                "&:hover": {
-                  backgroundColor: "gray",
-                  borderColor: "gray",
-                },
-              }}
-            >
-              Leave game
-            </Button>
-          </div>
-      </Grid>
-    </Grid>
+        Leave game
+      </Button>
+    </div>
   );
 };
