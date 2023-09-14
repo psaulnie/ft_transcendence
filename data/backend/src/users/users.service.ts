@@ -39,6 +39,20 @@ export class UsersService {
     });
   }
 
+  async findOneById(id: number): Promise<User> {
+    return await this.usersRepository.findOne({
+      where: { uid: id },
+      relations: [
+        'blockedUsers',
+        'friends',
+        'achievements',
+        'blockedUsers.blockedUser',
+        'blockedUsers.user',
+        'statistics',
+      ],
+    });
+  }
+
   async findOneProfile(name: string): Promise<User> {
     return await this.usersRepository.findOne({
       where: { username: name },
@@ -70,16 +84,6 @@ export class UsersService {
 
   async findOneByUsername(name: string): Promise<User> {
     return await this.usersRepository.findOne({ where: { username: name }, relations: ['achievements'] });
-  }
-
-  async findOneById(id: number): Promise<User> {
-    return await this.usersRepository.findOne({
-      where: { uid: id },
-      relations: [
-        'friends',
-        'statistics',
-      ],
-    });
   }
 
   async findAll(): Promise<User[]> {

@@ -48,9 +48,6 @@ export class ChatController {
   async getBlockedUser(@Req() req: RequestWithUser): Promise<string[]> {
     console.log('getBlockedUser');
     const user = req.user as User;
-
-    // if (username == null) throw new HttpException('Bad request', 400);
-    // const user = await this.userService.findOne(username);
     if (!user) throw new HttpException('Unprocessable Entity', 422);
     const usersList = [];
     const blockedUsers = user.blockedUsers;
@@ -222,7 +219,7 @@ export class ChatController {
   async getUserFriendsList(@Req() req: RequestWithUser): Promise<{}[]> {
     const cUser = req.user as User;
     if (!cUser) throw new HttpException('Unprocessable Entity', 422);
-    const user = await this.userService.findOne(cUser.username);
+    const user = await this.userService.findOneById(cUser.uid);
     console.log('getuserfriendlist', user.username)
     const friendList = [];
     for (const element of user.friends) {
