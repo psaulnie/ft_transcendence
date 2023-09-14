@@ -42,8 +42,8 @@ export default function Canvas({
 
   useEffect(() => {
     const handleResize = () => {
-      const container = document.querySelector("." + canvasName) as HTMLElement;
-      const content = document.querySelector(".content") as HTMLElement;
+      const container = document.querySelector(".default") as HTMLElement;
+      const content = document.querySelector("." + canvasName) as HTMLElement;
 
       const containerWidth = container.clientWidth;
       const containerHeight = container.clientHeight;
@@ -197,10 +197,10 @@ export default function Canvas({
   }
   return (
     <div>
-      <div className={canvasName} id="canvas">
+      <div className="default" id="default">
         <canvas
-          id="content"
-          className="content"
+          id={canvasName}
+          className={canvasName}
           ref={canvasRef}
           width={canvasSize.width}
           height={canvasSize.height}
