@@ -1,0 +1,10 @@
+version: 2
+updates:
+    - package-ecosystem: "composer"
+      directory: "/data/backend"
+      schedule:
+          interval: "daily"
+    - package-ecosystem: "npm"
+      directory: "/data/frontend"
+      schedule:
+          interval: "daily"
