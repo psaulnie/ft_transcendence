@@ -121,7 +121,8 @@ export default function Canvas({
         ctx!.font = "40px serif";
         ctx!.textAlign = "center";
         ctx?.fillText(value.coward + " left the game", 320, 212);
-        return;
+        return ;
+
       } else {
         ctx!.fillStyle = "white";
         ctx!.font = "20px serif";
@@ -149,6 +150,7 @@ export default function Canvas({
         );
 
         setBallPosition({ x: value.ballX, y: value.ballY });
+
         ctx?.fillRect(ballPosition.x, ballPosition.y, ballWidth, ballWidth);
 
         ctx!.textAlign = "start";
@@ -167,6 +169,7 @@ export default function Canvas({
     return () => {
       webSocketManager.getSocket().off("game" + gameRoomId, process);
     };
+
   }, [
     rectPositionP1,
     rectPositionP2,
@@ -219,14 +222,13 @@ export default function Canvas({
           fontSize: "20px",
           width: "8em",
           height: "2em",
-          backgroundColor: "rgba(255, 255, 255, 0.9)",
+          backgroundColor: "#D4D4D4",
           borderColor: "#000000",
           border: "1px solid",
           borderRadius: "10px",
           color: "black",
           "&:hover": {
             backgroundColor: "gray",
-            borderColor: "gray",
           },
         }}
       >
