@@ -35,9 +35,9 @@ export default function Base() {
       setDrawerState(open);
     };
 
-    const [trigger] = useLazyGetUserRankQuery();
+  const [trigger] = useLazyGetUserRankQuery();
 
-    useEffect(() => {
+  useEffect(() => {
     if (user.isPlaying && !location.pathname.startsWith("/game")) {
       dispatch(setIsPlaying(false));
       webSocketManager.getSocket().emit("leaveGamePage");
