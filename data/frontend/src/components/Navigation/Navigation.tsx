@@ -6,7 +6,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { Grid } from "@mui/material";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Button from "@mui/material/Button";
 
 import { useSelector } from "react-redux";
@@ -14,11 +14,10 @@ import { useSelector } from "react-redux";
 import CustomAvatar from "../Global/CustomAvatar";
 import { useNavigate } from "react-router-dom";
 import { SyntheticEvent } from "react";
-import { apiSlice } from "../../store/api";
 
 function Navigation({ setDrawerState }: { setDrawerState: any }) {
   const user = useSelector((state: any) => state.user);
-  const query = apiSlice.endpoints.getMyProfile.useQueryState({});
+  // const query = apiSlice.endpoints.getMyProfile.useQueryState({});
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [rank, setRank] = useState(0);
@@ -42,11 +41,11 @@ function Navigation({ setDrawerState }: { setDrawerState: any }) {
     window.location.href = `http://${process.env.REACT_APP_IP}:5000/auth/logout`;
   }
 
-  useEffect(() => {
-    if (query.isUninitialized === false && query.isSuccess === true) {
-      setRank(query.data.rank);
-    }
-  }, [query]);
+  // useEffect(() => {
+  //   if (query.isUninitialized === false && query.isSuccess === true) {
+  //     setRank(query.data.rank);
+  //   }
+  // }, [query]);
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar
