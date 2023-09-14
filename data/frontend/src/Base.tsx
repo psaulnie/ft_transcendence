@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { setIsPlaying } from "./store/user";
+import { setIsInMatchmaking, setIsPlaying } from "./store/user";
 
 import Navigation from "./components/Navigation/Navigation";
 import NavDrawer from "./components/Navigation/NavDrawer";
@@ -35,10 +35,15 @@ export default function Base() {
     };
 
   useEffect(() => {
-    if (user.isPlaying && !location.pathname.startsWith('/game'))
-    {
+    if (user.isPlaying && !location.pathname.startsWith("/game")) {
       dispatch(setIsPlaying(false));
       webSocketManager.getSocket().emit("leaveGamePage");
+    }
+    if (user.isInMatchmaking && !location.pathname.startsWith("/game")) {
+      dispatch(setIsInMatchmaking(false));
+      webSocketManager
+        .getSocket()
+        .emit("cancelMatchmaking", { username: user.username });
     }
     if (!user || !user.username) {
       localStorage.removeItem("user");

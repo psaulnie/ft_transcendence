@@ -4,7 +4,7 @@ import { Button, Grid, LinearProgress } from "@mui/material";
 
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
-import { setIsPlaying } from "../../store/user";
+import { setIsInMatchmaking, setIsPlaying } from "../../store/user";
 import { Navigate } from "react-router";
 
 export default function Matchmaking({
@@ -27,6 +27,7 @@ export default function Matchmaking({
     webSocketManager
       .getSocket()
       .emit("matchmaking", { username: user.username });
+    dispatch(setIsInMatchmaking(true));
   }
 
   function cancelMatchmaking() {
