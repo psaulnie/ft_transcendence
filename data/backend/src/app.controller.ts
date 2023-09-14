@@ -8,11 +8,6 @@ import {
   Res,
   Param,
   Req,
-  Query,
-  ParseFilePipeBuilder,
-  HttpStatus,
-  ParseFilePipe,
-  FileTypeValidator,
   BadRequestException,
   UnsupportedMediaTypeException,
 } from '@nestjs/common';
@@ -40,7 +35,14 @@ import { promises as fs } from 'fs';
 
 const fileInterceptorOptions = {
   fileFilter: function fileFilter(req, file: Express.Multer.File, cb) {
-    const whitelist = ['image/png', 'image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+    console.log('fileinterceptor');
+    const whitelist = [
+      'image/png',
+      'image/jpeg',
+      'image/jpg',
+      'image/png',
+      'image/gif',
+    ];
     if (!file) return cb(new BadRequestException('No file provided'), false);
     if (!whitelist.includes(file.mimetype))
       return cb(
@@ -90,7 +92,11 @@ export class AppController {
         } catch (err) {
           throw new HttpException('Internal Server Error', 500);
         }
-        await this.userService.updateAvatar(user, path + name, false);
+        await this.userService.updateAvatar(
+          user,
+          path + name,
+          isUrl(user.urlAvatar),
+        );
       } else throw new HttpException('Unprocessable Entity', 422);
     } else throw new HttpException('Bad Request', 400);
   }
