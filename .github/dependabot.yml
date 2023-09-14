@@ -1,4 +1,4 @@
-dversion: 2
+version: 2
 updates:
     - package-ecosystem: "composer"
       directory: "/data/backend"
