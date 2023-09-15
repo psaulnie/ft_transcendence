@@ -17,7 +17,6 @@ import ErrorSnackbar from "../Global/ErrorSnackbar";
 import webSocketManager from "../../webSocket";
 
 import GavelIcon from "@mui/icons-material/Gavel";
-import { useSelector } from "react-redux";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -61,7 +60,7 @@ export default function BanListDialog({
       keepMounted
       onClose={closeDialog}
     >
-      <DialogTitle>Banned user</DialogTitle>
+      <DialogTitle>Banned users</DialogTitle>
       <DialogContent sx={{ overflow: "auto" }}>
         <Box
           sx={{
@@ -71,7 +70,6 @@ export default function BanListDialog({
         >
           <Grid
             container
-            spacing={0}
             direction="column"
             justifyContent="center"
             alignItems="center"
@@ -84,31 +82,23 @@ export default function BanListDialog({
                   <Grid
                     key={key}
                     item
-                    xs
-                    sx={{ backgroundColor: "", width: "100%", height: "90%" }}
+                    sx={{ width: "100%", height: "90%" }}
                   >
                     <Box
                       sx={{
                         background:
                           "linear-gradient(to right, #FE8F29, #FEAB5D, #FE8F29)",
-                        borderWidth: "1px 0",
-                        borderStyle: "solid",
-                        borderImage:
-                          "linear-gradient(to right, #d6d4d4, #00000000, #d6d4d4)",
-                        borderImageSlice: "1 0",
-                        marginTop: "0.5em",
-                        padding: "0.1em",
+                        marginTop: "0.2em",
                       }}
                     >
                       <Grid
                         container
                         direction="row"
-                        spacing={1}
                         alignItems="center"
                         sx={{ flexWrap: "nowrap" }}
                         justifyContent="space-between"
                       >
-                        <Grid container item alignItems="center" spacing={1}>
+                        <Grid container item alignItems="center" spacing={1} sx={{ flexWrap: "nowrap" }}>
                           <Grid item>
                             <Avatar
                               src={`http://${
@@ -116,28 +106,19 @@ export default function BanListDialog({
                               }:5000/api/avatar/${username}`}
                               alt="User Avatar"
                               sx={{
-                                width: "2em",
-                                height: "2em",
-                                border: "black solid",
-                                borderWidth: "1px",
-                                borderRadius: "3em",
-                                marginLeft: "1.5em",
-                                marginRight: "0.3em",
-                                cursor: "pointer",
+                                width: "1.5em",
+                                height: "1.5em",
+                                border: "1px solid #00000",
+                                margin: "3px 0.5em 3px 1em",
                               }}
                             />
                           </Grid>
-
                           <Grid item>
                             <Typography
                               variant="h6"
-                              align="left"
                               sx={{
                                 fontSize: 16,
-                                fontWeight: "bold",
                                 color: "black",
-                                transform: "translate(0%, 10%)",
-                                cursor: "pointer",
                               }}
                             >
                               {username}
@@ -145,23 +126,19 @@ export default function BanListDialog({
                           </Grid>
                         </Grid>
 
-                        <Grid item>
+                        <Grid container item alignItems="center">
                           <Button
                             onClick={() => {
                               unban(username);
                             }}
                             sx={{
-                              backgroundColor: "#d4d4d4",
-                              border: "black solid",
-                              borderRadius: "10px",
-                              borderWidth: "1px",
-                              width: "30px",
-                              height: "30px",
-                              minWidth: "5px",
-                              marginRight: "2em",
+                              backgroundColor: "#00000000",
+                              '&:hover': {
+                                backgroundColor: '#00000000',
+                              },
                             }}
                           >
-                            <GavelIcon sx={{ fontSize: 20 }} />
+                            <GavelIcon sx={{ fontSize: 18 }} />
                           </Button>
                         </Grid>
                       </Grid>
