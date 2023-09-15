@@ -87,17 +87,15 @@ export class RoomService {
     return accessStatus.public;
   }
 
-  async removeUser(roomName: string, userId: number): Promise<User> {
+  async removeUser(room: Room, userId: number): Promise<User> {
     console.log('removeuser');
-    const room = await this.findOne(roomName);
-    if (!room) return;
-    console.log('-1 user in ' + roomName);
+    console.log('-1 user in ' + room.roomName);
     if (room.usersList.find((obj) => obj.user.uid == userId))
       room.usersNumber--;
     console.log('number of users:' + room.usersNumber);
     if (room.usersNumber <= 0) {
       console.log('room deleted');
-      this.removeRoom(roomName);
+      this.removeRoom(room.roomName);
       return;
     }
     room.usersList = room.usersList.filter((user) => {
@@ -122,7 +120,7 @@ export class RoomService {
     console.log('removeuserfromrooms');
     const rooms = this.findAll();
     (await rooms).forEach((element) => {
-      this.removeUser(element.roomName, userId);
+      this.removeUser(element, userId);
     });
   }
 
