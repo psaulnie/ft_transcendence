@@ -81,9 +81,6 @@ export default function InputForm({
             value={message}
             onChange={onChange}
             autoComplete='off'
-            disabled={
-              rooms.room.find((obj: any) => obj.name === roomName).isMuted
-            }
           />
         </Grid>
         <Grid item xs={2}>
@@ -101,10 +98,6 @@ export default function InputForm({
               bgcolor: "#D9D9D9",
               color: "black",
             }}
-            disabled={
-              isLoading ||
-              rooms.room.find((obj: any) => obj.name === roomName).isMuted
-            }
             onKeyDown={keyPress}
             endIcon={isWideScreen ? null : <Publish />}
             centerRipple

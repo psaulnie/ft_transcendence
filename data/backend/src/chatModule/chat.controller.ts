@@ -220,7 +220,7 @@ export class ChatController {
     const cUser = req.user as User;
     if (!cUser) throw new HttpException('Unprocessable Entity', 422);
     const user = await this.userService.findOneById(cUser.uid);
-    console.log('getuserfriendlist', user.username)
+    console.log('getuserfriendlist', user.username);
     const friendList = [];
     for (const element of user.friends) {
       if (element) {
@@ -231,5 +231,27 @@ export class ChatController {
       }
     }
     return friendList;
+  }
+
+  @UseInterceptors(CacheInterceptor)
+  @UseGuards(AuthenticatedGuard)
+  @Get(':room/:username/muted')
+  async getIsMuted(
+    @Req() req: RequestWithUser,
+    @Param('room') roomName: string,
+    @Param('username') username: string,
+  ): Promise<boolean> {
+    const cUser = req.user as User;
+    if (!cUser) throw new HttpException('Unprocessable Entity', 422);
+    const room = await this.roomService.findOne(roomName);
+    if (!room) throw new HttpException('Unprocessable Entity', 422);
+    const user = await this.userService.findOneById(cUser.uid);
+    if (!user) throw new HttpException('Unprocessable Entity', 422);
+    const cUserInRoom = room.usersList.find((obj) => obj.user.uid == user.uid);
+    if (!cUserInRoom || cUserInRoom.role === userRole.none || cUserInRoom.isBanned === true)
+      throw new HttpException('Unauthorized', 401);
+    const userInRoom = room.usersList.find((obj) => obj.user.username == username);
+    if (!userInRoom) throw new HttpException('Unprocessable Entity', 422);
+    return (userInRoom.isMuted);
   }
 }

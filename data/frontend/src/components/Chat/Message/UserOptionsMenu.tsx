@@ -7,6 +7,8 @@ import { userRole } from "../chatEnums";
 import { useNavigate } from "react-router";
 import ErrorSnackbar from "../../Global/ErrorSnackbar";
 import Loading from "../../Global/Loading";
+import { apiSlice, useLazyGetIsMutedQuery } from "../../../store/api";
+import { useEffect } from "react";
 
 type arg = {
   cUser: { username: string; role: userRole; isMuted: boolean };
@@ -30,6 +32,8 @@ export default function UserOptionsMenu({
   const user = useSelector((state: any) => state.user);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const query = apiSlice.endpoints.getIsMuted.useQueryState({roomName, username: cUser.username});
 
   const handleClose = () => {
     setContextMenu(null);
@@ -70,8 +74,6 @@ export default function UserOptionsMenu({
     );
   }
 
-  if (friendList.isError) return <ErrorSnackbar error={friendList.error} />;
-  if (friendList.isLoading) return <Loading />;
   return (
     <Menu
       open={contextMenu !== null}
@@ -115,7 +117,7 @@ export default function UserOptionsMenu({
           >
             Ban
           </MenuItem>
-          {!cUser.isMuted ? (
+          {query.data === false ? (
             <MenuItem
               onClick={() => {
                 webSocketManager
