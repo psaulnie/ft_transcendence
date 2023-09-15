@@ -14,21 +14,22 @@ export class WebSocketManager {
         withCredentials: true,
         transports: ["websocket"],
       });
-
       this.socket.on("connect_error", (err: any) => {
+        console.log(err.message);
         localStorage.removeItem("user");
         window.location.href = `http://${import.meta.env.VITE_IP}:5000/auth/logout`;
       });
-      this.socket.on("disconnect", function () {
-        localStorage.removeItem("user");
-        window.location.href = `http://${import.meta.env.VITE_IP}:5000/auth/logout`;
+      this.socket.on("disconnect", function (err: any) {
+        if (err === "io server disconnect") {
+          localStorage.removeItem("user");
+          window.location.href = `http://${import.meta.env.VITE_IP}:5000/auth/logout`;
+        }
       });
     }
   }
 
   getSocket() {
-    if (!this.socket)
-    {
+    if (!this.socket) {
       localStorage.removeItem("user");
       window.location.href = `http://${import.meta.env.VITE_IP}:5000/auth/logout`;
     }
