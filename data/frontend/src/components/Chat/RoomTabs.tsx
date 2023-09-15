@@ -56,13 +56,13 @@ export default function RoomTabs() {
           bottom: "100",
           "& .MuiTabs-flexContainer": {
             maxWidth: "19em",
-            maxHeight: "100%",
+            maxHeight: "80%",
             marginTop: "0px",
           },
           "@media (max-width: 600px) or (max-height: 700px)": {
             "& .MuiTabs-flexContainer": {
               maxWidth: "10em",
-              maxHeight: "100%",
+              maxHeight: "80%",
               marginTop: "0px",
             },
           },
