@@ -258,11 +258,14 @@ export class Gateway
       throw new WsException('Forbidden');
     const user = await this.userService.findOne(payload.source);
     if (!user) throw new WsException(payload.source + ' not found');
-    const owner = await this.roomService.removeUser(payload.room, user.uid);
+    const room = await this.roomService.findOne(payload.room);
+    if (!room) throw new WsException('Room not found');
+    const previousOwner = room.owner.uid;
+    const owner = await this.roomService.removeUser(room, user.uid);
     const ownerStatus = await this.usersStatusService.getUserStatus(
       owner?.username,
     );
-    if (ownerStatus && ownerStatus.username === owner.username) {
+    if (ownerStatus && ownerStatus.username === owner.username && previousOwner !== owner.uid) {
       this.server.emit(ownerStatus.clientId, {
         source: payload.room,
         action: actionTypes.owner,
@@ -325,7 +328,7 @@ export class Gateway
     if (!isInRoom) throw new WsException("You're not in that room");
     if ((await this.roomService.getRole(room, admin.uid)) == userRole.none)
       throw new WsException("You're not an admin of this room");
-    await this.roomService.removeUser(payload.room, user.uid);
+    await this.roomService.removeUser(room, user.uid);
     this.server.emit(payload.room, {
       source: payload.target,
       target: payload.room,
