@@ -100,29 +100,41 @@ function Profile() {
             {userProfile.matchHistory && userProfile.matchHistory.length > 0 ? (
               userProfile.matchHistory.map((match: any, index: any) => (
                 <Grid container key={index} alignItems="center" justifyContent="center"
-                  sx={{
-                    background: 'linear-gradient(90deg, #45454500, #454545AA, #454545FF, #454545AA, #45454500)',
-                    boxShadow: "0 0 10px rgba(0, 0, 0, 0.3)",
-                    borderWidth: '1px 0',
-                    borderStyle: 'solid',
-                    borderImage: 'linear-gradient(to right, #00000000, #d6d4d4, #00000000)',
-                    borderImageSlice: '1 0',
-                    width: '100%',
-                    height: '2.5em',
-                    marginBottom: '0.5em',
-                  }}
+                      sx={{
+                        background: 'linear-gradient(90deg, #45454500, #454545AA, #454545FF, #454545AA, #45454500)',
+                        boxShadow: "0 0 10px rgba(0, 0, 0, 0.3)",
+                        borderWidth: '1px 0',
+                        borderStyle: 'solid',
+                        borderImage: 'linear-gradient(to right, #00000000, #d6d4d4, #00000000)',
+                        borderImageSlice: '1 0',
+                        width: '100%',
+                        height: '2.5em',
+                        marginBottom: '0.5em',
+                      }}
                 >
-                  <Grid item container alignItems="center" justifyContent="center">
-                    <Avatar src={`http://${import.meta.env.VITE_IP}:5000/api/avatar/${match.p1}`} alt="User Avatar" sx={{ width: '30px', height: '30px', margin: '0 30px' }} />
+                  {/* Player 1 (avatar and username) */}
+                  <Grid item container xs={4} alignItems="center" justifyContent="flex-end">
+                    <Typography sx={{ fontSize: 20, color: 'black', margin: '0 10px' }}>{match.p1}</Typography>
+                    <Avatar src={`http://${import.meta.env.VITE_IP}:5000/api/avatar/${match.p1}`} alt="User Avatar" sx={{ width: '30px', height: '30px', margin: '0 5px' }} />
+                  </Grid>
+
+                  {/* Scores */}
+                  <Grid item container xs={2} alignItems="center" justifyContent="center">
                     <Typography sx={{ color: match.scoreP1 > match.scoreP2 ? '#1ABAFF' : '#FC7D07', fontSize: 20, margin: '0 10px' }}>{match.scoreP1}</Typography>
                     <Typography sx={{ fontSize: 20, color: 'black', margin: '0 5px' }}>:</Typography>
                     <Typography sx={{ color: match.scoreP2 > match.scoreP1 ? '#1ABAFF' : '#FC7D07', fontSize: 20, margin: '0 10px' }}>{match.scoreP2}</Typography>
-                    <Avatar src={`http://${import.meta.env.VITE_IP}:5000/api/avatar/${match.p2}`} alt="User Avatar" sx={{ width: '30px', height: '30px', margin: '0 30px' }} />
+                  </Grid>
+
+                  {/* Player 2 (avatar and username) */}
+                  <Grid item container xs={4} alignItems="center" justifyContent="flex-start">
+                    <Avatar src={`http://${import.meta.env.VITE_IP}:5000/api/avatar/${match.p2}`} alt="User Avatar" sx={{ width: '30px', height: '30px', margin: '0 5px' }} />
+                    <Typography sx={{ fontSize: 20, color: 'black', margin: '0 10px' }}>{match.p2}</Typography>
                   </Grid>
                 </Grid>
               ))
             ) : (<p>No match history available.</p>)}
           </Grid>
+
 
         </Grid>
       </Box>

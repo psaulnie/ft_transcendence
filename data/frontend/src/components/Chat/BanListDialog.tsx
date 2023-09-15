@@ -17,7 +17,6 @@ import ErrorSnackbar from "../Global/ErrorSnackbar";
 import webSocketManager from "../../webSocket";
 
 import GavelIcon from "@mui/icons-material/Gavel";
-import { useSelector } from "react-redux";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
