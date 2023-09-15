@@ -121,7 +121,7 @@ export class ChatController {
       const userInfo = element.usersList.find(
         (obj) => user.uid == obj.user.uid,
       );
-      if (element.usersList.find((obj) => user.uid == obj.user.uid))
+      if (userInfo && userInfo.isBanned === false)
         roomsList.push({
           roomName: element.roomName,
           role: userInfo.role,
