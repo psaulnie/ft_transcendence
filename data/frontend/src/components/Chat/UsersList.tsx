@@ -136,9 +136,7 @@ export default function UsersList({
                     }
                   />
                   <ListItemIcon>
-                    {user.username === cUser.username
-                      ? getRoleIcon(role)
-                      : getRoleIcon(cUser.role)}
+                    {getRoleIcon(cUser.role)}
                   </ListItemIcon>
                 </ListItemButton>
                 {cUser.username !== user.username && selectedUser !== null ? (
