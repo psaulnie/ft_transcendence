@@ -77,7 +77,7 @@ function Profile() {
                   </Grid>
                   {user.username === username && (
                     <Grid>
-                      <Button onClick={handleModificationClick} sx={{ ...editButtonStyle }} startIcon={<BorderColorIcon sx={{ color: grey[400] }} />} />
+                      <Button onClick={handleModificationClick} sx={{ ...editButtonStyle }} startIcon={<BorderColorIcon sx={{ color: grey[200] }} />} />
                     </Grid>
                   )}
                 </Grid>
