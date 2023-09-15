@@ -110,8 +110,13 @@ export class Gateway
       throw new WsException('Forbidden');
     const room = await this.roomService.findOne(payload.target);
     if (!room) throw new WsException('Room not found');
-    if (!room.usersList.find((tmpUser) => tmpUser.user.uid === user.uid))
+    const cUser = room.usersList.find((tmpUser) => tmpUser.user.uid === user.uid);
+    if (!cUser)
       throw new WsException("You're not in that room");
+    if (cUser.isBanned)
+      throw new WsException("You're banned from that room");
+    else if (cUser.isMuted)
+      throw new WsException("You're muted in that room");
     let role = await this.roomService.getRole(room, user.uid);
     if (!role) role = userRole.none;
     this.server.emit(payload.target, {
