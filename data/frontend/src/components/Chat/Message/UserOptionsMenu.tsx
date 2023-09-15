@@ -117,7 +117,7 @@ export default function UserOptionsMenu({
           >
             Ban
           </MenuItem>
-          {query.data === false ? (
+          {query && query.data === false ? (
             <MenuItem
               onClick={() => {
                 webSocketManager
