@@ -156,7 +156,6 @@ export class Gateway
       throw new WsException('Missing parameter');
     if (payload.access == accessStatus.protected && payload.password == null)
       throw new WsException('Missing parameter');
-
     const user = await this.userService.findOne(payload.source);
     if (!user) throw new WsException(payload.source + ' not found');
     const userStatus = await this.usersStatusService.getUserStatus(
@@ -389,6 +388,30 @@ export class Gateway
       target: payload.room,
       action: actionTypes.ban,
       role: userRole.none,
+    });
+  }
+
+  @SubscribeMessage('unban')
+  async unbanUser(client: Socket, payload: {roomName: string, username: string}) {
+    const ownerStatus = await this.usersStatusService.getUserStatusByClientId(client.id);
+    if (!ownerStatus) throw new WsException('Forbidden');
+    const owner = await this.userService.findOne(ownerStatus.username);
+    if (!owner) throw new WsException('Forbidden');
+    const room = await this.roomService.findOne(payload.roomName);
+    if (!room) throw new WsException('Room not found');
+    if (room.owner.uid !== owner.uid) throw new WsException('Forbidden');
+    const user = await this.usersStatusService.getUserStatus(payload.username);
+    if (!user) throw new WsException(payload.username + ' not found');
+    const bannedUser = await this.userService.findOne(payload.username);
+    if (!bannedUser) throw new WsException(payload.username + ' not found');
+    await this.roomService.unban(payload.roomName, bannedUser);
+    this.server.emit(user.clientId, {
+      action: actionTypes.unban,
+      target: payload.roomName,
+    });
+    this.server.emit(ownerStatus.clientId, {
+      action: actionTypes.beenUnbanned,
+      target: payload.username,
     });
   }
 

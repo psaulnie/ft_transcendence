@@ -150,6 +150,15 @@ export class RoomService {
     return await this.roomsRepository.save(room);
   }
 
+  async unban(roomName: string, user: User): Promise<Room> {
+    console.log('unban');
+    const room = await this.findOne(roomName);
+    const userInList = room.usersList.filter((obj) => obj.user.uid != user.uid);
+    room.usersList = userInList;
+    await this.usersListRepository.save(userInList);
+    return await this.roomsRepository.save(room);
+  }
+
   async addToMutedList(roomName: string, user: User): Promise<Room> {
     console.log('addtomutedlist');
     const room = await this.findOne(roomName);

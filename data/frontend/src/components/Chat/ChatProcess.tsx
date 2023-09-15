@@ -158,6 +158,10 @@ export default function ChatProcess() {
           "You are banned from this channel: " + value.target,
           "error"
         );
+      } else if (value.action === actionTypes.unban) {
+        setSnackbar('You are unbanned from this channel: ' + value.target, 'success')
+      } else if (value.action === actionTypes.beenUnbanned) {
+        setSnackbar(value.target + ' has been unbanned from this channel', 'success')
       } else if (value.action === actionTypes.private) {
         dispatch(removeRoom(value.target));
         setSnackbar(
