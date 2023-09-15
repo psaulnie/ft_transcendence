@@ -112,6 +112,12 @@ export const apiSlice = createApi({
         method: "GET",
       }),
     }),
+    getBanList: builder.query({
+      query: ({ roomName = null }) => ({
+        url: "/api/chat/" + roomName + "/banned/list",
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -133,4 +139,5 @@ export const {
   useGetFriendsListQuery,
   useLazyGetUserRankQuery,
   useLazyGetIsMutedQuery,
+  useGetBanListQuery,
 } = apiSlice;

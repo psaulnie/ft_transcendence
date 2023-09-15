@@ -248,10 +248,36 @@ export class ChatController {
     const user = await this.userService.findOneById(cUser.uid);
     if (!user) throw new HttpException('Unprocessable Entity', 422);
     const cUserInRoom = room.usersList.find((obj) => obj.user.uid == user.uid);
-    if (!cUserInRoom || cUserInRoom.role === userRole.none || cUserInRoom.isBanned === true)
+    if (
+      !cUserInRoom ||
+      cUserInRoom.role === userRole.none ||
+      cUserInRoom.isBanned === true
+    )
       throw new HttpException('Unauthorized', 401);
-    const userInRoom = room.usersList.find((obj) => obj.user.username == username);
+    const userInRoom = room.usersList.find(
+      (obj) => obj.user.username == username,
+    );
     if (!userInRoom) throw new HttpException('Unprocessable Entity', 422);
-    return (userInRoom.isMuted);
+    return userInRoom.isMuted;
+  }
+
+  @UseInterceptors(CacheInterceptor)
+  @UseGuards(AuthenticatedGuard)
+  @Get(':room/banned/list')
+  async getBannedUsersList(
+    @Req() req: RequestWithUser,
+    @Param('room') roomName: string,
+  ) {
+    const cUser = req.user as User;
+    if (!cUser) throw new HttpException('Unprocessable Entity', 422);
+    const room = await this.roomService.findOne(roomName);
+    if (!room) throw new HttpException('Unprocessable Entity', 422);
+    if (cUser.uid !== room.owner.uid)
+      throw new HttpException('Unauthorized', 401);
+    const bannedUsers = [];
+    for (const element of room.usersList) {
+      if (element.isBanned === true) bannedUsers.push(element.user.username);
+    }
+    return bannedUsers;
   }
 }

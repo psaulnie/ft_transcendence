@@ -27,5 +27,7 @@ export enum actionTypes {
   acceptPlay,
   joinRoom,
   roomAlreadyExist,
-  cantJoin
+  cantJoin,
+  unban,
+  beenUnbanned,
 }

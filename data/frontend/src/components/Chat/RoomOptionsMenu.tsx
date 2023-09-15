@@ -8,6 +8,7 @@ import SelectUserDialog from "./SelectUserDialog";
 
 import webSocketManager from "../../webSocket";
 import { userRole } from "./chatEnums";
+import BanListDialog from "./BanListDialog";
 
 type arg = {
   contextMenu: any;
@@ -26,6 +27,7 @@ export default function RoomOptionsMenu({
 }: arg) {
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
   const [showUserDialog, setShowUserDialog] = useState(false);
+  const [showBanListDialog, setShowBanListDialog] = useState(false);
 
   const user = useSelector((state: any) => state.user);
   const rooms = useSelector((state: any) => state.rooms);
@@ -49,6 +51,11 @@ export default function RoomOptionsMenu({
 
   function showDialog() {
     setShowUserDialog(true);
+    setContextMenu(null);
+  }
+
+  function seeBanList() {
+    setShowBanListDialog(true);
     setContextMenu(null);
   }
 
@@ -86,6 +93,7 @@ export default function RoomOptionsMenu({
               >
                 Remove password
               </MenuItem>
+              <MenuItem onClick={seeBanList}>Ban list</MenuItem>
               <Divider />
             </div>
           ) : null}
@@ -108,6 +116,13 @@ export default function RoomOptionsMenu({
         <SelectUserDialog
           open={showUserDialog}
           setOpen={setShowUserDialog}
+          roomName={roomName}
+        />
+      ) : null}
+      {showBanListDialog ? (
+        <BanListDialog
+          open={showBanListDialog}
+          setOpen={setShowBanListDialog}
           roomName={roomName}
         />
       ) : null}
