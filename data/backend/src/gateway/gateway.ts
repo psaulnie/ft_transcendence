@@ -418,7 +418,6 @@ export class Gateway
   @SubscribeMessage('block')
   async blockUser(client: Socket, payload: actionArgs) {
     if (
-      payload.room == null ||
       payload.source == null ||
       payload.target == null
     )
@@ -434,12 +433,12 @@ export class Gateway
     if (!userStatus || userStatus.clientId !== client.id)
       throw new WsException('Forbidden');
     await this.userService.blockUser(user, blockedUser);
+    this.removeFriend(client, payload);
   }
 
   @SubscribeMessage('unblock')
   async unblockUser(client: Socket, payload: actionArgs) {
     if (
-      payload.room == null ||
       payload.source == null ||
       payload.target == null
     )

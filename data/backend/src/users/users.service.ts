@@ -56,10 +56,7 @@ export class UsersService {
   async findOneProfile(name: string): Promise<User> {
     return await this.usersRepository.findOne({
       where: { username: name },
-      relations: [
-        'friends',
-        'statistics',
-      ],
+      relations: ['friends', 'statistics'],
     });
   }
 
@@ -71,9 +68,9 @@ export class UsersService {
   }
 
   async findOneMatchHistory(uid: number): Promise<MatchHistory[]> {
-    return (await this.matchHistoryRepository.find({
+    return await this.matchHistoryRepository.find({
       where: [{ user1id: uid }, { user2id: uid }],
-    }));
+    });
   }
 
   async findOneByIntraUsername(name: string): Promise<User> {
@@ -83,7 +80,10 @@ export class UsersService {
   }
 
   async findOneByUsername(name: string): Promise<User> {
-    return await this.usersRepository.findOne({ where: { username: name }, relations: ['achievements'] });
+    return await this.usersRepository.findOne({
+      where: { username: name },
+      relations: ['achievements'],
+    });
   }
 
   async findAll(): Promise<User[]> {
@@ -116,9 +116,12 @@ export class UsersService {
       return;
     }
     user.friends = user.friends.filter((obj) => obj.uid !== blockedUser.uid);
+    blockedUser.friends = blockedUser.friends.filter(
+      (obj) => obj.uid !== user.uid,
+    );
     user.blockedUsers = user.blockedUsers.filter(
       (obj) => obj.blockedUser.uid !== blockedUser.uid,
-    ); // TODO test, remove the blockedUser from the friendList
+    );
     block.user = user;
     block.blockedUser = blockedUser;
     user.blockedUsers.push(block);
@@ -141,7 +144,10 @@ export class UsersService {
       user.achievements.achievement3 = true;
       await this.achievementsRepository.save(user.achievements);
     }
-    if (friend.friends.length === 0 && friend.achievements.achievement3 === false) {
+    if (
+      friend.friends.length === 0 &&
+      friend.achievements.achievement3 === false
+    ) {
       friend.achievements.achievement3 = true;
       await this.achievementsRepository.save(friend.achievements);
     }
@@ -149,7 +155,6 @@ export class UsersService {
     friend.friends.push(user);
     await this.usersRepository.save(user);
     await this.usersRepository.save(friend);
-    
   }
 
   async removeFriend(user: User, friend: User) {
@@ -185,12 +190,14 @@ export class UsersService {
     user.username = username;
     await this.usersRepository.save(user);
   }
-  
-  async changeBackground(username: string, background: string)
-  {
+
+  async changeBackground(username: string, background: string) {
     const user = await this.findOneByUsername(username);
-    if (!user) return ;
-    if (user.gameBackground === 'canvas' && user.achievements.achievement5 === false) {
+    if (!user) return;
+    if (
+      user.gameBackground === 'canvas' &&
+      user.achievements.achievement5 === false
+    ) {
       user.achievements.achievement5 = true;
       await this.achievementsRepository.save(user.achievements);
     }
