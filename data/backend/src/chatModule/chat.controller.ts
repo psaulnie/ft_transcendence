@@ -253,7 +253,7 @@ export class ChatController {
       cUserInRoom.role === userRole.none ||
       cUserInRoom.isBanned === true
     )
-      throw new HttpException('Unauthorized', 401);
+      return false;
     const userInRoom = room.usersList.find(
       (obj) => obj.user.username == username,
     );
