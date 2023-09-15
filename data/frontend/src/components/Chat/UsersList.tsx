@@ -1,5 +1,6 @@
 import {
   useGetUsersInRoomQuery,
+  useLazyGetIsMutedQuery,
   useLazyGetUserFriendsListQuery,
 } from "../../store/api";
 
@@ -53,6 +54,7 @@ export default function UsersList({
   } = useGetUsersInRoomQuery({ roomName: roomName }, { skip: isDirectMessage });
 
   const [trigger, result] = useLazyGetUserFriendsListQuery();
+  const [triggerIsMuted, resultIsMuted] = useLazyGetIsMutedQuery();
 
   let usersList: any[];
   if (!isDirectMessage) usersList = usersListData;
@@ -64,7 +66,9 @@ export default function UsersList({
 
   const handleContextMenu = (event: React.MouseEvent, username: string, cUser: any) => {
     event.preventDefault();
-    if (!isDirectMessage) refetch();
+    if (!isDirectMessage) {
+      refetch();
+    }
     if (user.username !== username) {
       setSelectedUser(cUser);
       setContextMenu(
@@ -76,6 +80,8 @@ export default function UsersList({
           : null
       );
       trigger({});
+      if (!isDirectMessage)
+        triggerIsMuted({ roomName: roomName, username: username });
     }
   };
 
@@ -90,7 +96,12 @@ export default function UsersList({
   }, [isDirectMessage, refetch]);
 
   if (isError && !isDirectMessage) return <ErrorSnackbar error={error} />;
+  if (resultIsMuted.isError && !isDirectMessage) return <ErrorSnackbar error={result.error} />;
+  if (result.isError) return <ErrorSnackbar error={result.error} />;
   if (isLoading && !isDirectMessage) return <Loading />;
+  if (result.isLoading) return <Loading />;
+  if (resultIsMuted.isLoading && !isDirectMessage) return <Loading />;
+
   return (
     <Grid sx={{overflow: 'auto'}}>
       <List>

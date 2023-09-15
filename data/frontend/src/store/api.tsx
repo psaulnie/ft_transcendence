@@ -104,9 +104,12 @@ export const apiSlice = createApi({
       query: () => ({
         url: "/friends/list",
         method: "GET",
-        headers: {
-          Authorization: "Bearer " + Cookies.get("accessToken"),
-        },
+      }),
+    }),
+    getIsMuted: builder.query({
+      query: ({ username = null, roomName = null }) => ({
+        url: "/api/chat/" + roomName + "/" + username + "/muted",
+        method: "GET",
       }),
     }),
   }),
@@ -129,4 +132,5 @@ export const {
   useGetLeaderboardQuery,
   useGetFriendsListQuery,
   useLazyGetUserRankQuery,
+  useLazyGetIsMutedQuery,
 } = apiSlice;

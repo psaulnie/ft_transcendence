@@ -39,61 +39,9 @@ export default function Message({
   isDirectMessage,
 }: arg) {
   const user = useSelector((state: any) => state.user);
-  const [contextMenu, setContextMenu] = useState<{
-    mouseX: number;
-    mouseY: number;
-  } | null>(null);
-  const [showAdminOpt, setShowAdminOpt] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
-
-  const {
-    data: cUser,
-    isSuccess,
-    refetch,
-  } = useGetUserStatusInRoomQuery(
-    { roomName: roomName },
-    { skip: isDirectMessage }
-  );
-
-  const [trigger, result] = useLazyGetUserFriendsListQuery();
-
-  const handleContextMenu = (event: React.MouseEvent) => {
-    event.preventDefault();
-    trigger({});
-    if (!isDirectMessage) {
-      refetch();
-      if (isSuccess) {
-        setShowAdminOpt(true);
-        setIsMuted(cUser.isMuted);
-      } else setShowAdminOpt(false);
-    } else setShowAdminOpt(false);
-    setContextMenu(
-      contextMenu === null
-        ? {
-            mouseX: event.clientX + 2,
-            mouseY: event.clientY - 6,
-          }
-        : null
-    );
-  };
 
   return (
-    <div className="message" onContextMenu={handleContextMenu}>
-      {user.username !== message.source ? (
-        <UserOptionsMenu
-          cUser={{
-            username: message.source,
-            role: message.role,
-            isMuted: isMuted,
-          }}
-          role={role}
-          roomName={roomName}
-          contextMenu={contextMenu}
-          setContextMenu={setContextMenu}
-          showAdminOpt={showAdminOpt}
-          friendList={result}
-        />
-      ) : null}
+    <div className="message">
       <Box sx={{ flexGrow: 1, overflow: "hidden", px: 3, opacity: 1 }}>
         <StyledPaper
           sx={{
