@@ -113,6 +113,17 @@ export default function Message({
               <Typography
                 style={{
                   color: "black",
+                  fontWeight: "bold",
+                  overflowWrap: "break-word",
+                  wordBreak: "break-word",
+                  textAlign: user.username !== message.source ? "start" : "end",
+                }}
+              >
+                {message.source}
+              </Typography>
+              <Typography
+                style={{
+                  color: "black",
                   overflowWrap: "break-word",
                   wordBreak: "break-word",
                   textAlign: user.username !== message.source ? "start" : "end",
