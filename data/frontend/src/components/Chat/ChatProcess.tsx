@@ -251,11 +251,20 @@ export default function ChatProcess() {
         });
       }
     }
+
+    function handleWsException(value: any) {
+      setSnackbar(value?.message, "error");
+    }
+  
+    webSocketManager.getSocket().on("exception", handleWsException);
     webSocketManager.getSocket().on(webSocketManager.getSocket().id, process);
     return () => {
       webSocketManager
         .getSocket()
         .off(webSocketManager.getSocket().id, process);
+      webSocketManager
+        .getSocket()
+        .off("exception", handleWsException);
     };
   }, [user.username, dispatch, rooms]);
 
