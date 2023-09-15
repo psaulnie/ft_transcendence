@@ -125,7 +125,6 @@ function TwoFactorLogin() {
       );
       const data = await response.json();
       if (response.ok && data.status !== "codeError") {
-        console.log("2FA authentication successfully.");
         setError(false);
         navigate("/home");
       } else {
@@ -152,13 +151,13 @@ function TwoFactorLogin() {
     >
       <Box
         sx={{
-          // top: '25%',
           width: "100%",
           height: "60%",
           padding: "2em",
           borderRadius: "3em",
-          background: "linear-gradient(to right, #ECECEC, #d6d4d4)",
-          border: "1px solid #000000",
+          background: "#d6d4d450",
+          backdropFilter: 'blur(8px)',
+          border: "1px solid #00000088",
           boxShadow: "0 0 10px rgba(0, 0, 0, 0.3)",
         }}
       >
@@ -187,12 +186,12 @@ function TwoFactorLogin() {
                     color: "black",
                   },
                 }}
-                value={twoFactorTurnOnCode}
-                onChange={(e) => setTwoFactorTurnOnCode(e.target.value)}
+                value={twoFactorAuthCode}
+                onChange={(e) => setTwoFactorAuthCode(e.target.value)}
                 placeholder="Enter validation code"
               />
               <Button
-                onClick={validateTwoFactorTurnOnCode}
+                onClick={validateTwoFactorAuthCode}
                 variant="outlined"
                 sx={{
                   width: "55px",

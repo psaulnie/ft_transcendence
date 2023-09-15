@@ -136,7 +136,7 @@ export class AuthController {
         throw err;
       }
 
-      res.cookie('username', usr.username, {
+      res.cookie('username', userTest.username, {
         httpOnly: false,
         secure: false,
       });
