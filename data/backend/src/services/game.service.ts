@@ -28,6 +28,7 @@ export interface gameRoom {
 	ballSpeedY: number,
 	coward: string,
 	intervalId: any,
+	isFinish: boolean,
 }
 
 const rectWidth = 5;
@@ -35,8 +36,6 @@ const rectHeight = 75;
 const ballWidth = 10;
 const paddleSpeed = 10;
 const maxScore = 5;
-const demote = 2;
-const promote = 2;
 
 @Injectable()
 export class GameService {
@@ -84,6 +83,7 @@ export class GameService {
 			ballSpeedY: 5,
 			coward: null,
 			intervalId: -1,
+			isFinish: false,
 		});
 		this.resetBall(gameRoomId);
 		console.log(this.gameRooms);
@@ -228,7 +228,6 @@ export class GameService {
 		console.log(roomIndex);
 		if (roomIndex === -1)
 			return ;
-		this.gameRooms[roomIndex].coward = coward;
 	}
 
 	async updateRank(userW: User, userL: User) {
@@ -263,7 +262,10 @@ export class GameService {
 		const matchHistory = new MatchHistory();
 		matchHistory.user1id = userW.uid;
 		matchHistory.user2id = userL.uid;
-		matchHistory.user1Score = this.gameRooms[roomIndex].player1.user.username === userW.username ? this.gameRooms[roomIndex].player1.score : this.gameRooms[roomIndex].player2.score;
+		if (this.gameRooms[roomIndex].coward === null)
+			matchHistory.user1Score = this.gameRooms[roomIndex].player1.user.username === userW.username ? this.gameRooms[roomIndex].player1.score : this.gameRooms[roomIndex].player2.score;
+		else
+			matchHistory.user1Score = maxScore;
 		matchHistory.user2Score = this.gameRooms[roomIndex].player1.user.username === userW.username ? this.gameRooms[roomIndex].player2.score : this.gameRooms[roomIndex].player1.score;
 		await this.matchHistoryRepository.save(matchHistory);
 	}
