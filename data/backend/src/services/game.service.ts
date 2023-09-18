@@ -224,7 +224,6 @@ export class GameService {
 			coward,
 		);
 		userStatusTmp.gameRoomId = '';
-		userStatusTmp.status = userStatus.online;
 		const roomIndex = this.gameRooms.findIndex((obj) => obj.gameRoomId === gameRoomId);
 		console.log(roomIndex);
 		if (roomIndex === -1)
