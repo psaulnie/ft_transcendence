@@ -26,6 +26,7 @@ export default function ErrorSnackbar({ error }: { error: any }) {
   }
 
   useEffect(() => {
+    console.log(error);
     if (error && error.status) setErrorCode(error.status);
     if (error && error.data && error.data.message)
       setMessage(error.data.message);
