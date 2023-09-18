@@ -970,8 +970,9 @@ export class Gateway
       if (!gameRoom) throw new WsException('Game Room not found');
       gameRoom.intervalId = setInterval(() => {
         if (
-          gameRoom.player1.score === this.maxScore ||
-          gameRoom.player2.score === this.maxScore
+          (gameRoom.player1.score === this.maxScore ||
+          gameRoom.player2.score === this.maxScore) &&
+          gameRoom.isFinish === false
         ) {
           clearInterval(gameRoom.intervalId);
           this.endGame(client, { gameRoomId });
@@ -993,14 +994,28 @@ export class Gateway
   async endGame(client: Socket, payload: { gameRoomId: string }) {
     const gameRoom = this.gameService.getGameRoom(payload.gameRoomId);
     if (!gameRoom) throw new WsException('Game Room not found');
-    const userW =
-      gameRoom.player1.score === this.maxScore
-        ? gameRoom.player1.user
-        : gameRoom.player2.user;
-    const userL =
-      gameRoom.player1.score === this.maxScore
-        ? gameRoom.player2.user
-        : gameRoom.player1.user;
+    if (gameRoom.isFinish === true) return;
+    let userW;
+    let userL;
+    if (gameRoom.coward === null) {
+      userW =
+        gameRoom.player1.score === this.maxScore
+          ? gameRoom.player1.user
+          : gameRoom.player2.user;
+      userL =
+        gameRoom.player1.score === this.maxScore
+          ? gameRoom.player2.user
+          : gameRoom.player1.user;
+    } else {
+      userW =
+        gameRoom.coward === gameRoom.player1.user.username
+          ? gameRoom.player2.user
+          : gameRoom.player1.user;
+      userL =
+        gameRoom.coward === gameRoom.player1.user.username
+          ? gameRoom.player1.user
+          : gameRoom.player2.user;
+    }
     const userWStatus = await this.usersStatusService.getUserStatus(
       userW.username,
     );
@@ -1014,6 +1029,7 @@ export class Gateway
     await this.gameService.addMatchHistory(payload.gameRoomId, userW, userL);
     await this.gameService.updateRank(userW, userL);
     this.gameService.updateAchivement(userW, userL);
+    gameRoom.isFinish = true;
   }
 
   @SubscribeMessage('leaveGame')
@@ -1026,7 +1042,12 @@ export class Gateway
     );
     if (!userStatus || userStatus.clientId !== client.id)
       throw new WsException('Forbidden');
+    const gameRoom = this.gameService.getGameRoom(payload.gameRoomId);
+    if (!gameRoom) throw new WsException('Game Room not found');
+    gameRoom.coward = payload.coward;
+    // gameRoom.isFinish = true;
     this.gameService.leaveGame(payload.gameRoomId, payload.coward);
+    this.endGame(client, {gameRoomId: payload.gameRoomId});
   }
 
   @SubscribeMessage('cancelMatchmaking')
