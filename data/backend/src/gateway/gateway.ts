@@ -910,7 +910,6 @@ export class Gateway
         gameRoom.player2.score === this.maxScore
       ) {
         clearInterval(gameRoom.intervalId);
-        console.log('vs match');
         this.endGame(client, { gameRoomId });
       }
       this.gameService.movePlayer(gameRoomId);
@@ -976,7 +975,6 @@ export class Gateway
           gameRoom.isFinish === false
         ) {
           clearInterval(gameRoom.intervalId);
-          console.log('classic match');
           this.endGame(client, { gameRoomId });
         }
         this.gameService.movePlayer(gameRoomId);
