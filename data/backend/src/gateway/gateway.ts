@@ -1024,9 +1024,6 @@ export class Gateway
     const userStatus = await this.usersStatusService.getUserStatus(
       payload.coward,
     );
-    console.log(payload.coward);
-    console.log(client.id);
-    console.log(userStatus);
     if (!userStatus || userStatus.clientId !== client.id)
       throw new WsException('Forbidden');
     this.gameService.leaveGame(payload.gameRoomId, payload.coward);
