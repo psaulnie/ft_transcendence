@@ -1239,11 +1239,11 @@ export class Gateway
       currentStatus.status === userStatus.online &&
       client.id !== currentStatus.clientId
     ) {
-      client.disconnect();
-      return;
+      currentStatus.client.disconnect();
     }
     await this.usersStatusService.addUser(
       client.id,
+      client,
       user.username,
       userStatus.online,
     );

@@ -3,11 +3,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from 'src/entities';
 import { userStatus } from 'src/users/userStatus';
-
+import { Socket } from 'socket.io';
 @Injectable()
 export class UsersStatusService {
   private readonly usersStatus: {
     clientId: string;
+    client: Socket;
     username: string;
     status: userStatus;
     gameRoomId: string;
@@ -19,7 +20,7 @@ export class UsersStatusService {
     this.usersStatus = [];
   }
 
-  async addUser(clientId: string, username: string, status: userStatus) {
+  async addUser(clientId: string, client: Socket, username: string, status: userStatus) {
     const user = await this.userRepository.findOne({
       where: { username: username },
     });
@@ -30,11 +31,12 @@ export class UsersStatusService {
     if (userStatusIndex != -1)
       this.usersStatus[userStatusIndex] = {
         clientId,
+        client,
         username,
         status,
         gameRoomId: '',
       };
-    else this.usersStatus.push({ clientId, username, status, gameRoomId:'' });
+    else this.usersStatus.push({ clientId, client, username, status, gameRoomId:'' });
   }
 
   async changeUsername(old: string, newUsername: string) {
