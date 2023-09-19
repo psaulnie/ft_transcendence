@@ -113,7 +113,7 @@ export class UsersService {
     if (
       user.blockedUsers.find((obj) => obj.blockedUser.uid === blockedUser.uid)
     ) {
-      return;
+      return false;
     }
     user.friends = user.friends.filter((obj) => obj.uid !== blockedUser.uid);
     blockedUser.friends = blockedUser.friends.filter(
@@ -127,6 +127,7 @@ export class UsersService {
     user.blockedUsers.push(block);
     await this.blockedUserRepository.save(block);
     await this.usersRepository.save(user);
+    return true;
   }
 
   async unblockUser(user: User, blockedUser: User) {

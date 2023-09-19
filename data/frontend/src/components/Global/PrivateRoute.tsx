@@ -25,10 +25,10 @@ export default function PrivateRoute() {
         setIsLoading(false);
       });
     // TODO add when removing testUser
-    if (!user || !user.username) {
-      localStorage.removeItem("user");
-      window.location.href = `http://${import.meta.env.VITE_IP}:5000/auth/logout`;
-    }
+    // if (!user || !user.username) {
+    //   localStorage.removeItem("user");
+    //   window.location.href = `http://${import.meta.env.VITE_IP}:5000/auth/logout`;
+    // }
   };
 
   useEffect(() => {
