@@ -92,6 +92,10 @@ export class ProfileController {
         a.statistics.streak > b.statistics.streak
       )
         return -1;
+      else if (a.statistics.winNbr - a.statistics.loseNbr < b.statistics.winNbr - b.statistics.loseNbr)
+        return 1;
+      else if (a.statistics.winNbr - a.statistics.loseNbr > b.statistics.winNbr - b.statistics.loseNbr)
+        return -1;
       return 0;
     });
     const leaderboard = [];
@@ -99,19 +103,19 @@ export class ProfileController {
       leaderboard.push({
         username: bestUsers[0].username,
         score:
-          bestUsers[0].statistics.rank * 15 + bestUsers[0].statistics.streak,
+          bestUsers[0].statistics.rank * 10 + bestUsers[0].statistics.streak * 5 + bestUsers[0].statistics.winNbr - bestUsers[0].statistics.loseNbr,
       });
     if (users.length > 1)
       leaderboard.push({
         username: bestUsers[1].username,
         score:
-          bestUsers[1].statistics.rank * 15 + bestUsers[1].statistics.streak,
+          bestUsers[1].statistics.rank * 10 + bestUsers[1].statistics.streak * 5 + bestUsers[1].statistics.winNbr - bestUsers[1].statistics.loseNbr,
       });
     if (users.length > 2)
       leaderboard.push({
         username: bestUsers[2].username,
         score:
-          bestUsers[2].statistics.rank * 15 + bestUsers[2].statistics.streak,
+          bestUsers[2].statistics.rank * 10 + bestUsers[2].statistics.streak * 5 + bestUsers[2].statistics.winNbr - bestUsers[2].statistics.loseNbr,
       });
     return leaderboard;
   }
