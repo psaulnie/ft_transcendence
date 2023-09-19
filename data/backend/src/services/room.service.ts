@@ -33,6 +33,7 @@ export class RoomService {
     .leftJoinAndSelect('room.usersList', 'usersList')
     .leftJoinAndSelect('usersList.user', 'user')
     .where('user.username = :username', { username: username })
+    .andWhere('usersList.isBanned = false')
     .getCount());
   }
 

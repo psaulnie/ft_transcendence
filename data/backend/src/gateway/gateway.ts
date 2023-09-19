@@ -147,6 +147,11 @@ export class Gateway
     );
     if (!userStatus || userStatus.clientId !== client.id)
       throw new WsException('Forbidden');
+    const user = await this.userService.findOne(payload.source);
+    if (!user)
+      throw new WsException(payload.source + ' not found');
+    if (await this.roomService.isUserInRoom(payload.room, user.uid))
+      throw new WsException("You're already in that room");
     const roomsJoined = await this.roomService.findAllRoomUser(payload.source);
     if (roomsJoined >= 15)
       throw new WsException('You joined too many channels, leave some before creating a new one');
@@ -176,6 +181,8 @@ export class Gateway
     );
     if (!userStatus || userStatus.clientId !== client.id)
       throw new WsException('Forbidden');
+    if (await this.roomService.isUserInRoom(payload.room, user.uid))
+      throw new WsException("You're already in that room");
     const roomsJoined = await this.roomService.findAllRoomUser(payload.source);
     if (roomsJoined >= 15)
       throw new WsException('You joined too many channels, leave some before joining a new one');
@@ -205,7 +212,6 @@ export class Gateway
       role = userRole.owner;
     } else {
       // If room exists
-
       if (room.access == accessStatus.protected) {
         const roomPassword = await this.roomService.getPassword(payload.room);
         if (!(await comparePassword(payload.password, roomPassword))) {
