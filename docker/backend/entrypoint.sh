@@ -1,3 +1,3 @@
-mv /default.jpg /avatars/default.jpg
+cp /default.jpg /avatars/default.jpg
 npm install
 npm run start:dev

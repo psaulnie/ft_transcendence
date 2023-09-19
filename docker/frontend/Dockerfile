@@ -2,6 +2,8 @@ FROM node:latest
 
 WORKDIR /app
 
+RUN npm update -g npm
+
 COPY entrypoint.sh ../
 
 ARG IP
