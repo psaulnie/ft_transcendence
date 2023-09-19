@@ -137,6 +137,14 @@ export class Gateway
       payload.source == null
     )
       throw new WsException('Missing parameter');
+    const userStatus = await this.usersStatusService.getUserStatus(
+      payload.source,
+    );
+    if (!userStatus || userStatus.clientId !== client.id)
+      throw new WsException('Forbidden');
+    const roomsJoined = await this.roomService.findAllRoomUser(payload.source);
+    if (roomsJoined >= 15)
+      throw new WsException('You joined too many channels, leave some before creating a new one');
     const room = await this.roomService.findOne(payload.room);
     if (!room) this.joinRoom(client, payload);
     else
@@ -163,6 +171,9 @@ export class Gateway
     );
     if (!userStatus || userStatus.clientId !== client.id)
       throw new WsException('Forbidden');
+    const roomsJoined = await this.roomService.findAllRoomUser(payload.source);
+    if (roomsJoined >= 15)
+      throw new WsException('You joined too many channels, leave some before joining a new one');
     let hasPassword = false;
     let role = userRole.none;
     if (payload.room.length > 10) payload.room = payload.room.slice(0, 10);
