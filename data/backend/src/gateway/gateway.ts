@@ -61,10 +61,10 @@ export class Gateway
     const user = await this.userService.findOne(payload.source);
     console.log('sendprivmsg');
     if (!user) throw new WsException(payload.source + ' not found');
-    const userStatus = await this.usersStatusService.getUserStatus(
+    const cUserStatus = await this.usersStatusService.getUserStatus(
       payload.source,
     );
-    if (!userStatus || userStatus.clientId !== client.id)
+    if (!cUserStatus || cUserStatus.clientId !== client.id)
       throw new WsException('Forbidden');
     const targetUser = await this.userService.findOne(payload.target);
     if (!targetUser) throw new WsException(payload.target + ' not found');
@@ -73,12 +73,17 @@ export class Gateway
         (blockedUser) => blockedUser.blockedUser.uid === user.uid,
       )
     ) {
+      // TODO maybe a duplicate
       this.server.emit(client.id, {
         source: payload.source,
         target: payload.target,
         action: actionTypes.blockedmsg,
       });
       throw new WsException(payload.target + ' blocked you');
+    }
+    const targetStatus = await this.usersStatusService.getUserStatus(targetUser.username);
+    if (!targetStatus || targetStatus.status === userStatus.offline) {
+      throw new WsException(targetUser.username + ' is offline');
     }
     this.server.emit(payload.target, {
       source: payload.source,
@@ -1137,9 +1142,16 @@ export class Gateway
     }
     if (userStatus.clientId !== client.id) throw new WsException('Forbidden');
     const user = await this.userService.findOne(userStatus.username);
+    const oldUsername = user.username;
     if (!user) throw new WsException(userStatus + ' not found');
     await this.userService.changeUsername(user, payload);
     await this.usersStatusService.changeUsername(userStatus.username, payload);
+    this.server.emit("newUsername", {
+      source: oldUsername,
+      target: payload,
+      action: actionTypes.msg,
+      isDirectMessage: true,
+    });
     this.server.emit(client.id, {
       newUsername: payload,
       action: actionTypes.newUsername,

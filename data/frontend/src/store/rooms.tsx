@@ -77,6 +77,11 @@ export const roomsSlice = createSlice({
       if (state.room.length === 0) state.index = -1;
       else if (state.index !== 0) state.index--;
     },
+    updateRoomName: (state, action: PayloadAction<{oldName: string, newName: string}>) => {
+      const room = state.room.find((obj) => obj.name === action.payload.oldName);
+      if (!room) return ;
+      room.name = action.payload.newName;
+    },
     changeRole: (state, action: PayloadAction<roomType>) => {
       const roomIndex = state.room.findIndex(
         (obj: roomType) => obj.name === action.payload.name,
@@ -154,6 +159,7 @@ export const roomsSlice = createSlice({
 export const {
   addRoom,
   removeRoom,
+  updateRoomName,
   changeRole,
   quitAll,
   addMsg,
