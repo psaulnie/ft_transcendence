@@ -1,8 +1,11 @@
 import { Navigate, Outlet } from "react-router";
 import { useEffect, useState } from "react";
 import Loading from "./Loading";
+import { useSelector } from "react-redux";
+import Cookies from "js-cookie";
 
 export default function PrivateRoute() {
+  const user = useSelector((state: any) => state.user);
   const [isLoading, setIsLoading] = useState(true);
   const [isOk, setIsOk] = useState(false);
 
@@ -22,10 +25,10 @@ export default function PrivateRoute() {
         setIsLoading(false);
       });
     // TODO add when removing testUser
-    // if (!user || !user.username) {
-    //   localStorage.removeItem("user");
-    //   window.location.href = `http://${import.meta.env.VITE_IP}:5000/auth/logout`;
-    // }
+    if (!user || !user.username) {
+      localStorage.removeItem("user");
+      window.location.href = `http://${import.meta.env.VITE_IP}:5000/auth/logout`;
+    }
   };
 
   useEffect(() => {

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button, Snackbar } from "@mui/material";
 import { Alert } from "@mui/material";
 import CachedIcon from "@mui/icons-material/Cached";
+import Cookies from "js-cookie";
 
 export default function ErrorSnackbar({ error }: { error: any }) {
   const [message, setMessage] = useState("Unknown error");

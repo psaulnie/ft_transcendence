@@ -16,6 +16,7 @@ import { MatchHistory } from 'src/entities/matchHistory.entity';
 import { Achievements } from 'src/entities/achievements.entity';
 import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerGuard } from '@nestjs/throttler';
+import { UsersStatusService } from 'src/services/users.status.service';
 
 @Module({
   controllers: [AuthController, TwoFactorAuthController],
@@ -31,6 +32,7 @@ import { ThrottlerGuard } from '@nestjs/throttler';
       useClass: ThrottlerGuard,
     },
     UsersService,
+    UsersStatusService,
     TwoFactorAuthService,
     ConfigService,
     AuthService,

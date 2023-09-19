@@ -1144,7 +1144,7 @@ export class Gateway
     const cUserStatus = await this.usersStatusService.getUserStatusByClientId(
       client.id,
     );
-    if (!cUserStatus || cUserStatus.status !== userStatus.playing) throw new WsException('Forbidden');
+    if (!cUserStatus || cUserStatus.status !== userStatus.playing) return ;
     this.gameService.leaveGame(cUserStatus.gameRoomId, cUserStatus.username);
   }
 
@@ -1266,7 +1266,16 @@ export class Gateway
       currentStatus.status === userStatus.online &&
       client.id !== currentStatus.clientId
     ) {
+      console.log(currentStatus);
+      await this.usersStatusService.addUser(
+        client.id,
+        client,
+        user.username,
+        userStatus.offline,
+      );
       currentStatus.client.disconnect();
+      client.disconnect();
+      return ;
     }
     await this.usersStatusService.addUser(
       client.id,

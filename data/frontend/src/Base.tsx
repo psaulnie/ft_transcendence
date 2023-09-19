@@ -16,6 +16,7 @@ import EditProfile from "./components/Profile/EditProfile";
 import Friendlist from "./components/Friendlist/Friendlist";
 import webSocketManager from "./webSocket";
 import { useLazyGetUserRankQuery } from "./store/api";
+import Cookies from "js-cookie";
 
 export default function Base() {
   const user = useSelector((state: any) => state.user);

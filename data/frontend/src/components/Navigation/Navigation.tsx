@@ -15,6 +15,7 @@ import CustomAvatar from "../Global/CustomAvatar";
 import { useNavigate } from "react-router-dom";
 import { SyntheticEvent } from "react";
 import { apiSlice } from "../../store/api";
+import ErrorSnackbar from "../Global/ErrorSnackbar";
 
 function Navigation({ setDrawerState }: { setDrawerState: any }) {
   const user = useSelector((state: any) => state.user);
@@ -48,6 +49,7 @@ function Navigation({ setDrawerState }: { setDrawerState: any }) {
     }
   }, [query]);
 
+  if (query.isError) return <ErrorSnackbar error={query.error} />;
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar
