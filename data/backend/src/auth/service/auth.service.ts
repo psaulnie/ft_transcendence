@@ -27,8 +27,8 @@ export class AuthService implements AuthProvider {
     const user = await this.userRepo.findOneBy({ intraId });
     console.log('‣ Found user in db', user);
     if (user) {
-      if (1) {
-        const url = await firstValueFrom(
+      if (user.urlAvatar === '' || user.urlAvatar === null) {
+        const url: any = await firstValueFrom(
           this.httpService
             .get('https://api.intra.42.fr/v2/me', {
               headers: {
@@ -63,7 +63,7 @@ export class AuthService implements AuthProvider {
 
     // TODO remove condition, it's only for userTest
     if (details.username !== 'userTest') {
-      const url = await firstValueFrom(
+      const url: any = await firstValueFrom(
         this.httpService
           .get('https://api.intra.42.fr/v2/me', {
             headers: {

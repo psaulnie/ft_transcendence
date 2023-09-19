@@ -7,6 +7,12 @@ import Switch from "@mui/material/Switch";
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
+import TextField from '@mui/material/TextField';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 
 import orange from "../Game/img/orange.jpg";
 import scooby from "../Game/img/scooby.jpg";
@@ -18,6 +24,9 @@ import webSocketManager from "../../webSocket";
 
 function Settings() {
   const [twoFactorAuthState, setTwoFactorAuthState] = useState<boolean>(false);
+  const [open, setOpen] = React.useState(false);
+  const [twoFactorAuthCode, setTwoFactorAuthCode] = useState("");
+  const [error, setError] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const spongebobStyle = {
@@ -67,10 +76,18 @@ function Settings() {
     checkTwoFactorState();
   }, []);
 
-  async function changeTwoFactorAuthState() {
+  async function askForChangeTwoFactorAuthState() {
+    const newState = !twoFactorAuthState;
+    setTwoFactorAuthState(newState);
+    if (!newState) {
+      handleClickOpen();
+    } else {
+      await changeTwoFactorAuthState(newState);
+    }
+  }
+
+  async function changeTwoFactorAuthState(state: boolean) {
     try {
-      const newState = !twoFactorAuthState;
-      setTwoFactorAuthState(newState);
       const response = await fetch(
         `http://${import.meta.env.VITE_IP}:5000/2fa/changeState`,
         {
@@ -79,17 +96,55 @@ function Settings() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ twoFactorAuthState: newState }),
+          body: JSON.stringify({ twoFactorAuthState: state }),
         }
       );
       if (!response.ok) {
         console.error("Failed to fetch state of 2FA");
       }
-      if (newState) {
+      if (state) {
         navigate("/2fa");
       }
     } catch (error) {
       console.error("Error: ", error);
+    }
+  }
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setTwoFactorAuthState(true);
+    setError(false);
+  };
+
+  async function validateTwoFactorAuthCode() {
+    try {
+      const response = await fetch(
+        `http://${import.meta.env.VITE_IP}:5000/2fa/authenticate`,
+        {
+          method: "post",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ twoFactorAuthCode: twoFactorAuthCode }),
+        }
+      );
+      const data = await response.json();
+      if (response.ok && data.status !== "codeError") {
+        await changeTwoFactorAuthState(false);
+        setError(false);
+        setOpen(false);
+      } else {
+        console.log("Wrong authentication code");
+        setError(true);
+      }
+    } catch (error) {
+      console.error("Error: ", error);
+      navigate("/login");
     }
   }
 
@@ -213,7 +268,7 @@ function Settings() {
                       <Switch
                         color="warning"
                         checked={twoFactorAuthState}
-                        onChange={changeTwoFactorAuthState}
+                        onChange={askForChangeTwoFactorAuthState}
                         inputProps={{ "aria-label": "controlled" }}
                       />
                     }
@@ -228,6 +283,35 @@ function Settings() {
           </Grid>
         </Box>
       </Grid>
+
+      <div>
+        <Dialog open={open} onClose={handleClose}>
+          <DialogTitle>Two Factor Authentication</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              To disable two factor authentication, please enter your validation code
+            </DialogContentText>
+            <TextField
+              autoFocus
+              placeholder="Validation code"
+              margin="dense"
+              id="code"
+              value={twoFactorAuthCode}
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                setTwoFactorAuthCode(event.target.value);
+              }}
+              variant="outlined"
+            />
+            {error && (
+              <p style={{ color: "red" }}>Incorrect code, please try again.</p>
+            )}
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose}>Cancel</Button>
+            <Button onClick={validateTwoFactorAuthCode}>Validate</Button>
+          </DialogActions>
+        </Dialog>
+      </div>
     </Grid>
   );
 }
