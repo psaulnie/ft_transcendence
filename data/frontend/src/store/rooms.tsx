@@ -100,6 +100,9 @@ export const roomsSlice = createSlice({
       if (roomIndex !== -1) {
         state.room[roomIndex].messages.push(action.payload.message);
         state.room[roomIndex].unread = (roomIndex !== state.index);
+        if (state.room[roomIndex].messages.length >= 50) {
+          state.room[roomIndex].messages.shift();
+        }
       } else {
         state.room.push({
           name: action.payload.name,
