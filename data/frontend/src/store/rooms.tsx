@@ -66,7 +66,7 @@ export const roomsSlice = createSlice({
           usersList: [],
           isMuted: false,
         });
-        if (action.payload.openTab || state.index === -1) state.index++;
+        if (state.index === -1) state.index++;
       } else if (roomIndex !== -1 && action.payload.openTab)
         state.index = roomIndex;
     },
