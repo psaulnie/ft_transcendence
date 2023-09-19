@@ -7,6 +7,12 @@ import Switch from "@mui/material/Switch";
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
+import TextField from '@mui/material/TextField';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 
 import orange from "../Game/img/orange.jpg";
 import scooby from "../Game/img/scooby.jpg";
@@ -18,6 +24,7 @@ import webSocketManager from "../../webSocket";
 
 function Settings() {
   const [twoFactorAuthState, setTwoFactorAuthState] = useState<boolean>(false);
+  const [open, setOpen] = React.useState(false);
   const navigate = useNavigate();
 
   const spongebobStyle = {
@@ -71,6 +78,9 @@ function Settings() {
     try {
       const newState = !twoFactorAuthState;
       setTwoFactorAuthState(newState);
+      if (!newState) {
+        handleClickOpen();
+      }
       const response = await fetch(
         `http://${import.meta.env.VITE_IP}:5000/2fa/changeState`,
         {
@@ -92,6 +102,14 @@ function Settings() {
       console.error("Error: ", error);
     }
   }
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   return (
     <Grid
@@ -228,6 +246,28 @@ function Settings() {
           </Grid>
         </Box>
       </Grid>
+
+      <div>
+        <Dialog open={open} onClose={handleClose}>
+          <DialogTitle>Two Factor Authentication</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              To disable two factor authentication, please enter your validation code here
+            </DialogContentText>
+            <TextField
+              autoFocus
+              margin="dense"
+              id="name"
+              label="Code"
+              variant="standard"
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose}>Cancel</Button>
+            <Button onClick={handleClose}>Validate</Button>
+          </DialogActions>
+        </Dialog>
+      </div>
     </Grid>
   );
 }
