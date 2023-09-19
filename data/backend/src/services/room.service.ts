@@ -28,6 +28,14 @@ export class RoomService {
     });
   }
 
+  async findAllRoomUser(username: string): Promise<number> {
+    return (await this.roomsRepository.createQueryBuilder('room')
+    .leftJoinAndSelect('room.usersList', 'usersList')
+    .leftJoinAndSelect('usersList.user', 'user')
+    .where('user.username = :username', { username: username })
+    .getCount());
+  }
+
   async createRoom(
     name: string,
     user: User,
@@ -108,7 +116,7 @@ export class RoomService {
       await this.usersListRepository.save(room.usersList[0]);
     }
     await this.roomsRepository.save(room);
-    return (room.owner);
+    return room.owner;
   }
 
   async removeRoom(name: string) {
