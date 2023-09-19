@@ -29,7 +29,7 @@ export default function NavDrawer({
 
   const handleSettingsClick = () => {
     toggleDrawer(false);
-    navigate("/options");
+    navigate("/settings");
   };
 
   return (

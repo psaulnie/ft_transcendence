@@ -71,7 +71,7 @@ export default function Base() {
         <Route path="/home" element={<Home />}></Route>
         <Route path="/profile/:username" element={<Profile />}></Route>
         <Route path="/game/*" element={<Game />}></Route>
-        <Route path="/options" element={<Settings />}></Route>
+        <Route path="/settings" element={<Settings />}></Route>
         <Route
           path="/profile/:username/achievements"
           element={<Achievements />}

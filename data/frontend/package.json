@@ -13,8 +13,6 @@
     "@testing-library/user-event": "^13.5.0",
     "@types/react": "^18.2.5",
     "@types/react-dom": "^18.2.3",
-    "@types/socket.io": "^3.0.2",
-    "@types/socket.io-client": "^3.0.0",
     "@vitejs/plugin-react-swc": "^3.3.2",
     "http-proxy-middleware": "^2.0.6",
     "js-cookie": "^3.0.5",

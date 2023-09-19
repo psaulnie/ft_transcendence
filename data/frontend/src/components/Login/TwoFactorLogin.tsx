@@ -100,7 +100,7 @@ function TwoFactorLogin() {
       const data = await response.json();
       if (response.ok && data.status !== "codeError") {
         setError(false);
-        navigate("/home");
+        navigate("/settings");
       } else {
         setError(true);
       }
