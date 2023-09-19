@@ -38,7 +38,7 @@ function Chat() {
     if (blockedUsers.status === "uninitialized") {
       fetchBlockedUsers({});
     }
-
+    console.log(blockedUsers);
     if (blockedUsers.isSuccess && blockedUsers.data) {
       blockedUsers.data.forEach((element: any) => {
         dispatch(addBlockedUser(element));
