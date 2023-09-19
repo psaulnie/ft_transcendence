@@ -2,13 +2,9 @@ FROM node:latest
 
 RUN mkdir /avatars
 
+RUN npm update -g npm
+
 WORKDIR /app
-
-#check if needed
-#RUN npm install --save-dev @nestjs/typeorm typeorm
-#RUN npm install --save-dev @nestjs/websockets @nestjs/platform-socket.io
-
-#RUN npm install
 
 COPY entrypoint.sh ../
 
