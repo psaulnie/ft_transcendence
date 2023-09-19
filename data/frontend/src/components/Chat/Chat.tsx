@@ -38,7 +38,7 @@ function Chat() {
     if (blockedUsers.status === "uninitialized") {
       fetchBlockedUsers({});
     }
-    console.log(blockedUsers);
+
     if (blockedUsers.isSuccess && blockedUsers.data) {
       blockedUsers.data.forEach((element: any) => {
         dispatch(addBlockedUser(element));
@@ -59,7 +59,7 @@ function Chat() {
             isDirectMsg: false,
             isMuted: element.isMuted,
             openTab: false,
-          }),
+          })
         );
       });
 
@@ -77,8 +77,9 @@ function Chat() {
   ]);
 
   if (blockedUsers.isError) return <ErrorSnackbar error={blockedUsers.error} />;
-  else if (userRoomList.isError) return <ErrorSnackbar error={userRoomList.error} />;
-  else if (blockedUsers.isLoading || userRoomList.isLoading) return (<Loading />)
+  else if (userRoomList.isError)
+    return <ErrorSnackbar error={userRoomList.error} />;
+  else if (blockedUsers.isLoading || userRoomList.isLoading) return <Loading />;
 
   return (
     <div className="chat">
