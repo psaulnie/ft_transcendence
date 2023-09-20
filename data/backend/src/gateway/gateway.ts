@@ -183,6 +183,8 @@ export class Gateway
     );
     if (!userStatus || userStatus.clientId !== client.id)
       throw new WsException('Forbidden');
+    if (await this.roomService.isUserBanned(payload.room, user.uid))
+      throw new WsException("You're banned from that room");
     if (await this.roomService.isUserInRoom(payload.room, user.uid))
       throw new WsException("You're already in that room");
     const roomsJoined = await this.roomService.findAllRoomUser(payload.source);
