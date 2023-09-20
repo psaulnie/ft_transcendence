@@ -31,8 +31,8 @@
   },
   "scripts": {
     "start": "vite --host",
-    "build": "tsc && vite build --host",
-    "serve": "vite preview",
+    "build": "vite build",
+    "serve": "vite preview --host",
     "test": "vitest",
     "test:coverage": "vitest run --coverage --watch=false"
   },
