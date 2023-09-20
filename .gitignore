@@ -4,3 +4,5 @@ data/database/
 data/avatars/
 data/avatar
 .vscode/
+data/frontend/dist
+data/backend/dist
