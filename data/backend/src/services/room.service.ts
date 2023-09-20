@@ -99,7 +99,7 @@ export class RoomService {
   async removeUser(room: Room, userId: number): Promise<User> {
     console.log('removeuser');
     console.log('-1 user in ' + room.roomName);
-    if (room.usersList.find((obj) => obj.user.uid == userId))
+    if (room.usersList.find((obj) => obj.user.uid == userId && obj.isBanned === false))
       room.usersNumber--;
     console.log('number of users:' + room.usersNumber);
     if (room.usersNumber <= 0) {
