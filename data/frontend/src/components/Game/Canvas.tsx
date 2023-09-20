@@ -114,6 +114,7 @@ export default function Canvas({
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext("2d");
     dispatch(setIsPlaying(true));
+
     function process(value: any) {
       if (value.coward !== null) {
         ctx?.clearRect(0, 0, canvas!.width, canvas!.height);
