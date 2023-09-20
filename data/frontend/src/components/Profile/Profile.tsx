@@ -6,6 +6,7 @@ import Loading from "../Global/Loading";
 import ErrorSnackbar from "../Global/ErrorSnackbar";
 import BorderColorIcon from '@mui/icons-material/BorderColor';
 import {grey} from "@mui/material/colors";
+import { useEffect } from "react";
 
 function Profile() {
   const {username} = useParams();
@@ -18,7 +19,12 @@ function Profile() {
     isLoading,
     error,
     isError,
+    refetch,
   } = useGetUserProfileQuery({username}, {skip: !username});
+
+  useEffect(() => {
+    refetch();
+  }, [refetch]);
 
   const handleAchievementsClick = () => {
     navigate(`/profile/${username}/achievements`);
