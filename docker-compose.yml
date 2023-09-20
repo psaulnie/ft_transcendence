@@ -3,13 +3,16 @@ services:
   database:
     env_file:
       - .env
+    environment:
+      - PGDATA=/var/lib/postgresql/data/db
     container_name: database
+    user: postgres
     image: postgres:latest
-    volumes:
-      - ./data/database:/data
     networks:
       - ft_transcendence
-    # restart: on-failure
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    restart: on-failure
   frontend:
     env_file:
       - .env
@@ -26,7 +29,7 @@ services:
       - ./data/frontend:/app
     networks:
       - ft_transcendence
-    # restart: on-failure
+    restart: on-failure
   backend:
     container_name: backend
     image: backend
@@ -42,7 +45,9 @@ services:
       - ./data/avatars:/avatars
     networks:
       - ft_transcendence
-    # restart: on-failure
+    restart: on-failure
 networks:
   ft_transcendence:
     driver: bridge
+volumes:
+  db_data:

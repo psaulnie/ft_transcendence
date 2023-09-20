@@ -1236,11 +1236,12 @@ export class Gateway
     const user = await this.userService.findOne(userStatusTmp.username);
     if (userStatusTmp.status === userStatus.playing) {
       const gameRoom = this.gameService.getGameRoom(userStatusTmp.gameRoomId);
-      if (!gameRoom) throw new WsException('Game Room not found');
-      gameRoom.coward = userStatusTmp.username;
-      const gameRoomId = userStatusTmp.gameRoomId;
-      await this.gameService.leaveGame(userStatusTmp.gameRoomId, user.username);
-      await this.endGame(client, {gameRoomId: gameRoomId});
+      if (gameRoom) {
+        gameRoom.coward = userStatusTmp.username;
+        const gameRoomId = userStatusTmp.gameRoomId;
+        await this.gameService.leaveGame(userStatusTmp.gameRoomId, user.username);
+        await this.endGame(client, {gameRoomId: gameRoomId});
+      }
     }
     this.askFriend = this.askFriend.filter((obj) => obj.id !== client.id);
     this.invitedChat = this.invitedChat.filter((obj) => obj.id !== client.id);
