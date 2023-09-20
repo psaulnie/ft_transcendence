@@ -47,12 +47,15 @@ export class ChatController {
   @Get('user/blocked')
   async getBlockedUser(@Req() req: RequestWithUser): Promise<string[]> {
     console.log('getBlockedUser');
-    const user = req.user as User;
+    const cUser = req.user as User;
+    if (!cUser) throw new HttpException("Unprocessable Entity", 422);
+    const user = await this.userService.findOne(cUser.username);
     if (!user) throw new HttpException('Unprocessable Entity', 422);
     const usersList = [];
     const blockedUsers = user.blockedUsers;
     let userBlocked: User;
     for (const element of blockedUsers) {
+      console.log(element);
       if (element) {
         userBlocked = await this.userService.findOneById(
           element.blockedUser.uid,

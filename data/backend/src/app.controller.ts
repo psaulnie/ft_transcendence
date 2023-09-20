@@ -80,7 +80,7 @@ export class AppController {
     const user = req.user as User;
     if (body && file) {
       if (!validImage(file)) {
-        throw new HttpException('Unprocessable Entity', 400);
+        throw new HttpException('Wrong image format', 400);
       }
       if (user) {
         const path = '/avatars/';

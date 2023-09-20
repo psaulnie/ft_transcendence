@@ -28,8 +28,7 @@ export class TwoFactorAuthController {
   @Post('getState')
   @HttpCode(200)
   async getTwoFactorAuthState(@Req() request: RequestWithUser) {
-    if (!request.isAuthenticated())
-      return (false);
+    if (!request.isAuthenticated()) return false;
     return await this.usersService.getTwoFactorAuthState(request.user.uid);
   }
 
@@ -93,7 +92,7 @@ export class TwoFactorAuthController {
     }
     await this.usersService.turnOnTwoFactorAuth(request.user.uid);
     await this.usersService.setIsTwoFactorAuthenticated(request.user.uid, true);
-    return { status: 'success', message: '2FA is turned on.' };
+    return { status: 'success', message: '2FA is turned on' };
   }
 
   @Get('status')
@@ -123,6 +122,6 @@ export class TwoFactorAuthController {
       };
     }
     await this.usersService.setIsTwoFactorAuthenticated(request.user.uid, true);
-    return request.user;
+    return { status: 'success', message: 'User authenticated with 2FA' };
   }
 }

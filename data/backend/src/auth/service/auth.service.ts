@@ -10,6 +10,7 @@ import { catchError } from 'rxjs';
 import { UnauthorizedException } from '@nestjs/common';
 import { Statistics } from 'src/entities/stats.entity';
 import { Achievements } from 'src/entities/achievements.entity';
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class AuthService implements AuthProvider {
@@ -27,7 +28,7 @@ export class AuthService implements AuthProvider {
     console.log('‣ Found user in db', user);
     if (user) {
       if (user.urlAvatar === '' || user.urlAvatar === null) {
-        const url = await firstValueFrom(
+        const url: any = await firstValueFrom(
           this.httpService
             .get('https://api.intra.42.fr/v2/me', {
               headers: {
@@ -40,7 +41,9 @@ export class AuthService implements AuthProvider {
               }),
             ),
         );
-        user.urlAvatar = url.data.image.versions.small;
+        details.urlAvatar = url?.data?.image?.link;
+        if (!details.urlAvatar)
+              details.urlAvatar = '';
       }
       user.accessToken = accessToken;
       user.refreshToken = refreshToken;
@@ -60,7 +63,7 @@ export class AuthService implements AuthProvider {
 
     // TODO remove condition, it's only for userTest
     if (details.username !== 'userTest') {
-      const url = await firstValueFrom(
+      const url: any = await firstValueFrom(
         this.httpService
           .get('https://api.intra.42.fr/v2/me', {
             headers: {
@@ -73,12 +76,17 @@ export class AuthService implements AuthProvider {
             }),
           ),
       );
-      details.urlAvatar = url.data.image.versions.small;
+      details.urlAvatar = url?.data?.image?.link;
+      if (!details.urlAvatar)
+            details.urlAvatar = '';
     }
 
     const achievements = new Achievements();
     const statistics = new Statistics();
 
+    while (await this.userRepo.findOne({ where: { username: details.username } })) {
+      details.username = randomUUID().slice(0, 8);
+    }
     const user = this.userRepo.create(details);
     user.achievements = achievements;
     user.statistics = statistics;
