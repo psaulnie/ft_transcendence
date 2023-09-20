@@ -7,8 +7,6 @@ services:
       - PGDATA=/var/lib/postgresql/data/db
     container_name: database
     user: postgres
-    build:
-      context: docker/database
     image: postgres:latest
     networks:
       - ft_transcendence
