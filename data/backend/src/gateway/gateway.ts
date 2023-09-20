@@ -1169,6 +1169,7 @@ export class Gateway
   async changeUsername(client: Socket, payload: string) {
     console.log('changeusername');
     if (payload.length > 10) payload = payload.substring(0, 10);
+    payload = payload.replace(/[^a-z0-9]/gi, '');
     const userStatus = await this.usersStatusService.getUserStatusByClientId(
       client.id,
     );
