@@ -243,4 +243,13 @@ export class RoomService {
     const room = await this.findOne(roomName);
     return !(!room || !room.usersList.find((obj) => obj.user.uid == userID));
   }
+
+  async isUserBanned(roomName: string, userID: number): Promise<boolean> {
+    console.log('isuserbanned');
+    const room = await this.findOne(roomName);
+    if (!room) return false;
+    const usersList = room.usersList.find((obj) => obj.user.uid == userID );
+    if (!usersList) return false;
+    return usersList.isBanned;
+  }
 }
