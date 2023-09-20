@@ -1024,7 +1024,7 @@ export class Gateway
 
   async endGame(client: Socket, payload: { gameRoomId: string }) {
     const gameRoom = this.gameService.getGameRoom(payload.gameRoomId);
-    if (!gameRoom) throw new WsException('Game Room not found');
+    if (!gameRoom) return ;
     if (gameRoom.isFinish === true) return;
     let userW;
     let userL;
@@ -1153,8 +1153,12 @@ export class Gateway
     const cUserStatus = await this.usersStatusService.getUserStatusByClientId(
       client.id,
     );
-    if (!cUserStatus || cUserStatus.status !== userStatus.playing) return;
-    this.gameService.leaveGame(cUserStatus.gameRoomId, cUserStatus.username);
+    if (!cUserStatus || cUserStatus.status !== userStatus.playing) return ;
+    const gameRoom = this.gameService.getGameRoom(cUserStatus.gameRoomId);
+    if (!gameRoom) throw new WsException('Game Room not found');
+    gameRoom.coward = cUserStatus.username;
+    await this.gameService.leaveGame(cUserStatus.gameRoomId, cUserStatus.username);
+    await this.endGame(client, {gameRoomId: cUserStatus.gameRoomId});
   }
 
   /*
@@ -1231,7 +1235,12 @@ export class Gateway
     if (!userStatusTmp) return;
     const user = await this.userService.findOne(userStatusTmp.username);
     if (userStatusTmp.status === userStatus.playing) {
+      const gameRoom = this.gameService.getGameRoom(userStatusTmp.gameRoomId);
+      if (!gameRoom) throw new WsException('Game Room not found');
+      gameRoom.coward = userStatusTmp.username;
+      const gameRoomId = userStatusTmp.gameRoomId;
       await this.gameService.leaveGame(userStatusTmp.gameRoomId, user.username);
+      await this.endGame(client, {gameRoomId: gameRoomId});
     }
     this.askFriend = this.askFriend.filter((obj) => obj.id !== client.id);
     this.invitedChat = this.invitedChat.filter((obj) => obj.id !== client.id);
@@ -1270,7 +1279,7 @@ export class Gateway
     );
     if (
       currentStatus &&
-      currentStatus.status === userStatus.online &&
+      currentStatus.status !== userStatus.offline &&
       client.id !== currentStatus.clientId
     ) {
       await this.usersStatusService.addUser(
@@ -1279,9 +1288,19 @@ export class Gateway
         user.username,
         userStatus.offline,
       );
+      if (currentStatus.status === userStatus.playing) {
+        const gameRoom = this.gameService.getGameRoom(currentStatus.gameRoomId);
+        if (!gameRoom) throw new WsException('Game Room not found');
+        gameRoom.coward = currentStatus.username;
+        await this.gameService.leaveGame(currentStatus.gameRoomId, currentStatus.username);
+        await this.endGame(client, {gameRoomId: currentStatus.gameRoomId});
+      }
       currentStatus.client.disconnect();
       client.disconnect();
-      return;
+      this.askFriend = this.askFriend.filter((obj) => obj.id !== client.id);
+      this.invitedChat = this.invitedChat.filter((obj) => obj.id !== client.id);
+      this.invitedPong = this.invitedPong.filter((obj) => obj.id !== client.id);
+      return ;
     }
     await this.usersStatusService.addUser(
       client.id,
