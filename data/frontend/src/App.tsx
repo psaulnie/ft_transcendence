@@ -38,7 +38,7 @@ function App() {
     }
     dispatch(setUsername(username));
     dispatch(login());
-    Cookies.remove("username", {sameSite: 'none', secure: true});
+    Cookies.remove("username", {sameSite: 'strict', secure: false});
   }, [dispatch]);
 
   return (
