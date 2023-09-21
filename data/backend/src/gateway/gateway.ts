@@ -948,7 +948,9 @@ export class Gateway
         clearInterval(gameRoom.intervalId);
         this.endGame(client, { gameRoomId });
       }
-      this.gameService.movePlayer(gameRoomId);
+      this.gameService.movePlayer(gameRoomId, false);
+      this.gameService.movePlayer(gameRoomId, true);
+      this.gameService.moveBall(gameRoomId);
       this.server.emit('game' + gameRoomId, {
         playerY: gameRoom.player1.Y,
         enemyY: gameRoom.player2.Y,
@@ -1013,7 +1015,9 @@ export class Gateway
           clearInterval(gameRoom.intervalId);
           this.endGame(client, { gameRoomId });
         }
-        this.gameService.movePlayer(gameRoomId);
+        this.gameService.movePlayer(gameRoomId, false);
+        this.gameService.movePlayer(gameRoomId, true);
+        this.gameService.moveBall(gameRoomId);
         this.server.emit('game' + gameRoomId, {
           playerY: gameRoom.player1.Y,
           enemyY: gameRoom.player2.Y,
