@@ -58,6 +58,8 @@ export class Gateway
     )
       throw new WsException('Missing parameter');
     if (payload.data.length > 50) payload.data = payload.data.slice(0, 50);
+    console.log(payload);
+    payload.target = payload.target.slice(0, -1);
     const user = await this.userService.findOne(payload.source);
     console.log('sendprivmsg');
     if (!user) throw new WsException(payload.source + ' not found');
@@ -87,7 +89,7 @@ export class Gateway
     if (!targetStatus || targetStatus.status === userStatus.offline) {
       throw new WsException(targetUser.username + ' is offline');
     }
-    this.server.emit(payload.target, {
+    this.server.emit(payload.target + '⌲', {
       source: payload.source,
       target: payload.target,
       action: actionTypes.msg,
@@ -148,6 +150,9 @@ export class Gateway
     );
     if (!userStatus || userStatus.clientId !== client.id)
       throw new WsException('Forbidden');
+    const newName = payload.room.replace(/[^a-z0-9]/gi, '');
+    if (newName !== payload.room)
+      throw new WsException('Room name must be alphanumeric');
     const user = await this.userService.findOne(payload.source);
     if (!user) throw new WsException(payload.source + ' not found');
     if (await this.roomService.isUserInRoom(payload.room, user.uid))
@@ -174,6 +179,10 @@ export class Gateway
       payload.source == null
     )
       throw new WsException('Missing parameter');
+    if (payload.room.length > 10) payload.room = payload.room.slice(0, 10);
+    const newName = payload.room.replace(/[^a-z0-9]/gi, '');
+    if (newName !== payload.room)
+      throw new WsException('Room name must be alphanumeric');
     if (payload.access == accessStatus.protected && payload.password == null)
       throw new WsException('Missing parameter');
     const user = await this.userService.findOne(payload.source);
@@ -289,7 +298,7 @@ export class Gateway
     const user = await this.userService.findOne(payload.source);
     if (!user) throw new WsException(payload.source + ' not found');
     const room = await this.roomService.findOne(payload.room);
-    if (!room) throw new WsException('Room not found');
+    if (!room) return ;
     const previousOwner = room.owner.uid;
     const owner = await this.roomService.removeUser(room, user.uid);
     const ownerStatus = await this.usersStatusService.getUserStatus(

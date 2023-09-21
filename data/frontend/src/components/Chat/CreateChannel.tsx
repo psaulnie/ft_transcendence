@@ -48,7 +48,7 @@ function CreateChannel() {
     event.preventDefault();
     if (
       !rooms.room.find(
-        (obj: { name: string; role: userRole }) => obj.name === newRoomName,
+        (obj: { name: string; role: userRole, isDirectMsg: boolean }) => obj.name === newRoomName && obj.isDirectMsg === false,
       )
     ) {
       if (access === accessStatus.protected) {

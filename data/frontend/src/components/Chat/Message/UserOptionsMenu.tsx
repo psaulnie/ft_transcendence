@@ -64,7 +64,7 @@ export default function UserOptionsMenu({
   function sendMessage() {
     dispatch(
       addRoom({
-        name: cUser.username,
+        name: cUser.username + "⌲",
         role: userRole.none,
         hasPassword: false,
         isDirectMsg: true,

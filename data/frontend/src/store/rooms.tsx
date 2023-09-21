@@ -55,7 +55,7 @@ export const roomsSlice = createSlice({
       const roomIndex = state.room.findIndex(
         (obj: roomType) => obj.name === action.payload.name,
       );
-      if (!room) {
+      if (!room || (room.isDirectMsg !== action.payload.isDirectMsg)) {
         state.room.push({
           name: action.payload.name,
           role: action.payload.role,
