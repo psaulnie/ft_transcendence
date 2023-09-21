@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { setIsInMatchmaking, setIsPlaying } from "./store/user";
+import { setIsInMatchmaking, setIsPlaying, setUsername } from "./store/user";
 
 import Navigation from "./components/Navigation/Navigation";
 import NavDrawer from "./components/Navigation/NavDrawer";
@@ -16,7 +16,8 @@ import EditProfile from "./components/Profile/EditProfile";
 import Friendlist from "./components/Friendlist/Friendlist";
 import webSocketManager from "./webSocket";
 import { useLazyGetUserRankQuery } from "./store/api";
-import Cookies from "js-cookie";
+import Loading from "./components/Global/Loading";
+import ErrorSnackbar from "./components/Global/ErrorSnackbar";
 
 export default function Base() {
   const user = useSelector((state: any) => state.user);
@@ -36,8 +37,7 @@ export default function Base() {
       setDrawerState(open);
     };
 
-
-  const [trigger] = useLazyGetUserRankQuery();
+  const [trigger, result] = useLazyGetUserRankQuery();
 
   useEffect(() => {
     if (user.isPlaying && !location.pathname.startsWith("/game")) {
@@ -51,8 +51,12 @@ export default function Base() {
         .emit("cancelMatchmaking", { username: user.username });
     }
     trigger({});
-  }, [dispatch, user, user.username, location]);
+    if (result.isSuccess)
+      dispatch(setUsername(result.data.username));
+  }, [dispatch, user, user.username, location, result.isSuccess]);
 
+  if (result.isLoading) return <Loading />;
+  if (result.isError) return <ErrorSnackbar error={result.error} />;
   webSocketManager.initializeWebSocket();
 
   return (

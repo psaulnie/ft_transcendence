@@ -144,6 +144,37 @@ export class AppController {
     }
   }
 
+  @Get('/avatar/')
+  async getDefaultAvatar(
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<StreamableFile> {
+    try {
+      let path = '/avatars/default.jpg';
+      console.log('PATH: ', path);
+      const file = createReadStream(join(process.cwd(), '..' + path));
+      stream.finished(file, (err) => {
+        if (err) {
+          console.error('Stream failed.', err);
+        } else {
+          console.log('Stream is done reading.');
+        }
+      });
+      if (file) {
+        const mime = require('mime');
+        const mime_type = mime.getType(path);
+        if (!mime_type) throw new HttpException('Internal Server Error', 500);
+        res.set({
+          'Content-Type': mime_type,
+        });
+        return new StreamableFile(file);
+      } else {
+        throw new HttpException('Internal Server Error', 500);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
   @Get(':username/status')
   @UseGuards(AuthenticatedGuard)
   async getUserStatus(
