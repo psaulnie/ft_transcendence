@@ -1098,7 +1098,7 @@ export class Gateway
     if (!userStatus || userStatus.clientId !== client.id)
       throw new WsException('Forbidden');
     if (this.matchmakingQueue.find((name: string) => name != payload.username))
-      throw new WsException('Player not in Matchmaking');
+      return;
     this.matchmakingQueue.splice(
       this.matchmakingQueue.indexOf(payload.username),
       1,

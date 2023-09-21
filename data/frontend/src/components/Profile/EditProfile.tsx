@@ -19,7 +19,6 @@ function EditProfile() {
   const navigate = useNavigate();
 
   const [newUsername, setNewUsername] = useState("");
-  const [selectedFile, setSelectedFile] = useState<File | undefined>(undefined);
   const [fileUrl, setFileUrl] = useState("");
   const [error, setError] = useState<any>(null);
   const [uploadAvatar, response] = useUploadAvatarMutation();
@@ -39,28 +38,25 @@ function EditProfile() {
       ];
       if (!allowedTypes.includes(e.target.files[0].type)) {
         alert("Only images are allowed");
-        setSelectedFile(undefined);
         setFileUrl("");
       } else if (e.target.files[0].size > 1024 * 1024 * 5) {
         alert("Image is too large");
-        setSelectedFile(undefined);
         setFileUrl("");
       } else {
-        setSelectedFile(e.target.files[0]);
         setFileUrl(URL.createObjectURL(e.target.files[0]));
+        const formData = new FormData();
+        if (e.target.files[0] !== undefined) {
+          formData.append("file", e.target.files[0]);
+          uploadAvatar(formData);
+        }
       }
     }
   };
 
   const saveChanges = () => {
-    const formData = new FormData();
     if (newUsername !== "" && newUsername.length < 10) {
       webSocketManager.getSocket()?.emit("changeUsername", newUsername);
       setNewUsername("");
-    }
-    if (selectedFile !== undefined) {
-      formData.append("file", selectedFile);
-      uploadAvatar(formData);
     }
   };
 
