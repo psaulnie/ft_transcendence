@@ -8,16 +8,6 @@ interface UserState {
   blockedUsers: string[];
 }
 
-// const initialUser: UserState = localStorage.getItem("user")
-//   ? JSON.parse(localStorage.getItem("user") || "{}")
-//   : {
-//       username: "",
-//       isUserBlocked: false,
-//       isPlaying: false,
-//       isInMatchmaking: false,
-//       blockedUsers: [],
-//     };
-
 const initialState: UserState = {
   username: "",
   isUserBlocked: false,
