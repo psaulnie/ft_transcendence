@@ -28,7 +28,7 @@ export class UsersList {
   @Column()
   isBanned: boolean;
 
-  @Column()
+  @Column({default: false})
   isMuted: boolean;
 
   @ManyToOne(() => Room, (room) => room.id, { onDelete: 'CASCADE' })
