@@ -42,7 +42,6 @@ export default function Base() {
   useEffect(() => {
     if (user.isPlaying && !location.pathname.startsWith("/game")) {
       dispatch(setIsPlaying(false));
-      console.log("nav ailleur", user.username);
       webSocketManager.getSocket().emit("leaveGamePage");
     }
     if (user.isInMatchmaking && !location.pathname.startsWith("/game")) {

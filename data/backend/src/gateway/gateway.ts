@@ -1171,7 +1171,6 @@ export class Gateway
       {gameRoomId : cUserStatus.gameRoomId,
       coward: cUserStatus.username}
     );
-    // await this.endGame(client, { gameRoomId: cUserStatus.gameRoomId });
   }
 
   /*
