@@ -1312,13 +1312,14 @@ export class Gateway
       );
       if (currentStatus.status === userStatus.playing) {
         const gameRoom = this.gameService.getGameRoom(currentStatus.gameRoomId);
-        if (!gameRoom) throw new WsException('Game Room not found');
-        gameRoom.coward = currentStatus.username;
-        await this.gameService.leaveGame(
-          currentStatus.gameRoomId,
-          currentStatus.username,
-        );
-        await this.endGame(client, { gameRoomId: currentStatus.gameRoomId });
+        if (gameRoom) {
+          gameRoom.coward = currentStatus.username;
+          await this.gameService.leaveGame(
+            currentStatus.gameRoomId,
+            currentStatus.username,
+          );
+          await this.endGame(client, { gameRoomId: currentStatus.gameRoomId });
+        }
       }
       currentStatus.client.disconnect();
       client.disconnect();
