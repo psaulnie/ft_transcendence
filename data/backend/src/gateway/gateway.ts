@@ -1163,7 +1163,7 @@ export class Gateway
     userLStatus.gameRoomId = null;
     await this.gameService.addMatchHistory(payload.gameRoomId, userW, userL);
     await this.gameService.updateRank(userW, userL);
-    this.gameService.updateAchivement(userW, userL);
+    await this.gameService.updateAchivement(userW, userL);
     gameRoom.isFinish = true;
   }
 
@@ -1184,8 +1184,8 @@ export class Gateway
     if (!gameRoom) throw new WsException('Game Room not found');
     gameRoom.coward = payload.coward;
     // gameRoom.isFinish = true;
-    this.gameService.leaveGame(payload.gameRoomId, payload.coward);
-    this.endGame(client, { gameRoomId: payload.gameRoomId });
+    await this.gameService.leaveGame(payload.gameRoomId, payload.coward);
+    await this.endGame(client, { gameRoomId: payload.gameRoomId });
   }
 
   @SubscribeMessage('cancelMatchmaking')
@@ -1284,11 +1284,11 @@ export class Gateway
     const gameRoom = this.gameService.getGameRoom(cUserStatus.gameRoomId);
     if (!gameRoom) throw new WsException('Game Room not found');
     gameRoom.coward = cUserStatus.username;
-    await this.gameService.leaveGame(
-      cUserStatus.gameRoomId,
-      cUserStatus.username,
+    await this.leaveGame(
+      client,
+      {gameRoomId : cUserStatus.gameRoomId,
+      coward: cUserStatus.username}
     );
-    await this.endGame(client, { gameRoomId: cUserStatus.gameRoomId });
   }
 
   /*
@@ -1375,9 +1375,10 @@ export class Gateway
       if (gameRoom) {
         gameRoom.coward = userStatusTmp.username;
         const gameRoomId = userStatusTmp.gameRoomId;
-        await this.gameService.leaveGame(
-          userStatusTmp.gameRoomId,
-          user.username,
+        await this.leaveGame(
+          client,
+          {gameRoomId : userStatusTmp.gameRoomId,
+          coward: user.username}          
         );
         await this.endGame(client, { gameRoomId: gameRoomId });
       }
@@ -1417,6 +1418,7 @@ export class Gateway
       client.disconnect();
       return;
     }
+
     await this.usersStatusService.addUser(
       client.id,
       client,
