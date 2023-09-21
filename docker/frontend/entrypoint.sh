@@ -1,4 +1,4 @@
 npm install
-#npm start
-npm run build
-npm run serve
+npm start
+# npm run build
+# npm run serve
