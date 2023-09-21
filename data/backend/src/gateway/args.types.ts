@@ -30,4 +30,6 @@ export enum actionTypes {
   cantJoin,
   unban,
   beenUnbanned,
+  leaveRoom,
+  cancelMatchmaking,
 }

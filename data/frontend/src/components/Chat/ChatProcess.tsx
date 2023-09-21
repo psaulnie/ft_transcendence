@@ -20,13 +20,14 @@ import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import { userRole } from "./chatEnums";
 import { setUsername } from "../../store/user";
 import { userStatus } from "../Friendlist/userStatus";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 
 export default function ChatProcess() {
   const user = useSelector((state: any) => state.user);
   const rooms = useSelector((state: any) => state.rooms);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [open, setOpen] = useState(false);
   const [openInvite, setOpenInvite] = useState(false);
@@ -143,6 +144,8 @@ export default function ChatProcess() {
             isMuted: false,
           })
         );
+      } else if (value.action === actionTypes.leaveRoom) { 
+        dispatch(removeRoom(value.target));
       } else if (value.action === actionTypes.roomAlreadyExist) {
         setSnackbar("This room already exists: " + value.target, 'error');
       } 
@@ -253,6 +256,13 @@ export default function ChatProcess() {
             gameRoomId: value.data.gameRoomId,
           },
         });
+      } else if (value.action === actionTypes.cancelMatchmaking) {
+        setSnackbar(
+          "Matchmaking cancelled",
+          "info"
+        );
+        if (location.pathname.startsWith("/game"))
+          navigate('/home');
       }
     }
 

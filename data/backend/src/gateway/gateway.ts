@@ -66,7 +66,10 @@ export class Gateway
     const cUserStatus = await this.usersStatusService.getUserStatus(
       payload.source,
     );
-    if (!cUserStatus || cUserStatus.clientId !== client.id)
+    if (
+      !cUserStatus ||
+      cUserStatus.clientId.find((element) => element === client.id) == null
+    )
       throw new WsException('Forbidden');
     const targetUser = await this.userService.findOne(payload.target);
     if (!targetUser) throw new WsException(payload.target + ' not found');
@@ -115,7 +118,10 @@ export class Gateway
     const userStatus = await this.usersStatusService.getUserStatus(
       payload.source,
     );
-    if (!userStatus || userStatus.clientId !== client.id)
+    if (
+      !userStatus ||
+      userStatus.clientId.find((element) => element === client.id) == null
+    )
       throw new WsException('Forbidden');
     const room = await this.roomService.findOne(payload.target);
     if (!room) throw new WsException('Room not found');
@@ -148,7 +154,10 @@ export class Gateway
     const userStatus = await this.usersStatusService.getUserStatus(
       payload.source,
     );
-    if (!userStatus || userStatus.clientId !== client.id)
+    if (
+      !userStatus ||
+      userStatus.clientId.find((element) => element === client.id) == null
+    )
       throw new WsException('Forbidden');
     const newName = payload.room.replace(/[^a-z0-9]/gi, '');
     if (newName !== payload.room)
@@ -190,7 +199,10 @@ export class Gateway
     const userStatus = await this.usersStatusService.getUserStatus(
       payload.source,
     );
-    if (!userStatus || userStatus.clientId !== client.id)
+    if (
+      !userStatus ||
+      userStatus.clientId.find((element) => element === client.id) == null
+    )
       throw new WsException('Forbidden');
     if (await this.roomService.isUserBanned(payload.room, user.uid))
       throw new WsException("You're banned from that room");
@@ -257,25 +269,26 @@ export class Gateway
         return;
       }
     }
-
-    this.server.emit(client.id, {
-      action: actionTypes.joinRoom,
-      target: payload.room,
-      hasPassword: hasPassword,
-      role: role,
+    userStatus.clientId.forEach((element) => {
+      this.server.emit(element, {
+        action: actionTypes.joinRoom,
+        target: payload.room,
+        hasPassword: hasPassword,
+        role: role,
+      });
+      if (hasPassword == true)
+        this.server.emit(element, {
+          source: payload.source,
+          target: payload.room,
+          action: actionTypes.rightpassword,
+          role: role,
+        });
     });
     this.server.emit(payload.room, {
       source: payload.source,
       target: payload.room,
       action: actionTypes.join,
     });
-    if (hasPassword == true)
-      this.server.emit(client.id, {
-        source: payload.source,
-        target: payload.room,
-        action: actionTypes.rightpassword,
-        role: role,
-      });
   }
 
   @SubscribeMessage('leaveRoom')
@@ -289,12 +302,15 @@ export class Gateway
     const userStatus = await this.usersStatusService.getUserStatus(
       payload.source,
     );
-    if (!userStatus || userStatus.clientId !== client.id)
+    if (
+      !userStatus ||
+      userStatus.clientId.find((element) => element === client.id) == null
+    )
       throw new WsException('Forbidden');
     const user = await this.userService.findOne(payload.source);
     if (!user) throw new WsException(payload.source + ' not found');
     const room = await this.roomService.findOne(payload.room);
-    if (!room) return ;
+    if (!room) return;
     const previousOwner = room.owner.uid;
     const owner = await this.roomService.removeUser(room, user.uid);
     const ownerStatus = await this.usersStatusService.getUserStatus(
@@ -305,15 +321,23 @@ export class Gateway
       ownerStatus.username === owner.username &&
       previousOwner !== owner.uid
     ) {
-      this.server.emit(ownerStatus.clientId, {
-        source: payload.room,
-        action: actionTypes.owner,
+      ownerStatus.clientId.forEach((element) => {
+        this.server.emit(element, {
+          source: payload.room,
+          action: actionTypes.owner,
+        });
       });
     }
     this.server.emit(payload.room, {
       source: payload.source,
       target: payload.room,
       action: actionTypes.left,
+    });
+    userStatus.clientId.forEach((element) => {
+      this.server.emit(element, {
+        action: actionTypes.leaveRoom,
+        target: payload.room,
+      });
     });
   }
 
@@ -332,7 +356,10 @@ export class Gateway
     const userStatus = await this.usersStatusService.getUserStatus(
       payload.source,
     );
-    if (!userStatus || userStatus.clientId !== client.id)
+    if (
+      !userStatus ||
+      userStatus.clientId.find((element) => element === client.id) == null
+    )
       throw new WsException('Forbidden');
     if (payload.room.length > 10) payload.room = payload.room.slice(0, 10);
     this.server.emit(payload.room, {
@@ -357,7 +384,10 @@ export class Gateway
     const userStatus = await this.usersStatusService.getUserStatus(
       payload.source,
     );
-    if (!userStatus || userStatus.clientId !== client.id)
+    if (
+      !userStatus ||
+      userStatus.clientId.find((element) => element === client.id) == null
+    )
       throw new WsException('Forbidden');
     const room = await this.roomService.findOne(payload.room);
     if (!room) throw new WsException('Room not found');
@@ -376,11 +406,13 @@ export class Gateway
     const targetStatus = await this.usersStatusService.getUserStatus(
       payload.target,
     );
-    this.server.emit(targetStatus.clientId, {
-      source: payload.source,
-      target: payload.room,
-      action: actionTypes.kick,
-      role: userRole.none,
+    targetStatus.clientId.forEach((element) => {
+      this.server.emit(element, {
+        source: payload.source,
+        target: payload.room,
+        action: actionTypes.kick,
+        role: userRole.none,
+      });
     });
   }
 
@@ -399,7 +431,10 @@ export class Gateway
     const userStatus = await this.usersStatusService.getUserStatus(
       payload.source,
     );
-    if (!userStatus || userStatus.clientId !== client.id)
+    if (
+      !userStatus ||
+      userStatus.clientId.find((element) => element === client.id) == null
+    )
       throw new WsException('Forbidden');
     const room = await this.roomService.findOne(payload.room);
     if (!room) throw new WsException('Room not found');
@@ -418,11 +453,13 @@ export class Gateway
     const targetStatus = await this.usersStatusService.getUserStatus(
       payload.target,
     );
-    this.server.emit(targetStatus.clientId, {
-      source: payload.source,
-      target: payload.room,
-      action: actionTypes.ban,
-      role: userRole.none,
+    targetStatus.clientId.forEach((element) => {
+      this.server.emit(element, {
+        source: payload.source,
+        target: payload.room,
+        action: actionTypes.ban,
+        role: userRole.none,
+      });
     });
   }
 
@@ -445,11 +482,13 @@ export class Gateway
     const bannedUser = await this.userService.findOne(payload.username);
     if (!bannedUser) throw new WsException(payload.username + ' not found');
     await this.roomService.unban(payload.roomName, bannedUser);
-    this.server.emit(user.clientId, {
-      action: actionTypes.unban,
-      target: payload.roomName,
+    user.clientId.forEach((element) => {
+      this.server.emit(element, {
+        action: actionTypes.unban,
+        target: payload.roomName,
+      });
     });
-    this.server.emit(ownerStatus.clientId, {
+    this.server.emit(client.id, {
       action: actionTypes.beenUnbanned,
       target: payload.username,
     });
@@ -467,7 +506,10 @@ export class Gateway
     const userStatus = await this.usersStatusService.getUserStatus(
       payload.source,
     );
-    if (!userStatus || userStatus.clientId !== client.id)
+    if (
+      !userStatus ||
+      userStatus.clientId.find((element) => element === client.id) == null
+    )
       throw new WsException('Forbidden');
     if (!(await this.userService.blockUser(user, blockedUser)))
       throw new WsException('Already blocked');
@@ -486,7 +528,10 @@ export class Gateway
     const userStatus = await this.usersStatusService.getUserStatus(
       payload.source,
     );
-    if (!userStatus || userStatus.clientId !== client.id)
+    if (
+      !userStatus ||
+      userStatus.clientId.find((element) => element === client.id) == null
+    )
       throw new WsException('Forbidden');
     if (user.blockedUsers.find((obj) => obj.user.username === payload.target))
       throw new WsException('Not blocked');
@@ -508,7 +553,10 @@ export class Gateway
     const userStatus = await this.usersStatusService.getUserStatus(
       payload.source,
     );
-    if (!userStatus || userStatus.clientId !== client.id)
+    if (
+      !userStatus ||
+      userStatus.clientId.find((element) => element === client.id) == null
+    )
       throw new WsException('Forbidden');
     const room = await this.roomService.findOne(payload.room);
     if (!room) throw new WsException('Room not found');
@@ -518,11 +566,13 @@ export class Gateway
     const targetStatus = await this.usersStatusService.getUserStatus(
       payload.target,
     );
-    this.server.emit(targetStatus.clientId, {
-      source: payload.room,
-      target: payload.target,
-      action: actionTypes.admin,
-      role: userRole.admin,
+    targetStatus.clientId.forEach((element) => {
+      this.server.emit(element, {
+        source: payload.room,
+        target: payload.target,
+        action: actionTypes.admin,
+        role: userRole.admin,
+      });
     });
   }
 
@@ -541,7 +591,10 @@ export class Gateway
     const userStatus = await this.usersStatusService.getUserStatus(
       payload.source,
     );
-    if (!userStatus || userStatus.clientId !== client.id)
+    if (
+      !userStatus ||
+      userStatus.clientId.find((element) => element === client.id) == null
+    )
       throw new WsException('Forbidden');
     const room = await this.roomService.findOne(payload.room);
     if (!room) throw new WsException('Room not found');
@@ -551,11 +604,13 @@ export class Gateway
     const targetStatus = await this.usersStatusService.getUserStatus(
       payload.target,
     );
-    this.server.emit(targetStatus.clientId, {
-      source: payload.room,
-      target: payload.target,
-      action: actionTypes.mute,
-      role: userRole.none,
+    targetStatus.clientId.forEach((element) => {
+      this.server.emit(element, {
+        source: payload.room,
+        target: payload.target,
+        action: actionTypes.mute,
+        role: userRole.none,
+      });
     });
   }
 
@@ -575,7 +630,10 @@ export class Gateway
     const userStatus = await this.usersStatusService.getUserStatus(
       payload.source,
     );
-    if (!userStatus || userStatus.clientId !== client.id)
+    if (
+      !userStatus ||
+      userStatus.clientId.find((element) => element === client.id) == null
+    )
       throw new WsException('Forbidden');
     const room = await this.roomService.findOne(payload.room);
     if (!room) throw new WsException('Room not found');
@@ -585,11 +643,13 @@ export class Gateway
     const targetStatus = await this.usersStatusService.getUserStatus(
       payload.target,
     );
-    this.server.emit(targetStatus.clientId, {
-      source: payload.room,
-      target: payload.target,
-      action: actionTypes.unmute,
-      role: userRole.none,
+    targetStatus.clientId.forEach((element) => {
+      this.server.emit(element, {
+        source: payload.room,
+        target: payload.target,
+        action: actionTypes.unmute,
+        role: userRole.none,
+      });
     });
   }
 
@@ -610,7 +670,10 @@ export class Gateway
     const userStatus = await this.usersStatusService.getUserStatus(
       payload.source,
     );
-    if (!userStatus || userStatus.clientId !== client.id)
+    if (
+      !userStatus ||
+      userStatus.clientId.find((element) => element === client.id) == null
+    )
       throw new WsException('Forbidden');
     const room = await this.roomService.findOne(payload.room);
     if (!room) throw new WsException('Room not found');
@@ -639,7 +702,10 @@ export class Gateway
     const userStatus = await this.usersStatusService.getUserStatus(
       payload.source,
     );
-    if (!userStatus || userStatus.clientId !== client.id)
+    if (
+      !userStatus ||
+      userStatus.clientId.find((element) => element === client.id) == null
+    )
       throw new WsException('Forbidden');
     const room = await this.roomService.findOne(payload.room);
     if (!room) throw new WsException('Room not found');
@@ -669,7 +735,10 @@ export class Gateway
     const cUserStatus = await this.usersStatusService.getUserStatus(
       payload.source,
     );
-    if (!cUserStatus || cUserStatus.clientId !== client.id)
+    if (
+      !cUserStatus ||
+      cUserStatus.clientId.find((element) => element === client.id) == null
+    )
       throw new WsException('Forbidden');
     const invitedUserStatus = await this.usersStatusService.getUserStatus(
       payload.username,
@@ -678,15 +747,17 @@ export class Gateway
       throw new WsException(payload.username + ' is offline');
     const room = await this.roomService.findOne(payload.roomName);
     if (!room) throw new WsException('Room not found');
-    this.invitedChat.push({
-      id: invitedUserStatus.clientId,
-      value: payload.roomName,
-    });
-    this.server.emit(invitedUserStatus.clientId, {
-      source: payload.roomName,
-      target: payload.username,
-      action: actionTypes.invited,
-      hasPassword: room.password != null,
+    invitedUserStatus.clientId.forEach((element) => {
+      this.invitedChat.push({
+        id: element,
+        value: payload.roomName,
+      });
+      this.server.emit(element, {
+        source: payload.roomName,
+        target: payload.username,
+        action: actionTypes.invited,
+        hasPassword: room.password != null,
+      });
     });
   }
 
@@ -711,7 +782,10 @@ export class Gateway
     const userStatus = await this.usersStatusService.getUserStatus(
       payload.username,
     );
-    if (!userStatus || userStatus.clientId !== client.id)
+    if (
+      !userStatus ||
+      userStatus.clientId.find((element) => element === client.id) == null
+    )
       throw new WsException('Forbidden');
     await this.roomService.addUser(payload.roomName, user, true);
     this.server.emit(payload.roomName, {
@@ -731,7 +805,10 @@ export class Gateway
     const userStatus = await this.usersStatusService.getUserStatus(
       payload.source,
     );
-    if (!userStatus || userStatus.clientId !== client.id)
+    if (
+      !userStatus ||
+      userStatus.clientId.find((element) => element === client.id) == null
+    )
       throw new WsException('Forbidden');
     const sourceUser = await this.userService.findOne(payload.source);
     if (!sourceUser) throw new WsException(payload.source + ' not found');
@@ -758,11 +835,13 @@ export class Gateway
       payload.target,
     );
     if (!targetStatus) throw new WsException(payload.target + ' not found');
-    this.askFriend.push({ id: targetStatus.clientId, value: payload.source });
-    this.server.emit(targetStatus.clientId, {
-      source: payload.source,
-      target: payload.target,
-      action: actionTypes.askBeingFriend,
+    targetStatus.clientId.forEach((element) => {
+      this.askFriend.push({ id: element, value: payload.source });
+      this.server.emit(element, {
+        source: payload.source,
+        target: payload.target,
+        action: actionTypes.askBeingFriend,
+      });
     });
   }
 
@@ -777,7 +856,10 @@ export class Gateway
     const userStatus = await this.usersStatusService.getUserStatus(
       payload.source,
     );
-    if (!userStatus || userStatus.clientId !== client.id)
+    if (
+      !userStatus ||
+      userStatus.clientId.find((element) => element === client.id) == null
+    )
       throw new WsException('Forbidden');
     if (
       !this.askFriend.find(
@@ -814,9 +896,11 @@ export class Gateway
     )
       throw new WsException('You blocked ' + payload.target);
     await this.userService.addFriend(sourceUser, targetUser);
-    this.server.emit(targetStatus.clientId, {
-      source: payload.source,
-      action: actionTypes.acceptBeingFriend,
+    targetStatus.clientId.forEach((element) => {
+      this.server.emit(element, {
+        source: payload.source,
+        action: actionTypes.acceptBeingFriend,
+      });
     });
     this.server.emit(targetStatus.clientId + 'friend');
     this.server.emit(client.id + 'friend');
@@ -832,7 +916,10 @@ export class Gateway
     const userStatus = await this.usersStatusService.getUserStatus(
       payload.source,
     );
-    if (!userStatus || userStatus.clientId !== client.id)
+    if (
+      !userStatus ||
+      userStatus.clientId.find((element) => element === client.id) == null
+    )
       throw new WsException('Forbidden');
     const sourceUser = await this.userService.findOne(payload.source);
     if (!sourceUser) throw new WsException(payload.source + ' not found');
@@ -871,13 +958,15 @@ export class Gateway
       });
       return;
     }
-    this.invitedPong.push({
-      id: invitedUserStatus.clientId,
-      value: cUserStatus.username,
-    });
-    this.server.emit(invitedUserStatus.clientId, {
-      action: actionTypes.askPlay,
-      source: cUserStatus.username,
+    invitedUserStatus.clientId.forEach((element) => {
+      this.invitedPong.push({
+        id: element,
+        value: cUserStatus.username,
+      });
+      this.server.emit(element, {
+        action: actionTypes.askPlay,
+        source: cUserStatus.username,
+      });
     });
   }
 
@@ -892,6 +981,9 @@ export class Gateway
       )
     )
       throw new WsException('Forbidden');
+    const clientId = this.invitedPong.find(
+      (obj) => obj.id === client.id && obj.value === payload,
+    ).id;
     this.invitedPong = this.invitedPong.filter(
       (obj) => obj.id !== client.id && obj.value !== payload,
     );
@@ -920,7 +1012,7 @@ export class Gateway
     cUserStatus.gameRoomId = gameRoomId;
     opponentStatus.status = userStatus.playing;
     opponentStatus.gameRoomId = gameRoomId;
-    this.server.emit(opponentStatus.clientId, {
+    this.server.emit(clientId, {
       action: actionTypes.acceptPlay,
       source: opponentStatus.username,
       target: cUserStatus.username,
@@ -929,7 +1021,7 @@ export class Gateway
         background: user2.gameBackground,
       },
     });
-    this.server.emit(cUserStatus.clientId, {
+    this.server.emit(client.id, {
       action: actionTypes.acceptPlay,
       source: cUserStatus.username,
       target: opponentStatus.username,
@@ -968,7 +1060,10 @@ export class Gateway
     const userStatusTmp = await this.usersStatusService.getUserStatus(
       payload.username,
     );
-    if (!userStatusTmp || userStatusTmp.clientId !== client.id)
+    if (
+      !userStatusTmp ||
+      userStatusTmp.clientId.find((element) => element === client.id) == null
+    )
       throw new WsException('Forbidden');
     const ticServ = 16;
     if (this.matchmakingQueue.find((name: string) => name == payload.username))
@@ -1080,7 +1175,10 @@ export class Gateway
     const userStatus = await this.usersStatusService.getUserStatus(
       payload.coward,
     );
-    if (!userStatus || userStatus.clientId !== client.id)
+    if (
+      !userStatus ||
+      userStatus.clientId.find((element) => element === client.id) == null
+    )
       throw new WsException('Forbidden');
     const gameRoom = this.gameService.getGameRoom(payload.gameRoomId);
     if (!gameRoom) throw new WsException('Game Room not found');
@@ -1095,7 +1193,10 @@ export class Gateway
     const userStatus = await this.usersStatusService.getUserStatus(
       payload.username,
     );
-    if (!userStatus || userStatus.clientId !== client.id)
+    if (
+      !userStatus ||
+      userStatus.clientId.find((element) => element === client.id) == null
+    )
       throw new WsException('Forbidden');
     if (this.matchmakingQueue.find((name: string) => name != payload.username))
       return;
@@ -1103,6 +1204,11 @@ export class Gateway
       this.matchmakingQueue.indexOf(payload.username),
       1,
     );
+    userStatus.clientId.forEach((element) => {
+      this.server.emit(element, {
+        action: actionTypes.cancelMatchmaking,
+      })
+    });
   }
 
   @SubscribeMessage('pressUp')
@@ -1113,7 +1219,10 @@ export class Gateway
     const userStatus = await this.usersStatusService.getUserStatus(
       payload.player,
     );
-    if (!userStatus || userStatus.clientId !== client.id)
+    if (
+      !userStatus ||
+      userStatus.clientId.find((element) => element === client.id) == null
+    )
       throw new WsException('Forbidden');
     this.gameService.pressUp(payload.player, payload.gameRoomId);
   }
@@ -1126,7 +1235,10 @@ export class Gateway
     const userStatus = await this.usersStatusService.getUserStatus(
       payload.player,
     );
-    if (!userStatus || userStatus.clientId !== client.id)
+    if (
+      !userStatus ||
+      userStatus.clientId.find((element) => element === client.id) == null
+    )
       throw new WsException('Forbidden');
     this.gameService.pressDown(payload.player, payload.gameRoomId);
   }
@@ -1139,7 +1251,10 @@ export class Gateway
     const userStatus = await this.usersStatusService.getUserStatus(
       payload.player,
     );
-    if (!userStatus || userStatus.clientId !== client.id)
+    if (
+      !userStatus ||
+      userStatus.clientId.find((element) => element === client.id) == null
+    )
       throw new WsException('Forbidden');
     this.gameService.releaseUp(payload.player, payload.gameRoomId);
   }
@@ -1152,7 +1267,10 @@ export class Gateway
     const userStatus = await this.usersStatusService.getUserStatus(
       payload.player,
     );
-    if (!userStatus || userStatus.clientId !== client.id)
+    if (
+      !userStatus ||
+      userStatus.clientId.find((element) => element === client.id) == null
+    )
       throw new WsException('Forbidden');
     this.gameService.releaseDown(payload.player, payload.gameRoomId);
   }
@@ -1195,7 +1313,8 @@ export class Gateway
       });
       return;
     }
-    if (userStatus.clientId !== client.id) throw new WsException('Forbidden');
+    if (userStatus.clientId.find((element) => element === client.id) == null)
+      throw new WsException('Forbidden');
     const user = await this.userService.findOne(userStatus.username);
     const oldUsername = user.username;
     if (!user) throw new WsException(userStatus + ' not found');
@@ -1207,10 +1326,12 @@ export class Gateway
       action: actionTypes.msg,
       isDirectMessage: true,
     });
-    this.server.emit(client.id, {
-      newUsername: payload,
-      action: actionTypes.newUsername,
-    });
+    userStatus.clientId.forEach((element) => {
+      this.server.emit(element, {
+        newUsername: payload,
+        action: actionTypes.newUsername,
+      });
+    })
   }
 
   @SubscribeMessage('changeBackground')
@@ -1294,38 +1415,6 @@ export class Gateway
     );
     if (!user) {
       client.disconnect();
-      return;
-    }
-    const currentStatus = await this.usersStatusService.getUserStatus(
-      user.username,
-    );
-    if (
-      currentStatus &&
-      currentStatus.status !== userStatus.offline &&
-      client.id !== currentStatus.clientId
-    ) {
-      await this.usersStatusService.addUser(
-        client.id,
-        client,
-        user.username,
-        userStatus.offline,
-      );
-      if (currentStatus.status === userStatus.playing) {
-        const gameRoom = this.gameService.getGameRoom(currentStatus.gameRoomId);
-        if (gameRoom) {
-          gameRoom.coward = currentStatus.username;
-          await this.gameService.leaveGame(
-            currentStatus.gameRoomId,
-            currentStatus.username,
-          );
-          await this.endGame(client, { gameRoomId: currentStatus.gameRoomId });
-        }
-      }
-      currentStatus.client.disconnect();
-      client.disconnect();
-      this.askFriend = this.askFriend.filter((obj) => obj.id !== client.id);
-      this.invitedChat = this.invitedChat.filter((obj) => obj.id !== client.id);
-      this.invitedPong = this.invitedPong.filter((obj) => obj.id !== client.id);
       return;
     }
     await this.usersStatusService.addUser(

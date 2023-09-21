@@ -123,6 +123,36 @@ export class AuthController {
     res.redirect(`http://${process.env.IP}:3000/login`);
   }
 
+  @Get('close')
+  async close(
+    @Req() request: RequestWithUser,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+  
+    if (!req.isAuthenticated()) {
+      res.clearCookie('connect.sid');
+      res.clearCookie('username');
+
+      res.redirect(`http://${process.env.IP}:3000/login`);
+      return ;
+    }
+    
+    // await new Promise<void>((resolve, reject) => {
+    //   req.logOut((err: any) => {
+    //     if (err) reject(err);
+    //     else resolve();
+    //   });
+    // });
+
+    // Delete cookie 'connect.sid' on client side
+    res.clearCookie('connect.sid');
+    res.clearCookie('username');
+
+    // Redirect on login page
+    res.redirect(`http://${process.env.IP}:3000/login`);
+  }
+
   @Get('testlogin')
   async testLogin(@Res() res: Response, @Req() req: Request) {
     const userTest = {

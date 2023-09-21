@@ -7,7 +7,7 @@ import { Socket } from 'socket.io';
 @Injectable()
 export class UsersStatusService {
   private readonly usersStatus: {
-    clientId: string;
+    clientId: string[];
     client: Socket;
     username: string;
     status: userStatus;
@@ -28,15 +28,12 @@ export class UsersStatusService {
     const userStatusIndex = this.usersStatus.findIndex(
       (user) => user.username === username,
     );
-    if (userStatusIndex != -1)
-      this.usersStatus[userStatusIndex] = {
-        clientId,
-        client,
-        username,
-        status,
-        gameRoomId: '',
-      };
-    else this.usersStatus.push({ clientId, client, username, status, gameRoomId:'' });
+    if (userStatusIndex != -1) {
+      this.usersStatus[userStatusIndex].clientId.push(clientId);
+      this.usersStatus[userStatusIndex].client = client;
+      this.usersStatus[userStatusIndex].status = status;
+    }
+    else this.usersStatus.push({ clientId: [clientId], client, username, status, gameRoomId:'' });
   }
 
   async changeUsername(old: string, newUsername: string) {
@@ -51,11 +48,11 @@ export class UsersStatusService {
   }
 
   async getUserStatusByClientId(clientId: string) {
-    return this.usersStatus.find((user) => user.clientId === clientId);
+    return this.usersStatus.find((user) => user.clientId.find((id) => id === clientId));
   }
 
   async setUserStatus(clientId: string, status: userStatus) {
-    const user = this.usersStatus.find((user) => user.clientId === clientId);
+    const user = this.usersStatus.find((user) => user.clientId.find((id) => id === clientId));
     if (!user) return;
     user.status = status;
   }
