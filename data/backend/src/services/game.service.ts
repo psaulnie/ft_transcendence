@@ -121,41 +121,48 @@ export class GameService {
               : 350;
       }
     }
-    // this.moveBall(gameRoomId);
   }
 
   moveBall(gameRoomId: string) {
-    const roomIndex = this.gameRooms.findIndex(
-      (obj) => obj.gameRoomId === gameRoomId,
-    );
-    if (roomIndex === -1) return;
+    const roomIndex = this.gameRooms.findIndex((obj) => obj.gameRoomId === gameRoomId);
+    if (roomIndex === -1)
+      return;
+  
     const room = this.gameRooms[roomIndex];
+  
     room.ballPos.x += room.ballSpeedX;
     room.ballPos.y += room.ballSpeedY;
-
+  
     if (room.ballPos.y < 0 || room.ballPos.y + ballWidth > 425) {
       room.ballSpeedY = -room.ballSpeedY;
     }
-
-    if (
-      room.ballPos.x < rectWidth + 5 &&
-      room.ballPos.y + ballWidth > room.player1.Y &&
-      room.ballPos.y < room.player1.Y + rectHeight
-    ) {
-      if (room.ballPos.x + ballWidth / 2 >= 5) room.ballPos.x = 5 + rectWidth; //  5 is p1.x
-      room.ballSpeedX = -room.ballSpeedX;
+  
+    if (room.ballPos.x < rectWidth + 5) {
+      if (
+        room.ballPos.y + ballWidth > room.player1.Y &&
+        room.ballPos.y < room.player1.Y + rectHeight
+      ) {
+        const ballCenterY = room.ballPos.y + ballWidth / 2;
+        const paddleCenterY = room.player1.Y + rectHeight / 2;
+        const deltaY = ballCenterY - paddleCenterY;
+        room.ballSpeedX = Math.abs(room.ballSpeedX);
+        room.ballSpeedY = deltaY * 0.1; 
+      }
     }
-
-    if (
-      room.ballPos.x > 640 - 9 - 2 * rectWidth &&
-      room.ballPos.y + ballWidth > room.player2.Y &&
-      room.ballPos.y < room.player2.Y + rectHeight
-    ) {
-      if (room.ballPos.x + ballWidth / 2 <= 630 + rectWidth)
-        room.ballPos.x = 630 - rectWidth; // 630 is p2.x
-      room.ballSpeedX = -room.ballSpeedX;
+  
+    if (room.ballPos.x > 640 - 9 - 2 * rectWidth) {
+      if (
+        room.ballPos.y + ballWidth > room.player2.Y &&
+        room.ballPos.y < room.player2.Y + rectHeight
+      ) {
+        const ballCenterY = room.ballPos.y + ballWidth / 2;
+        const paddleCenterY = room.player2.Y + rectHeight / 2;
+        const deltaY = ballCenterY - paddleCenterY;
+        room.ballSpeedX = -Math.abs(room.ballSpeedX);
+        room.ballSpeedY = deltaY * 0.1;
+      }
     }
-
+  
     if (room.ballPos.x < 0) {
       room.player2.score++;
       this.resetBall(gameRoomId);
