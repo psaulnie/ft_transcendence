@@ -1261,6 +1261,9 @@ export class Gateway
         await this.endGame(client, { gameRoomId: gameRoomId });
       }
     }
+    this.matchmakingQueue = this.matchmakingQueue.filter(
+      (name: string) => name != userStatusTmp.username,
+    );
     this.askFriend = this.askFriend.filter((obj) => obj.id !== client.id);
     this.invitedChat = this.invitedChat.filter((obj) => obj.id !== client.id);
     this.invitedPong = this.invitedPong.filter((obj) => obj.id !== client.id);
