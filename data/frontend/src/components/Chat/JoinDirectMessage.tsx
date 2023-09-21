@@ -43,7 +43,7 @@ function JoinDirectMessage() {
     ) {
       dispatch(
         addRoom({
-          name: newUser,
+          name: newUser + "⌲",
           role: userRole.none,
           isDirectMsg: true,
           hasPassword: false,

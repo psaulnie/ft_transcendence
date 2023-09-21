@@ -30,7 +30,10 @@ function MessageProvider({ roomName }: { roomName: string }) {
         ) {
           trigger({ roomName: roomName });
         }
-        dispatch(addMsg({ name: roomName, message: value }));
+        if (rooms.room[roomIndex].isDirectMessage === true)
+          dispatch(addMsg({ name: roomName + '⌲', message: value }));
+        else
+          dispatch(addMsg({ name: roomName, message: value }));
         if (value.source === user.username || rooms.index === roomIndex) {
           dispatch(setRead(roomIndex));
         }
@@ -40,7 +43,7 @@ function MessageProvider({ roomName }: { roomName: string }) {
         )
           dispatch(
             addRoom({
-              name: value.source,
+              name: value.source + "⌲",
               role: userRole.none,
               isDirectMsg: true,
               hasPassword: false,
@@ -50,14 +53,9 @@ function MessageProvider({ roomName }: { roomName: string }) {
           );
       }
     }
-
-    let currentRoom = rooms.room.find((obj: any) => obj.name === roomName);
-    let listener = roomName;
-
-    if (currentRoom.isDirectMessage === true) listener += user.username;
-    webSocketManager.getSocket().on(listener, onMsgSent);
+    webSocketManager.getSocket().on(roomName, onMsgSent);
     return () => {
-      webSocketManager.getSocket().off(listener, onMsgSent);
+      webSocketManager.getSocket().off(roomName, onMsgSent);
     };
   }, [roomName, dispatch, rooms, user, trigger]);
 

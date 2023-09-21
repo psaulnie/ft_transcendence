@@ -16,7 +16,7 @@ export default function DirectMessageProvider() {
       if (value.action !== actionTypes.left) {
         dispatch(
           addRoom({
-            name: value.source,
+            name: value.source + "⌲",
             role: userRole.none,
             isDirectMsg: true,
             hasPassword: false,
@@ -24,7 +24,7 @@ export default function DirectMessageProvider() {
             isMuted: false,
           })
         );
-        dispatch(addMsg({ name: value.source, message: value }));
+        dispatch(addMsg({ name: value.source + '⌲', message: value }));
       }
       dispatch(setRead(rooms.index));
     }
@@ -36,9 +36,9 @@ export default function DirectMessageProvider() {
     }
 
     webSocketManager.getSocket().on("newUsername", newUsername);
-    webSocketManager.getSocket().on(user.username, onMsgSent);
+    webSocketManager.getSocket().on(user.username + '⌲', onMsgSent);
     return () => {
-      webSocketManager.getSocket().off(user.username, onMsgSent);
+      webSocketManager.getSocket().off(user.username + '⌲', onMsgSent);
       webSocketManager.getSocket().off("newUsername", newUsername);
     };
   }, [user, dispatch, rooms]);

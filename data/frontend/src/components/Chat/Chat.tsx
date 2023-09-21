@@ -84,7 +84,7 @@ function Chat() {
   return (
     <div className="chat">
       <ChatProcess />
-
+      <DirectMessageProvider />
       <div style={{ display: "flex", alignItems: "flex-start" }}>
         <Button
           onClick={toggleBox}
@@ -126,7 +126,6 @@ function Chat() {
             }}
           >
             <Grid container sx={{ height: "5%", width: "100%" }}>
-              <DirectMessageProvider />
               <Grid
                 item
                 xs={1}
