@@ -22,11 +22,9 @@ export const userSlice = createSlice({
   reducers: {
     login: (state) => {
       state.blockedUsers = [];
-      // localStorage.setItem("user", state.username);
     },
     setUsername: (state, action: PayloadAction<string>) => {
       state.username = action.payload;
-      // localStorage.setItem("user", state.username);
     },
     setIsPlaying: (state, action: PayloadAction<boolean>) => {
       state.isPlaying = action.payload;
