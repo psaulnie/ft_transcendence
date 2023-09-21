@@ -72,7 +72,7 @@ export class ProfileController {
     const user = req.user as User;
     const cUser = await this.userService.findOneById(user.uid);
     if (!user || !cUser) throw new HttpException('Unprocessable entity', 422);
-    return cUser.statistics.rank;
+    return { username: cUser.username, rank: cUser.statistics.rank };
   }
 
   @Get('/general/leaderboard')

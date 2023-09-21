@@ -8,22 +8,22 @@ interface UserState {
   blockedUsers: string[];
 }
 
-const initialUser: UserState = localStorage.getItem("user")
-  ? JSON.parse(localStorage.getItem("user") || "{}")
-  : {
-      username: "",
-      isUserBlocked: false,
-      isPlaying: false,
-      isInMatchmaking: false,
-      blockedUsers: [],
-    };
+// const initialUser: UserState = localStorage.getItem("user")
+//   ? JSON.parse(localStorage.getItem("user") || "{}")
+//   : {
+//       username: "",
+//       isUserBlocked: false,
+//       isPlaying: false,
+//       isInMatchmaking: false,
+//       blockedUsers: [],
+//     };
 
 const initialState: UserState = {
-  username: initialUser.username,
-  isUserBlocked: initialUser.isUserBlocked,
-  blockedUsers: initialUser.blockedUsers,
-  isPlaying: initialUser.isPlaying,
-  isInMatchmaking: initialUser.isInMatchmaking,
+  username: "",
+  isUserBlocked: false,
+  isPlaying: false,
+  isInMatchmaking: false,
+  blockedUsers: [],
 };
 
 export const userSlice = createSlice({
@@ -32,11 +32,11 @@ export const userSlice = createSlice({
   reducers: {
     login: (state) => {
       state.blockedUsers = [];
-      localStorage.setItem("user", JSON.stringify(state));
+      // localStorage.setItem("user", state.username);
     },
     setUsername: (state, action: PayloadAction<string>) => {
       state.username = action.payload;
-      localStorage.setItem("user", JSON.stringify(state));
+      // localStorage.setItem("user", state.username);
     },
     setIsPlaying: (state, action: PayloadAction<boolean>) => {
       state.isPlaying = action.payload;
