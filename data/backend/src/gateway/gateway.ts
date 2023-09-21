@@ -943,7 +943,9 @@ export class Gateway
         clearInterval(gameRoom.intervalId);
         this.endGame(client, { gameRoomId });
       }
-      this.gameService.movePlayer(gameRoomId);
+      this.gameService.movePlayer(gameRoomId, false);
+      this.gameService.movePlayer(gameRoomId, true);
+      this.gameService.moveBall(gameRoomId);
       this.server.emit('game' + gameRoomId, {
         playerY: gameRoom.player1.Y,
         enemyY: gameRoom.player2.Y,
@@ -1008,7 +1010,9 @@ export class Gateway
           clearInterval(gameRoom.intervalId);
           this.endGame(client, { gameRoomId });
         }
-        this.gameService.movePlayer(gameRoomId);
+        this.gameService.movePlayer(gameRoomId, false);
+        this.gameService.movePlayer(gameRoomId, true);
+        this.gameService.moveBall(gameRoomId);
         this.server.emit('game' + gameRoomId, {
           playerY: gameRoom.player1.Y,
           enemyY: gameRoom.player2.Y,
@@ -1024,7 +1028,7 @@ export class Gateway
 
   async endGame(client: Socket, payload: { gameRoomId: string }) {
     const gameRoom = this.gameService.getGameRoom(payload.gameRoomId);
-    if (!gameRoom) return ;
+    if (!gameRoom) return;
     if (gameRoom.isFinish === true) return;
     let userW;
     let userL;
@@ -1153,12 +1157,15 @@ export class Gateway
     const cUserStatus = await this.usersStatusService.getUserStatusByClientId(
       client.id,
     );
-    if (!cUserStatus || cUserStatus.status !== userStatus.playing) return ;
+    if (!cUserStatus || cUserStatus.status !== userStatus.playing) return;
     const gameRoom = this.gameService.getGameRoom(cUserStatus.gameRoomId);
     if (!gameRoom) throw new WsException('Game Room not found');
     gameRoom.coward = cUserStatus.username;
-    await this.gameService.leaveGame(cUserStatus.gameRoomId, cUserStatus.username);
-    await this.endGame(client, {gameRoomId: cUserStatus.gameRoomId});
+    await this.gameService.leaveGame(
+      cUserStatus.gameRoomId,
+      cUserStatus.username,
+    );
+    await this.endGame(client, { gameRoomId: cUserStatus.gameRoomId });
   }
 
   /*
@@ -1170,7 +1177,8 @@ export class Gateway
     console.log('changeusername');
     if (payload.length > 10) payload = payload.substring(0, 10);
     const newPayload = payload.replace(/[^a-z0-9]/gi, '');
-    if (newPayload !== payload) throw new WsException('Only alpha-numeric characters allowed');
+    if (newPayload !== payload)
+      throw new WsException('Only alpha-numeric characters allowed');
     const userStatus = await this.usersStatusService.getUserStatusByClientId(
       client.id,
     );
@@ -1241,8 +1249,11 @@ export class Gateway
       if (gameRoom) {
         gameRoom.coward = userStatusTmp.username;
         const gameRoomId = userStatusTmp.gameRoomId;
-        await this.gameService.leaveGame(userStatusTmp.gameRoomId, user.username);
-        await this.endGame(client, {gameRoomId: gameRoomId});
+        await this.gameService.leaveGame(
+          userStatusTmp.gameRoomId,
+          user.username,
+        );
+        await this.endGame(client, { gameRoomId: gameRoomId });
       }
     }
     this.askFriend = this.askFriend.filter((obj) => obj.id !== client.id);
@@ -1295,15 +1306,18 @@ export class Gateway
         const gameRoom = this.gameService.getGameRoom(currentStatus.gameRoomId);
         if (!gameRoom) throw new WsException('Game Room not found');
         gameRoom.coward = currentStatus.username;
-        await this.gameService.leaveGame(currentStatus.gameRoomId, currentStatus.username);
-        await this.endGame(client, {gameRoomId: currentStatus.gameRoomId});
+        await this.gameService.leaveGame(
+          currentStatus.gameRoomId,
+          currentStatus.username,
+        );
+        await this.endGame(client, { gameRoomId: currentStatus.gameRoomId });
       }
       currentStatus.client.disconnect();
       client.disconnect();
       this.askFriend = this.askFriend.filter((obj) => obj.id !== client.id);
       this.invitedChat = this.invitedChat.filter((obj) => obj.id !== client.id);
       this.invitedPong = this.invitedPong.filter((obj) => obj.id !== client.id);
-      return ;
+      return;
     }
     await this.usersStatusService.addUser(
       client.id,

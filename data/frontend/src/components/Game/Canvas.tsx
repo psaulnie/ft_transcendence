@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./Canvas.css";
 import webSocketManager from "../../webSocket";
-import { Button, Grid } from "@mui/material";
+import { Button } from "@mui/material";
 import { useNavigate } from "react-router";
 import { setIsPlaying } from "../../store/user";
 import { useDispatch } from "react-redux";
@@ -188,7 +188,7 @@ export default function Canvas({
     ctx!.fillStyle = "white";
     ctx!.font = "40px serif";
     ctx!.textAlign = "center";
-    ctx?.fillText(name + " Win the game", 320, 190);
+    ctx?.fillText(name + " win the game", 320, 190);
   }
 
   function quitGame(gameRoomId: string) {
