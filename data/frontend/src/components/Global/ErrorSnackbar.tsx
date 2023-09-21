@@ -22,7 +22,6 @@ export default function ErrorSnackbar({ error }: { error: any }) {
   };
 
   function reload(e: any) {
-    localStorage.removeItem("user");
     window.location.href = `http://${import.meta.env.VITE_IP}:5000/auth/logout`;
   }
 

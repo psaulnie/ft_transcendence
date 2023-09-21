@@ -50,10 +50,6 @@ export default function Base() {
         .getSocket()
         .emit("cancelMatchmaking", { username: user.username });
     }
-    if (!user || !user.username) {
-      localStorage.removeItem("user");
-      window.location.href = `http://${import.meta.env.VITE_IP}:5000/auth/logout`;
-    }
     trigger({});
   }, [dispatch, user, user.username, location]);
 
