@@ -88,7 +88,7 @@ export class RoomService {
     newEntry.user = user;
     newEntry.role = userRole.none;
     newEntry.isBanned = false;
-    newEntry.isMuted = false;
+    newEntry.isMuted = !(!room.mutedUsers.find((obj) => obj == user.uid));
 
     room.usersNumber += 1;
     room.usersList.push(await this.usersListRepository.save(newEntry));
@@ -172,6 +172,7 @@ export class RoomService {
     console.log('addtomutedlist');
     const room = await this.findOne(roomName);
     if (!room) return;
+    room.mutedUsers.push(user.uid);
     const userInList = room.usersList.find((obj) => obj.user.uid == user.uid);
     userInList.isMuted = true;
     await this.usersListRepository.save(userInList);
@@ -182,6 +183,8 @@ export class RoomService {
     console.log('removefrommutedlist');
     const room = await this.findOne(roomName);
     if (!room) return;
+    console.log(room);
+    room.mutedUsers = room.mutedUsers.filter((obj) => obj != user.uid);
     const userInList = room.usersList.find((obj) => obj.user.uid == user.uid);
     userInList.isMuted = false;
     await this.usersListRepository.save(userInList);
@@ -192,12 +195,8 @@ export class RoomService {
     console.log('ismuted');
     const room = await this.findOne(roomName);
     if (!room) return false;
-    const userInList = room.usersList.find((obj) => {
-      if (obj.user.uid) return obj.user.uid == user.uid;
-      return false;
-    });
-    if (!userInList) return false;
-    return userInList.isMuted;
+    const mutedUser = room.mutedUsers.find((obj) => obj == user.uid);
+    return !(!mutedUser);
   }
 
   async addAdmin(roomName: string, user: User): Promise<Room> {

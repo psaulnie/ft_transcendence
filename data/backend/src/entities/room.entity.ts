@@ -37,11 +37,19 @@ export class Room {
   @Column()
   usersNumber: number;
 
+  @Column('integer', {
+    array: true,
+    nullable: true,
+    default: []
+  })
+  mutedUsers: number[];
+
   @OneToMany(() => UsersList, (usersList) => usersList.room, { eager: true })
   usersList: UsersList[];
 
   @AfterLoad()
   async nullCheck() {
     if (!this.usersList) this.usersList = [];
+    if (!this.mutedUsers) this.mutedUsers = [];
   }
 }
