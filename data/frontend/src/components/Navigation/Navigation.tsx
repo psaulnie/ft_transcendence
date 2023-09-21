@@ -9,16 +9,18 @@ import MenuItem from "@mui/material/MenuItem";
 import React, { useEffect, useState } from "react";
 import Button from "@mui/material/Button";
 
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import CustomAvatar from "../Global/CustomAvatar";
 import { useNavigate } from "react-router-dom";
 import { SyntheticEvent } from "react";
 import { apiSlice } from "../../store/api";
 import ErrorSnackbar from "../Global/ErrorSnackbar";
+import { setUsername } from "../../store/user";
 
 function Navigation({ setDrawerState }: { setDrawerState: any }) {
   const user = useSelector((state: any) => state.user);
+  const dispatch = useDispatch();
   const query = apiSlice.endpoints.getUserRank.useQueryState({});
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -45,7 +47,8 @@ function Navigation({ setDrawerState }: { setDrawerState: any }) {
 
   useEffect(() => {
     if (query.isUninitialized === false && query.isSuccess === true) {
-      setRank(query.data);
+      setRank(query.data.rank);
+      dispatch(setUsername(query.data.username));
     }
   }, [query]);
 

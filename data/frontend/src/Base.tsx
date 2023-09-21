@@ -36,6 +36,7 @@ export default function Base() {
       setDrawerState(open);
     };
 
+
   const [trigger] = useLazyGetUserRankQuery();
 
   useEffect(() => {
