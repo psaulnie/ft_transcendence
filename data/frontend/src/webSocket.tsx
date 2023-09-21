@@ -24,7 +24,6 @@ export class WebSocketManager {
       this.socket.on("disconnect", function (err: any) {
         if (err === "io server disconnect") {
           alert("You have opened a new tab. You will be logged out.");
-          localStorage.removeItem("user");
           window.location.href = `http://${import.meta.env.VITE_IP}:5000/auth/logout`;
         }
       });
@@ -32,7 +31,6 @@ export class WebSocketManager {
       this.channel.addEventListener("message", (msg) => {
         if (msg.data === "newTab") {
           alert("You have opened a new tab. You will be logged out.");
-          localStorage.removeItem("user");
           window.location.href = `http://${import.meta.env.VITE_IP}:5000/auth/logout`;
         }
       });
@@ -41,7 +39,6 @@ export class WebSocketManager {
 
   getSocket() {
     if (!this.socket) {
-      localStorage.removeItem("user");
       window.location.href = `http://${import.meta.env.VITE_IP}:5000/auth/logout`;
     }
     return this.socket;

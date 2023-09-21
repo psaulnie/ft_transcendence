@@ -25,9 +25,7 @@ export default function Home() {
   } = useGetLeaderboardQuery({});
 
   useEffect(() => {
-    if (localStorage.getItem("user")) {
       refetchLeaderboard();
-    }
   }, [refetchLeaderboard]);
 
   if (isLoadingLeaderboard) return <Loading />;
