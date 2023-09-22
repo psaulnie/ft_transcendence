@@ -237,7 +237,7 @@ export default function ChatProcess() {
           setSnackbar(
             "You can't play with " +
               value.target +
-              " because he is already playing",
+              " because one of you is playing",
             "error"
           );
       } else if (value.action === actionTypes.askPlay) {
@@ -257,6 +257,7 @@ export default function ChatProcess() {
           },
         });
       } else if (value.action === actionTypes.cancelMatchmaking) {
+        console.log(location.pathname);
         setSnackbar(
           "Matchmaking cancelled",
           "info"
@@ -267,6 +268,9 @@ export default function ChatProcess() {
     }
 
     function handleWsException(value: any) {
+      console.log(value);
+      if (value?.message === 'Already in Matchmaking' || value?.message === 'Already playing')
+        navigate('/home');
       setSnackbar(value?.message, "error");
     }
   

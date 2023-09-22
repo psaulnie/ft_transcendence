@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { setIsInMatchmaking, setIsPlaying, setUsername } from "./store/user";
+import { addBlockedUser, removeBlockedUser, setIsInMatchmaking, setIsPlaying, setUsername } from "./store/user";
 
 import Navigation from "./components/Navigation/Navigation";
 import NavDrawer from "./components/Navigation/NavDrawer";
@@ -53,7 +53,10 @@ export default function Base() {
     trigger({});
     if (result.isSuccess)
       dispatch(setUsername(result.data.username));
-  }, [dispatch, user, user.username, location, result.isSuccess]);
+    if (result.isError) {
+      window.location.href = `http://${import.meta.env.VITE_IP}:3000/login`;
+    }
+  }, [dispatch, user, user.username, location, result.isSuccess, result.isError]);
 
   if (result.isLoading) return <Loading />;
   if (result.isError) return <ErrorSnackbar error={result.error} />;

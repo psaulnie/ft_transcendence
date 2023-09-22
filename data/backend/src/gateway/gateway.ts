@@ -29,7 +29,7 @@ export class Gateway
 {
   private matchmakingQueue: string[];
   private invitedChat: Array<{ id: string; value: string }>;
-  private invitedPong: Array<{ id: string; value: string }>;
+  private invitedPong: Array<{ id: string; value: string, invintingId: string }>;
   private askFriend: Array<{ id: string; value: string }>;
   private maxScore: number;
   @WebSocketServer() server: Server;
@@ -948,7 +948,7 @@ export class Gateway
     const invitedUserStatus = await this.usersStatusService.getUserStatus(
       payload,
     );
-    if (!invitedUserStatus || invitedUserStatus.status !== userStatus.online) {
+    if (!invitedUserStatus || invitedUserStatus.status !== userStatus.online || cUserStatus.status !== userStatus.online) {
       this.server.emit(client.id, {
         action: actionTypes.cantPlay,
         target: payload,
@@ -962,6 +962,7 @@ export class Gateway
       this.invitedPong.push({
         id: element,
         value: cUserStatus.username,
+        invintingId: client.id,
       });
       this.server.emit(element, {
         action: actionTypes.askPlay,
@@ -981,9 +982,10 @@ export class Gateway
       )
     )
       throw new WsException('Forbidden');
+      console.log(this.invitedPong)
     const clientId = this.invitedPong.find(
       (obj) => obj.id === client.id && obj.value === payload,
-    ).id;
+    ).invintingId;
     this.invitedPong = this.invitedPong.filter(
       (obj) => obj.id !== client.id && obj.value !== payload,
     );
@@ -1068,6 +1070,9 @@ export class Gateway
     const ticServ = 16;
     if (this.matchmakingQueue.find((name: string) => name == payload.username))
       throw new WsException('Already in Matchmaking');
+    console.log(userStatusTmp.gameRoomId);
+    if (userStatusTmp.gameRoomId)
+      throw new WsException('Already playing');
     this.matchmakingQueue.push(payload.username);
     while (this.matchmakingQueue.length >= 2) {
       const player1 = this.matchmakingQueue[0];

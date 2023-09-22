@@ -3,7 +3,7 @@ import "./Canvas.css";
 import webSocketManager from "../../webSocket";
 import { Button } from "@mui/material";
 import { useNavigate } from "react-router";
-import { setIsPlaying } from "../../store/user";
+import { setIsInMatchmaking, setIsPlaying } from "../../store/user";
 import { useDispatch } from "react-redux";
 
 export default function Canvas({
@@ -114,6 +114,7 @@ export default function Canvas({
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext("2d");
     dispatch(setIsPlaying(true));
+    dispatch(setIsInMatchmaking(false));
 
     function process(value: any) {
       if (value.coward !== null) {
