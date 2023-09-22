@@ -22,12 +22,14 @@ function EditProfile() {
   const [fileUrl, setFileUrl] = useState("");
   const [error, setError] = useState<any>(null);
   const [uploadAvatar, response] = useUploadAvatarMutation();
+  const [isError, setIsError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
     if (response.isSuccess) window.location.reload();
     else if (response.isError) setError(response.error);
   }, [response]);
-  
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.[0] !== undefined) {
       const allowedTypes = [
@@ -37,10 +39,12 @@ function EditProfile() {
         "image/gif",
       ];
       if (!allowedTypes.includes(e.target.files[0].type)) {
-        alert("Only images are allowed");
+        setErrorMsg("Only images are allowed");
+        setIsError(true);
         setFileUrl("");
       } else if (e.target.files[0].size > 1024 * 1024 * 5) {
-        alert("Image is too large");
+        setErrorMsg("Image is too large");
+        setIsError(true);
         setFileUrl("");
       } else {
         setFileUrl(URL.createObjectURL(e.target.files[0]));
@@ -214,7 +218,7 @@ function EditProfile() {
         </Grid>
       </Box>
       <Snackbar
-        open={!(!error)}
+        open={!!error}
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
         onClose={() => setError(null)}
       >
@@ -224,6 +228,25 @@ function EditProfile() {
           sx={{ width: "100%" }}
         >
           Error {`${error?.data?.statusCode}: ${error?.data?.message}`}
+        </Alert>
+      </Snackbar>
+      <Snackbar
+        open={isError}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        onClose={() => {
+          setIsError(false);
+          setErrorMsg("");
+        }}
+      >
+        <Alert
+          onClose={() => {
+            setIsError(false);
+            setErrorMsg("");
+          }}
+          severity="error"
+          sx={{ width: "100%" }}
+        >
+          {errorMsg}
         </Alert>
       </Snackbar>
     </div>
