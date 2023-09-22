@@ -153,8 +153,10 @@ export class Gateway
     const newName = payload.room.replace(/[^a-z0-9]/gi, '');
     if (newName !== payload.room)
       throw new WsException('Room name must be alphanumeric');
+    if (payload.room.length < 1) throw new WsException('Room name too short');
     const user = await this.userService.findOne(payload.source);
     if (!user) throw new WsException(payload.source + ' not found');
+    console.log(await this.roomService.isUserInRoom(payload.room, user.uid));
     if (await this.roomService.isUserInRoom(payload.room, user.uid))
       throw new WsException("You're already in that room");
     const roomsJoined = await this.roomService.findAllRoomUser(payload.source);
@@ -179,6 +181,7 @@ export class Gateway
       payload.source == null
     )
       throw new WsException('Missing parameter');
+    if (payload.room.length < 1) throw new WsException('Room name too short');
     if (payload.room.length > 10) payload.room = payload.room.slice(0, 10);
     const newName = payload.room.replace(/[^a-z0-9]/gi, '');
     if (newName !== payload.room)
