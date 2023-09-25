@@ -106,6 +106,7 @@ export default function ChatProcess() {
         hasPassword: hasPassword,
         openTab: true,
         isMuted: false,
+        username: user.username,
       })
     );
     webSocketManager.getSocket()?.emit("joinPrivateRoom", {
@@ -141,6 +142,7 @@ export default function ChatProcess() {
             hasPassword: value.hasPassword,
             openTab: true,
             isMuted: false,
+            username: user.username,
           })
         );
       } else if (value.action === actionTypes.roomAlreadyExist) {

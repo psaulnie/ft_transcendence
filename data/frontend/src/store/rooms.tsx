@@ -1,6 +1,7 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, current, PayloadAction } from "@reduxjs/toolkit";
 import { chatResponseArgs } from "../components/Chat/args.interface";
 import { userRole } from "../components/Chat/chatEnums";
+import store from "./default";
 
 export interface roomType {
   name: string;
@@ -13,6 +14,7 @@ interface roomInterface {
   name: string;
   role: userRole;
   isDirectMsg: boolean;
+  listener: string;
   messages: chatResponseArgs[];
   unread: boolean;
   hasPassword: boolean;
@@ -47,6 +49,7 @@ export const roomsSlice = createSlice({
         hasPassword: boolean;
         openTab: boolean;
         isMuted: boolean;
+        username: string
       }>,
     ) => {
       const room = state.room.find(
@@ -56,8 +59,9 @@ export const roomsSlice = createSlice({
         (obj: roomType) => obj.name === action.payload.name,
       );
       if (!room || (room.isDirectMsg !== action.payload.isDirectMsg)) {
+        if (action.payload.isDirectMsg && state.room.find((obj: roomInterface) => obj.listener === action.payload.name + '⌲')) return ;
         state.room.push({
-          name: action.payload.name,
+          name: action.payload.isDirectMsg ? action.payload.name.replace(action.payload.username, '') + '⌲' : action.payload.name,
           role: action.payload.role,
           isDirectMsg: action.payload.isDirectMsg,
           messages: [],
@@ -65,6 +69,7 @@ export const roomsSlice = createSlice({
           hasPassword: action.payload.hasPassword,
           usersList: [],
           isMuted: false,
+          listener: action.payload.isDirectMsg ? action.payload.name + '⌲' : action.payload.name.replace(action.payload.username, ''),
         });
         if (state.index === -1) state.index++;
       } else if (roomIndex !== -1 && action.payload.openTab)
@@ -118,6 +123,7 @@ export const roomsSlice = createSlice({
           hasPassword: false,
           usersList: [],
           isMuted: false,
+          listener: action.payload.name + '⌲',
         });
       }
     },
