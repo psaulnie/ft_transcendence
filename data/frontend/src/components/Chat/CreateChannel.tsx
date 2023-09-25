@@ -33,7 +33,6 @@ function CreateChannel() {
     if (e.target.value.length <= 10) {
       setNewRoomName(e.target.value);
     }
-
   }
 
   function changeAccess(event: SelectChangeEvent) {
@@ -46,21 +45,16 @@ function CreateChannel() {
 
   function createRoom(event: any) {
     event.preventDefault();
-    if (
-      !rooms.room.find(
-        (obj: { name: string; role: userRole, isDirectMsg: boolean }) => obj.name === newRoomName && obj.isDirectMsg === false,
-      )
-    ) {
-      if (access === accessStatus.protected) {
-        setShowDialog(true);
-        return;
-      }
-      webSocketManager.getSocket().emit("createRoom", {
-        source: user.username,
-        room: newRoomName,
-        access: access,
-      });
-    } else alert("You are currently in this channel");
+
+    if (access === accessStatus.protected) {
+      setShowDialog(true);
+      return;
+    }
+    webSocketManager.getSocket().emit("createRoom", {
+      source: user.username,
+      room: newRoomName,
+      access: access,
+    });
     setNewRoomName("");
   }
 
@@ -68,7 +62,7 @@ function CreateChannel() {
     <Grid className="createChannel">
       <Typography sx={{ marginTop: "2em" }}>Create a new channel</Typography>
       <TextField
-        autoComplete='off'
+        autoComplete="off"
         label="Room name"
         value={newRoomName}
         onChange={updateNewRoomName}

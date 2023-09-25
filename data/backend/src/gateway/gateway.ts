@@ -50,7 +50,7 @@ export class Gateway
   @SubscribeMessage('sendPrivateMsg')
   async sendPrivateMessage(client: Socket, payload: sendMsgArgs) {
     if (
-      //TODO duplicated fragment of code (9lines), try to avoid duplicates
+      !payload || 
       payload.data == null ||
       payload.source == null ||
       payload.target == null ||
@@ -75,7 +75,6 @@ export class Gateway
         (blockedUser) => blockedUser.blockedUser.uid === user.uid,
       )
     ) {
-      // TODO maybe a duplicate
       this.server.emit(client.id, {
         source: payload.source,
         target: payload.target,
@@ -102,6 +101,7 @@ export class Gateway
   @SubscribeMessage('sendMsg')
   async sendMsg(client: Socket, payload: sendMsgArgs) {
     if (
+      !payload || 
       payload.data == null ||
       payload.source == null ||
       payload.target == null ||
@@ -140,6 +140,7 @@ export class Gateway
   @SubscribeMessage('createRoom')
   async createRoom(client: Socket, payload: any) {
     if (
+      !payload || 
       payload.access == null ||
       payload.room == null ||
       payload.source == null
@@ -153,8 +154,10 @@ export class Gateway
     const newName = payload.room.replace(/[^a-z0-9]/gi, '');
     if (newName !== payload.room)
       throw new WsException('Room name must be alphanumeric');
+    if (payload.room.length < 1) throw new WsException('Room name too short');
     const user = await this.userService.findOne(payload.source);
     if (!user) throw new WsException(payload.source + ' not found');
+    console.log(await this.roomService.isUserInRoom(payload.room, user.uid));
     if (await this.roomService.isUserInRoom(payload.room, user.uid))
       throw new WsException("You're already in that room");
     const roomsJoined = await this.roomService.findAllRoomUser(payload.source);
@@ -174,11 +177,13 @@ export class Gateway
   @SubscribeMessage('joinRoom')
   async joinRoom(client: Socket, payload: any) {
     if (
+      !payload || 
       payload.access == null ||
       payload.room == null ||
       payload.source == null
     )
       throw new WsException('Missing parameter');
+    if (payload.room.length < 1) throw new WsException('Room name too short');
     if (payload.room.length > 10) payload.room = payload.room.slice(0, 10);
     const newName = payload.room.replace(/[^a-z0-9]/gi, '');
     if (newName !== payload.room)
@@ -281,6 +286,7 @@ export class Gateway
   @SubscribeMessage('leaveRoom')
   async leaveRoom(client: Socket, payload: any) {
     if (
+      !payload || 
       payload.access == null ||
       payload.room == null ||
       payload.source == null
@@ -320,6 +326,7 @@ export class Gateway
   @SubscribeMessage('openPrivateMessage')
   async openPrivateMessage(client: Socket, payload: any) {
     if (
+      !payload || 
       payload.access == null ||
       payload.room == null ||
       payload.source == null
@@ -345,6 +352,7 @@ export class Gateway
   @SubscribeMessage('kick')
   async kickUser(client: Socket, payload: actionArgs) {
     if (
+      !payload || 
       payload.room == null ||
       payload.source == null ||
       payload.target == null
@@ -387,6 +395,7 @@ export class Gateway
   @SubscribeMessage('ban')
   async banUser(client: Socket, payload: actionArgs) {
     if (
+      !payload || 
       payload.room == null ||
       payload.source == null ||
       payload.target == null
@@ -431,6 +440,7 @@ export class Gateway
     client: Socket,
     payload: { roomName: string; username: string },
   ) {
+    if (!payload || !payload.roomName || !payload.username) throw new WsException("Missing parameters");
     const ownerStatus = await this.usersStatusService.getUserStatusByClientId(
       client.id,
     );
@@ -457,7 +467,7 @@ export class Gateway
 
   @SubscribeMessage('block')
   async blockUser(client: Socket, payload: actionArgs) {
-    if (payload.source == null || payload.target == null)
+    if (!payload || payload.source == null || payload.target == null)
       throw new WsException('Missing parameter');
     const user = await this.userService.findOne(payload.source);
     const blockedUser = await this.userService.findOne(payload.target);
@@ -476,7 +486,7 @@ export class Gateway
 
   @SubscribeMessage('unblock')
   async unblockUser(client: Socket, payload: actionArgs) {
-    if (payload.source == null || payload.target == null)
+    if (!payload || payload.source == null || payload.target == null)
       throw new WsException('Missing parameter');
     const user = await this.userService.findOne(payload.source);
     const blockedUser = await this.userService.findOne(payload.target);
@@ -496,6 +506,7 @@ export class Gateway
   @SubscribeMessage('admin')
   async addAdmin(client: Socket, payload: actionArgs) {
     if (
+      !payload || 
       payload.room == null ||
       payload.source == null ||
       payload.target == null
@@ -529,6 +540,7 @@ export class Gateway
   @SubscribeMessage('mute')
   async muteUser(client: Socket, payload: actionArgs) {
     if (
+      !payload || 
       payload.room == null ||
       payload.source == null ||
       payload.target == null
@@ -562,6 +574,7 @@ export class Gateway
   @SubscribeMessage('unmute')
   async unmuteUser(client: Socket, payload: actionArgs) {
     if (
+      !payload || 
       payload.room == null ||
       payload.source == null ||
       payload.target == null
@@ -599,6 +612,7 @@ export class Gateway
     payload: { room: string; password: string; source: string },
   ) {
     if (
+      !payload || 
       payload.room == null ||
       payload.password == null ||
       payload.source == null
@@ -632,7 +646,7 @@ export class Gateway
     client: Socket,
     payload: { room: string; source: string },
   ) {
-    if (payload.room == null || payload.source == null)
+    if (!payload || payload.room == null || payload.source == null)
       throw new WsException('Missing parameter');
     const admin = await this.userService.findOne(payload.source);
     if (!admin) throw new WsException('Source user not found');
@@ -659,6 +673,7 @@ export class Gateway
     payload: { roomName: string; username: string; source: string },
   ) {
     if (
+      !payload || 
       payload.roomName == null ||
       payload.username == null ||
       payload.source == null
@@ -695,7 +710,7 @@ export class Gateway
     client: Socket,
     payload: { roomName: string; username: string },
   ) {
-    if (payload.roomName == null || payload.username == null)
+    if (!payload || payload.roomName == null || payload.username == null)
       throw new WsException('Missing parameters');
     if (
       !this.invitedChat.find(
@@ -726,7 +741,7 @@ export class Gateway
     client: Socket,
     payload: { source: string; target: string },
   ) {
-    if (payload.source == null || payload.target == null)
+    if (!payload || payload.source == null || payload.target == null)
       throw new WsException('Missing parameters');
     const userStatus = await this.usersStatusService.getUserStatus(
       payload.source,
@@ -772,7 +787,7 @@ export class Gateway
     payload: { source: string; target: string },
   ) {
     console.log('acceptBeingFriend');
-    if (payload.source == null || payload.target == null)
+    if (!payload || payload.source == null || payload.target == null)
       throw new WsException('Missing parameters');
     const userStatus = await this.usersStatusService.getUserStatus(
       payload.source,
@@ -827,7 +842,7 @@ export class Gateway
     client: Socket,
     payload: { source: string; target: string },
   ) {
-    if (payload.source == null || payload.target == null)
+    if (!payload || payload.source == null || payload.target == null)
       throw new WsException('Missing parameters');
     const userStatus = await this.usersStatusService.getUserStatus(
       payload.source,
@@ -852,6 +867,7 @@ export class Gateway
 
   @SubscribeMessage('askPlayPong')
   async askPlayPong(client: Socket, payload: string) {
+    if (!payload) throw new WsException("Missing parameters");
     const cUserStatus = await this.usersStatusService.getUserStatusByClientId(
       client.id,
     );
@@ -883,6 +899,7 @@ export class Gateway
 
   @SubscribeMessage('acceptPlayPong')
   async acceptPlayPong(client: Socket, payload: string) {
+    if (!payload) throw new WsException("Missing parameters");
     const cUserStatus = await this.usersStatusService.getUserStatusByClientId(
       client.id,
     );
@@ -965,6 +982,7 @@ export class Gateway
 
   @SubscribeMessage('matchmaking')
   async handleMatchmaking(client: Socket, payload: { username: string }) {
+    if (!payload || !payload.username) throw new WsException("Missing parameters");
     const userStatusTmp = await this.usersStatusService.getUserStatus(
       payload.username,
     );
@@ -1032,6 +1050,7 @@ export class Gateway
   }
 
   async endGame(client: Socket, payload: { gameRoomId: string }) {
+    if (!payload || !payload.gameRoomId) return ;
     const gameRoom = this.gameService.getGameRoom(payload.gameRoomId);
     if (!gameRoom) return;
     if (gameRoom.isFinish === true) return;
@@ -1077,6 +1096,7 @@ export class Gateway
     client: Socket,
     payload: { gameRoomId: string; coward: string },
   ) {
+    if (!payload || !payload.gameRoomId || !payload.coward) throw new WsException('Missing parameter');
     const userStatus = await this.usersStatusService.getUserStatus(
       payload.coward,
     );
@@ -1092,6 +1112,7 @@ export class Gateway
 
   @SubscribeMessage('cancelMatchmaking')
   async cancelMatchmaking(client: Socket, payload: { username: string }) {
+    if (!payload || !payload.username) throw new WsException('Missing parameter');
     const userStatus = await this.usersStatusService.getUserStatus(
       payload.username,
     );
@@ -1110,6 +1131,7 @@ export class Gateway
     client: Socket,
     payload: { player: string; gameRoomId: string },
   ) {
+    if (!payload || !payload.gameRoomId || !payload.player) throw new WsException('Missing parameter');
     const userStatus = await this.usersStatusService.getUserStatus(
       payload.player,
     );
@@ -1123,6 +1145,7 @@ export class Gateway
     client: Socket,
     payload: { player: string; gameRoomId: string },
   ) {
+    if (!payload || !payload.gameRoomId || !payload.player) throw new WsException('Missing parameter');
     const userStatus = await this.usersStatusService.getUserStatus(
       payload.player,
     );
@@ -1136,6 +1159,7 @@ export class Gateway
     client: Socket,
     payload: { player: string; gameRoomId: string },
   ) {
+    if (!payload || !payload.player || !payload.gameRoomId) throw new WsException('Missing parameter');
     const userStatus = await this.usersStatusService.getUserStatus(
       payload.player,
     );
@@ -1149,6 +1173,7 @@ export class Gateway
     client: Socket,
     payload: { player: string; gameRoomId: string },
   ) {
+    if (!payload || !payload.player || !payload.gameRoomId) throw new WsException('Missing parameter');
     const userStatus = await this.usersStatusService.getUserStatus(
       payload.player,
     );
@@ -1180,6 +1205,8 @@ export class Gateway
   @SubscribeMessage('changeUsername')
   async changeUsername(client: Socket, payload: string) {
     console.log('changeusername');
+    if (!payload) throw new WsException('Missing parameter');
+    if (payload.length < 1) throw new WsException('Username too short');
     if (payload.length > 10) payload = payload.substring(0, 10);
     const newPayload = payload.replace(/[^a-z0-9]/gi, '');
     if (newPayload !== payload)
@@ -1215,6 +1242,7 @@ export class Gateway
 
   @SubscribeMessage('changeBackground')
   async changeBackground(client: Socket, payload: string) {
+    if (!payload) throw new WsException('Missing parameter');
     const userStatus = await this.usersStatusService.getUserStatusByClientId(
       client.id,
     );
