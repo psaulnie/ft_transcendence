@@ -27,6 +27,9 @@ export class WebSocketManager {
           window.location.href = `http://${import.meta.env.VITE_IP}:5000/auth/logout`;
         }
       });
+      window.onbeforeunload = () => {
+        this.socket.close();
+      };
       this.channel.postMessage("newTab");
       this.channel.addEventListener("message", (msg) => {
         if (msg.data === "newTab") {
