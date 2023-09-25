@@ -1,18 +1,24 @@
 import React, { KeyboardEvent, SyntheticEvent, useState } from "react";
 import webSocketManager from "../../../webSocket";
 import { sendMsgArgs } from "../args.interface";
-import { sendMsgTypes } from "../args.types";
-import { useSelector } from "react-redux";
+import { actionTypes, sendMsgTypes } from "../args.types";
+import { useDispatch, useSelector } from "react-redux";
 
 import { Button, Grid, TextField } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { Publish } from "@mui/icons-material";
+import { addMsg } from "../../../store/rooms";
+import { userRole } from "../chatEnums";
 
-export default function InputForm({ roomName, isDirectMessage }: {
+export default function InputForm({
+  roomName,
+  isDirectMessage,
+}: {
   roomName: string;
   isDirectMessage: boolean;
 }) {
   const user = useSelector((state: any) => state.user);
+  const dispatch = useDispatch();
   const isWideScreen = useMediaQuery("(max-width:600px) or (max-height:700px)");
 
   const [value, setValue] = useState<sendMsgArgs>({
@@ -42,6 +48,23 @@ export default function InputForm({ roomName, isDirectMessage }: {
       .emit(msg, value, () => {
         setIsLoading(false);
       });
+    if (isDirectMessage) {
+      dispatch(
+        addMsg({
+          name: roomName,
+          message: {
+            source: user.username,
+            target: roomName,
+            data: value.data,
+            action: actionTypes.msg,
+            role: userRole.none,
+            isMuted: false,
+            hasPassword: false,
+            newUsername: "",
+          },
+        })
+      );
+    }
   }
   function keyPress(event: KeyboardEvent<HTMLButtonElement>) {
     event.preventDefault();
@@ -78,7 +101,7 @@ export default function InputForm({ roomName, isDirectMessage }: {
             fullWidth
             value={message}
             onChange={onChange}
-            autoComplete='off'
+            autoComplete="off"
           />
         </Grid>
         <Grid item xs={2}>

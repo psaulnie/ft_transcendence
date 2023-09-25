@@ -32,7 +32,7 @@ export class Gateway
   private invitedChat: Array<{ id: string; value: string }>;
   private invitedPong: Array<{ id: string; value: string }>;
   private askFriend: Array<{ id: string; value: string }>;
-  private maxScore: number;
+  private readonly maxScore: number;
 
   constructor(
     private roomService: RoomService,
@@ -58,10 +58,8 @@ export class Gateway
     )
       throw new WsException('Missing parameter');
     if (payload.data.length > 50) payload.data = payload.data.slice(0, 50);
-    console.log(payload);
     payload.target = payload.target.slice(0, -1);
     const user = await this.userService.findOne(payload.source);
-    console.log('sendprivmsg');
     if (!user) throw new WsException(payload.source + ' not found');
     const cUserStatus = await this.usersStatusService.getUserStatus(
       payload.source,
@@ -110,7 +108,6 @@ export class Gateway
       throw new WsException('Missing parameter');
     if (payload.data.length > 50) payload.data = payload.data.slice(0, 50);
     const user = await this.userService.findOne(payload.source);
-    console.log('sendmsg');
     if (!user) throw new WsException(payload.source + ' not found');
     const userStatus = await this.usersStatusService.getUserStatus(
       payload.source,
@@ -166,7 +163,7 @@ export class Gateway
         'You joined too many channels, leave some before creating a new one',
       );
     const room = await this.roomService.findOne(payload.room);
-    if (!room) this.joinRoom(client, payload);
+    if (!room) await this.joinRoom(client, payload);
     else
       this.server.emit(client.id, {
         action: actionTypes.roomAlreadyExist,
@@ -482,7 +479,7 @@ export class Gateway
       throw new WsException('Forbidden');
     if (!(await this.userService.blockUser(user, blockedUser)))
       throw new WsException('Already blocked');
-    this.removeFriend(client, payload);
+    await this.removeFriend(client, payload);
   }
 
   @SubscribeMessage('unblock')
@@ -619,7 +616,6 @@ export class Gateway
       payload.source == null
     )
       throw new WsException('Missing parameter');
-    console.log('setPasswordToRoom');
     const admin = await this.userService.findOne(payload.source);
     if (!admin) throw new WsException(payload.source + ' not found');
     const userStatus = await this.usersStatusService.getUserStatus(
@@ -787,7 +783,6 @@ export class Gateway
     client: Socket,
     payload: { source: string; target: string },
   ) {
-    console.log('acceptBeingFriend');
     if (!payload || payload.source == null || payload.target == null)
       throw new WsException('Missing parameters');
     const userStatus = await this.usersStatusService.getUserStatus(
@@ -1108,7 +1103,6 @@ export class Gateway
     const gameRoom = this.gameService.getGameRoom(payload.gameRoomId);
     if (!gameRoom) throw new WsException('Game Room not found');
     gameRoom.coward = payload.coward;
-    // gameRoom.isFinish = true;
     await this.gameService.leaveGame(payload.gameRoomId, payload.coward);
     await this.endGame(client, { gameRoomId: payload.gameRoomId });
   }
@@ -1211,7 +1205,6 @@ export class Gateway
 
   @SubscribeMessage('changeUsername')
   async changeUsername(client: Socket, payload: string) {
-    console.log('changeusername');
     if (!payload) throw new WsException('Missing parameter');
     if (payload.length < 1) throw new WsException('Username too short');
     if (payload.length > 10) payload = payload.substring(0, 10);
@@ -1269,16 +1262,14 @@ export class Gateway
   }
 
   async afterInit(server: Server) {
-    console.log('Init');
     server.on('connection', (client) => {
       client.on('disconnect', (reason) => {
-        console.log(`Client disconnected due to: ${reason}`);
+        console.log(reason);
       });
     });
   }
 
   async handleDisconnect(client: Socket) {
-    console.log(`Client disconnected: ${client.id}`);
     const userStatusTmp = await this.usersStatusService.getUserStatusByClientId(
       client.id,
     );
@@ -1306,7 +1297,6 @@ export class Gateway
   }
 
   async handleConnection(client: Socket) {
-    console.log(`Client connected: ${client.id}`);
     const credential = client.handshake.headers.cookie
       ?.split(';')
       .find((cookie) => cookie.includes('connect.sid'));

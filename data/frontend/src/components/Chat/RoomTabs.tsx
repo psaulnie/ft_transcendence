@@ -94,7 +94,7 @@ export default function RoomTabs() {
       >
         {rooms.room.map(
           (
-            room: { name: string; role: number; unread: boolean },
+            room: { name: string; role: number; unread: boolean; listener: string },
             key: number,
           ) => (
             <Tab
@@ -115,7 +115,7 @@ export default function RoomTabs() {
                       <CloseIcon/>
                     </IconButton>
                   ) : null}
-                  <MessageProvider roomName={room.name}/>
+                  <MessageProvider roomName={room.listener} />
                   <RoomOptionsMenu
                     contextMenu={contextMenu}
                     setContextMenu={setContextMenu}

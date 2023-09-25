@@ -1,4 +1,8 @@
-import {useGetUsersInRoomQuery, useLazyGetIsMutedQuery, useLazyGetUserFriendsListQuery,} from "../../store/api";
+import {
+  useGetUsersInRoomQuery,
+  useLazyGetIsMutedQuery,
+  useLazyGetUserFriendsListQuery,
+} from "../../store/api";
 
 import React, {useEffect, useState} from "react";
 import {useSelector} from "react-redux";
@@ -26,10 +30,10 @@ import ErrorSnackbar from "../Global/ErrorSnackbar";
 import Loading from "../Global/Loading";
 
 export default function UsersList({
-                                    isDirectMessage,
-                                    roomName,
-                                    role,
-                                  }: {
+  isDirectMessage,
+  roomName,
+  role,
+}: {
   isDirectMessage: boolean;
   roomName: string;
   role: userRole;
@@ -56,8 +60,8 @@ export default function UsersList({
   if (!isDirectMessage) usersList = usersListData;
   else
     usersList = [
-      {username: user.username, role: userRole.none, isMuted: false},
-      {username: roomName, role: userRole.none, isMuted: false},
+      { username: user.username, role: userRole.none, isMuted: false },
+      { username: roomName.replace('⌲', ''), role: userRole.none, isMuted: false },
     ];
 
   const handleContextMenu = (event: React.MouseEvent, username: string, cUser: any) => {

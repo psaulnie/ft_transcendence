@@ -17,7 +17,7 @@ function MessageProvider({roomName}: { roomName: string }) {
 
   useEffect(() => {
     function onMsgSent(value: chatResponseArgs) {
-      let roomIndex = rooms.room.findIndex((obj: any) => obj.name === roomName);
+      let roomIndex = rooms.room.findIndex((obj: any) => obj.listener === roomName);
 
       if (value.action === actionTypes.hasPassword)
         dispatch(setHasPassword({index: roomIndex, value: true}));
@@ -43,12 +43,13 @@ function MessageProvider({roomName}: { roomName: string }) {
         )
           dispatch(
             addRoom({
-              name: value.source + "⌲",
+              name: value.source,
               role: userRole.none,
               isDirectMsg: true,
               hasPassword: false,
               openTab: false,
               isMuted: false,
+              username: user.username,
             }),
           );
       }

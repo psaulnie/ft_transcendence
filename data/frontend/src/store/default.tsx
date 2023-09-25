@@ -12,7 +12,12 @@ const reducer = combineReducers({
 const store = configureStore({
   reducer,
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(apiSlice.middleware),
+    getDefaultMiddleware({
+      thunk: {
+        extraArgument: user,
+      },
+      serializableCheck: false,
+    }).concat(apiSlice.middleware),
 });
 
 export default store;

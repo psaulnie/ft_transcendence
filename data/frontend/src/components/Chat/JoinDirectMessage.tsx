@@ -40,14 +40,16 @@ function JoinDirectMessage() {
         (obj: { name: string; role: string }) => obj.name === newUser,
       )
     ) {
+      const roomName = user.username > newUser ? user.username + newUser : newUser + user.username;
       dispatch(
         addRoom({
-          name: newUser + "⌲",
+          name: roomName,
           role: userRole.none,
           isDirectMsg: true,
           hasPassword: false,
           openTab: true,
           isMuted: false,
+          username: user.username,
         }),
       );
       webSocketManager.getSocket().emit("openPrivateMsg", {
