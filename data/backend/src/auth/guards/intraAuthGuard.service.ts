@@ -1,4 +1,4 @@
-import { ExecutionContext, Injectable, CanActivate } from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { UsersService } from '../../users/users.service';
 
@@ -6,7 +6,6 @@ import { UsersService } from '../../users/users.service';
 export class IntraAuthGuard extends AuthGuard('42') {
   async canActivate(context: ExecutionContext) {
     try {
-      console.log('INTRA AUTH GUARD');
       const activate = (await super.canActivate(context)) as boolean;
       const request = context.switchToHttp().getRequest();
       await super.logIn(request);
@@ -27,10 +26,7 @@ export class AuthenticatedGuard implements CanActivate {
   constructor(private readonly usersService: UsersService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    // console.log('AUTHENTICATED GUARD');
     const req = context.switchToHttp().getRequest();
-    // console.log('‣ isAuthenticated: ', req.isAuthenticated());
-
     if (!req.isAuthenticated()) {
       return false;
     }
@@ -55,9 +51,7 @@ export class AuthenticatedGuard implements CanActivate {
 @Injectable()
 export class IntraAuthenticatedGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    console.log('INTRA AUTHENTICATED GUARD');
     const req = context.switchToHttp().getRequest();
-    console.log('‣ isAuthenticated: ', req.isAuthenticated());
     return req.isAuthenticated();
   }
 }

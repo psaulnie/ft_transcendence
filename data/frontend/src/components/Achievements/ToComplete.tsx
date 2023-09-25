@@ -1,14 +1,11 @@
-import { Box, Grid, Typography } from "@mui/material";
+import {Box, Grid, Typography} from "@mui/material";
 
-function ToComplete({
-  title,
-  description,
-}: {
+function ToComplete({ title, description }: {
   title: string;
   description: string;
 }) {
   return (
-    <Grid item xs sx={{ width: "100%", height: "100%" }}>
+    <Grid item xs sx={{width: "100%", height: "100%"}}>
       <Box
         sx={{
           background: "linear-gradient(90deg, #454545FF, #454545AA, #45454500)",
@@ -50,7 +47,7 @@ function ToComplete({
                 marginRight: "3.2em",
               }}
             >
-            {title}
+              {title}
             </Typography>
             <Typography
               variant="h6"
@@ -61,7 +58,7 @@ function ToComplete({
                 textAlign: "left",
               }}
             >
-            {description}
+              {description}
             </Typography>
           </Grid>
         </Grid>

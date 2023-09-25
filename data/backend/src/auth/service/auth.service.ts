@@ -1,13 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthProvider } from './auth.provider';
 import { UserDetails } from '../../utils/types';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../../entities';
 import { Repository } from 'typeorm';
 import { HttpService } from '@nestjs/axios';
-import { firstValueFrom } from 'rxjs';
-import { catchError } from 'rxjs';
-import { UnauthorizedException } from '@nestjs/common';
+import { catchError, firstValueFrom } from 'rxjs';
 import { Statistics } from 'src/entities/stats.entity';
 import { Achievements } from 'src/entities/achievements.entity';
 import { randomUUID } from 'crypto';
@@ -21,11 +19,10 @@ export class AuthService implements AuthProvider {
     private achievementsRepo: Repository<Achievements>,
     private readonly httpService: HttpService,
   ) {}
+
   async validateUser(details: UserDetails) {
-    console.log('VALIDATE USER SERVICE');
     const { intraId, accessToken, refreshToken } = details;
     const user = await this.userRepo.findOneBy({ intraId });
-    console.log('‣ Found user in db', user);
     if (user) {
       if (user.urlAvatar === '' || user.urlAvatar === null) {
         const url: any = await firstValueFrom(
@@ -42,8 +39,7 @@ export class AuthService implements AuthProvider {
             ),
         );
         details.urlAvatar = url?.data?.image?.link;
-        if (!details.urlAvatar)
-              details.urlAvatar = '';
+        if (!details.urlAvatar) details.urlAvatar = '';
       }
       user.accessToken = accessToken;
       user.refreshToken = refreshToken;
@@ -58,9 +54,6 @@ export class AuthService implements AuthProvider {
   }
 
   async createUser(details: UserDetails) {
-    console.log('CREATE USER SERVICE');
-    console.log('‣ UserDetails', details);
-
     // TODO remove condition, it's only for userTest
     if (details.username !== 'userTest') {
       const url: any = await firstValueFrom(
@@ -77,14 +70,15 @@ export class AuthService implements AuthProvider {
           ),
       );
       details.urlAvatar = url?.data?.image?.link;
-      if (!details.urlAvatar)
-            details.urlAvatar = '';
+      if (!details.urlAvatar) details.urlAvatar = '';
     }
 
     const achievements = new Achievements();
     const statistics = new Statistics();
 
-    while (await this.userRepo.findOne({ where: { username: details.username } })) {
+    while (
+      await this.userRepo.findOne({ where: { username: details.username } })
+    ) {
       details.username = randomUUID().slice(0, 8);
     }
     const user = this.userRepo.create(details);
@@ -96,7 +90,6 @@ export class AuthService implements AuthProvider {
   }
 
   findUser(intraId: string): Promise<User> | undefined {
-    // console.log('FIND USER SERVICE');
     return this.userRepo.findOneBy({ intraId });
   }
 }

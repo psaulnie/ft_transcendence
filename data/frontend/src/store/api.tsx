@@ -1,5 +1,4 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import Cookies from "js-cookie";
+import {createApi, fetchBaseQuery} from "@reduxjs/toolkit/query/react";
 
 export const apiSlice = createApi({
   reducerPath: "api",
@@ -9,7 +8,7 @@ export const apiSlice = createApi({
   }),
   endpoints: (builder) => ({
     getRole: builder.query({
-      query: ({ username = null, roomName = null }) => ({
+      query: ({username = null, roomName = null}) => ({
         url: "/api/chat/role/" + username + "/" + roomName,
         method: "GET",
       }),
@@ -27,7 +26,7 @@ export const apiSlice = createApi({
       }),
     }),
     getUsersInRoom: builder.query({
-      query: ({ roomName = null }) => ({
+      query: ({roomName = null}) => ({
         url: "/api/chat/" + roomName + "/users",
         method: "GET",
       }),
@@ -45,19 +44,19 @@ export const apiSlice = createApi({
       }),
     }),
     getUserStatusInRoom: builder.query({
-      query: ({ roomName = null }) => ({
+      query: ({roomName = null}) => ({
         url: "/api/chat/user/" + roomName + "/status",
         method: "GET",
       }),
     }),
     getInvitedUsersList: builder.query({
-      query: ({ username = null, roomName = null }) => ({
+      query: ({username = null, roomName = null}) => ({
         url: "/api/chat/" + username + "/" + roomName + "/invited",
         method: "GET",
       }),
     }),
     getIsRoomNameTaken: builder.query({
-      query: ({ roomName = null }) => ({
+      query: ({roomName = null}) => ({
         url: "/api/chat/" + roomName + "/exist",
         method: "GET",
       }),
@@ -69,13 +68,13 @@ export const apiSlice = createApi({
       }),
     }),
     getUserProfile: builder.query({
-      query: ({ username = null }) => ({
+      query: ({username = null}) => ({
         url: "/api/profile/" + username,
         method: "GET",
       }),
     }),
     getUserAchievements: builder.query({
-      query: ({ username = null }) => ({
+      query: ({username = null}) => ({
         url: "/api/profile/" + username + "/achievements",
         method: "GET",
       }),
@@ -107,13 +106,13 @@ export const apiSlice = createApi({
       }),
     }),
     getIsMuted: builder.query({
-      query: ({ username = null, roomName = null }) => ({
+      query: ({username = null, roomName = null}) => ({
         url: "/api/chat/" + roomName + "/" + username + "/muted",
         method: "GET",
       }),
     }),
     getBanList: builder.query({
-      query: ({ roomName = null }) => ({
+      query: ({roomName = null}) => ({
         url: "/api/chat/" + roomName + "/banned/list",
         method: "GET",
       }),

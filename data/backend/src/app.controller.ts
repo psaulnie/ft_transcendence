@@ -1,21 +1,22 @@
 import {
-  Controller,
-  Body,
-  Post,
-  UploadedFile,
-  Get,
-  StreamableFile,
-  Res,
-  Param,
-  Req,
   BadRequestException,
+  Body,
+  Controller,
+  Get,
+  HttpException,
+  Param,
+  Post,
+  Req,
+  Res,
+  StreamableFile,
   UnsupportedMediaTypeException,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
-import { UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { HttpException } from '@nestjs/common';
 
-import { createReadStream } from 'fs';
+import { createReadStream, promises as fs } from 'fs';
 import { join } from 'path';
 import { randomUUID } from 'crypto';
 
@@ -24,14 +25,12 @@ import { Response } from 'express';
 import { AppService } from './services/app.service';
 
 import { AuthenticatedGuard } from './auth/guards/intraAuthGuard.service';
-import { UseGuards } from '@nestjs/common';
 
 import { HttpService } from '@nestjs/axios';
 import { UsersStatusService } from './services/users.status.service';
 import { userStatus } from './users/userStatus';
 import RequestWithUser from './auth/service/requestWithUser.interface';
 import { User } from './entities';
-import { promises as fs } from 'fs';
 import * as stream from 'stream';
 
 const fileInterceptorOptions = {
@@ -76,7 +75,6 @@ export class AppController {
     file: Express.Multer.File,
     @Req() req: RequestWithUser,
   ) {
-    console.log('changeAvatar');
     const user = req.user as User;
     if (body && file) {
       if (!validImage(file)) {
@@ -119,7 +117,6 @@ export class AppController {
           return;
         }
       }
-      console.log('PATH: ', path);
       const file = createReadStream(join(process.cwd(), '..' + path));
       stream.finished(file, (err) => {
         if (err) {
@@ -149,8 +146,7 @@ export class AppController {
     @Res({ passthrough: true }) res: Response,
   ): Promise<StreamableFile> {
     try {
-      let path = '/avatars/default.jpg';
-      console.log('PATH: ', path);
+      const path = '/avatars/default.jpg';
       const file = createReadStream(join(process.cwd(), '..' + path));
       stream.finished(file, (err) => {
         if (err) {

@@ -1,6 +1,6 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { chatResponseArgs } from "../components/Chat/args.interface";
-import { userRole } from "../components/Chat/chatEnums";
+import {createSlice, PayloadAction} from "@reduxjs/toolkit";
+import {chatResponseArgs} from "../components/Chat/args.interface";
+import {userRole} from "../components/Chat/chatEnums";
 
 export interface roomType {
   name: string;
@@ -27,7 +27,7 @@ interface RoomsState {
 
 const initialUser: RoomsState = localStorage.getItem("rooms")
   ? JSON.parse(localStorage.getItem("rooms") || "{ room: [], index: -1 }")
-  : { room: [], index: -1 };
+  : {room: [], index: -1};
 
 const initialState: RoomsState = {
   room: initialUser.room,
@@ -77,9 +77,9 @@ export const roomsSlice = createSlice({
       if (state.room.length === 0) state.index = -1;
       else if (state.index !== 0) state.index--;
     },
-    updateRoomName: (state, action: PayloadAction<{oldName: string, newName: string}>) => {
+    updateRoomName: (state, action: PayloadAction<{ oldName: string, newName: string }>) => {
       const room = state.room.find((obj) => obj.name === action.payload.oldName);
-      if (!room) return ;
+      if (!room) return;
       room.name = action.payload.newName;
     },
     changeRole: (state, action: PayloadAction<roomType>) => {

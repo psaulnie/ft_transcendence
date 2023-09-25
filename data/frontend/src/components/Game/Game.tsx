@@ -1,15 +1,7 @@
-// import { exit } from 'process';
-import { useEffect, useState } from "react";
-// import { webSocket } from '../../webSocket';
-// import { WidthFull } from '@mui/icons-material';
+import {useEffect, useState} from "react";
 import Matchmaking from "./Matchmaking";
 import Canvas from "./Canvas";
-import { Route, Routes, useLocation } from "react-router";
-
-// interface InterfaceProps{
-//   WidthFrame:string;
-//   Heigth:string;
-// }
+import {Route, Routes, useLocation} from "react-router";
 
 export default function Game() {
   const [foundUser, setFoundUser] = useState(false);
@@ -45,9 +37,7 @@ export default function Game() {
       />
     );
   }
-  // if (!foundUser && location.pathname !== "/matchmaking") {
-  //   return <Navigate to="/matchmaking" />;
-  // }
+
   return (
     <Routes>
       <Route

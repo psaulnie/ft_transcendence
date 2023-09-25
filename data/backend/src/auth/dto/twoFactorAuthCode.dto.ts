@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, Length } from 'class-validator';
+import { IsNotEmpty, IsString, Length } from 'class-validator';
 
 export class TwoFactorAuthCodeDto {
   @IsString()
@@ -6,5 +6,3 @@ export class TwoFactorAuthCodeDto {
   @Length(6, 6)
   twoFactorAuthCode: string;
 }
-
-export default TwoFactorAuthCodeDto;

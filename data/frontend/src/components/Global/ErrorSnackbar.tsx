@@ -1,12 +1,9 @@
-import React, { useEffect } from "react";
-import { useState } from "react";
+import React, {useEffect, useState} from "react";
 
-import { Button, Snackbar } from "@mui/material";
-import { Alert } from "@mui/material";
+import {Alert, Button, Snackbar} from "@mui/material";
 import CachedIcon from "@mui/icons-material/Cached";
-import Cookies from "js-cookie";
 
-export default function ErrorSnackbar({ error }: { error: any }) {
+export default function ErrorSnackbar({error}: { error: any }) {
   const [message, setMessage] = useState("Unknown error");
   const [errorCode, setErrorCode] = useState(0);
   const [open, setOpen] = useState(true);
@@ -21,7 +18,7 @@ export default function ErrorSnackbar({ error }: { error: any }) {
     setOpen(false);
   };
 
-  function reload(e: any) {
+  function reload() {
     window.location.href = `http://${import.meta.env.VITE_IP}:5000/auth/logout`;
   }
 
@@ -34,17 +31,17 @@ export default function ErrorSnackbar({ error }: { error: any }) {
   return (
     <Snackbar
       open={open}
-      anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      anchorOrigin={{vertical: "top", horizontal: "right"}}
       onClose={handleClose}
     >
       <Alert
         onClose={handleClose}
         severity="error"
-        sx={{ width: "100%" }}
+        sx={{width: "100%"}}
         action={
           <Button onClick={reload} color="inherit" size="small">
             Reload
-            <CachedIcon />
+            <CachedIcon/>
           </Button>
         }
       >

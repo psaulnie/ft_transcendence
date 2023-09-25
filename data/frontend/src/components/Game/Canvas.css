@@ -6,8 +6,8 @@
     justify-content: center;
     align-items: center;
     overflow: hidden;
-  }
-  
+}
+
 .canvas {
     width: 640px;
     height: 425px;

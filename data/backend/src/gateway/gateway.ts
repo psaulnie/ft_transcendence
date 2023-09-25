@@ -1,21 +1,21 @@
 import {
-  SubscribeMessage,
-  WebSocketGateway,
-  OnGatewayInit,
-  WebSocketServer,
   OnGatewayConnection,
   OnGatewayDisconnect,
+  OnGatewayInit,
+  SubscribeMessage,
+  WebSocketGateway,
+  WebSocketServer,
   WsException,
 } from '@nestjs/websockets';
 
-import { Socket, Server } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 import { RoomService } from 'src/services/room.service';
 import { UsersService } from 'src/users/users.service';
 
-import { sendMsgArgs, actionArgs } from './args.interface';
+import { actionArgs, sendMsgArgs } from './args.interface';
 import { actionTypes } from './args.types';
 import { accessStatus, userRole } from 'src/chatModule/chatEnums';
-import { hashPassword, comparePassword } from './hashPasswords';
+import { comparePassword, hashPassword } from './hashPasswords';
 import { UsersStatusService } from 'src/services/users.status.service';
 import { userStatus } from 'src/users/userStatus';
 import { GameService } from 'src/services/game.service';
@@ -27,12 +27,12 @@ import { GameService } from 'src/services/game.service';
 export class Gateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
+  @WebSocketServer() server: Server;
   private matchmakingQueue: string[];
   private invitedChat: Array<{ id: string; value: string }>;
   private invitedPong: Array<{ id: string; value: string }>;
   private askFriend: Array<{ id: string; value: string }>;
   private maxScore: number;
-  @WebSocketServer() server: Server;
 
   constructor(
     private roomService: RoomService,
@@ -50,7 +50,7 @@ export class Gateway
   @SubscribeMessage('sendPrivateMsg')
   async sendPrivateMessage(client: Socket, payload: sendMsgArgs) {
     if (
-      !payload || 
+      !payload ||
       payload.data == null ||
       payload.source == null ||
       payload.target == null ||
@@ -101,7 +101,7 @@ export class Gateway
   @SubscribeMessage('sendMsg')
   async sendMsg(client: Socket, payload: sendMsgArgs) {
     if (
-      !payload || 
+      !payload ||
       payload.data == null ||
       payload.source == null ||
       payload.target == null ||
@@ -140,7 +140,7 @@ export class Gateway
   @SubscribeMessage('createRoom')
   async createRoom(client: Socket, payload: any) {
     if (
-      !payload || 
+      !payload ||
       payload.access == null ||
       payload.room == null ||
       payload.source == null
@@ -177,7 +177,7 @@ export class Gateway
   @SubscribeMessage('joinRoom')
   async joinRoom(client: Socket, payload: any) {
     if (
-      !payload || 
+      !payload ||
       payload.access == null ||
       payload.room == null ||
       payload.source == null
@@ -286,7 +286,7 @@ export class Gateway
   @SubscribeMessage('leaveRoom')
   async leaveRoom(client: Socket, payload: any) {
     if (
-      !payload || 
+      !payload ||
       payload.access == null ||
       payload.room == null ||
       payload.source == null
@@ -300,7 +300,7 @@ export class Gateway
     const user = await this.userService.findOne(payload.source);
     if (!user) throw new WsException(payload.source + ' not found');
     const room = await this.roomService.findOne(payload.room);
-    if (!room) return ;
+    if (!room) return;
     const previousOwner = room.owner.uid;
     const owner = await this.roomService.removeUser(room, user.uid);
     const ownerStatus = await this.usersStatusService.getUserStatus(
@@ -326,7 +326,7 @@ export class Gateway
   @SubscribeMessage('openPrivateMessage')
   async openPrivateMessage(client: Socket, payload: any) {
     if (
-      !payload || 
+      !payload ||
       payload.access == null ||
       payload.room == null ||
       payload.source == null
@@ -352,7 +352,7 @@ export class Gateway
   @SubscribeMessage('kick')
   async kickUser(client: Socket, payload: actionArgs) {
     if (
-      !payload || 
+      !payload ||
       payload.room == null ||
       payload.source == null ||
       payload.target == null
@@ -395,7 +395,7 @@ export class Gateway
   @SubscribeMessage('ban')
   async banUser(client: Socket, payload: actionArgs) {
     if (
-      !payload || 
+      !payload ||
       payload.room == null ||
       payload.source == null ||
       payload.target == null
@@ -440,7 +440,8 @@ export class Gateway
     client: Socket,
     payload: { roomName: string; username: string },
   ) {
-    if (!payload || !payload.roomName || !payload.username) throw new WsException("Missing parameters");
+    if (!payload || !payload.roomName || !payload.username)
+      throw new WsException('Missing parameters');
     const ownerStatus = await this.usersStatusService.getUserStatusByClientId(
       client.id,
     );
@@ -506,7 +507,7 @@ export class Gateway
   @SubscribeMessage('admin')
   async addAdmin(client: Socket, payload: actionArgs) {
     if (
-      !payload || 
+      !payload ||
       payload.room == null ||
       payload.source == null ||
       payload.target == null
@@ -540,7 +541,7 @@ export class Gateway
   @SubscribeMessage('mute')
   async muteUser(client: Socket, payload: actionArgs) {
     if (
-      !payload || 
+      !payload ||
       payload.room == null ||
       payload.source == null ||
       payload.target == null
@@ -574,7 +575,7 @@ export class Gateway
   @SubscribeMessage('unmute')
   async unmuteUser(client: Socket, payload: actionArgs) {
     if (
-      !payload || 
+      !payload ||
       payload.room == null ||
       payload.source == null ||
       payload.target == null
@@ -612,7 +613,7 @@ export class Gateway
     payload: { room: string; password: string; source: string },
   ) {
     if (
-      !payload || 
+      !payload ||
       payload.room == null ||
       payload.password == null ||
       payload.source == null
@@ -673,7 +674,7 @@ export class Gateway
     payload: { roomName: string; username: string; source: string },
   ) {
     if (
-      !payload || 
+      !payload ||
       payload.roomName == null ||
       payload.username == null ||
       payload.source == null
@@ -867,7 +868,7 @@ export class Gateway
 
   @SubscribeMessage('askPlayPong')
   async askPlayPong(client: Socket, payload: string) {
-    if (!payload) throw new WsException("Missing parameters");
+    if (!payload) throw new WsException('Missing parameters');
     const cUserStatus = await this.usersStatusService.getUserStatusByClientId(
       client.id,
     );
@@ -899,7 +900,7 @@ export class Gateway
 
   @SubscribeMessage('acceptPlayPong')
   async acceptPlayPong(client: Socket, payload: string) {
-    if (!payload) throw new WsException("Missing parameters");
+    if (!payload) throw new WsException('Missing parameters');
     const cUserStatus = await this.usersStatusService.getUserStatusByClientId(
       client.id,
     );
@@ -982,7 +983,8 @@ export class Gateway
 
   @SubscribeMessage('matchmaking')
   async handleMatchmaking(client: Socket, payload: { username: string }) {
-    if (!payload || !payload.username) throw new WsException("Missing parameters");
+    if (!payload || !payload.username)
+      throw new WsException('Missing parameters');
     const userStatusTmp = await this.usersStatusService.getUserStatus(
       payload.username,
     );
@@ -1050,7 +1052,7 @@ export class Gateway
   }
 
   async endGame(client: Socket, payload: { gameRoomId: string }) {
-    if (!payload || !payload.gameRoomId) return ;
+    if (!payload || !payload.gameRoomId) return;
     const gameRoom = this.gameService.getGameRoom(payload.gameRoomId);
     if (!gameRoom) return;
     if (gameRoom.isFinish === true) return;
@@ -1087,7 +1089,7 @@ export class Gateway
     userLStatus.gameRoomId = null;
     await this.gameService.addMatchHistory(payload.gameRoomId, userW, userL);
     await this.gameService.updateRank(userW, userL);
-    await this.gameService.updateAchivement(userW, userL);
+    await this.gameService.updateAchievement(userW, userL);
     gameRoom.isFinish = true;
   }
 
@@ -1096,7 +1098,8 @@ export class Gateway
     client: Socket,
     payload: { gameRoomId: string; coward: string },
   ) {
-    if (!payload || !payload.gameRoomId || !payload.coward) throw new WsException('Missing parameter');
+    if (!payload || !payload.gameRoomId || !payload.coward)
+      throw new WsException('Missing parameter');
     const userStatus = await this.usersStatusService.getUserStatus(
       payload.coward,
     );
@@ -1112,7 +1115,8 @@ export class Gateway
 
   @SubscribeMessage('cancelMatchmaking')
   async cancelMatchmaking(client: Socket, payload: { username: string }) {
-    if (!payload || !payload.username) throw new WsException('Missing parameter');
+    if (!payload || !payload.username)
+      throw new WsException('Missing parameter');
     const userStatus = await this.usersStatusService.getUserStatus(
       payload.username,
     );
@@ -1131,7 +1135,8 @@ export class Gateway
     client: Socket,
     payload: { player: string; gameRoomId: string },
   ) {
-    if (!payload || !payload.gameRoomId || !payload.player) throw new WsException('Missing parameter');
+    if (!payload || !payload.gameRoomId || !payload.player)
+      throw new WsException('Missing parameter');
     const userStatus = await this.usersStatusService.getUserStatus(
       payload.player,
     );
@@ -1145,7 +1150,8 @@ export class Gateway
     client: Socket,
     payload: { player: string; gameRoomId: string },
   ) {
-    if (!payload || !payload.gameRoomId || !payload.player) throw new WsException('Missing parameter');
+    if (!payload || !payload.gameRoomId || !payload.player)
+      throw new WsException('Missing parameter');
     const userStatus = await this.usersStatusService.getUserStatus(
       payload.player,
     );
@@ -1159,7 +1165,8 @@ export class Gateway
     client: Socket,
     payload: { player: string; gameRoomId: string },
   ) {
-    if (!payload || !payload.player || !payload.gameRoomId) throw new WsException('Missing parameter');
+    if (!payload || !payload.player || !payload.gameRoomId)
+      throw new WsException('Missing parameter');
     const userStatus = await this.usersStatusService.getUserStatus(
       payload.player,
     );
@@ -1173,7 +1180,8 @@ export class Gateway
     client: Socket,
     payload: { player: string; gameRoomId: string },
   ) {
-    if (!payload || !payload.player || !payload.gameRoomId) throw new WsException('Missing parameter');
+    if (!payload || !payload.player || !payload.gameRoomId)
+      throw new WsException('Missing parameter');
     const userStatus = await this.usersStatusService.getUserStatus(
       payload.player,
     );
@@ -1191,11 +1199,10 @@ export class Gateway
     const gameRoom = this.gameService.getGameRoom(cUserStatus.gameRoomId);
     if (!gameRoom) throw new WsException('Game Room not found');
     gameRoom.coward = cUserStatus.username;
-    await this.leaveGame(
-      client,
-      {gameRoomId : cUserStatus.gameRoomId,
-      coward: cUserStatus.username}
-    );
+    await this.leaveGame(client, {
+      gameRoomId: cUserStatus.gameRoomId,
+      coward: cUserStatus.username,
+    });
   }
 
   /*
@@ -1282,11 +1289,10 @@ export class Gateway
       if (gameRoom) {
         gameRoom.coward = userStatusTmp.username;
         const gameRoomId = userStatusTmp.gameRoomId;
-        await this.leaveGame(
-          client,
-          {gameRoomId : userStatusTmp.gameRoomId,
-          coward: user.username}          
-        );
+        await this.leaveGame(client, {
+          gameRoomId: userStatusTmp.gameRoomId,
+          coward: user.username,
+        });
         await this.endGame(client, { gameRoomId: gameRoomId });
       }
     }
@@ -1299,7 +1305,7 @@ export class Gateway
     await this.usersStatusService.setUserStatus(client.id, userStatus.offline);
   }
 
-  async handleConnection(client: Socket, ...args: any[]) {
+  async handleConnection(client: Socket) {
     console.log(`Client connected: ${client.id}`);
     const credential = client.handshake.headers.cookie
       ?.split(';')
@@ -1343,11 +1349,10 @@ export class Gateway
         const gameRoom = this.gameService.getGameRoom(currentStatus.gameRoomId);
         if (gameRoom) {
           gameRoom.coward = currentStatus.username;
-          await this.leaveGame(
-            client,
-            {gameRoomId : currentStatus.gameRoomId,
-            coward: currentStatus.username}
-          );
+          await this.leaveGame(client, {
+            gameRoomId: currentStatus.gameRoomId,
+            coward: currentStatus.username,
+          });
           await this.endGame(client, { gameRoomId: currentStatus.gameRoomId });
         }
       }

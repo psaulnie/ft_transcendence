@@ -1,10 +1,10 @@
-import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
-import { chatResponseArgs } from "./args.interface";
-import { addMsg, addRoom, setRead, updateRoomName } from "../../store/rooms";
+import {useDispatch, useSelector} from "react-redux";
+import {useEffect} from "react";
+import {chatResponseArgs} from "./args.interface";
+import {addMsg, addRoom, setRead, updateRoomName} from "../../store/rooms";
 import webSocketManager from "../../webSocket";
-import { actionTypes } from "./args.types";
-import { userRole } from "./chatEnums";
+import {actionTypes} from "./args.types";
+import {userRole} from "./chatEnums";
 
 export default function DirectMessageProvider() {
   const user = useSelector((state: any) => state.user);
@@ -24,14 +24,14 @@ export default function DirectMessageProvider() {
             isMuted: false,
           })
         );
-        dispatch(addMsg({ name: value.source + '⌲', message: value }));
+        dispatch(addMsg({name: value.source + '⌲', message: value}));
       }
       dispatch(setRead(rooms.index));
     }
 
     function newUsername(value: chatResponseArgs) {
       dispatch(
-        updateRoomName({ oldName: value.source, newName: value.target })
+        updateRoomName({oldName: value.source, newName: value.target})
       );
     }
 

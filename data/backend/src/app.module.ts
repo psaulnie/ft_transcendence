@@ -1,4 +1,4 @@
-import { Module, forwardRef } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CacheModule } from '@nestjs/cache-manager';
@@ -8,9 +8,7 @@ import { AppService } from './services/app.service';
 
 import { AuthModule } from './auth/auth.module';
 import { PassportModule } from '@nestjs/passport';
-import { TypeormSession, entities } from './entities';
-
-import { User } from './entities';
+import { entities, TypeormSession, User } from './entities';
 
 import { ChatController } from './chatModule/chat.controller';
 import { RoomService } from './services/room.service';
@@ -37,10 +35,12 @@ import { ThrottlerModule } from '@nestjs/throttler';
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    ThrottlerModule.forRoot([{
-      ttl: 2000,
-      limit: 20,
-    }]),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 2000,
+        limit: 20,
+      },
+    ]),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'database',

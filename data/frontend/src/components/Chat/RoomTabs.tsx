@@ -1,4 +1,4 @@
-import { Tabs, Tab, IconButton } from "@mui/material";
+import {IconButton, Tab, Tabs} from "@mui/material";
 
 import MessageProvider from "./Message/MessageProvider";
 
@@ -6,11 +6,11 @@ import CloseIcon from "@mui/icons-material/Close";
 import MarkChatUnreadIcon from "@mui/icons-material/MarkChatUnread";
 import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
 
-import { useDispatch, useSelector } from "react-redux";
-import { useState } from "react";
+import {useDispatch, useSelector} from "react-redux";
+import React, {useState} from "react";
 
 import webSocketManager from "../../webSocket";
-import { removeRoom, setRead, setRoomIndex } from "../../store/rooms";
+import {removeRoom, setRead, setRoomIndex} from "../../store/rooms";
 import RoomOptionsMenu from "./RoomOptionsMenu";
 
 export default function RoomTabs() {
@@ -28,12 +28,13 @@ export default function RoomTabs() {
       setContextMenu(
         contextMenu === null
           ? {
-              mouseX: event.clientX + 2,
-              mouseY: event.clientY - 6,
-            }
+            mouseX: event.clientX + 2,
+            mouseY: event.clientY - 6,
+          }
           : null,
       );
   };
+
   function changeSelectedRoom(event: React.SyntheticEvent, newIndex: number) {
     dispatch(setRoomIndex(newIndex));
     dispatch(setRead(newIndex));
@@ -111,10 +112,10 @@ export default function RoomTabs() {
                       component="span"
                       onClick={() => quitRoom(room.name)}
                     >
-                      <CloseIcon />
+                      <CloseIcon/>
                     </IconButton>
                   ) : null}
-                  <MessageProvider roomName={room.name} />
+                  <MessageProvider roomName={room.name}/>
                   <RoomOptionsMenu
                     contextMenu={contextMenu}
                     setContextMenu={setContextMenu}
@@ -126,9 +127,9 @@ export default function RoomTabs() {
               }
               icon={
                 room.unread ? (
-                  <MarkChatUnreadIcon fontSize="small" />
+                  <MarkChatUnreadIcon fontSize="small"/>
                 ) : (
-                  <ChatBubbleIcon fontSize="small" />
+                  <ChatBubbleIcon fontSize="small"/>
                 )
               }
               iconPosition="start"

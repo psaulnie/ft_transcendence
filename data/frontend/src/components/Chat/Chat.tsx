@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 
-import { useDispatch, useSelector } from "react-redux";
-import { useLazyGetBlockedUsersQuery } from "../../store/api";
-import { useLazyGetUserRoomListQuery } from "../../store/api";
-import { addBlockedUser } from "../../store/user";
+import {useDispatch, useSelector} from "react-redux";
+import {useLazyGetBlockedUsersQuery, useLazyGetUserRoomListQuery} from "../../store/api";
+import {addBlockedUser} from "../../store/user";
 
 import Room from "./Room";
 import Tab from "./Tab";
@@ -13,10 +12,10 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ChatProcess from "./ChatProcess";
 
-import { Box, Grid, Button, Slide } from "@mui/material";
+import {Box, Button, Grid, Slide} from "@mui/material";
 
 import RoomTabs from "./RoomTabs";
-import { addRoom, setRoomIndex } from "../../store/rooms";
+import {addRoom, setRoomIndex} from "../../store/rooms";
 import ErrorSnackbar from "../Global/ErrorSnackbar";
 import Loading from "../Global/Loading";
 
@@ -76,16 +75,16 @@ function Chat() {
     fetchUserRoomList,
   ]);
 
-  if (blockedUsers.isError) return <ErrorSnackbar error={blockedUsers.error} />;
+  if (blockedUsers.isError) return <ErrorSnackbar error={blockedUsers.error}/>;
   else if (userRoomList.isError)
-    return <ErrorSnackbar error={userRoomList.error} />;
-  else if (blockedUsers.isLoading || userRoomList.isLoading) return <Loading />;
+    return <ErrorSnackbar error={userRoomList.error}/>;
+  else if (blockedUsers.isLoading || userRoomList.isLoading) return <Loading/>;
 
   return (
     <div className="chat">
-      <ChatProcess />
-      <DirectMessageProvider />
-      <div style={{ display: "flex", alignItems: "flex-start" }}>
+      <ChatProcess/>
+      <DirectMessageProvider/>
+      <div style={{display: "flex", alignItems: "flex-start"}}>
         <Button
           onClick={toggleBox}
           sx={{
@@ -103,7 +102,7 @@ function Chat() {
             },
           }}
         >
-          {isOpen ? <ExpandMoreIcon /> : <ExpandLessIcon />}
+          {isOpen ? <ExpandMoreIcon/> : <ExpandLessIcon/>}
         </Button>
         <Slide direction="up" in={isOpen}>
           <Box
@@ -125,7 +124,7 @@ function Chat() {
               },
             }}
           >
-            <Grid container sx={{ height: "5%", width: "100%" }}>
+            <Grid container sx={{height: "5%", width: "100%"}}>
               <Grid
                 item
                 xs={1}
@@ -139,12 +138,12 @@ function Chat() {
                   },
                 }}
               >
-                {rooms.index !== -1 && rooms.room[rooms.index] ? ( // CONDITION'S HERE TO KNOW IF THE USER IS NOT IN A ROOM
-                  <UsersTab roomName={rooms.room[rooms.index].name} />
+                {rooms.index !== -1 && rooms.room[rooms.index] ? (
+                  <UsersTab roomName={rooms.room[rooms.index].name}/>
                 ) : null}
               </Grid>
-              <Grid item zIndex={99} xs={9} sx={{ height: "5%", width: "20%" }}>
-                <RoomTabs />
+              <Grid item zIndex={99} xs={9} sx={{height: "5%", width: "20%"}}>
+                <RoomTabs/>
               </Grid>
               <Grid
                 item
@@ -156,7 +155,7 @@ function Chat() {
                   marginLeft: "1.1em",
                 }}
               >
-                <Tab />
+                <Tab/>
               </Grid>
             </Grid>
             <Grid

@@ -5,13 +5,13 @@ import Drawer from "@mui/material/Drawer";
 import HomeIcon from "@mui/icons-material/Home";
 import SportsEsportsIcon from "@mui/icons-material/SportsEsports";
 import SettingsIcon from "@mui/icons-material/Settings";
-import { Grid, Button } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import {Button, Grid} from "@mui/material";
+import {useNavigate} from "react-router-dom";
 
 export default function NavDrawer({
-  state,
-  toggleDrawer,
-}: {
+                                    state,
+                                    toggleDrawer,
+                                  }: {
   state: boolean;
   toggleDrawer: any;
 }) {
@@ -19,7 +19,7 @@ export default function NavDrawer({
 
   const handleHomeClick = () => {
     toggleDrawer(false);
-    navigate("/home"); // Navigate to the '/home' route
+    navigate("/home");
   };
 
   const handleEsportsClick = () => {
@@ -71,10 +71,10 @@ export default function NavDrawer({
           >
             <Button
               variant="text"
-              sx={{ marginLeft: "auto" }}
+              sx={{marginLeft: "auto"}}
               onClick={handleHomeClick}
             >
-              <HomeIcon />
+              <HomeIcon/>
             </Button>
           </Grid>
           <Grid
@@ -87,7 +87,7 @@ export default function NavDrawer({
             }}
           >
             <Button variant="text" sx={{}} onClick={handleEsportsClick}>
-              <SportsEsportsIcon />
+              <SportsEsportsIcon/>
             </Button>
           </Grid>
           <Grid
@@ -101,10 +101,10 @@ export default function NavDrawer({
           >
             <Button
               variant="text"
-              sx={{ marginRight: "auto" }}
+              sx={{marginRight: "auto"}}
               onClick={handleSettingsClick}
             >
-              <SettingsIcon />
+              <SettingsIcon/>
             </Button>
           </Grid>
         </Grid>

@@ -1,17 +1,7 @@
-import {
-  Avatar,
-  Box,
-  Button,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  Grid,
-  Typography,
-  Zoom,
-} from "@mui/material";
-import { TransitionProps } from "@mui/material/transitions";
+import {Avatar, Box, Button, Dialog, DialogContent, DialogTitle, Grid, Typography, Zoom,} from "@mui/material";
+import {TransitionProps} from "@mui/material/transitions";
 import React from "react";
-import { useGetBanListQuery } from "../../store/api";
+import {useGetBanListQuery} from "../../store/api";
 import Loading from "../Global/Loading";
 import ErrorSnackbar from "../Global/ErrorSnackbar";
 import webSocketManager from "../../webSocket";
@@ -24,24 +14,24 @@ const Transition = React.forwardRef(function Transition(
   },
   ref: React.Ref<unknown>
 ) {
-  return <Zoom ref={ref} {...props} style={{ transitionDelay: "100ms" }} />;
+  return <Zoom ref={ref} {...props} style={{transitionDelay: "100ms"}}>{props.children}</Zoom>;
 });
 
 export default function BanListDialog({
-  open,
-  setOpen,
-  roomName,
-}: {
+                                        open,
+                                        setOpen,
+                                        roomName,
+                                      }: {
   open: boolean;
   setOpen: any;
   roomName: string;
 }) {
-  const { data, isError, isLoading, error, refetch } = useGetBanListQuery({
+  const {data, isError, isLoading, error, refetch} = useGetBanListQuery({
     roomName,
   });
 
-  if (isLoading) return <Loading />;
-  if (isError) return <ErrorSnackbar error={error} />;
+  if (isLoading) return <Loading/>;
+  if (isError) return <ErrorSnackbar error={error}/>;
 
   function closeDialog() {
     setOpen(false);
@@ -53,6 +43,7 @@ export default function BanListDialog({
       refetch();
     }, 500);
   }
+
   return (
     <Dialog
       open={open}
@@ -61,7 +52,7 @@ export default function BanListDialog({
       onClose={closeDialog}
     >
       <DialogTitle>Banned users</DialogTitle>
-      <DialogContent sx={{ overflow: "auto" }}>
+      <DialogContent sx={{overflow: "auto"}}>
         <Box
           sx={{
             height: "100%",
@@ -82,7 +73,7 @@ export default function BanListDialog({
                   <Grid
                     key={key}
                     item
-                    sx={{ width: "100%", height: "90%" }}
+                    sx={{width: "100%", height: "90%"}}
                   >
                     <Box
                       sx={{
@@ -95,10 +86,10 @@ export default function BanListDialog({
                         container
                         direction="row"
                         alignItems="center"
-                        sx={{ flexWrap: "nowrap" }}
+                        sx={{flexWrap: "nowrap"}}
                         justifyContent="space-between"
                       >
-                        <Grid container item alignItems="center" spacing={1} sx={{ flexWrap: "nowrap" }}>
+                        <Grid container item alignItems="center" spacing={1} sx={{flexWrap: "nowrap"}}>
                           <Grid item>
                             <Avatar
                               src={`http://${
@@ -138,7 +129,7 @@ export default function BanListDialog({
                               },
                             }}
                           >
-                            <GavelIcon sx={{ fontSize: 18 }} />
+                            <GavelIcon sx={{fontSize: 18}}/>
                           </Button>
                         </Grid>
                       </Grid>

@@ -1,6 +1,6 @@
-import { Box, Grid, Button } from "@mui/material";
-import { Navigate, useNavigate, useParams } from "react-router-dom";
-import { useGetUserAchievementsQuery } from "../../store/api";
+import {Box, Button, Grid} from "@mui/material";
+import {Navigate, useNavigate, useParams} from "react-router-dom";
+import {useGetUserAchievementsQuery} from "../../store/api";
 import Completed from "./Completed";
 import ToComplete from "./ToComplete";
 import Loading from "../Global/Loading";
@@ -8,7 +8,7 @@ import ErrorSnackbar from "../Global/ErrorSnackbar";
 
 function Achievements() {
   const navigate = useNavigate();
-  const { username } = useParams();
+  const {username} = useParams();
 
   const handleProfileClick = () => {
     navigate("/profile/" + username);
@@ -18,11 +18,11 @@ function Achievements() {
     data: userAchievements,
     isLoading,
     isError,
-  } = useGetUserAchievementsQuery({ username });
+  } = useGetUserAchievementsQuery({username});
 
-  if (isLoading) return <Loading />;
-  if (isError) return <ErrorSnackbar error={isError} />;
-  if (userAchievements.exist === false) return <Navigate to="/home" />;
+  if (isLoading) return <Loading/>;
+  if (isError) return <ErrorSnackbar error={isError}/>;
+  if (userAchievements.exist === false) return <Navigate to="/home"/>;
 
   const buttonStyle = {
     textTransform: 'none',
@@ -133,7 +133,7 @@ function Achievements() {
         </Grid>
       </Box>
 
-      <Button onClick={handleProfileClick} variant="contained" sx={{ ...buttonStyle, bottom: '10%' }}>
+      <Button onClick={handleProfileClick} variant="contained" sx={{...buttonStyle, bottom: '10%'}}>
         Back
       </Button>
 

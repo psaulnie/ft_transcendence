@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
+import React, {useEffect, useState} from "react";
+import {useNavigate} from "react-router";
 
-import { Box, Grid, Button, Typography } from "@mui/material";
+import {Box, Button, Grid, Typography} from "@mui/material";
 
 import Switch from "@mui/material/Switch";
 import FormGroup from "@mui/material/FormGroup";
@@ -73,6 +73,7 @@ function Settings() {
         console.error("Error: ", error);
       }
     }
+
     checkTwoFactorState();
   }, []);
 
@@ -96,7 +97,7 @@ function Settings() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ twoFactorAuthState: state }),
+          body: JSON.stringify({twoFactorAuthState: state}),
         }
       );
       if (!response.ok) {
@@ -130,7 +131,7 @@ function Settings() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ twoFactorAuthCode: twoFactorAuthCode }),
+          body: JSON.stringify({twoFactorAuthCode: twoFactorAuthCode}),
         }
       );
       const data = await response.json();
@@ -158,7 +159,7 @@ function Settings() {
         width: '100%',
       }}
     >
-      <Grid item sx={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}>
+      <Grid item sx={{position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)'}}>
         <Box
           sx={{
             width: "30em",
@@ -173,14 +174,15 @@ function Settings() {
         >
           <Grid container direction="column" justifyContent="center" alignItems="center">
 
-            <Typography variant="h6" sx={{ fontSize: 22, fontWeight: "bold", color: "black", margin: '1em 0em 1em 0em' }}>Game background</Typography>
+            <Typography variant="h6" sx={{fontSize: 22, fontWeight: "bold", color: "black", margin: '1em 0em 1em 0em'}}>Game
+              background</Typography>
 
-            <Grid item xs sx={{ width: "100%", height: "90%" }}>
+            <Grid item xs sx={{width: "100%", height: "90%"}}>
               <Grid container justifyContent="center" alignItems="center">
 
                 <Grid item xs={3}>
                   <Button
-                    sx={{ backgroundColor: "black", height: "6em", width: "6em" }}
+                    sx={{backgroundColor: "black", height: "6em", width: "6em"}}
                     onClick={() => {
                       webSocketManager
                         .getSocket()
@@ -191,7 +193,7 @@ function Settings() {
 
                 <Grid item xs={3}>
                   <Button
-                    sx={{ height: "6em", width: "6em" }}
+                    sx={{height: "6em", width: "6em"}}
                     style={spongebobStyle}
                     onClick={() => {
                       webSocketManager
@@ -203,7 +205,7 @@ function Settings() {
 
                 <Grid item xs={3}>
                   <Button
-                    sx={{ height: "6em", width: "6em" }}
+                    sx={{height: "6em", width: "6em"}}
                     style={windowsStyle}
                     onClick={() => {
                       webSocketManager
@@ -216,12 +218,12 @@ function Settings() {
               </Grid>
             </Grid>
 
-            <Grid item xs sx={{ backgroundColor: "", width: "100%", height: "90%", marginTop: "0.5em",}}>
+            <Grid item xs sx={{backgroundColor: "", width: "100%", height: "90%", marginTop: "0.5em",}}>
               <Grid container justifyContent="center" alignItems="center">
 
                 <Grid item xs={3}>
                   <Button
-                    sx={{ height: "6em", width: "6em" }}
+                    sx={{height: "6em", width: "6em"}}
                     style={orangeStyle}
                     onClick={() => {
                       webSocketManager
@@ -233,7 +235,7 @@ function Settings() {
 
                 <Grid item xs={3}>
                   <Button
-                    sx={{ height: "6em", width: "6em" }}
+                    sx={{height: "6em", width: "6em"}}
                     style={roadRunnerStyle}
                     onClick={() => {
                       webSocketManager
@@ -245,7 +247,7 @@ function Settings() {
 
                 <Grid item xs={3}>
                   <Button
-                    sx={{ height: "6em", width: "6em" }}
+                    sx={{height: "6em", width: "6em"}}
                     style={scoobyStyle}
                     onClick={() => {
                       webSocketManager
@@ -257,9 +259,10 @@ function Settings() {
               </Grid>
             </Grid>
 
-            <Typography variant="h6" sx={{ fontSize: 22, fontWeight: "bold", color: "black", margin: '2em 0 0.8em 0' }}>Two factor authentication</Typography>
+            <Typography variant="h6" sx={{fontSize: 22, fontWeight: "bold", color: "black", margin: '2em 0 0.8em 0'}}>Two
+              factor authentication</Typography>
 
-            <Grid item sx={{ width: "100%", height: "100%" }}>
+            <Grid item sx={{width: "100%", height: "100%"}}>
               <FormControl component="fieldset">
                 <FormGroup aria-label="position" row>
                   <FormControlLabel
@@ -269,11 +272,11 @@ function Settings() {
                         color="warning"
                         checked={twoFactorAuthState}
                         onChange={askForChangeTwoFactorAuthState}
-                        inputProps={{ "aria-label": "controlled" }}
+                        inputProps={{"aria-label": "controlled"}}
                       />
                     }
                     label={twoFactorAuthState ? "Enabled" : "Disabled"}
-                    sx={{ color: "black" }}
+                    sx={{color: "black"}}
                     labelPlacement="start"
                   />
                 </FormGroup>
@@ -303,7 +306,7 @@ function Settings() {
               variant="outlined"
             />
             {error && (
-              <p style={{ color: "red" }}>Incorrect code, please try again.</p>
+              <p style={{color: "red"}}>Incorrect code, please try again.</p>
             )}
           </DialogContent>
           <DialogActions>

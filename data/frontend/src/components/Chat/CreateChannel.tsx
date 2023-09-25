@@ -1,28 +1,25 @@
-import React, { useEffect, useState } from "react";
+import React, {useState} from "react";
 
 import webSocketManager from "../../webSocket";
-import { accessStatus, userRole } from "./chatEnums";
-import { useDispatch, useSelector } from "react-redux";
-import { useLazyGetIsRoomNameTakenQuery } from "../../store/api";
-import { addRoom } from "../../store/rooms";
-import { Grid, Typography } from "@mui/material";
-
+import {accessStatus, userRole} from "./chatEnums";
+import {useSelector} from "react-redux";
 import {
-  TextField,
-  Select,
-  MenuItem,
   FormControl,
   FormHelperText,
-  SelectChangeEvent,
+  Grid,
   IconButton,
   InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+  TextField,
+  Typography
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import PasswordDialog from "./PasswordDialog";
 
 function CreateChannel() {
   const user = useSelector((state: any) => state.user);
-  const rooms = useSelector((state: any) => state.rooms);
 
   const [newRoomName, setNewRoomName] = useState("");
   const [access, setAccess] = useState(accessStatus.public);
@@ -60,7 +57,7 @@ function CreateChannel() {
 
   return (
     <Grid className="createChannel">
-      <Typography sx={{ marginTop: "2em" }}>Create a new channel</Typography>
+      <Typography sx={{marginTop: "2em"}}>Create a new channel</Typography>
       <TextField
         autoComplete="off"
         label="Room name"
@@ -68,7 +65,7 @@ function CreateChannel() {
         onChange={updateNewRoomName}
         autoFocus
       />
-      <FormControl sx={{ height: "80%" }}>
+      <FormControl sx={{height: "80%"}}>
         <InputLabel>Access</InputLabel>
         <Select name="roomAccess" onChange={changeAccess} defaultValue="">
           <MenuItem defaultChecked value="public">
@@ -82,9 +79,9 @@ function CreateChannel() {
       <IconButton
         name="rooms"
         onClick={createRoom}
-        sx={{ transform: "translate(0%, 18%)" }}
+        sx={{transform: "translate(0%, 18%)"}}
       >
-        <AddIcon />
+        <AddIcon/>
       </IconButton>
       {showDialog ? (
         <PasswordDialog

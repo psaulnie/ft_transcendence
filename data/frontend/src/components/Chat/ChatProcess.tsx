@@ -1,26 +1,20 @@
-import { useEffect, useState } from "react";
-import { actionTypes } from "./args.types";
+import React, {useEffect, useState} from "react";
+import {actionTypes} from "./args.types";
 
-import { useDispatch, useSelector } from "react-redux";
-import {
-  removeRoom,
-  changeRole,
-  addRoom,
-  mute,
-  unmute,
-} from "../../store/rooms";
+import {useDispatch, useSelector} from "react-redux";
+import {addRoom, changeRole, mute, removeRoom, unmute,} from "../../store/rooms";
 
-import { chatResponseArgs } from "./args.interface";
+import {chatResponseArgs} from "./args.interface";
 import webSocketManager from "../../webSocket";
 
-import { Snackbar, Alert, AlertColor, IconButton, Box } from "@mui/material";
+import {Alert, AlertColor, Box, IconButton, Snackbar} from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
-import { userRole } from "./chatEnums";
-import { setUsername } from "../../store/user";
-import { userStatus } from "../Friendlist/userStatus";
-import { useNavigate } from "react-router";
+import {userRole} from "./chatEnums";
+import {setUsername} from "../../store/user";
+import {userStatus} from "../Friendlist/userStatus";
+import {useNavigate} from "react-router";
 
 export default function ChatProcess() {
   const user = useSelector((state: any) => state.user);
@@ -121,6 +115,7 @@ export default function ChatProcess() {
     setOpenPong(false);
     webSocketManager.getSocket()?.emit("acceptPlayPong", target);
   }
+
   function acceptBeingFriend() {
     if (target === "") return;
     setOpenFriend(false);
@@ -145,8 +140,7 @@ export default function ChatProcess() {
         );
       } else if (value.action === actionTypes.roomAlreadyExist) {
         setSnackbar("This room already exists: " + value.target, 'error');
-      } 
-      else if (value.action === actionTypes.kick) {
+      } else if (value.action === actionTypes.kick) {
         dispatch(removeRoom(value.target));
         setSnackbar(
           "You've been kicked from this channel: " + value.target,
@@ -233,8 +227,8 @@ export default function ChatProcess() {
         else if (value.data === userStatus.playing)
           setSnackbar(
             "You can't play with " +
-              value.target +
-              " because he is already playing",
+            value.target +
+            " because he is already playing",
             "error"
           );
       } else if (value.action === actionTypes.askPlay) {
@@ -259,7 +253,7 @@ export default function ChatProcess() {
     function handleWsException(value: any) {
       setSnackbar(value?.message, "error");
     }
-  
+
     webSocketManager.getSocket().on("exception", handleWsException);
     webSocketManager.getSocket().on(webSocketManager.getSocket().id, process);
     return () => {
@@ -277,17 +271,17 @@ export default function ChatProcess() {
       <Snackbar // Default snackbar
         open={open}
         autoHideDuration={5000}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        anchorOrigin={{vertical: "top", horizontal: "right"}}
         onClose={handleClose}
       >
-        <Alert onClose={handleClose} severity={type} sx={{ width: "100%" }}>
+        <Alert onClose={handleClose} severity={type} sx={{width: "100%"}}>
           {message}
         </Alert>
       </Snackbar>
       <Snackbar // Invite snackbar
         open={openInvite}
         autoHideDuration={10000}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        anchorOrigin={{vertical: "top", horizontal: "right"}}
         onClose={handleCloseInvite}
       >
         <Box
@@ -301,28 +295,28 @@ export default function ChatProcess() {
             flexWrap: "wrap",
           }}
         >
-          <PeopleAltIcon sx={{ color: "#000" }} />
+          <PeopleAltIcon sx={{color: "#000"}}/>
           {message}
           <IconButton
             size="small"
-            sx={{ color: "#000" }}
+            sx={{color: "#000"}}
             onClick={acceptInvite}
           >
-            <CheckIcon />
+            <CheckIcon/>
           </IconButton>
           <IconButton
             size="small"
-            sx={{ color: "#000" }}
+            sx={{color: "#000"}}
             onClick={handleCloseInvite}
           >
-            <CloseIcon />
+            <CloseIcon/>
           </IconButton>
         </Box>
       </Snackbar>
       <Snackbar // Friend snackbar
         open={openFriend}
         autoHideDuration={10000}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        anchorOrigin={{vertical: "top", horizontal: "right"}}
         onClose={handleCloseInvite}
       >
         <Box
@@ -336,28 +330,28 @@ export default function ChatProcess() {
             flexWrap: "wrap",
           }}
         >
-          <PeopleAltIcon sx={{ color: "#000" }} />
+          <PeopleAltIcon sx={{color: "#000"}}/>
           {message}
           <IconButton
             size="small"
-            sx={{ color: "#000" }}
+            sx={{color: "#000"}}
             onClick={acceptBeingFriend}
           >
-            <CheckIcon />
+            <CheckIcon/>
           </IconButton>
           <IconButton
             size="small"
-            sx={{ color: "#000" }}
+            sx={{color: "#000"}}
             onClick={handleCloseInvite}
           >
-            <CloseIcon />
+            <CloseIcon/>
           </IconButton>
         </Box>
       </Snackbar>
       <Snackbar // Pong snackbar
         open={openPong}
         autoHideDuration={10000}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        anchorOrigin={{vertical: "top", horizontal: "right"}}
         onClose={handleClosePong}
       >
         <Box
@@ -371,21 +365,21 @@ export default function ChatProcess() {
             flexWrap: "wrap",
           }}
         >
-          <PeopleAltIcon sx={{ color: "#000" }} />
+          <PeopleAltIcon sx={{color: "#000"}}/>
           {message}
           <IconButton
             size="small"
-            sx={{ color: "#000" }}
+            sx={{color: "#000"}}
             onClick={acceptPlayPong}
           >
-            <CheckIcon />
+            <CheckIcon/>
           </IconButton>
           <IconButton
             size="small"
-            sx={{ color: "#000" }}
+            sx={{color: "#000"}}
             onClick={handleClosePong}
           >
-            <CloseIcon />
+            <CloseIcon/>
           </IconButton>
         </Box>
       </Snackbar>

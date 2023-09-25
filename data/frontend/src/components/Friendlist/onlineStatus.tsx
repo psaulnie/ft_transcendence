@@ -1,23 +1,19 @@
-import { Avatar, Box, Button, Grid, Typography } from "@mui/material";
-import { Adjust, Delete } from "@mui/icons-material";
+import {Avatar, Box, Button, Grid, Typography} from "@mui/material";
+import {Adjust, Delete} from "@mui/icons-material";
 import webSocketManager from "../../webSocket";
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router";
+import {useSelector} from "react-redux";
+import {useNavigate} from "react-router";
 
-function OnlineStatus({
-  username,
-  refetch,
-}: {
+function OnlineStatus({ username }: {
   username: string;
   refetch: any;
 }) {
   const urlAvatar = `http://${import.meta.env.VITE_IP}:5000/api/avatar/${username}`;
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   const user = useSelector((state: any) => state.user);
   const navigate = useNavigate();
 
   return (
-    <Grid item xs sx={{ backgroundColor: "", width: "100%", height: "90%" }}>
+    <Grid item xs sx={{backgroundColor: "", width: "100%", height: "90%"}}>
       <Box
         sx={{
           background: "linear-gradient(to right, #1ABAFF, #47C8FF, #1ABAFF)",
@@ -35,7 +31,7 @@ function OnlineStatus({
           direction="row"
           spacing={1}
           alignItems="center"
-          sx={{ flexWrap: "nowrap" }}
+          sx={{flexWrap: "nowrap"}}
           justifyContent="space-between"
         >
           <Grid container item alignItems="center" spacing={1}>
@@ -53,7 +49,9 @@ function OnlineStatus({
                   marginRight: "0.3em",
                   cursor: 'pointer',
                 }}
-                onClick={() => {navigate(`/profile/${username}`)}}
+                onClick={() => {
+                  navigate(`/profile/${username}`)
+                }}
               />
             </Grid>
 
@@ -68,7 +66,9 @@ function OnlineStatus({
                   transform: "translate(0%, 10%)",
                   cursor: 'pointer',
                 }}
-                onClick={() => {navigate(`/profile/${username}`)}}
+                onClick={() => {
+                  navigate(`/profile/${username}`)
+                }}
               >
                 {username}
               </Typography>
@@ -82,7 +82,7 @@ function OnlineStatus({
                 }}
               >
                 <Adjust
-                  sx={{ fontSize: "16px", transform: "translate(0%, 16%)" }}
+                  sx={{fontSize: "16px", transform: "translate(0%, 16%)"}}
                 />{" "}
                 Online
               </Typography>
@@ -108,7 +108,7 @@ function OnlineStatus({
                 marginRight: "2em",
               }}
             >
-              <Delete sx={{ fontSize: 20 }} />
+              <Delete sx={{fontSize: 20}}/>
             </Button>
           </Grid>
         </Grid>

@@ -1,12 +1,11 @@
-import { Avatar, Box, Button, Grid, Typography } from "@mui/material";
-import { HideSource, Delete } from "@mui/icons-material";
+import {Avatar, Box, Button, Grid, Typography} from "@mui/material";
+import {Delete, HideSource} from "@mui/icons-material";
 import webSocketManager from "../../webSocket";
 import {useSelector} from "react-redux";
-import { useNavigate } from "react-router";
+import {useNavigate} from "react-router";
 
-function OfflineStatus({username, refetch}: {username: string, refetch: any}) {
+function OfflineStatus({username}: { username: string, refetch: any }) {
   const urlAvatar = `http://${import.meta.env.VITE_IP}:5000/api/avatar/${username}`;
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   const user = useSelector((state: any) => state.user);
   const navigate = useNavigate();
 
@@ -14,7 +13,7 @@ function OfflineStatus({username, refetch}: {username: string, refetch: any}) {
     <Grid
       item
       xs
-      sx={{ width: "100%", height: "90%" }}
+      sx={{width: "100%", height: "90%"}}
     >
       <Box
         sx={{
@@ -33,7 +32,7 @@ function OfflineStatus({username, refetch}: {username: string, refetch: any}) {
           direction="row"
           spacing={1}
           alignItems="center"
-          sx={{ flexWrap: "nowrap" }}
+          sx={{flexWrap: "nowrap"}}
           justifyContent="space-between"
         >
           <Grid
@@ -56,7 +55,9 @@ function OfflineStatus({username, refetch}: {username: string, refetch: any}) {
                   marginRight: "0.3em",
                   cursor: 'pointer',
                 }}
-                onClick={() => {navigate(`/profile/${username}`)}}
+                onClick={() => {
+                  navigate(`/profile/${username}`)
+                }}
               />
             </Grid>
 
@@ -71,7 +72,9 @@ function OfflineStatus({username, refetch}: {username: string, refetch: any}) {
                   transform: "translate(0%, 10%)",
                   cursor: 'pointer',
                 }}
-                onClick={() => {navigate(`/profile/${username}`)}}
+                onClick={() => {
+                  navigate(`/profile/${username}`)
+                }}
               >
                 {username}
               </Typography>
@@ -88,7 +91,8 @@ function OfflineStatus({username, refetch}: {username: string, refetch: any}) {
                   sx={{
                     fontSize: "15px",
                     transform: "translate(0%, 16%)",
-                    marginRight: "4px" }}
+                    marginRight: "4px"
+                  }}
                 />
                 Offline
               </Typography>
@@ -114,7 +118,7 @@ function OfflineStatus({username, refetch}: {username: string, refetch: any}) {
                 marginRight: "2em",
               }}
             >
-              <Delete sx={{ fontSize: 20 }} />
+              <Delete sx={{fontSize: 20}}/>
             </Button>
           </Grid>
         </Grid>

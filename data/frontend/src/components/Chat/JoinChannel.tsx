@@ -1,24 +1,23 @@
-import React, { useState, useEffect } from "react";
+import React, {useEffect, useState} from "react";
 
 import webSocketManager from "../../webSocket";
-import { useSelector, useDispatch } from "react-redux";
-import { useGetRoomsListQuery } from "../../store/api";
-import { accessStatus, userRole } from "./chatEnums";
-import { addRoom } from "../../store/rooms";
+import {useSelector} from "react-redux";
+import {useGetRoomsListQuery} from "../../store/api";
+import {accessStatus, userRole} from "./chatEnums";
 
 import PasswordDialog from "./PasswordDialog";
 
 import {
   FormControl,
   FormHelperText,
-  InputLabel,
-  Select,
-  MenuItem,
-  SelectChangeEvent,
-  IconButton,
   Grid,
+  IconButton,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+  Typography,
 } from "@mui/material";
-import { Typography } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import LockIcon from "@mui/icons-material/Lock";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -28,7 +27,6 @@ import Loading from "../Global/Loading";
 function JoinChannel() {
   const user = useSelector((state: any) => state.user);
   const rooms = useSelector((state: any) => state.rooms);
-  const dispatch = useDispatch();
 
   const [newRoomName, setNewRoomName] = useState("");
   const [showDialog, setShowDialog] = useState(false);
@@ -72,13 +70,13 @@ function JoinChannel() {
     refetch();
   }, [refetch]);
 
-  if (isError) return <ErrorSnackbar error={error} />;
-  else if (isLoading) return <Loading />;
+  if (isError) return <ErrorSnackbar error={error}/>;
+  else if (isLoading) return <Loading/>;
 
   return (
     <Grid className="joinChannel">
-      <Typography sx={{ marginTop: "2em" }}>Join a new channel</Typography>
-      <FormControl sx={{ minWidth: 120 }} size="small">
+      <Typography sx={{marginTop: "2em"}}>Join a new channel</Typography>
+      <FormControl sx={{minWidth: 120}} size="small">
         <InputLabel>Channel</InputLabel>
         <Select
           name="roomsList"
@@ -107,9 +105,9 @@ function JoinChannel() {
                       {room.roomName}
                     </Grid>
                     {room.hasPassword === false ? (
-                      <VisibilityIcon />
+                      <VisibilityIcon/>
                     ) : (
-                      <LockIcon />
+                      <LockIcon/>
                     )}
                   </Grid>
                 </MenuItem>
@@ -122,9 +120,9 @@ function JoinChannel() {
       <IconButton
         size="small"
         onClick={joinRoom}
-        sx={{ transform: "translate(0%, 6%)" }}
+        sx={{transform: "translate(0%, 6%)"}}
       >
-        <AddIcon />
+        <AddIcon/>
       </IconButton>
       {showDialog ? (
         <PasswordDialog

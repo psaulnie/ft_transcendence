@@ -1,16 +1,11 @@
 import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { Request, Response } from 'express';
-import {
-  IntraAuthGuard,
-  IntraAuthenticatedGuard,
-} from '../guards/intraAuthGuard.service';
+import { IntraAuthGuard } from '../guards/intraAuthGuard.service';
 import { User } from '../../entities';
 import { HttpService as NestHttpService } from '@nestjs/axios';
 import { UsersService } from 'src/users/users.service';
 import RequestWithUser from '../service/requestWithUser.interface';
 import { AuthService } from '../service/auth.service';
-import { UsersStatusService } from 'src/services/users.status.service';
-import { userStatus } from 'src/users/userStatus';
 
 @Controller('auth')
 export class AuthController {
@@ -18,7 +13,6 @@ export class AuthController {
     private readonly httpService: NestHttpService,
     private readonly usersService: UsersService,
     private readonly authService: AuthService,
-    private readonly userStatusService: UsersStatusService,
   ) {}
 
   /**
@@ -44,7 +38,6 @@ export class AuthController {
       secure: false,
     }); // Set username in cookie
     res.redirect(`http://${process.env.IP}:3000/2fa`);
-    // res.sendStatus(200);
   }
 
   /**
@@ -53,7 +46,6 @@ export class AuthController {
    */
   @Get('status')
   async status(@Req() req: RequestWithUser) {
-    // return (req.isAuthenticated());
     if (!req.isAuthenticated()) {
       return false;
     }
@@ -85,13 +77,13 @@ export class AuthController {
     @Res() res: Response,
   ) {
     console.log('LOGOUT CONTROLLER');
-  
+
     if (!req.isAuthenticated()) {
       res.clearCookie('connect.sid');
       res.clearCookie('username');
 
       res.redirect(`http://${process.env.IP}:3000/login`);
-      return ;
+      return;
     }
     // Set 2FA authenticated to false in DB to indicate user is not connected anymore
     await this.usersService.setIsTwoFactorAuthenticated(

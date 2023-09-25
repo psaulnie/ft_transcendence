@@ -1,22 +1,18 @@
-import {
-  useGetUsersInRoomQuery,
-  useLazyGetIsMutedQuery,
-  useLazyGetUserFriendsListQuery,
-} from "../../store/api";
+import {useGetUsersInRoomQuery, useLazyGetIsMutedQuery, useLazyGetUserFriendsListQuery,} from "../../store/api";
 
-import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import React, {useEffect, useState} from "react";
+import {useSelector} from "react-redux";
 
 import {
   Grid,
-  ListItem,
-  ListItemButton,
   List,
+  ListItem,
+  ListItemAvatar,
+  ListItemButton,
   ListItemIcon,
   ListItemText,
-  ListItemAvatar,
-  Typography,
   Tooltip,
+  Typography,
 } from "@mui/material";
 
 import StarIcon from "@mui/icons-material/Star";
@@ -25,15 +21,15 @@ import PersonIcon from "@mui/icons-material/Person";
 
 import UserOptionsMenu from "./Message/UserOptionsMenu";
 import CustomAvatar from "../Global/CustomAvatar";
-import { userRole } from "./chatEnums";
+import {userRole} from "./chatEnums";
 import ErrorSnackbar from "../Global/ErrorSnackbar";
 import Loading from "../Global/Loading";
 
 export default function UsersList({
-  isDirectMessage,
-  roomName,
-  role,
-}: {
+                                    isDirectMessage,
+                                    roomName,
+                                    role,
+                                  }: {
   isDirectMessage: boolean;
   roomName: string;
   role: userRole;
@@ -51,7 +47,7 @@ export default function UsersList({
     isError,
     error,
     refetch,
-  } = useGetUsersInRoomQuery({ roomName: roomName }, { skip: isDirectMessage });
+  } = useGetUsersInRoomQuery({roomName: roomName}, {skip: isDirectMessage});
 
   const [trigger, result] = useLazyGetUserFriendsListQuery();
   const [triggerIsMuted, resultIsMuted] = useLazyGetIsMutedQuery();
@@ -60,8 +56,8 @@ export default function UsersList({
   if (!isDirectMessage) usersList = usersListData;
   else
     usersList = [
-      { username: user.username, role: userRole.none, isMuted: false },
-      { username: roomName, role: userRole.none, isMuted: false },
+      {username: user.username, role: userRole.none, isMuted: false},
+      {username: roomName, role: userRole.none, isMuted: false},
     ];
 
   const handleContextMenu = (event: React.MouseEvent, username: string, cUser: any) => {
@@ -74,33 +70,33 @@ export default function UsersList({
       setContextMenu(
         contextMenu === null
           ? {
-              mouseX: event.clientX + 2,
-              mouseY: event.clientY - 6,
-            }
+            mouseX: event.clientX + 2,
+            mouseY: event.clientY - 6,
+          }
           : null
       );
       trigger({});
       if (!isDirectMessage)
-        triggerIsMuted({ roomName: roomName, username: username });
+        triggerIsMuted({roomName: roomName, username: username});
     }
   };
 
   function getRoleIcon(role: userRole) {
-    if (role === userRole.owner) return <StarIcon />;
-    else if (role === userRole.admin) return <StarOutlineIcon />;
-    else return <PersonIcon />;
+    if (role === userRole.owner) return <StarIcon/>;
+    else if (role === userRole.admin) return <StarOutlineIcon/>;
+    else return <PersonIcon/>;
   }
 
   useEffect(() => {
     if (!isDirectMessage) refetch();
   }, [isDirectMessage, refetch]);
 
-  if (isError && !isDirectMessage) return <ErrorSnackbar error={error} />;
-  if (resultIsMuted.isError && !isDirectMessage) return <ErrorSnackbar error={result.error} />;
-  if (result.isError) return <ErrorSnackbar error={result.error} />;
-  if (isLoading && !isDirectMessage) return <Loading />;
-  if (result.isLoading) return <Loading />;
-  if (resultIsMuted.isLoading && !isDirectMessage) return <Loading />;
+  if (isError && !isDirectMessage) return <ErrorSnackbar error={error}/>;
+  if (resultIsMuted.isError && !isDirectMessage) return <ErrorSnackbar error={result.error}/>;
+  if (result.isError) return <ErrorSnackbar error={result.error}/>;
+  if (isLoading && !isDirectMessage) return <Loading/>;
+  if (result.isLoading) return <Loading/>;
+  if (resultIsMuted.isLoading && !isDirectMessage) return <Loading/>;
 
   return (
     <Grid sx={{overflow: 'auto'}}>
@@ -108,20 +104,20 @@ export default function UsersList({
         {usersList.map((cUser: any, key: number) => {
           return (
             <Tooltip key={key}
-              title={
-                cUser.role === userRole.owner
-                  ? "Owner"
-                  : cUser.role === userRole.admin
-                  ? "Admin"
-                  : "User"
-              }
+                     title={
+                       cUser.role === userRole.owner
+                         ? "Owner"
+                         : cUser.role === userRole.admin
+                           ? "Admin"
+                           : "User"
+                     }
             >
               <ListItem disablePadding dense>
                 <ListItemButton
                   onClick={(e) => handleContextMenu(e, cUser.username, cUser)}
                 >
                   <ListItemAvatar>
-                    <CustomAvatar username={cUser.username} />
+                    <CustomAvatar username={cUser.username}/>
                   </ListItemAvatar>
                   <ListItemText
                     primary={

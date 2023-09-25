@@ -1,15 +1,15 @@
-import { Box, Grid, Button, Typography } from "@mui/material";
-import { Navigate, useNavigate } from "react-router-dom";
-import { useGetFriendsListQuery } from "../../store/api";
+import {Box, Button, Grid, Typography} from "@mui/material";
+import {Navigate, useNavigate} from "react-router-dom";
+import {useGetFriendsListQuery} from "../../store/api";
 import InGameStatus from "./inGameStatus";
 import OnlineStatus from "./onlineStatus";
 import OfflineStatus from "./offlineStatus";
-import { userStatus } from "./userStatus";
-import { useEffect } from "react";
+import {userStatus} from "./userStatus";
+import {useEffect} from "react";
 import Loading from "../Global/Loading";
 import ErrorSnackbar from "../Global/ErrorSnackbar";
 import webSocketManager from "../../webSocket";
-import { useSelector } from "react-redux";
+import {useSelector} from "react-redux";
 
 function Friendlist() {
   const user = useSelector((state: any) => state.user);
@@ -25,7 +25,7 @@ function Friendlist() {
   useEffect(() => {
     webSocketManager
       .getSocket()
-      .on(webSocketManager.getSocket().id + "friend", (value: any) => {
+      .on(webSocketManager.getSocket().id + "friend", () => {
         refetch();
       });
     return () => {
@@ -39,9 +39,9 @@ function Friendlist() {
     navigate(`/profile/${user.username}`);
   };
 
-  if (isLoading) return <Loading />;
-  if (isError) return <ErrorSnackbar error={error} />;
-  if (!userFriendsList) return <Navigate to="/home" />;
+  if (isLoading) return <Loading/>;
+  if (isError) return <ErrorSnackbar error={error}/>;
+  if (!userFriendsList) return <Navigate to="/home"/>;
 
   const buttonStyle = {
     textTransform: 'none',
@@ -132,7 +132,7 @@ function Friendlist() {
         </Box>
       </Box>
 
-      <Button onClick={handleProfileClick} variant="contained" sx={{ ...buttonStyle, bottom: '10%' }}>
+      <Button onClick={handleProfileClick} variant="contained" sx={{...buttonStyle, bottom: '10%'}}>
         Back
       </Button>
 

@@ -1,11 +1,8 @@
-import { Navigate, Outlet } from "react-router";
-import { useEffect, useState } from "react";
+import {Navigate, Outlet} from "react-router";
+import {useEffect, useState} from "react";
 import Loading from "./Loading";
-import { useSelector } from "react-redux";
-import Cookies from "js-cookie";
 
 export default function PrivateRoute() {
-  const user = useSelector((state: any) => state.user);
   const [isLoading, setIsLoading] = useState(true);
   const [isOk, setIsOk] = useState(false);
 
@@ -30,10 +27,9 @@ export default function PrivateRoute() {
     fetchData();
   }, []);
 
-  if (isLoading) return <Loading />;
+  if (isLoading) return <Loading/>;
   if (isOk) {
-    return <Outlet />;
+    return <Outlet/>;
   }
-  // return (null);
-  return <Navigate to="/login" />;
+  return <Navigate to="/login"/>;
 }

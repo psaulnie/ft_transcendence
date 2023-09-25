@@ -1,7 +1,6 @@
-import { useLocation } from "react-router";
-import { SyntheticEvent, useEffect, useState } from "react";
-import { Navigate } from "react-router";
-import { Button, Grid } from "@mui/material";
+import {Navigate, useLocation} from "react-router";
+import {SyntheticEvent, useEffect, useState} from "react";
+import {Button, Grid} from "@mui/material";
 import Loading from "../Global/Loading";
 
 function Login() {
@@ -49,8 +48,8 @@ function Login() {
     fetchData();
   }, []);
 
-  if (isLoading) return <Loading />;
-  if (isOk) return <Navigate to="/home" />;
+  if (isLoading) return <Loading/>;
+  if (isOk) return <Navigate to="/home"/>;
 
   return (
     <Grid

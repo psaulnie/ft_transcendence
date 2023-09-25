@@ -1,14 +1,11 @@
 import webSocketManager from "../../../webSocket";
-import { useDispatch, useSelector } from "react-redux";
-import { addBlockedUser, removeBlockedUser } from "../../../store/user";
-import { Menu, MenuItem, Divider } from "@mui/material";
-import { addRoom } from "../../../store/rooms";
-import { userRole } from "../chatEnums";
-import { useNavigate } from "react-router";
-import ErrorSnackbar from "../../Global/ErrorSnackbar";
-import Loading from "../../Global/Loading";
-import { apiSlice, useLazyGetIsMutedQuery } from "../../../store/api";
-import { useEffect } from "react";
+import {useDispatch, useSelector} from "react-redux";
+import {addBlockedUser, removeBlockedUser} from "../../../store/user";
+import {Divider, Menu, MenuItem} from "@mui/material";
+import {addRoom} from "../../../store/rooms";
+import {userRole} from "../chatEnums";
+import {useNavigate} from "react-router";
+import {apiSlice} from "../../../store/api";
 
 type arg = {
   cUser: { username: string; role: userRole; isMuted: boolean };
@@ -21,14 +18,14 @@ type arg = {
 };
 
 export default function UserOptionsMenu({
-  cUser,
-  role,
-  roomName,
-  contextMenu,
-  setContextMenu,
-  showAdminOpt,
-  friendList,
-}: arg) {
+                                          cUser,
+                                          role,
+                                          roomName,
+                                          contextMenu,
+                                          setContextMenu,
+                                          showAdminOpt,
+                                          friendList,
+                                        }: arg) {
   const user = useSelector((state: any) => state.user);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -82,7 +79,7 @@ export default function UserOptionsMenu({
       anchorReference="anchorPosition"
       anchorPosition={
         contextMenu !== null
-          ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
+          ? {top: contextMenu.mouseY, left: contextMenu.mouseX}
           : undefined
       }
     >
@@ -159,7 +156,7 @@ export default function UserOptionsMenu({
           >
             Set {cUser.username} as administrator
           </MenuItem>
-          <Divider />
+          <Divider/>
         </span>
       ) : null}
       {user.username !== cUser.username ? (
@@ -172,11 +169,9 @@ export default function UserOptionsMenu({
             See profile
           </MenuItem>
           {(
-            friendList.data?.find(
+            !friendList.data?.find(
               (element: string) => element === cUser.username
             )
-              ? false
-              : true
           ) ? (
             <MenuItem
               onClick={() => {

@@ -3,22 +3,21 @@ import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
-import { Grid } from "@mui/material";
+import {Grid} from "@mui/material";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import React, { useEffect, useState } from "react";
+import React, {SyntheticEvent, useEffect, useState} from "react";
 import Button from "@mui/material/Button";
 
-import { useDispatch, useSelector } from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 
 import CustomAvatar from "../Global/CustomAvatar";
-import { useNavigate } from "react-router-dom";
-import { SyntheticEvent } from "react";
-import { apiSlice } from "../../store/api";
+import {useNavigate} from "react-router-dom";
+import {apiSlice} from "../../store/api";
 import ErrorSnackbar from "../Global/ErrorSnackbar";
-import { setUsername } from "../../store/user";
+import {setUsername} from "../../store/user";
 
-function Navigation({ setDrawerState }: { setDrawerState: any }) {
+function Navigation({setDrawerState}: { setDrawerState: any }) {
   const user = useSelector((state: any) => state.user);
   const dispatch = useDispatch();
   const query = apiSlice.endpoints.getUserRank.useQueryState({});
@@ -45,28 +44,28 @@ function Navigation({ setDrawerState }: { setDrawerState: any }) {
   }
 
   useEffect(() => {
-    if (query.isUninitialized === false && query.isSuccess === true) {
+    if (!query.isUninitialized && query.isSuccess === true) {
       setRank(query.data.rank);
       dispatch(setUsername(query.data.username));
     }
   }, [query]);
 
-  if (query.isError) return <ErrorSnackbar error={query.error} />;
+  if (query.isError) return <ErrorSnackbar error={query.error}/>;
   return (
-    <Box sx={{ flexGrow: 1 }}>
+    <Box sx={{flexGrow: 1}}>
       <AppBar
         position="static"
-        sx={{ backgroundColor: "#FC7D07", height: "3.5em" }}
+        sx={{backgroundColor: "#FC7D07", height: "3.5em"}}
       >
-        <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
+        <Toolbar sx={{display: "flex", justifyContent: "space-between"}}>
           <IconButton
             size="large"
             edge="start"
             aria-label="menu"
-            sx={{ mr: 2, color: "black" }}
+            sx={{mr: 2, color: "black"}}
             onClick={() => setDrawerState(true)}
           >
-            <MenuIcon />
+            <MenuIcon/>
           </IconButton>
           <Grid
             item
@@ -94,7 +93,7 @@ function Navigation({ setDrawerState }: { setDrawerState: any }) {
               }}
               onClick={handleBoxClick}
             >
-                <CustomAvatar username={user.username} />
+              <CustomAvatar username={user.username}/>
             </Box>
             <Menu
               anchorEl={anchorEl}
@@ -111,26 +110,26 @@ function Navigation({ setDrawerState }: { setDrawerState: any }) {
             >
               <MenuItem
                 onClick={handleMenuClose}
-                sx={{ backgroundColor: "white" }}
+                sx={{backgroundColor: "white"}}
               >
                 <Button
                   variant="outlined"
                   size="small"
                   onClick={handleProfileClick}
-                  sx={{ width: "100%" }}
+                  sx={{width: "100%"}}
                 >
                   Show Profile
                 </Button>
               </MenuItem>
               <MenuItem
                 onClick={handleMenuClose}
-                sx={{ backgroundColor: "white" }}
+                sx={{backgroundColor: "white"}}
               >
                 <Button
                   variant="outlined"
                   size="small"
                   onClick={logoutButton}
-                  sx={{ width: "100%" }}
+                  sx={{width: "100%"}}
                 >
                   Logout
                 </Button>

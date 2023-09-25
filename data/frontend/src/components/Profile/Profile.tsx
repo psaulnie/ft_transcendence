@@ -1,4 +1,4 @@
-import {Box, Grid, Button, Avatar, Typography} from "@mui/material";
+import {Avatar, Box, Button, Grid, Typography} from "@mui/material";
 import {useSelector} from "react-redux";
 import {Navigate, useNavigate, useParams} from "react-router-dom";
 import {useGetUserProfileQuery} from "../../store/api";
@@ -6,7 +6,7 @@ import Loading from "../Global/Loading";
 import ErrorSnackbar from "../Global/ErrorSnackbar";
 import BorderColorIcon from '@mui/icons-material/BorderColor';
 import {grey} from "@mui/material/colors";
-import { useEffect } from "react";
+import {useEffect} from "react";
 
 function Profile() {
   const {username} = useParams();
@@ -135,17 +135,17 @@ function Profile() {
             {userProfile.matchHistory && userProfile.matchHistory.length > 0 ? (
               userProfile.matchHistory.map((match: any, index: any) => (
                 <Grid container key={index} alignItems="center" justifyContent="center"
-                  sx={{
-                    background: 'linear-gradient(90deg, #45454500, #454545AA, #454545FF, #454545AA, #45454500)',
-                    boxShadow: "0 0 10px rgba(0, 0, 0, 0.3)",
-                    borderWidth: '1px 0',
-                    borderStyle: 'solid',
-                    borderImage: 'linear-gradient(to right, #00000000, #d6d4d4, #00000000)',
-                    borderImageSlice: '1 0',
-                    width: '100%',
-                    height: '2.5em',
-                    marginBottom: '0.5em',
-                  }}
+                      sx={{
+                        background: 'linear-gradient(90deg, #45454500, #454545AA, #454545FF, #454545AA, #45454500)',
+                        boxShadow: "0 0 10px rgba(0, 0, 0, 0.3)",
+                        borderWidth: '1px 0',
+                        borderStyle: 'solid',
+                        borderImage: 'linear-gradient(to right, #00000000, #d6d4d4, #00000000)',
+                        borderImageSlice: '1 0',
+                        width: '100%',
+                        height: '2.5em',
+                        marginBottom: '0.5em',
+                      }}
                 >
                   {/* Player 1 (avatar and username) */}
                   <Grid item container xs={4} alignItems="center" justifyContent="flex-end">

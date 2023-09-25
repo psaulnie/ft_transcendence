@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, {useState} from "react";
 
 import CreateChannel from "./CreateChannel";
 import JoinChannel from "./JoinChannel";
 import JoinDirectMessage from "./JoinDirectMessage";
 
-import { Box, Grid, Button,} from "@mui/material";
+import {Box, Button, Grid,} from "@mui/material";
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import Drawer from "@mui/material/Drawer";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -26,8 +26,8 @@ function Tab() {
         variant="text"
         onClick={handleOpenTab}
         startIcon={
-          <Box sx={{ fontSize: 30, color: "black" }}>
-            <MenuIcon sx={{ marginLeft: "1.8em", width: "auto" }} />
+          <Box sx={{fontSize: 30, color: "black"}}>
+            <MenuIcon sx={{marginLeft: "1.8em", width: "auto"}}/>
           </Box>
         }
         sx={{
@@ -56,15 +56,16 @@ function Tab() {
           }}
         >
           <Grid container>
-            <JoinDirectMessage />
-            <JoinChannel />
+            <JoinDirectMessage/>
+            <JoinChannel/>
           </Grid>
           <Grid container>
-            <CreateChannel />
+            <CreateChannel/>
           </Grid>
           <Grid container>
-            <Button sx={{color:'white', marginLeft:'6em', marginTop:'1.6em', height:'1.8em', fontSize:'12px'}} onClick={() => setIsTabOpen(false)}>
-              <ArrowForwardIosIcon />
+            <Button sx={{color: 'white', marginLeft: '6em', marginTop: '1.6em', height: '1.8em', fontSize: '12px'}}
+                    onClick={() => setIsTabOpen(false)}>
+              <ArrowForwardIosIcon/>
             </Button>
           </Grid>
         </Box>

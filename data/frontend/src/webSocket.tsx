@@ -1,7 +1,7 @@
-import Cookies from "js-cookie";
-import { io } from "socket.io-client";
+import {io} from "socket.io-client";
 
 const URL = `ws://${import.meta.env.VITE_IP}:5000/gateway`;
+
 export class WebSocketManager {
   private socket: any;
   private channel: BroadcastChannel;

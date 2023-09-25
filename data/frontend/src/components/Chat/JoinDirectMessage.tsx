@@ -1,23 +1,22 @@
-import React, { useState, useEffect } from "react";
+import React, {useEffect, useState} from "react";
 
 import webSocketManager from "../../webSocket";
-import { useSelector, useDispatch } from "react-redux";
-import { useGetUsersListQuery } from "../../store/api";
-import { addRoom } from "../../store/rooms";
-import { Grid, Typography } from "@mui/material";
-
-
+import {useDispatch, useSelector} from "react-redux";
+import {useGetUsersListQuery} from "../../store/api";
+import {addRoom} from "../../store/rooms";
 import {
   FormControl,
   FormHelperText,
-  InputLabel,
-  Select,
-  MenuItem,
-  SelectChangeEvent,
+  Grid,
   IconButton,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+  Typography
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import { userRole } from "./chatEnums";
+import {userRole} from "./chatEnums";
 import ErrorSnackbar from "../Global/ErrorSnackbar";
 import Loading from "../Global/Loading";
 
@@ -72,13 +71,13 @@ function JoinDirectMessage() {
     refetch();
   }, [refetch]);
 
-  if (isError) return <ErrorSnackbar error={error} />;
-  else if (isLoading) return <Loading />;
+  if (isError) return <ErrorSnackbar error={error}/>;
+  else if (isLoading) return <Loading/>;
 
   return (
     <Grid className="joinDirectMessage">
-      <Typography sx={{ marginTop: "2em" }}>Direct Message</Typography>
-      <FormControl sx={{ minWidth: 120 }} size="small">
+      <Typography sx={{marginTop: "2em"}}>Direct Message</Typography>
+      <FormControl sx={{minWidth: 120}} size="small">
         <InputLabel>Users</InputLabel>
         <Select
           name="usersList"
@@ -106,9 +105,9 @@ function JoinDirectMessage() {
         size="small"
         onClick={joinRoom}
         disabled={newUser === ""}
-        sx={{ transform: "translate(0%, 6%)" }}
+        sx={{transform: "translate(0%, 6%)"}}
       >
-        <AddIcon />
+        <AddIcon/>
       </IconButton>
     </Grid>
   );

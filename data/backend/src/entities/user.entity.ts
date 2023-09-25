@@ -1,18 +1,17 @@
 import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
   AfterLoad,
-  OneToMany,
+  Column,
+  Entity,
   JoinColumn,
-  OneToOne,
-  ManyToMany,
   JoinTable,
+  ManyToMany,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 
 import { BlockedList } from './blocked.list.entity';
 import { Achievements } from './achievements.entity';
-import { MatchHistory } from './matchHistory.entity';
 import { Statistics } from './stats.entity';
 
 @Entity({ name: 'User' })
@@ -32,7 +31,7 @@ export class User {
   @Column({ nullable: true })
   urlAvatar: string;
 
-  @Column({ default: 'canvas'})
+  @Column({ default: 'canvas' })
   gameBackground: string;
 
   @Column({ name: 'access_token' })

@@ -1,22 +1,10 @@
-import { userRole } from "./chatEnums";
-
-export interface manageRoomsArgs {
-  source: string;
-  room: string;
-  access: number;
-}
+import {userRole} from "./chatEnums";
 
 export interface sendMsgArgs {
   type: number;
   source: string;
   target: string;
   data: string;
-}
-
-export interface actionArgs {
-  source: string;
-  target: string;
-  room: string;
 }
 
 export interface chatResponseArgs {
