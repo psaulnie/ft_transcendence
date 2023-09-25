@@ -13,15 +13,17 @@ export default function DirectMessageProvider() {
 
   useEffect(() => {
     function onMsgSent(value: chatResponseArgs) {
+      const roomName = (value.source > value.target ? value.source + value.target : value.target + value.source);
       if (value.action !== actionTypes.left) {
         dispatch(
           addRoom({
-            name: value.source + "⌲",
+            name: roomName,
             role: userRole.none,
             isDirectMsg: true,
             hasPassword: false,
             openTab: false,
             isMuted: false,
+            username: user.username,
           })
         );
         dispatch(addMsg({ name: value.source + '⌲', message: value }));

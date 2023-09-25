@@ -61,7 +61,7 @@ export default function UsersList({
   else
     usersList = [
       { username: user.username, role: userRole.none, isMuted: false },
-      { username: roomName, role: userRole.none, isMuted: false },
+      { username: roomName.replace('⌲', ''), role: userRole.none, isMuted: false },
     ];
 
   const handleContextMenu = (event: React.MouseEvent, username: string, cUser: any) => {

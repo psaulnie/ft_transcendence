@@ -59,6 +59,7 @@ function Chat() {
             isDirectMsg: false,
             isMuted: element.isMuted,
             openTab: false,
+            username: user.username,
           })
         );
       });

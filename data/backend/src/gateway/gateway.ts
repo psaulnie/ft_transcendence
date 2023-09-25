@@ -88,6 +88,7 @@ export class Gateway
     if (!targetStatus || targetStatus.status === userStatus.offline) {
       throw new WsException(targetUser.username + ' is offline');
     }
+    const roomName = (payload.source > payload.target ? payload.source + payload.target + '⌲' : payload.target + payload.source + '⌲');
     this.server.emit(payload.target + '⌲', {
       source: payload.source,
       target: payload.target,
@@ -96,6 +97,14 @@ export class Gateway
       isDirectMessage: true,
       role: userRole.none,
     });
+    // this.server.emit(roomName, {
+    //   source: payload.source,
+    //   target: payload.target,
+    //   action: actionTypes.msg,
+    //   data: payload.data,
+    //   isDirectMessage: true,
+    //   role: userRole.none,
+    // });
   }
 
   @SubscribeMessage('sendMsg')

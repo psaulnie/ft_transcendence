@@ -62,14 +62,16 @@ export default function UserOptionsMenu({
   }
 
   function sendMessage() {
+    const roomName = user.username > cUser.username ? user.username + cUser.username : cUser.username + user.username;
     dispatch(
       addRoom({
-        name: cUser.username + "⌲",
+        name: roomName,
         role: userRole.none,
         hasPassword: false,
         isDirectMsg: true,
         openTab: true,
         isMuted: false,
+        username: user.username,
       })
     );
   }
