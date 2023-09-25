@@ -59,9 +59,9 @@ export const roomsSlice = createSlice({
         (obj: roomType) => obj.name === action.payload.name,
       );
       if (!room || (room.isDirectMsg !== action.payload.isDirectMsg)) {
-        if (action.payload.isDirectMsg && state.room.find((obj: roomInterface) => obj.listener === '⌲' + action.payload.name)) return ;
+        if (action.payload.isDirectMsg && state.room.find((obj: roomInterface) => obj.listener === action.payload.name + '⌲')) return ;
         state.room.push({
-          name: action.payload.isDirectMsg ? '⌲' + action.payload.name.replace(action.payload.username, '') : action.payload.name,
+          name: action.payload.isDirectMsg ? action.payload.name.replace(action.payload.username, '') + '⌲' : action.payload.name,
           role: action.payload.role,
           isDirectMsg: action.payload.isDirectMsg,
           messages: [],
@@ -69,7 +69,7 @@ export const roomsSlice = createSlice({
           hasPassword: action.payload.hasPassword,
           usersList: [],
           isMuted: false,
-          listener: action.payload.isDirectMsg ? '⌲' + action.payload.name : action.payload.name.replace(action.payload.username, ''),
+          listener: action.payload.isDirectMsg ? action.payload.name + '⌲' : action.payload.name.replace(action.payload.username, ''),
         });
         if (state.index === -1) state.index++;
       } else if (roomIndex !== -1 && action.payload.openTab)
@@ -123,7 +123,7 @@ export const roomsSlice = createSlice({
           hasPassword: false,
           usersList: [],
           isMuted: false,
-          listener: '⌲' + action.payload.name,
+          listener: action.payload.name + '⌲',
         });
       }
     },

@@ -88,8 +88,8 @@ export class Gateway
     if (!targetStatus || targetStatus.status === userStatus.offline) {
       throw new WsException(targetUser.username + ' is offline');
     }
-    const roomName = (payload.source > payload.target ? '⌲' + payload.source + payload.target : '⌲' + payload.target + payload.source);
-    this.server.emit('⌲' + payload.target, {
+    const roomName = (payload.source > payload.target ? payload.source + payload.target + '⌲' : payload.target + payload.source + '⌲');
+    this.server.emit(payload.target + '⌲', {
       source: payload.source,
       target: payload.target,
       action: actionTypes.msg,

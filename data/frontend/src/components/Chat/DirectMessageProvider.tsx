@@ -26,7 +26,7 @@ export default function DirectMessageProvider() {
             username: user.username,
           })
         );
-        dispatch(addMsg({ name: '⌲' + value.source, message: value }));
+        dispatch(addMsg({ name: value.source + '⌲', message: value }));
       }
       dispatch(setRead(rooms.index));
     }
@@ -38,9 +38,9 @@ export default function DirectMessageProvider() {
     }
 
     webSocketManager.getSocket().on("newUsername", newUsername);
-    webSocketManager.getSocket().on('⌲' + user.username, onMsgSent);
+    webSocketManager.getSocket().on(user.username + '⌲', onMsgSent);
     return () => {
-      webSocketManager.getSocket().off('⌲' + user.username, onMsgSent);
+      webSocketManager.getSocket().off(user.username + '⌲', onMsgSent);
       webSocketManager.getSocket().off("newUsername", newUsername);
     };
   }, [user, dispatch, rooms]);
