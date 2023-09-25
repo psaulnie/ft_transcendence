@@ -31,7 +31,7 @@ function MessageProvider({ roomName }: { roomName: string }) {
           trigger({ roomName: roomName });
         }
         if (rooms.room[roomIndex].isDirectMessage === true)
-          dispatch(addMsg({ name: roomName + '⌲', message: value }));
+          dispatch(addMsg({ name: '⌲' + roomName, message: value }));
         else
           dispatch(addMsg({ name: roomName, message: value }));
         if (value.source === user.username || rooms.index === roomIndex) {
