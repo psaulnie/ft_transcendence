@@ -12,18 +12,18 @@ export default function DirectMessageProvider() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    function onMsgSent(value: chatResponseArgs) {
-      const roomName = (value.source > value.target ? value.source + value.target : value.target + value.source);
+    function onMsgSent(value: any) {
       if (value.action !== actionTypes.left) {
         dispatch(
           addRoom({
-            name: roomName,
+            name: value.source + '⌲',
             role: userRole.none,
             isDirectMsg: true,
             hasPassword: false,
             openTab: false,
             isMuted: false,
             username: user.username,
+            listener: value.listener
           })
         );
         dispatch(addMsg({name: value.source + '⌲', message: value}));
@@ -37,11 +37,28 @@ export default function DirectMessageProvider() {
       );
     }
 
+    function joinRoom(value: { listener: string, name: string}) {
+      dispatch(
+        addRoom({
+          name: value.name,
+          role: userRole.none,
+          isDirectMsg: true,
+          hasPassword: false,
+          openTab: true,
+          isMuted: false,
+          username: user.username,
+          listener: value.listener
+        })
+      );
+    }
+
+    webSocketManager.getSocket().on(user.username + 'GETUID', joinRoom);
     webSocketManager.getSocket().on("newUsername", newUsername);
     webSocketManager.getSocket().on(user.username + '⌲', onMsgSent);
     return () => {
       webSocketManager.getSocket().off(user.username + '⌲', onMsgSent);
       webSocketManager.getSocket().off("newUsername", newUsername);
+      webSocketManager.getSocket().off(user.username + 'GETUID', joinRoom);
     };
   }, [user, dispatch, rooms]);
 

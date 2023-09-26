@@ -16,4 +16,5 @@ export interface chatResponseArgs {
   isMuted: boolean;
   hasPassword: boolean;
   newUsername: string;
+  listener: string;
 }
