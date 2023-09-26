@@ -129,7 +129,6 @@ function TwoFactorLogin() {
         setError(false);
         navigate("/home");
       } else {
-        console.log("Wrong authentication code");
         setError(true);
       }
     } catch (error) {

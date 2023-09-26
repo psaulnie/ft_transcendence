@@ -82,7 +82,6 @@ export class GameService {
       isFinish: false,
     });
     this.resetBall(gameRoomId);
-    console.log(this.gameRooms);
     return gameRoomId;
   }
 
@@ -245,7 +244,6 @@ export class GameService {
     const roomIndex = this.gameRooms.findIndex(
       (obj) => obj.gameRoomId === gameRoomId,
     );
-    console.log(roomIndex);
     if (roomIndex === -1) return;
   }
 

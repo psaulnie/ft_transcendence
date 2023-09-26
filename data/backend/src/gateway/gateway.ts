@@ -154,7 +154,6 @@ export class Gateway
     if (payload.room.length < 1) throw new WsException('Room name too short');
     const user = await this.userService.findOne(payload.source);
     if (!user) throw new WsException(payload.source + ' not found');
-    console.log(await this.roomService.isUserInRoom(payload.room, user.uid));
     if (await this.roomService.isUserInRoom(payload.room, user.uid))
       throw new WsException("You're already in that room");
     const roomsJoined = await this.roomService.findAllRoomUser(payload.source);
@@ -914,6 +913,10 @@ export class Gateway
     const opponentStatus = await this.usersStatusService.getUserStatus(payload);
     if (!opponentStatus)
       throw new WsException(payload + ' not found or offline');
+    if (cUserStatus.status === userStatus.playing)
+      throw new WsException(cUserStatus.username + ' is already in game');
+    if (opponentStatus.status === userStatus.playing)
+    throw new WsException(opponentStatus.username + ' is already in game');      
     const user1 = await this.userService.findOne(cUserStatus.username);
     const user2 = await this.userService.findOne(opponentStatus.username);
     if (!user1 || !user2) throw new WsException('Users not found');

@@ -166,7 +166,6 @@ export class RoomService {
   async removeFromMutedList(roomName: string, user: User): Promise<Room> {
     const room = await this.findOne(roomName);
     if (!room) return;
-    console.log(room);
     room.mutedUsers = room.mutedUsers.filter((obj) => obj != user.uid);
     const userInList = room.usersList.find((obj) => obj.user.uid == user.uid);
     userInList.isMuted = false;

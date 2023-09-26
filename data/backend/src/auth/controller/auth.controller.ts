@@ -74,8 +74,6 @@ export class AuthController {
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    console.log('LOGOUT CONTROLLER');
-
     if (!req.isAuthenticated()) {
       res.clearCookie('connect.sid');
       res.clearCookie('username');
