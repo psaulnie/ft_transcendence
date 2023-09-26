@@ -23,6 +23,10 @@ import { GameService } from 'src/services/game.service';
 @WebSocketGateway({
   cors: { origin: '*' },
   namespace: '/gateway',
+  connectionStateRecovery: {
+    maxDisconnectionDuration: 10000, //10 secondes
+    skipMiddlewares: true,
+  },
 })
 export class Gateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
@@ -1300,8 +1304,9 @@ export class Gateway
   async handleDisconnect(client: Socket) {
     const userStatusTmp = await this.usersStatusService.getUserStatusByClientId(
       client.id,
-    );
-    if (!userStatusTmp) return;
+      );
+      if (!userStatusTmp) return;
+      console.log('client disconnected: ', client.id, userStatusTmp.username);
     const user = await this.userService.findOne(userStatusTmp.username);
     if (userStatusTmp.status === userStatus.playing) {
       const gameRoom = this.gameService.getGameRoom(userStatusTmp.gameRoomId);
