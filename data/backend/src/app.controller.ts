@@ -122,7 +122,7 @@ export class AppController {
         if (err) {
           console.error('Stream failed.', err);
         } else {
-          console.log('Stream is done reading.');
+          console.log('Stream is done reading');
         }
       });
       if (file) {
@@ -150,9 +150,9 @@ export class AppController {
       const file = createReadStream(join(process.cwd(), '..' + path));
       stream.finished(file, (err) => {
         if (err) {
-          console.error('Stream failed.', err);
+          console.error('Stream failed: ', err);
         } else {
-          console.log('Stream is done reading.');
+          console.log('Stream is done reading');
         }
       });
       if (file) {
