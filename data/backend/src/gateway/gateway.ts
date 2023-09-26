@@ -47,6 +47,26 @@ export class Gateway
     this.maxScore = 5;
   }
 
+  @SubscribeMessage('joinPrivateMsg')
+  async joinPrivateMsg(client: Socket, payload: string) {
+    if (!payload) throw new WsException('Missing parameter');
+    const cUser = await this.usersStatusService.getUserStatusByClientId(
+      client.id,
+    );
+    if (!cUser) throw new WsException('Forbidden');
+    const user = await this.userService.findOne(cUser.username);
+    if (!user) throw new WsException('Forbidden');
+    const targetUser = await this.userService.findOne(payload);
+    if (!targetUser) throw new WsException(payload + ' not found');
+    this.server.emit(cUser.username + 'GETUID', {
+      listener:
+        user.uid > targetUser.uid
+          ? user.uid + '' + targetUser.uid
+          : targetUser.uid + '' + user.uid,
+      name: payload + '⌲',
+    });
+  }
+
   @SubscribeMessage('sendPrivateMsg')
   async sendPrivateMessage(client: Socket, payload: sendMsgArgs) {
     if (
@@ -86,9 +106,14 @@ export class Gateway
     if (!targetStatus || targetStatus.status === userStatus.offline) {
       throw new WsException(targetUser.username + ' is offline');
     }
+    const listener =
+      user.uid > targetUser.uid
+        ? user.uid + '' + targetUser.uid
+        : targetUser.uid + '' + user.uid;
     this.server.emit(payload.target + '⌲', {
       source: payload.source,
       target: payload.target,
+      listener: listener + '⌲',
       action: actionTypes.msg,
       data: payload.data,
       isDirectMessage: true,

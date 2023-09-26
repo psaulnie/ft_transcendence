@@ -59,6 +59,7 @@ function Chat() {
             isMuted: element.isMuted,
             openTab: false,
             username: user.username,
+            listener: element.roomName,
           })
         );
       });
