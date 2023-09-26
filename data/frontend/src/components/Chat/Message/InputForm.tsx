@@ -61,6 +61,7 @@ export default function InputForm({
             isMuted: false,
             hasPassword: false,
             newUsername: "",
+            listener: '',
           },
         })
       );
