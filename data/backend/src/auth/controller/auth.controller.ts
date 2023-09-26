@@ -5,14 +5,12 @@ import { User } from '../../entities';
 import { HttpService as NestHttpService } from '@nestjs/axios';
 import { UsersService } from 'src/users/users.service';
 import RequestWithUser from '../service/requestWithUser.interface';
-import { AuthService } from '../service/auth.service';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly httpService: NestHttpService,
     private readonly usersService: UsersService,
-    private readonly authService: AuthService,
   ) {}
 
   /**
@@ -113,44 +111,5 @@ export class AuthController {
 
     // Redirect on login page
     res.redirect(`http://${process.env.IP}:3000/login`);
-  }
-
-  @Get('testlogin')
-  async testLogin(@Res() res: Response, @Req() req: Request) {
-    const userTest = {
-      intraId: '987654',
-      username: 'userTest',
-      accessToken: 'accessToken',
-      refreshToken: 'refreshToken',
-      urlAvatar: '',
-      intraUsername: 'userTest',
-    };
-
-    const usr = await this.authService.findUser(userTest.intraId);
-    if (!usr) {
-      await this.authService.createUser(userTest);
-    }
-
-    // Use passport to connect userTest
-    req.logIn(userTest, (err) => {
-      if (err) {
-        console.error('Error logging in:', err);
-        throw err;
-      }
-
-      res.cookie('username', userTest.username, {
-        httpOnly: false,
-        secure: false,
-      });
-
-      req.session.save((err) => {
-        if (err) {
-          console.error('Error saving session:', err);
-          throw err;
-        }
-
-        res.redirect(`http://${process.env.IP}:3000/home`);
-      });
-    });
   }
 }

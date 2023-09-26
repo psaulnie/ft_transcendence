@@ -47,31 +47,27 @@ export class AuthService implements AuthProvider {
         accessToken,
         refreshToken,
       }); //Update accessToken
-      console.log('‣ User after update : ', user);
       return user;
     }
     return this.createUser(details);
   }
 
   async createUser(details: UserDetails) {
-    // TODO remove condition, it's only for userTest
-    if (details.username !== 'userTest') {
-      const url: any = await firstValueFrom(
-        this.httpService
-          .get('https://api.intra.42.fr/v2/me', {
-            headers: {
-              Authorization: `Bearer ${details.accessToken}`,
-            },
-          })
-          .pipe(
-            catchError(() => {
-              throw new UnauthorizedException();
-            }),
-          ),
-      );
-      details.urlAvatar = url?.data?.image?.link;
-      if (!details.urlAvatar) details.urlAvatar = '';
-    }
+    const url: any = await firstValueFrom(
+      this.httpService
+        .get('https://api.intra.42.fr/v2/me', {
+          headers: {
+            Authorization: `Bearer ${details.accessToken}`,
+          },
+        })
+        .pipe(
+          catchError(() => {
+            throw new UnauthorizedException();
+          }),
+        ),
+    );
+    details.urlAvatar = url?.data?.image?.link;
+    if (!details.urlAvatar) details.urlAvatar = '';
 
     const achievements = new Achievements();
     const statistics = new Statistics();

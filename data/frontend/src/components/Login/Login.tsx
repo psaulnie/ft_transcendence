@@ -23,10 +23,6 @@ function Login() {
     apiIntraLogIn();
   }
 
-  function testlogin() {
-    window.location.href = `http://${import.meta.env.VITE_IP}:5000/auth/testlogin`;
-  }
-
   const fetchData = () => {
     fetch(`http://${import.meta.env.VITE_IP}:5000/auth/status`, {
       credentials: "include",
@@ -85,27 +81,6 @@ function Login() {
         }}
       >
         Login
-      </Button>
-      <Button
-        variant='contained'
-        onClick={testlogin}
-        sx={{
-          textTransform: "none",
-          fontSize: "16px",
-          width: "12em",
-          height: "1.6em",
-          backgroundColor: "#D4D4D4",
-          border: "1px solid #00000088",
-          boxShadow: "0 0 10px rgba(0, 0, 0, 0.3)",
-          borderRadius: "10px",
-          color: "black",
-          "&:hover": {
-            backgroundColor: "gray",
-          },
-          marginTop: '2em',
-        }}
-      >
-        Log as user test
       </Button>
 
       {refused === "true" && (
