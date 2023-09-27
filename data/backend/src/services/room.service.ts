@@ -184,7 +184,8 @@ export class RoomService {
     const room = await this.findOne(roomName);
     const userInList = room.usersList.find((obj) => obj.user.uid == user.uid);
 
-    userInList.role = userRole.admin;
+    if (userInList.role === userRole.none)
+      userInList.role = userRole.admin;
     await this.usersListRepository.save(userInList);
     return await this.roomsRepository.save(room);
   }

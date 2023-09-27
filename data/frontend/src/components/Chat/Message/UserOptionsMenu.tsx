@@ -76,7 +76,7 @@ export default function UserOptionsMenu({
     >
       {role !== userRole.none &&
       user.username !== cUser.username &&
-      cUser.role === userRole.none &&
+      cUser.role !== userRole.owner &&
       showAdminOpt ? (
         <span>
           <MenuItem

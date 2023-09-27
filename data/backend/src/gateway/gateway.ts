@@ -400,6 +400,7 @@ export class Gateway
     if (!isInRoom) throw new WsException("You're not in that room");
     if ((await this.roomService.getRole(room, admin.uid)) == userRole.none)
       throw new WsException("You're not an admin of this room");
+    if (room.owner.username === payload.target) throw new WsException('You cannot kick the owner');
     await this.roomService.removeUser(room, user.uid);
     this.server.emit(payload.room, {
       source: payload.target,
@@ -443,6 +444,7 @@ export class Gateway
     if (!isInRoom) throw new WsException("You're not in that room");
     if ((await this.roomService.getRole(room, admin.uid)) == userRole.none)
       throw new WsException("You're not an admin of this room");
+    if (room.owner.username === payload.target) throw new WsException('You cannot kick the owner');
     await this.roomService.addToBanList(payload.room, user);
     this.server.emit(payload.room, {
       source: payload.target,
@@ -585,6 +587,7 @@ export class Gateway
     if (!room) throw new WsException('Room not found');
     if ((await this.roomService.getRole(room, admin.uid)) == userRole.none)
       throw new WsException("You're not an admin of this room");
+    if (room.owner.username === payload.target) throw new WsException('You cannot kick the owner');
     await this.roomService.addToMutedList(payload.room, user);
     const targetStatus = await this.usersStatusService.getUserStatus(
       payload.target,
@@ -620,6 +623,7 @@ export class Gateway
     if (!room) throw new WsException('Room not found');
     if ((await this.roomService.getRole(room, admin.uid)) == userRole.none)
       throw new WsException("You're not an admin of this room");
+    if (room.owner.username === payload.target) throw new WsException('You cannot kick the owner');
     await this.roomService.removeFromMutedList(payload.room, user);
     const targetStatus = await this.usersStatusService.getUserStatus(
       payload.target,
