@@ -75,7 +75,8 @@ export class AppController {
     file: Express.Multer.File,
     @Req() req: RequestWithUser,
   ) {
-    const user = req.user as User;
+    const cUser = req.user as User;
+    const user = await this.userService.findOne(cUser.username)
     if (body && file) {
       if (!validImage(file)) {
         throw new HttpException('Wrong image format', 400);

@@ -1392,5 +1392,6 @@ export class Gateway
       user.username,
       userStatus.online,
     );
+    console.log('client connected: ', client.id, user.username);
   }
 }
