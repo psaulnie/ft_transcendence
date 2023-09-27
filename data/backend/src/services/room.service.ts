@@ -29,12 +29,13 @@ export class RoomService {
   }
 
   async findAllRoomUser(username: string): Promise<number> {
-    return (await this.roomsRepository.createQueryBuilder('room')
-    .leftJoinAndSelect('room.usersList', 'usersList')
-    .leftJoinAndSelect('usersList.user', 'user')
-    .where('user.username = :username', { username: username })
-    .andWhere('usersList.isBanned = false')
-    .getCount());
+    return await this.roomsRepository
+      .createQueryBuilder('room')
+      .leftJoinAndSelect('room.usersList', 'usersList')
+      .leftJoinAndSelect('usersList.user', 'user')
+      .where('user.username = :username', { username: username })
+      .andWhere('usersList.isBanned = false')
+      .getCount();
   }
 
   async createRoom(
@@ -43,7 +44,6 @@ export class RoomService {
     access: number,
     password: string,
   ): Promise<Room> {
-    console.log('createroom');
     const room = new Room();
     const usersList = new UsersList();
 
@@ -63,7 +63,6 @@ export class RoomService {
   }
 
   async addRoom(room: Room): Promise<Room> {
-    console.log('addroom');
     return await this.roomsRepository.save(room);
   }
 
@@ -72,7 +71,6 @@ export class RoomService {
     user: User,
     invited: boolean,
   ): Promise<number> {
-    console.log('adduser');
     const room = await this.findOne(roomName);
     if (!room) return;
     if (room.access == accessStatus.private && !invited) {
@@ -88,7 +86,7 @@ export class RoomService {
     newEntry.user = user;
     newEntry.role = userRole.none;
     newEntry.isBanned = false;
-    newEntry.isMuted = !(!room.mutedUsers.find((obj) => obj == user.uid));
+    newEntry.isMuted = !!room.mutedUsers.find((obj) => obj == user.uid);
 
     room.usersNumber += 1;
     room.usersList.push(await this.usersListRepository.save(newEntry));
@@ -97,14 +95,14 @@ export class RoomService {
   }
 
   async removeUser(room: Room, userId: number): Promise<User> {
-    console.log('removeuser');
-    console.log('-1 user in ' + room.roomName);
-    if (room.usersList.find((obj) => obj.user.uid == userId && obj.isBanned === false))
+    if (
+      room.usersList.find(
+        (obj) => obj.user.uid == userId && obj.isBanned === false,
+      )
+    )
       room.usersNumber--;
-    console.log('number of users:' + room.usersNumber);
     if (room.usersNumber <= 0) {
-      console.log('room deleted');
-      this.removeRoom(room.roomName);
+      await this.removeRoom(room.roomName);
       return;
     }
     room.usersList = room.usersList.filter((user) => {
@@ -121,21 +119,10 @@ export class RoomService {
   }
 
   async removeRoom(name: string) {
-    console.log('removeroom');
     return await this.roomsRepository.delete({ roomName: name });
   }
 
-  async removeUserFromRooms(userId: number) {
-    console.log('removeuserfromrooms');
-    const rooms = this.findAll();
-    (await rooms).forEach((element) => {
-      this.removeUser(element, userId);
-    });
-  }
-
   async getRole(room: Room, userId: number): Promise<userRole> {
-    console.log('getrole');
-
     let isAdmin = false;
     if (!room) throw new Error('Room not found');
     if (room.owner.uid == userId) return userRole.owner;
@@ -150,7 +137,6 @@ export class RoomService {
   }
 
   async addToBanList(roomName: string, user: User): Promise<Room> {
-    console.log('addtobanlist');
     const room = await this.findOne(roomName);
     const userInList = room.usersList.find((obj) => obj.user.uid == user.uid);
     userInList.isBanned = true;
@@ -160,7 +146,6 @@ export class RoomService {
   }
 
   async unban(roomName: string, user: User): Promise<Room> {
-    console.log('unban');
     const room = await this.findOne(roomName);
     const userInList = room.usersList.filter((obj) => obj.user.uid != user.uid);
     room.usersList = userInList;
@@ -169,7 +154,6 @@ export class RoomService {
   }
 
   async addToMutedList(roomName: string, user: User): Promise<Room> {
-    console.log('addtomutedlist');
     const room = await this.findOne(roomName);
     if (!room) return;
     room.mutedUsers.push(user.uid);
@@ -180,10 +164,8 @@ export class RoomService {
   }
 
   async removeFromMutedList(roomName: string, user: User): Promise<Room> {
-    console.log('removefrommutedlist');
     const room = await this.findOne(roomName);
     if (!room) return;
-    console.log(room);
     room.mutedUsers = room.mutedUsers.filter((obj) => obj != user.uid);
     const userInList = room.usersList.find((obj) => obj.user.uid == user.uid);
     userInList.isMuted = false;
@@ -192,32 +174,28 @@ export class RoomService {
   }
 
   async isMuted(roomName: string, user: User): Promise<boolean> {
-    console.log('ismuted');
     const room = await this.findOne(roomName);
     if (!room) return false;
     const mutedUser = room.mutedUsers.find((obj) => obj == user.uid);
-    return !(!mutedUser);
+    return !!mutedUser;
   }
 
   async addAdmin(roomName: string, user: User): Promise<Room> {
-    console.log('addadmin');
     const room = await this.findOne(roomName);
     const userInList = room.usersList.find((obj) => obj.user.uid == user.uid);
 
-    userInList.role = userRole.admin;
+    if (userInList.role === userRole.none)
+      userInList.role = userRole.admin;
     await this.usersListRepository.save(userInList);
     return await this.roomsRepository.save(room);
   }
 
   async getPassword(roomName: string): Promise<string> {
-    console.log('getpassword');
     const room = await this.findOne(roomName);
     return room.password;
   }
 
   async setPasswordToRoom(roomName: string, password: string) {
-    console.log('setpasswordtoroom');
-
     const room = await this.findOne(roomName);
     if (room) {
       room.password = password;
@@ -227,8 +205,6 @@ export class RoomService {
   }
 
   async removePasswordToRoom(roomName: string) {
-    console.log('removepasswordtoroom');
-
     const room = await this.findOne(roomName);
     if (room) {
       room.password = '';
@@ -238,16 +214,14 @@ export class RoomService {
   }
 
   async isUserInRoom(roomName: string, userID: number): Promise<boolean> {
-    console.log('isuserinroom');
     const room = await this.findOne(roomName);
     return !(!room || !room.usersList.find((obj) => obj.user.uid == userID));
   }
 
   async isUserBanned(roomName: string, userID: number): Promise<boolean> {
-    console.log('isuserbanned');
     const room = await this.findOne(roomName);
     if (!room) return false;
-    const usersList = room.usersList.find((obj) => obj.user.uid == userID );
+    const usersList = room.usersList.find((obj) => obj.user.uid == userID);
     if (!usersList) return false;
     return usersList.isBanned;
   }

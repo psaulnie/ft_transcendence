@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 
-import { useSelector } from "react-redux";
+import {useSelector} from "react-redux";
 
-import { Box, Grid, Button } from "@mui/material";
+import {Box, Button, Grid} from "@mui/material";
 import Drawer from "@mui/material/Drawer";
 import PersonIcon from "@mui/icons-material/Person";
 
 import UsersList from "./UsersList";
-import { userRole } from "./chatEnums";
+import {userRole} from "./chatEnums";
 
-function UsersTab({ roomName }: { roomName: string }) {
+function UsersTab({roomName}: { roomName: string }) {
   const rooms = useSelector((state: any) => state.rooms);
   const roomIndex = rooms.room.findIndex(
     (obj: { name: string; role: userRole }) => obj.name === roomName,
@@ -40,9 +40,9 @@ function UsersTab({ roomName }: { roomName: string }) {
         onClick={handleOpenTab}
         disableRipple
         endIcon={
-          <Box sx={{ fontSize: 15, color: "black" }}>
+          <Box sx={{fontSize: 15, color: "black"}}>
             <PersonIcon
-              style={{ fontSize: "30px" }}
+              style={{fontSize: "30px"}}
               sx={{
                 "@media (max-width: 600px) or (max-height: 700px)": {
                   marginLeft: "1em",
@@ -75,7 +75,7 @@ function UsersTab({ roomName }: { roomName: string }) {
             padding: "45px",
           }}
         >
-          <Box sx={{ textAlign: "center", marginTop: "5%", color: "black" }}>
+          <Box sx={{textAlign: "center", marginTop: "5%", color: "black"}}>
             <h1
               style={{
                 fontWeight: "bold",
@@ -85,7 +85,7 @@ function UsersTab({ roomName }: { roomName: string }) {
               Users
             </h1>
           </Box>
-          <Grid container sx={{ marginLeft: "5%" }}>
+          <Grid container sx={{marginLeft: "5%"}}>
             <UsersList
               roomName={roomName}
               role={role}

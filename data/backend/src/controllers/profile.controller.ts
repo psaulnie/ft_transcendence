@@ -66,19 +66,19 @@ export class ProfileController {
     };
   }
 
-  @Get('/user/rank')
+  @Get('/user/name')
   @UseGuards(AuthenticatedGuard)
   async getUserRank(@Req() req: RequestWithUser) {
     const user = req.user as User;
-    const cUser = await this.userService.findOneById(user.uid);
-    if (!user || !cUser) throw new HttpException('Unprocessable entity', 422);
-    return { username: cUser.username, rank: cUser.statistics.rank };
+    if (!user) throw new HttpException('Unprocessable Entity', 422);
+    return ({ username: user.username });
   }
 
   @Get('/general/leaderboard')
   @UseGuards(AuthenticatedGuard)
   async getLeaderboard() {
     const users = await this.userService.findAll();
+    if (!users) return ([]);
     const bestUsers = users.sort((a, b) => {
       if (a.statistics.rank < b.statistics.rank) return 1;
       if (a.statistics.rank > b.statistics.rank) return -1;
@@ -92,9 +92,15 @@ export class ProfileController {
         a.statistics.streak > b.statistics.streak
       )
         return -1;
-      else if (a.statistics.winNbr - a.statistics.loseNbr < b.statistics.winNbr - b.statistics.loseNbr)
+      else if (
+        a.statistics.winNbr - a.statistics.loseNbr <
+        b.statistics.winNbr - b.statistics.loseNbr
+      )
         return 1;
-      else if (a.statistics.winNbr - a.statistics.loseNbr > b.statistics.winNbr - b.statistics.loseNbr)
+      else if (
+        a.statistics.winNbr - a.statistics.loseNbr >
+        b.statistics.winNbr - b.statistics.loseNbr
+      )
         return -1;
       return 0;
     });
@@ -103,19 +109,28 @@ export class ProfileController {
       leaderboard.push({
         username: bestUsers[0].username,
         score:
-          bestUsers[0].statistics.rank * 10 + bestUsers[0].statistics.streak * 5 + bestUsers[0].statistics.winNbr - bestUsers[0].statistics.loseNbr,
+          bestUsers[0].statistics.rank * 10 +
+          bestUsers[0].statistics.streak * 5 +
+          bestUsers[0].statistics.winNbr -
+          bestUsers[0].statistics.loseNbr,
       });
     if (users.length > 1)
       leaderboard.push({
         username: bestUsers[1].username,
         score:
-          bestUsers[1].statistics.rank * 10 + bestUsers[1].statistics.streak * 5 + bestUsers[1].statistics.winNbr - bestUsers[1].statistics.loseNbr,
+          bestUsers[1].statistics.rank * 10 +
+          bestUsers[1].statistics.streak * 5 +
+          bestUsers[1].statistics.winNbr -
+          bestUsers[1].statistics.loseNbr,
       });
     if (users.length > 2)
       leaderboard.push({
         username: bestUsers[2].username,
         score:
-          bestUsers[2].statistics.rank * 10 + bestUsers[2].statistics.streak * 5 + bestUsers[2].statistics.winNbr - bestUsers[2].statistics.loseNbr,
+          bestUsers[2].statistics.rank * 10 +
+          bestUsers[2].statistics.streak * 5 +
+          bestUsers[2].statistics.winNbr -
+          bestUsers[2].statistics.loseNbr,
       });
     return leaderboard;
   }

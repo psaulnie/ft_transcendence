@@ -18,7 +18,6 @@ export default function InputForm({
   isDirectMessage: boolean;
 }) {
   const user = useSelector((state: any) => state.user);
-  const rooms = useSelector((state: any) => state.rooms);
   const dispatch = useDispatch();
   const isWideScreen = useMediaQuery("(max-width:600px) or (max-height:700px)");
 
@@ -32,6 +31,8 @@ export default function InputForm({
   const [isLoading, setIsLoading] = useState(false);
 
   function send() {
+    if (isLoading)
+      return ;
     const msg = isDirectMessage ? "sendPrivateMsg" : "sendMsg";
     setMessage("");
     setValue({
@@ -43,7 +44,7 @@ export default function InputForm({
     setIsLoading(true);
     webSocketManager
       .getSocket()
-      .timeout(500)
+      .timeout(1000)
       .emit(msg, value, () => {
         setIsLoading(false);
       });
@@ -60,6 +61,7 @@ export default function InputForm({
             isMuted: false,
             hasPassword: false,
             newUsername: "",
+            listener: '',
           },
         })
       );
@@ -105,6 +107,7 @@ export default function InputForm({
         </Grid>
         <Grid item xs={2}>
           <Button
+            disabled={isLoading}
             variant="contained"
             name="message"
             type="submit"

@@ -1,7 +1,6 @@
 import { createSlice, current, PayloadAction } from "@reduxjs/toolkit";
 import { chatResponseArgs } from "../components/Chat/args.interface";
 import { userRole } from "../components/Chat/chatEnums";
-import store from "./default";
 
 export interface roomType {
   name: string;
@@ -29,7 +28,7 @@ interface RoomsState {
 
 const initialUser: RoomsState = localStorage.getItem("rooms")
   ? JSON.parse(localStorage.getItem("rooms") || "{ room: [], index: -1 }")
-  : { room: [], index: -1 };
+  : {room: [], index: -1};
 
 const initialState: RoomsState = {
   room: initialUser.room,
@@ -49,7 +48,8 @@ export const roomsSlice = createSlice({
         hasPassword: boolean;
         openTab: boolean;
         isMuted: boolean;
-        username: string
+        username: string;
+        listener: string;
       }>,
     ) => {
       const room = state.room.find(
@@ -59,9 +59,8 @@ export const roomsSlice = createSlice({
         (obj: roomType) => obj.name === action.payload.name,
       );
       if (!room || (room.isDirectMsg !== action.payload.isDirectMsg)) {
-        if (action.payload.isDirectMsg && state.room.find((obj: roomInterface) => obj.listener === action.payload.name + '⌲')) return ;
         state.room.push({
-          name: action.payload.isDirectMsg ? action.payload.name.replace(action.payload.username, '') + '⌲' : action.payload.name,
+          name: action.payload.name,
           role: action.payload.role,
           isDirectMsg: action.payload.isDirectMsg,
           messages: [],
@@ -69,7 +68,7 @@ export const roomsSlice = createSlice({
           hasPassword: action.payload.hasPassword,
           usersList: [],
           isMuted: false,
-          listener: action.payload.isDirectMsg ? action.payload.name + '⌲' : action.payload.name.replace(action.payload.username, ''),
+          listener: action.payload.isDirectMsg ? action.payload.listener : action.payload.name,
         });
         if (state.index === -1) state.index++;
       } else if (roomIndex !== -1 && action.payload.openTab)
@@ -82,10 +81,10 @@ export const roomsSlice = createSlice({
       if (state.room.length === 0) state.index = -1;
       else if (state.index !== 0) state.index--;
     },
-    updateRoomName: (state, action: PayloadAction<{oldName: string, newName: string}>) => {
-      const room = state.room.find((obj) => obj.name === action.payload.oldName);
-      if (!room) return ;
-      room.name = action.payload.newName;
+    updateRoomName: (state, action: PayloadAction<{ oldName: string, newName: string }>) => {
+      const room = state.room.find((obj) => obj.name === action.payload.oldName + '⌲');
+      if (!room) return;
+      room.name = action.payload.newName + '⌲';
     },
     changeRole: (state, action: PayloadAction<roomType>) => {
       const roomIndex = state.room.findIndex(

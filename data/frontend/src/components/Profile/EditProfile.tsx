@@ -1,17 +1,8 @@
-import {
-  Box,
-  Grid,
-  Button,
-  Avatar,
-  Typography,
-  TextField,
-  Snackbar,
-  Alert,
-} from "@mui/material";
-import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { useUploadAvatarMutation } from "../../store/api";
+import {Alert, Avatar, Box, Button, Grid, Snackbar, TextField, Typography,} from "@mui/material";
+import React, {useEffect, useState} from "react";
+import {useSelector} from "react-redux";
+import {useNavigate} from "react-router-dom";
+import {useUploadAvatarMutation} from "../../store/api";
 import webSocketManager from "../../webSocket";
 
 function EditProfile() {
@@ -126,7 +117,7 @@ function EditProfile() {
         <Grid
           container
           direction="row"
-          style={{ height: "100%", marginLeft: "2em" }}
+          style={{height: "100%", marginLeft: "2em"}}
         >
           {/* Avatar Grid */}
           <Grid
@@ -139,7 +130,7 @@ function EditProfile() {
             <Avatar
               src={fileUrl ? fileUrl : urlAvatar}
               alt="User Avatar"
-              sx={{ width: "10em", height: "10em" }}
+              sx={{width: "10em", height: "10em"}}
             />
           </Grid>
 
@@ -169,19 +160,19 @@ function EditProfile() {
                 }
                 sx={{
                   backgroundColor: "#F8F8F8",
-                  "& input": { color: "grey" },
+                  "& input": {color: "grey"},
                 }}
               />
             </Grid>
 
             <Grid item>
               <Button
-                sx={{ ...downloadButtonStyle }}
+                sx={{...downloadButtonStyle}}
                 variant="contained"
                 color="primary"
                 component="label"
               >
-                <input type="file" onChange={handleFileChange} hidden />
+                <input type="file" onChange={handleFileChange} hidden/>
                 Download new image
               </Button>
             </Grid>
@@ -219,20 +210,20 @@ function EditProfile() {
       </Box>
       <Snackbar
         open={!!error}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        anchorOrigin={{vertical: "top", horizontal: "right"}}
         onClose={() => setError(null)}
       >
         <Alert
           onClose={() => setError(null)}
           severity="error"
-          sx={{ width: "100%" }}
+          sx={{width: "100%"}}
         >
           Error {`${error?.data?.statusCode}: ${error?.data?.message}`}
         </Alert>
       </Snackbar>
       <Snackbar
         open={isError}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        anchorOrigin={{vertical: "top", horizontal: "right"}}
         onClose={() => {
           setIsError(false);
           setErrorMsg("");
@@ -244,7 +235,7 @@ function EditProfile() {
             setErrorMsg("");
           }}
           severity="error"
-          sx={{ width: "100%" }}
+          sx={{width: "100%"}}
         >
           {errorMsg}
         </Alert>

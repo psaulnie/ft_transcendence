@@ -1,24 +1,16 @@
 import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { Request, Response } from 'express';
-import {
-  IntraAuthGuard,
-  IntraAuthenticatedGuard,
-} from '../guards/intraAuthGuard.service';
+import { IntraAuthGuard } from '../guards/intraAuthGuard.service';
 import { User } from '../../entities';
 import { HttpService as NestHttpService } from '@nestjs/axios';
 import { UsersService } from 'src/users/users.service';
 import RequestWithUser from '../service/requestWithUser.interface';
-import { AuthService } from '../service/auth.service';
-import { UsersStatusService } from 'src/services/users.status.service';
-import { userStatus } from 'src/users/userStatus';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly httpService: NestHttpService,
     private readonly usersService: UsersService,
-    private readonly authService: AuthService,
-    private readonly userStatusService: UsersStatusService,
   ) {}
 
   /**
@@ -44,7 +36,6 @@ export class AuthController {
       secure: false,
     }); // Set username in cookie
     res.redirect(`http://${process.env.IP}:3000/2fa`);
-    // res.sendStatus(200);
   }
 
   /**
@@ -53,7 +44,6 @@ export class AuthController {
    */
   @Get('status')
   async status(@Req() req: RequestWithUser) {
-    // return (req.isAuthenticated());
     if (!req.isAuthenticated()) {
       return false;
     }
@@ -84,14 +74,12 @@ export class AuthController {
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    console.log('LOGOUT CONTROLLER');
-  
     if (!req.isAuthenticated()) {
       res.clearCookie('connect.sid');
       res.clearCookie('username');
 
       res.redirect(`http://${process.env.IP}:3000/login`);
-      return ;
+      return;
     }
     // Set 2FA authenticated to false in DB to indicate user is not connected anymore
     await this.usersService.setIsTwoFactorAuthenticated(
@@ -121,44 +109,5 @@ export class AuthController {
 
     // Redirect on login page
     res.redirect(`http://${process.env.IP}:3000/login`);
-  }
-
-  @Get('testlogin')
-  async testLogin(@Res() res: Response, @Req() req: Request) {
-    const userTest = {
-      intraId: '987654',
-      username: 'userTest',
-      accessToken: 'accessToken',
-      refreshToken: 'refreshToken',
-      urlAvatar: '',
-      intraUsername: 'userTest',
-    };
-
-    const usr = await this.authService.findUser(userTest.intraId);
-    if (!usr) {
-      await this.authService.createUser(userTest);
-    }
-
-    // Use passport to connect userTest
-    req.logIn(userTest, (err) => {
-      if (err) {
-        console.error('Error logging in:', err);
-        throw err;
-      }
-
-      res.cookie('username', userTest.username, {
-        httpOnly: false,
-        secure: false,
-      });
-
-      req.session.save((err) => {
-        if (err) {
-          console.error('Error saving session:', err);
-          throw err;
-        }
-
-        res.redirect(`http://${process.env.IP}:3000/home`);
-      });
-    });
   }
 }

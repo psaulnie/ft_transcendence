@@ -1,19 +1,10 @@
-import React, { useState } from "react";
+import React, {useState} from "react";
 import webSocketManager from "../../webSocket";
-import {
-  Dialog,
-  DialogTitle,
-  DialogActions,
-  Button,
-  Zoom,
-  TextField,
-} from "@mui/material";
-import { TransitionProps } from "@mui/material/transitions";
+import {Button, Dialog, DialogActions, DialogTitle, TextField, Zoom,} from "@mui/material";
+import {TransitionProps} from "@mui/material/transitions";
 
-import { useDispatch, useSelector } from "react-redux";
-import { accessStatus, userRole } from "./chatEnums";
-
-import { addRoom } from "../../store/rooms";
+import {useSelector} from "react-redux";
+import {accessStatus, userRole} from "./chatEnums";
 
 type arg = {
   open: boolean;
@@ -30,19 +21,17 @@ const Transition = React.forwardRef(function Transition(
   },
   ref: React.Ref<unknown>,
 ) {
-  return <Zoom ref={ref} {...props} style={{ transitionDelay: "100ms" }} />;
+  return <Zoom ref={ref} {...props} style={{transitionDelay: "100ms"}}>{props.children}</Zoom>;
 });
 
 export default function PasswordDialog({
-  open,
-  setOpen,
-  roomName,
-  role,
-  createRoom,
-  setNewRoomName
-}: arg) {
+                                         open,
+                                         setOpen,
+                                         roomName,
+                                         createRoom,
+                                         setNewRoomName
+                                       }: arg) {
   const user = useSelector((state: any) => state.user);
-  const dispatch = useDispatch();
   const [password, setPassword] = useState("");
 
   function updatePassword(e: any) {

@@ -1,12 +1,12 @@
 import {
   Controller,
-  Query,
   Get,
   HttpException,
   Param,
-  UseInterceptors,
-  UseGuards,
+  Query,
   Req,
+  UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { CacheInterceptor } from '@nestjs/cache-manager';
 import { RoomService } from '../services/room.service';
@@ -46,16 +46,14 @@ export class ChatController {
   @UseGuards(AuthenticatedGuard)
   @Get('user/blocked')
   async getBlockedUser(@Req() req: RequestWithUser): Promise<string[]> {
-    console.log('getBlockedUser');
     const cUser = req.user as User;
-    if (!cUser) throw new HttpException("Unprocessable Entity", 422);
+    if (!cUser) throw new HttpException('Unprocessable Entity', 422);
     const user = await this.userService.findOne(cUser.username);
     if (!user) throw new HttpException('Unprocessable Entity', 422);
     const usersList = [];
     const blockedUsers = user.blockedUsers;
     let userBlocked: User;
     for (const element of blockedUsers) {
-      console.log(element);
       if (element) {
         userBlocked = await this.userService.findOneById(
           element.blockedUser.uid,
@@ -70,9 +68,9 @@ export class ChatController {
   @UseInterceptors(CacheInterceptor)
   @UseGuards(AuthenticatedGuard)
   @Get('rooms/list')
-  async getRoomsList(): Promise<{}[]> {
+  async getRoomsList() {
     const rooms = await this.roomService.findAll();
-    const roomsList: {}[] = [];
+    const roomsList: any = [];
 
     rooms.forEach((element) =>
       roomsList.push({
@@ -195,11 +193,11 @@ export class ChatController {
   async getInvitedUsersList(
     @Param('username') username: string,
     @Param('roomName') roomName: string,
-  ): Promise<{}[]> {
+  ) {
     if (username == null || roomName == null)
       throw new HttpException('Bad request', 400);
     const users = await this.userService.findAll();
-    const usersList: {}[] = [];
+    const usersList: any = [];
 
     for (const element of users) {
       const cUsersStatus = await this.usersStatusService.getUserStatus(
@@ -219,11 +217,10 @@ export class ChatController {
   @UseInterceptors(CacheInterceptor)
   @UseGuards(AuthenticatedGuard)
   @Get('user/friends')
-  async getUserFriendsList(@Req() req: RequestWithUser): Promise<{}[]> {
+  async getUserFriendsList(@Req() req: RequestWithUser) {
     const cUser = req.user as User;
     if (!cUser) throw new HttpException('Unprocessable Entity', 422);
     const user = await this.userService.findOneById(cUser.uid);
-    console.log('getuserfriendlist', user.username);
     const friendList = [];
     for (const element of user.friends) {
       if (element) {

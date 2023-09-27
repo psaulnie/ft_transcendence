@@ -1,17 +1,17 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, {useEffect, useRef, useState} from "react";
 import "./Canvas.css";
 import webSocketManager from "../../webSocket";
-import { Button } from "@mui/material";
-import { useNavigate } from "react-router";
-import { setIsPlaying } from "../../store/user";
-import { useDispatch } from "react-redux";
+import {Button} from "@mui/material";
+import {useNavigate} from "react-router";
+import {setIsPlaying} from "../../store/user";
+import {useDispatch} from "react-redux";
 
 export default function Canvas({
-  players,
-  gameRoomId,
-  setFoundUser,
-  canvasName,
-}: {
+                                 players,
+                                 gameRoomId,
+                                 setFoundUser,
+                                 canvasName,
+                               }: {
   players: { 1: string; 2: string };
   gameRoomId: string;
   setFoundUser: any;
@@ -21,16 +21,16 @@ export default function Canvas({
   const [rectPositionP1, setRectPositionP1] = useState<{
     x: number;
     y: number;
-  }>({ x: 5, y: 175 });
+  }>({x: 5, y: 175});
   const [rectPositionP2, setRectPositionP2] = useState<{
     x: number;
     y: number;
-  }>({ x: 630, y: 175 });
+  }>({x: 630, y: 175});
   const [ballPosition, setBallPosition] = useState<{ x: number; y: number }>({
     x: 320,
     y: 212,
   });
-  const canvasSize = { width: 640, height: 425 };
+  const canvasSize = {width: 640, height: 425};
   const rectWidth = 5;
   const rectHeight = 75;
   const ballWidth = 10;
@@ -71,33 +71,33 @@ export default function Canvas({
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.repeat) return;
-      const { key } = event;
+      const {key} = event;
 
       if (key === "ArrowUp" || key === "w") {
         webSocketManager
           .getSocket()
-          .emit("pressUp", { player: players[1], gameRoomId: gameRoomId });
+          .emit("pressUp", {player: players[1], gameRoomId: gameRoomId});
       }
       if (key === "ArrowDown" || key === "s") {
         webSocketManager
           .getSocket()
-          .emit("pressDown", { player: players[1], gameRoomId: gameRoomId });
+          .emit("pressDown", {player: players[1], gameRoomId: gameRoomId});
       }
     };
 
     const handleKeyUp = (event: KeyboardEvent) => {
       if (event.repeat) return;
-      const { key } = event;
+      const {key} = event;
 
       if (key === "ArrowUp" || key === "w") {
         webSocketManager
           .getSocket()
-          .emit("releaseUp", { player: players[1], gameRoomId: gameRoomId });
+          .emit("releaseUp", {player: players[1], gameRoomId: gameRoomId});
       }
       if (key === "ArrowDown" || key === "s") {
         webSocketManager
           .getSocket()
-          .emit("releaseDown", { player: players[1], gameRoomId: gameRoomId });
+          .emit("releaseDown", {player: players[1], gameRoomId: gameRoomId});
       }
     };
 
@@ -122,7 +122,7 @@ export default function Canvas({
         ctx!.font = "40px serif";
         ctx!.textAlign = "center";
         ctx?.fillText(value.coward + " left the game", 320, 212);
-        return ;
+        return;
 
       } else {
         ctx!.fillStyle = "white";
@@ -150,7 +150,7 @@ export default function Canvas({
           rectHeight
         );
 
-        setBallPosition({ x: value.ballX, y: value.ballY });
+        setBallPosition({x: value.ballX, y: value.ballY});
 
         ctx?.fillRect(ballPosition.x, ballPosition.y, ballWidth, ballWidth);
 
@@ -166,6 +166,7 @@ export default function Canvas({
         }
       }
     }
+
     webSocketManager.getSocket().on("game" + gameRoomId, process);
     return () => {
       webSocketManager.getSocket().off("game" + gameRoomId, process);
@@ -196,9 +197,10 @@ export default function Canvas({
     const name = players[1];
     webSocketManager
       .getSocket()
-      .emit("leaveGame", { gameRoomId, coward: name });
+      .emit("leaveGame", {gameRoomId, coward: name});
     navigate("/home");
   }
+
   return (
     <div>
       <div className="default" id="default">

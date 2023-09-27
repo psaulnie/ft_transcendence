@@ -56,14 +56,14 @@ export class UsersService {
   async findOneProfile(name: string): Promise<User> {
     return await this.usersRepository.findOne({
       where: { username: name },
-      relations: ['friends', 'statistics'],
+      relations: ['friends', 'blockedUsers', 'achievements', 'statistics']
     });
   }
 
   async findOneAchievements(name: string): Promise<User> {
     return await this.usersRepository.findOne({
       where: { username: name },
-      relations: ['achievements'],
+      relations: ['friends', 'blockedUsers', 'achievements', 'statistics']
     });
   }
 
@@ -82,7 +82,7 @@ export class UsersService {
   async findOneByUsername(name: string): Promise<User> {
     return await this.usersRepository.findOne({
       where: { username: name },
-      relations: ['achievements'],
+      relations: ['friends', 'blockedUsers', 'achievements', 'statistics']
     });
   }
 
@@ -99,16 +99,7 @@ export class UsersService {
     });
   }
 
-  async addUser(user: User): Promise<User> {
-    return await this.usersRepository.save(user);
-  }
-
-  async removeUser(name: string) {
-    return await this.usersRepository.delete({ username: name });
-  }
-  // TODO FRIEND LIST (ADD, REMOVE, GET WITH CONDITIONS!!! LIKE UID1 < UID2)
   async blockUser(user: User, blockedUser: User) {
-    console.log('blockuser');
     const block = new BlockedList();
     if (
       user.blockedUsers.find((obj) => obj.blockedUser.uid === blockedUser.uid)
@@ -131,7 +122,6 @@ export class UsersService {
   }
 
   async unblockUser(user: User, blockedUser: User) {
-    console.log('unblockuser');
     user.blockedUsers = user.blockedUsers.filter(
       (obj) =>
         obj.user.uid !== user.uid && obj.blockedUser.uid !== blockedUser.uid,
@@ -140,7 +130,6 @@ export class UsersService {
   }
 
   async addFriend(user: User, friend: User) {
-    console.log('addfriend');
     if (user.friends.length === 0 && user.achievements.achievement3 === false) {
       user.achievements.achievement3 = true;
       await this.achievementsRepository.save(user.achievements);
@@ -159,7 +148,6 @@ export class UsersService {
   }
 
   async removeFriend(user: User, friend: User) {
-    console.log('removefriend');
     user.friends = user.friends.filter(
       (obj) => obj.username !== friend.username,
     );
@@ -171,7 +159,6 @@ export class UsersService {
   }
 
   async updateAvatar(user: User, avatar: string, isUrl: boolean) {
-    console.log('updateavatar');
     if (isUrl == false && user.urlAvatar !== '' && user.urlAvatar !== null) {
       const fs = require('fs');
       const path = require('path');
@@ -187,7 +174,6 @@ export class UsersService {
   }
 
   async changeUsername(user: User, username: string) {
-    console.log('changeusername in service');
     user.username = username;
     await this.usersRepository.save(user);
   }

@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 
-import { Routes, Route, Navigate, useLocation } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { setIsInMatchmaking, setIsPlaying, setUsername } from "./store/user";
+import {Navigate, Route, Routes, useLocation} from "react-router-dom";
+import {useDispatch, useSelector} from "react-redux";
+import {setIsInMatchmaking, setIsPlaying, setUsername} from "./store/user";
 
 import Navigation from "./components/Navigation/Navigation";
 import NavDrawer from "./components/Navigation/NavDrawer";
@@ -15,7 +15,7 @@ import Achievements from "./components/Achievements/Achievements";
 import EditProfile from "./components/Profile/EditProfile";
 import Friendlist from "./components/Friendlist/Friendlist";
 import webSocketManager from "./webSocket";
-import { useLazyGetUserRankQuery } from "./store/api";
+import {useLazyGetUsernameQuery} from "./store/api";
 import Loading from "./components/Global/Loading";
 import ErrorSnackbar from "./components/Global/ErrorSnackbar";
 
@@ -37,7 +37,13 @@ export default function Base() {
       setDrawerState(open);
     };
 
-  const [trigger, result] = useLazyGetUserRankQuery();
+  const [trigger, result] = useLazyGetUsernameQuery();
+  
+  useEffect(() => {
+    if (result.isUninitialized)
+      trigger({});
+    if (result.isSuccess) dispatch(setUsername(result.data.username));
+  }, [result]);
 
   useEffect(() => {
     if (user.isPlaying && !location.pathname.startsWith("/game")) {
@@ -48,39 +54,36 @@ export default function Base() {
       dispatch(setIsInMatchmaking(false));
       webSocketManager
         .getSocket()
-        .emit("cancelMatchmaking", { username: user.username });
+        .emit("cancelMatchmaking", {username: user.username});
     }
-    trigger({});
-    if (result.isSuccess)
-      dispatch(setUsername(result.data.username));
   }, [dispatch, user, user.username, location, result.isSuccess]);
 
-  if (result.isLoading) return <Loading />;
-  if (result.isError) return <ErrorSnackbar error={result.error} />;
+  if (result.isLoading) return <Loading/>;
+  if (result.isError) return <ErrorSnackbar error={result.error}/>;
   webSocketManager.initializeWebSocket();
 
   return (
     <div className="main">
       {location.pathname !== "/2fa" ? (
         <div>
-          <Navigation setDrawerState={setDrawerState} />
-          <NavDrawer state={drawerState} toggleDrawer={toggleDrawer} />
+          <Navigation setDrawerState={setDrawerState}/>
+          <NavDrawer state={drawerState} toggleDrawer={toggleDrawer}/>
         </div>
       ) : null}
       <Routes>
-        <Route path="*" element={<Navigate to="/home" />}></Route>
-        <Route path="/home" element={<Home />}></Route>
-        <Route path="/profile/:username" element={<Profile />}></Route>
-        <Route path="/game/*" element={<Game />}></Route>
-        <Route path="/settings" element={<Settings />}></Route>
+        <Route path="*" element={<Navigate to="/home"/>}></Route>
+        <Route path="/home" element={<Home/>}></Route>
+        <Route path="/profile/:username" element={<Profile/>}></Route>
+        <Route path="/game/*" element={<Game/>}></Route>
+        <Route path="/settings" element={<Settings/>}></Route>
         <Route
           path="/profile/:username/achievements"
-          element={<Achievements />}
+          element={<Achievements/>}
         ></Route>
-        <Route path="/friendlist" element={<Friendlist />}></Route>
-        <Route path="/edit" element={<EditProfile />}></Route>
+        <Route path="/friendlist" element={<Friendlist/>}></Route>
+        <Route path="/edit" element={<EditProfile/>}></Route>
       </Routes>
-      {location.pathname !== "/2fa" ? <Chat /> : null}
+      {location.pathname !== "/2fa" ? <Chat/> : null}
     </div>
   );
 }

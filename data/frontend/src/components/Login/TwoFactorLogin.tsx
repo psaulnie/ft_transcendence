@@ -1,6 +1,6 @@
-import { Box, Button, Grid, TextField, Typography } from "@mui/material";
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
+import {Box, Button, Grid, TextField, Typography} from "@mui/material";
+import React, {useEffect, useState} from "react";
+import {useNavigate} from "react-router";
 import DoneIcon from "@mui/icons-material/Done";
 import Loading from "../Global/Loading";
 
@@ -30,7 +30,7 @@ function TwoFactorLogin() {
         );
         const data = await response.json();
         if (response.ok && data === true) {
-          checkTwoFactorStatus();
+          await checkTwoFactorStatus();
         } else if (response.ok && data === false) {
           navigate("/home");
         } else {
@@ -41,6 +41,7 @@ function TwoFactorLogin() {
         navigate("/login");
       }
     }
+
     checkTwoFactorAuthState();
   }, []);
 
@@ -55,7 +56,7 @@ function TwoFactorLogin() {
       const data = await response.json();
       setIsTwoFactorEnabled(data);
       if (!data) {
-        fetchQrCode();
+        await fetchQrCode();
       }
     } catch (error) {
       console.error("Error: ", error);
@@ -94,7 +95,7 @@ function TwoFactorLogin() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ twoFactorAuthCode: twoFactorTurnOnCode }),
+          body: JSON.stringify({twoFactorAuthCode: twoFactorTurnOnCode}),
         }
       );
       const data = await response.json();
@@ -120,7 +121,7 @@ function TwoFactorLogin() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ twoFactorAuthCode: twoFactorAuthCode }),
+          body: JSON.stringify({twoFactorAuthCode: twoFactorAuthCode}),
         }
       );
       const data = await response.json();
@@ -128,7 +129,6 @@ function TwoFactorLogin() {
         setError(false);
         navigate("/home");
       } else {
-        console.log("Wrong authentication code");
         setError(true);
       }
     } catch (error) {
@@ -138,7 +138,7 @@ function TwoFactorLogin() {
   }
 
   if (isLoading) {
-    return <Loading />;
+    return <Loading/>;
   }
   return (
     <Grid
@@ -201,7 +201,7 @@ function TwoFactorLogin() {
                   marginLeft: "1em",
                 }}
               >
-                <DoneIcon />
+                <DoneIcon/>
               </Button>
             </div>
           </>
@@ -225,7 +225,7 @@ function TwoFactorLogin() {
                   src={qrCodeUrl}
                   alt="QR Code"
                   id="qrCodeImage"
-                  style={{ marginBottom: "1em" }}
+                  style={{marginBottom: "1em"}}
                 />
               )}
             </div>
@@ -255,14 +255,14 @@ function TwoFactorLogin() {
                   marginLeft: "1em",
                 }}
               >
-                <DoneIcon />
+                <DoneIcon/>
               </Button>
             </div>
           </>
         )}
 
         {error && (
-          <p style={{ color: "black" }}>Incorrect code, please try again.</p>
+          <p style={{color: "black"}}>Incorrect code, please try again.</p>
         )}
       </Box>
     </Grid>

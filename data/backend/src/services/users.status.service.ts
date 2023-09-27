@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { User } from 'src/entities';
 import { userStatus } from 'src/users/userStatus';
 import { Socket } from 'socket.io';
+
 @Injectable()
 export class UsersStatusService {
   private readonly usersStatus: {
@@ -13,6 +14,7 @@ export class UsersStatusService {
     status: userStatus;
     gameRoomId: string;
   }[];
+
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
@@ -20,7 +22,12 @@ export class UsersStatusService {
     this.usersStatus = [];
   }
 
-  async addUser(clientId: string, client: Socket, username: string, status: userStatus) {
+  async addUser(
+    clientId: string,
+    client: Socket,
+    username: string,
+    status: userStatus,
+  ) {
     const user = await this.userRepository.findOne({
       where: { username: username },
     });
@@ -36,7 +43,14 @@ export class UsersStatusService {
         status,
         gameRoomId: '',
       };
-    else this.usersStatus.push({ clientId, client, username, status, gameRoomId:'' });
+    else
+      this.usersStatus.push({
+        clientId,
+        client,
+        username,
+        status,
+        gameRoomId: '',
+      });
   }
 
   async changeUsername(old: string, newUsername: string) {
@@ -46,6 +60,7 @@ export class UsersStatusService {
     if (userStatusIndex != -1)
       this.usersStatus[userStatusIndex].username = newUsername;
   }
+
   async getUserStatus(username: string) {
     return this.usersStatus.find((user) => user.username === username);
   }

@@ -1,24 +1,15 @@
-import { chatResponseArgs } from "../args.interface";
+import {chatResponseArgs} from "../args.interface";
+import {useSelector} from "react-redux";
 
-import { useState } from "react";
-import { useSelector } from "react-redux";
-
-import UserOptionsMenu from "./UserOptionsMenu";
-
-import {
-  useGetUserStatusInRoomQuery,
-  useLazyGetUserFriendsListQuery,
-} from "../../../store/api";
-
-import { styled } from "@mui/material/styles";
+import {styled} from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import CustomAvatar from "../../Global/CustomAvatar";
-import { userRole } from "../chatEnums";
+import {userRole} from "../chatEnums";
 
-const StyledPaper = styled(Paper)(({ theme }) => ({
+const StyledPaper = styled(Paper)(({theme}) => ({
   backgroundColor: "#102b47",
   ...theme.typography.body2,
   padding: theme.spacing(2),
@@ -32,17 +23,12 @@ type arg = {
   isDirectMessage: boolean;
 };
 
-export default function Message({
-  message,
-  role,
-  roomName,
-  isDirectMessage,
-}: arg) {
+export default function Message({ message }: arg) {
   const user = useSelector((state: any) => state.user);
 
   return (
     <div className="message">
-      <Box sx={{ flexGrow: 1, overflow: "hidden", px: 3, opacity: 1 }}>
+      <Box sx={{flexGrow: 1, overflow: "hidden", px: 3, opacity: 1}}>
         <StyledPaper
           sx={{
             my: 1,
@@ -54,10 +40,10 @@ export default function Message({
           <Grid container wrap="nowrap" spacing={2}>
             {user.username !== message.source ? (
               <Grid item>
-                <CustomAvatar username={message.source} />
+                <CustomAvatar username={message.source}/>
               </Grid>
             ) : null}
-            <Grid item xs style={{ flexWrap: "wrap" }}>
+            <Grid item xs style={{flexWrap: "wrap"}}>
               <Typography
                 style={{
                   color: "black",
@@ -82,7 +68,7 @@ export default function Message({
             </Grid>
             {user.username === message.source ? (
               <Grid item>
-                <CustomAvatar username={message.source} />
+                <CustomAvatar username={message.source}/>
               </Grid>
             ) : null}
           </Grid>

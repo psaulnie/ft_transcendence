@@ -1,13 +1,13 @@
-import { useState } from "react";
-import { useSelector } from "react-redux";
+import {useState} from "react";
+import {useSelector} from "react-redux";
 
-import { Menu, MenuItem, Divider } from "@mui/material";
+import {Divider, Menu, MenuItem} from "@mui/material";
 
 import PasswordDialog from "./PasswordDialog";
 import SelectUserDialog from "./SelectUserDialog";
 
 import webSocketManager from "../../webSocket";
-import { userRole } from "./chatEnums";
+import {userRole} from "./chatEnums";
 import BanListDialog from "./BanListDialog";
 
 type arg = {
@@ -19,12 +19,12 @@ type arg = {
 };
 
 export default function RoomOptionsMenu({
-  contextMenu,
-  setContextMenu,
-  roomIndex,
-  roomName,
-  role,
-}: arg) {
+                                          contextMenu,
+                                          setContextMenu,
+                                          roomIndex,
+                                          roomName,
+                                          role,
+                                        }: arg) {
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
   const [showUserDialog, setShowUserDialog] = useState(false);
   const [showBanListDialog, setShowBanListDialog] = useState(false);
@@ -68,7 +68,7 @@ export default function RoomOptionsMenu({
         anchorReference="anchorPosition"
         anchorPosition={
           contextMenu !== null
-            ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
+            ? {top: contextMenu.mouseY, left: contextMenu.mouseX}
             : undefined
         }
       >
@@ -94,7 +94,7 @@ export default function RoomOptionsMenu({
                 Remove password
               </MenuItem>
               <MenuItem onClick={seeBanList}>Ban list</MenuItem>
-              <Divider />
+              <Divider/>
             </div>
           ) : null}
           {!rooms.room[roomIndex].isDirectMsg ? (

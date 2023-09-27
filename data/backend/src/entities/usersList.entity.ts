@@ -1,9 +1,9 @@
 import {
-  Entity,
-  PrimaryGeneratedColumn,
   Column,
-  ManyToOne,
+  Entity,
   JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Room } from './room.entity';
 import { User } from './user.entity';
@@ -28,7 +28,7 @@ export class UsersList {
   @Column()
   isBanned: boolean;
 
-  @Column({default: false})
+  @Column({ default: false })
   isMuted: boolean;
 
   @ManyToOne(() => Room, (room) => room.id, { onDelete: 'CASCADE' })

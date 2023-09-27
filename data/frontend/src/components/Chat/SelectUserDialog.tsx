@@ -1,20 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import webSocketManager from "../../webSocket";
-import {
-  Dialog,
-  DialogTitle,
-  DialogActions,
-  Button,
-  Zoom,
-  TextField,
-  Autocomplete,
-  DialogContent,
-} from "@mui/material";
-import { TransitionProps } from "@mui/material/transitions";
+import {Autocomplete, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Zoom,} from "@mui/material";
+import {TransitionProps} from "@mui/material/transitions";
 
-import { useSelector } from "react-redux";
+import {useSelector} from "react-redux";
 
-import { useGetInvitedUsersListQuery } from "../../store/api";
+import {useGetInvitedUsersListQuery} from "../../store/api";
 import ErrorSnackbar from "../Global/ErrorSnackbar";
 import Loading from "../Global/Loading";
 
@@ -30,10 +21,10 @@ const Transition = React.forwardRef(function Transition(
   },
   ref: React.Ref<unknown>,
 ) {
-  return <Zoom ref={ref} {...props} style={{ transitionDelay: "100ms" }} />;
+  return <Zoom ref={ref} {...props} style={{transitionDelay: "100ms"}}>{props.children}</Zoom>;
 });
 
-export default function SelectUserDialog({ open, setOpen, roomName }: arg) {
+export default function SelectUserDialog({open, setOpen, roomName}: arg) {
   const user = useSelector((state: any) => state.user);
   const [selectedUser, setSelectedUser] = useState("");
 
@@ -72,8 +63,8 @@ export default function SelectUserDialog({ open, setOpen, roomName }: arg) {
     refetch();
   }, [refetch]);
 
-  if (isError) return <ErrorSnackbar error={error} />;
-  if (isLoading) return <Loading />;
+  if (isError) return <ErrorSnackbar error={error}/>;
+  if (isLoading) return <Loading/>;
 
   return (
     <Dialog
@@ -86,9 +77,9 @@ export default function SelectUserDialog({ open, setOpen, roomName }: arg) {
       <DialogContent>
         <Autocomplete
           options={usersList}
-          sx={{ width: 300 }}
+          sx={{width: 300}}
           renderInput={(params: any) => (
-            <TextField autoComplete='off' {...params} label="User" value={params} />
+            <TextField autoComplete='off' {...params} label="User" value={params}/>
           )}
           value={selectedUser}
           onChange={updateUser}

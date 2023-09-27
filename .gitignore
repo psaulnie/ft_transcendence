@@ -6,3 +6,6 @@ data/avatar
 .vscode/
 data/frontend/dist
 data/backend/dist
+.idea/
+.DS_Store
+data/.DS_Store

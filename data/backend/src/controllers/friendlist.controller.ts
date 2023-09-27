@@ -24,7 +24,10 @@ export class FriendListController {
           const status = await this.usersStatusService.getUserStatus(
             element.username,
           );
-          friendList.push({ username: element.username, status: status ? status.status : userStatus.offline });
+          friendList.push({
+            username: element.username,
+            status: status ? status.status : userStatus.offline,
+          });
         }
       }
     }

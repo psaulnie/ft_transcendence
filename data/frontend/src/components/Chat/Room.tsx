@@ -1,16 +1,14 @@
-import { useState, useEffect, useRef } from "react";
-
-import { useLayoutEffect } from "react";
+import {useEffect, useLayoutEffect, useRef, useState} from "react";
 
 import MessagesBox from "./Message/MessagesBox";
 import InputForm from "./Message/InputForm";
 
-import { useSelector } from "react-redux";
+import {useSelector} from "react-redux";
 
-import { Grid, Box } from "@mui/material";
-import { userRole } from "./chatEnums";
+import {Box, Grid} from "@mui/material";
+import {userRole} from "./chatEnums";
 
-function Room({ roomName }: { roomName: string }) {
+function Room({roomName}: { roomName: string }) {
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const rooms = useSelector((state: any) => state.rooms);
 
@@ -36,7 +34,7 @@ function Room({ roomName }: { roomName: string }) {
   }, [setRole, rooms, roomName]);
 
   return (
-    <Grid sx={{ height: "100%", width: "100%", display: "flex" }}>
+    <Grid sx={{height: "100%", width: "100%", display: "flex"}}>
       <Grid
         item
         xs={8}
@@ -77,7 +75,7 @@ function Room({ roomName }: { roomName: string }) {
             </div>
           </Box>
         </Grid>
-        <Grid item xs={12} sx={{ marginTop: "auto", marginBottom: "9%" }}>
+        <Grid item xs={12} sx={{marginTop: "auto", marginBottom: "9%"}}>
           <InputForm
             roomName={roomName}
             isDirectMessage={rooms.room[roomIndex].isDirectMsg}

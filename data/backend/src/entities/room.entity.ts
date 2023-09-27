@@ -1,11 +1,11 @@
 import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  OneToMany,
   AfterLoad,
+  Column,
+  Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 
 import { UsersList } from './usersList.entity';
@@ -40,7 +40,7 @@ export class Room {
   @Column('integer', {
     array: true,
     nullable: true,
-    default: []
+    default: [],
   })
   mutedUsers: number[];
 
