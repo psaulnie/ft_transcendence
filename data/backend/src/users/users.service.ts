@@ -56,14 +56,14 @@ export class UsersService {
   async findOneProfile(name: string): Promise<User> {
     return await this.usersRepository.findOne({
       where: { username: name },
-      relations: ['friends', 'statistics'],
+      relations: ['friends', 'blockedUsers', 'achievements', 'statistics']
     });
   }
 
   async findOneAchievements(name: string): Promise<User> {
     return await this.usersRepository.findOne({
       where: { username: name },
-      relations: ['achievements'],
+      relations: ['friends', 'blockedUsers', 'achievements', 'statistics']
     });
   }
 
@@ -82,7 +82,7 @@ export class UsersService {
   async findOneByUsername(name: string): Promise<User> {
     return await this.usersRepository.findOne({
       where: { username: name },
-      relations: ['achievements'],
+      relations: ['friends', 'blockedUsers', 'achievements', 'statistics']
     });
   }
 
