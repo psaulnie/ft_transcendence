@@ -79,9 +79,9 @@ export const apiSlice = createApi({
         method: "GET",
       }),
     }),
-    getUserRank: builder.query({
+    getUsername: builder.query({
       query: () => ({
-        url: "/api/profile/user/rank",
+        url: "/api/profile/user/name",
         method: "GET",
       }),
     }),
@@ -136,7 +136,7 @@ export const {
   useGetUserAchievementsQuery,
   useGetLeaderboardQuery,
   useGetFriendsListQuery,
-  useLazyGetUserRankQuery,
+  useLazyGetUsernameQuery,
   useLazyGetIsMutedQuery,
   useGetBanListQuery,
 } = apiSlice;

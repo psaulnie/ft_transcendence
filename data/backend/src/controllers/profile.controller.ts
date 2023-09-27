@@ -66,19 +66,19 @@ export class ProfileController {
     };
   }
 
-  @Get('/user/rank')
+  @Get('/user/name')
   @UseGuards(AuthenticatedGuard)
   async getUserRank(@Req() req: RequestWithUser) {
     const user = req.user as User;
-    const cUser = await this.userService.findOneById(user.uid);
-    if (!user || !cUser) throw new HttpException('Unprocessable entity', 422);
-    return { username: cUser.username, rank: cUser.statistics.rank };
+    if (!user) throw new HttpException('Unprocessable Entity', 422);
+    return ({ username: user.username });
   }
 
   @Get('/general/leaderboard')
   @UseGuards(AuthenticatedGuard)
   async getLeaderboard() {
     const users = await this.userService.findAll();
+    if (!users) return ([]);
     const bestUsers = users.sort((a, b) => {
       if (a.statistics.rank < b.statistics.rank) return 1;
       if (a.statistics.rank > b.statistics.rank) return -1;

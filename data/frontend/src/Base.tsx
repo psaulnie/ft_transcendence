@@ -15,7 +15,7 @@ import Achievements from "./components/Achievements/Achievements";
 import EditProfile from "./components/Profile/EditProfile";
 import Friendlist from "./components/Friendlist/Friendlist";
 import webSocketManager from "./webSocket";
-import {useLazyGetUserRankQuery} from "./store/api";
+import {useLazyGetUsernameQuery} from "./store/api";
 import Loading from "./components/Global/Loading";
 import ErrorSnackbar from "./components/Global/ErrorSnackbar";
 
@@ -37,7 +37,13 @@ export default function Base() {
       setDrawerState(open);
     };
 
-  const [trigger, result] = useLazyGetUserRankQuery();
+  const [trigger, result] = useLazyGetUsernameQuery();
+  
+  useEffect(() => {
+    if (result.isUninitialized)
+      trigger({});
+    if (result.isSuccess) dispatch(setUsername(result.data.username));
+  }, [result]);
 
   useEffect(() => {
     if (user.isPlaying && !location.pathname.startsWith("/game")) {
@@ -52,12 +58,6 @@ export default function Base() {
     }
   }, [dispatch, user, user.username, location, result.isSuccess]);
 
-  useEffect(() => {
-    if (result.isUninitialized || user.isPlaying)
-      trigger({});
-    if (result.isSuccess) dispatch(setUsername(result.data.username));
-  }, [result]);
-  
   if (result.isLoading) return <Loading/>;
   if (result.isError) return <ErrorSnackbar error={result.error}/>;
   webSocketManager.initializeWebSocket();
