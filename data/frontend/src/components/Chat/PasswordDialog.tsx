@@ -47,7 +47,7 @@ export default function PasswordDialog({
     e.preventDefault();
     if (password !== "") {
       if (createRoom) {
-        webSocketManager.getSocket().emit("joinRoom", {
+        webSocketManager.getSocket().emit("createRoom", {
           source: user.username,
           room: roomName,
           access: accessStatus.protected,

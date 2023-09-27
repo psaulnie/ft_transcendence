@@ -6,24 +6,18 @@ import MenuIcon from "@mui/icons-material/Menu";
 import {Grid} from "@mui/material";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import React, {SyntheticEvent, useEffect, useState} from "react";
+import React, {SyntheticEvent, useState} from "react";
 import Button from "@mui/material/Button";
 
 import {useDispatch, useSelector} from "react-redux";
 
 import CustomAvatar from "../Global/CustomAvatar";
 import {useNavigate} from "react-router-dom";
-import {apiSlice} from "../../store/api";
-import ErrorSnackbar from "../Global/ErrorSnackbar";
-import {setUsername} from "../../store/user";
 
 function Navigation({setDrawerState}: { setDrawerState: any }) {
   const user = useSelector((state: any) => state.user);
-  const dispatch = useDispatch();
-  const query = apiSlice.endpoints.getUserRank.useQueryState({});
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [rank, setRank] = useState(0);
   const open = Boolean(anchorEl);
 
   const handleBoxClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -43,14 +37,6 @@ function Navigation({setDrawerState}: { setDrawerState: any }) {
     window.location.href = `http://${import.meta.env.VITE_IP}:5000/auth/logout`;
   }
 
-  useEffect(() => {
-    if (!query.isUninitialized && query.isSuccess === true) {
-      setRank(query.data.rank);
-      dispatch(setUsername(query.data.username));
-    }
-  }, [query]);
-
-  if (query.isError) return <ErrorSnackbar error={query.error}/>;
   return (
     <Box sx={{flexGrow: 1}}>
       <AppBar
@@ -81,7 +67,6 @@ function Navigation({setDrawerState}: { setDrawerState: any }) {
             }}
           >
             <div>{user.username}</div>
-            <div>Rank {rank}</div>
           </Grid>
           <Grid item xs={3}>
             <Box
