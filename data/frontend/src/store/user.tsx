@@ -4,13 +4,11 @@ interface UserState {
   username: string;
   isPlaying: boolean;
   isInMatchmaking: boolean;
-  isUserBlocked: boolean;
   blockedUsers: string[];
 }
 
 const initialState: UserState = {
   username: "",
-  isUserBlocked: false,
   isPlaying: false,
   isInMatchmaking: false,
   blockedUsers: [],
@@ -40,9 +38,11 @@ export const userSlice = createSlice({
       const index = state.blockedUsers.indexOf(action.payload);
       if (index !== -1) state.blockedUsers.splice(index, 1);
     },
-    isUserBlocked: (state) => {
-      const nbr = state.blockedUsers.indexOf(state.username);
-      state.isUserBlocked = (nbr !== -1);
+    updateBlockedUsers: (state, action: PayloadAction<{ oldName: string, newName: string }>) => {
+      const blockedUser = state.blockedUsers.findIndex((obj) => obj === action.payload.oldName);
+      if (blockedUser !== -1) {
+        state.blockedUsers[blockedUser] = action.payload.newName;
+      }
     },
   },
 });
@@ -52,8 +52,8 @@ export const {
   setUsername,
   addBlockedUser,
   removeBlockedUser,
-  isUserBlocked,
   setIsPlaying,
-  setIsInMatchmaking
+  setIsInMatchmaking,
+  updateBlockedUsers,
 } = userSlice.actions;
 export default userSlice.reducer;
