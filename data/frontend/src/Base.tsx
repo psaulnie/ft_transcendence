@@ -50,11 +50,14 @@ export default function Base() {
         .getSocket()
         .emit("cancelMatchmaking", {username: user.username});
     }
-    trigger({});
-    if (result.isSuccess)
-      dispatch(setUsername(result.data.username));
   }, [dispatch, user, user.username, location, result.isSuccess]);
 
+  useEffect(() => {
+    if (result.isUninitialized || user.isPlaying)
+      trigger({});
+    if (result.isSuccess) dispatch(setUsername(result.data.username));
+  }, [result]);
+  
   if (result.isLoading) return <Loading/>;
   if (result.isError) return <ErrorSnackbar error={result.error}/>;
   webSocketManager.initializeWebSocket();
