@@ -1,20 +1,28 @@
-import React, {useEffect, useState} from "react";
-import {actionTypes} from "./args.types";
+import React, { useEffect, useState } from "react";
+import { actionTypes } from "./args.types";
 
-import {useDispatch, useSelector} from "react-redux";
-import {addRoom, changeRole, mute, removeRoom, unmute,} from "../../store/rooms";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addRoom,
+  changeRole,
+  mute,
+  removeRoom,
+  unmute,
+} from "../../store/rooms";
 
-import {chatResponseArgs} from "./args.interface";
+import { chatResponseArgs } from "./args.interface";
 import webSocketManager from "../../webSocket";
 
-import {Alert, AlertColor, Box, IconButton, Snackbar} from "@mui/material";
+import {
+  Button,
+} from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
-import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
-import {userRole} from "./chatEnums";
-import {setUsername} from "../../store/user";
-import {userStatus} from "../Friendlist/userStatus";
-import {useNavigate} from "react-router";
+import { userRole } from "./chatEnums";
+import { setUsername } from "../../store/user";
+import { userStatus } from "../Friendlist/userStatus";
+import { useNavigate } from "react-router";
+import { closeSnackbar, enqueueSnackbar } from "notistack";
 
 export default function ChatProcess() {
   const user = useSelector((state: any) => state.user);
@@ -22,76 +30,29 @@ export default function ChatProcess() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const [open, setOpen] = useState(false);
-  const [openInvite, setOpenInvite] = useState(false);
-  const [openFriend, setOpenFriend] = useState(false);
-  const [openPong, setOpenPong] = useState(false);
-  const [message, setMessage] = useState("");
-  const [type, setType] = useState<AlertColor>("success");
-  const [room, setRoom] = useState("");
-  const [target, setTarget] = useState("");
   const [hasPassword, setHasPassword] = useState(false);
 
-  function setSnackbar(message: string, type: AlertColor) {
-    setMessage(message);
-    setType(type);
-    setOpen(true);
-  }
 
-  function setInviteSnackbar(message: string, type: AlertColor) {
-    setMessage(message);
-    setType(type);
-    setOpenInvite(true);
-  }
-
-  function setFriendSnackbar(message: string, type: AlertColor) {
-    setMessage(message);
-    setType(type);
-    setOpenFriend(true);
-  }
-
-  function setPongSnackbar(message: string, type: AlertColor) {
-    setMessage(message);
-    setType(type);
-    setOpenPong(true);
-  }
-
-  const handleClose = (
-    event?: React.SyntheticEvent | Event,
-    reason?: string
-  ) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setOpen(false);
+  const handleClose = (snackbarId?: any) => {
+    closeSnackbar(snackbarId);
   };
 
-  const handleCloseInvite = (
-    event?: React.SyntheticEvent | Event,
-    reason?: string
-  ) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setOpenInvite(false);
-    setOpenFriend(false);
+  const handleCloseInvite = (snackbarId?: any) => {
+    closeSnackbar(snackbarId);
   };
 
-  const handleClosePong = (
-    event?: React.SyntheticEvent | Event,
-    reason?: string
-  ) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setOpenInvite(false);
-    setOpenFriend(false);
-    setOpenPong(false);
+  const handleCloseFriend = (snackbarId?: any) => {
+    closeSnackbar(snackbarId);
   };
 
-  function acceptInvite() {
-    if (room === "") return;
-    setOpenInvite(false);
+  const handleClosePong = (snackbarId: any) => {
+    closeSnackbar(snackbarId);
+  };
+
+  function acceptInvite(snackbarId: string) {
+    closeSnackbar(snackbarId);
+    const room = snackbarId.split("-", 1)[0];
+    if (!room || room === "") return;
     dispatch(
       addRoom({
         name: room,
@@ -108,24 +69,92 @@ export default function ChatProcess() {
       roomName: room,
       username: user.username,
     });
-    setRoom("");
     setHasPassword(false);
   }
 
-  function acceptPlayPong() {
+  function acceptPlayPong(snackbarId: any) {
+    closeSnackbar(snackbarId);
+    const target = snackbarId.split("-", 1)[0];
     if (!target || target === "") return;
-    setOpenPong(false);
     webSocketManager.getSocket()?.emit("acceptPlayPong", target);
   }
 
-  function acceptBeingFriend() {
-    if (target === "") return;
-    setOpenFriend(false);
+  function acceptBeingFriend(snackbarId: any) {
+    closeSnackbar(snackbarId);
+    const target = snackbarId.split("-", 1)[0];
+    if (!target || target === "") return;
     webSocketManager.getSocket()?.emit("acceptBeingFriend", {
       source: user.username,
       target: target,
     });
   }
+
+  const actionInvite = (snackbarId: any) => (
+    <>
+      <Button
+        onClick={() => acceptInvite(snackbarId)}
+        color="inherit"
+        size="small"
+      >
+        <CheckIcon />
+      </Button>
+      <Button
+        onClick={() => handleCloseInvite(snackbarId)}
+        color="inherit"
+        size="small"
+      >
+        <CloseIcon />
+      </Button>
+    </>
+  );
+
+  const actionFriend = (snackbarId: any) => (
+    <>
+      <Button
+        onClick={() => acceptBeingFriend(snackbarId)}
+        color="inherit"
+        size="small"
+      >
+        <CheckIcon />
+      </Button>
+      <Button
+        onClick={() => handleCloseFriend(snackbarId)}
+        color="inherit"
+        size="small"
+      >
+        <CloseIcon />
+      </Button>
+    </>
+  );
+
+  const actionPong = (snackbarId: any) => (
+    <>
+      <Button
+        onClick={() => acceptPlayPong(snackbarId)}
+        color="inherit"
+        size="small"
+      >
+        <CheckIcon />
+      </Button>
+      <Button
+        onClick={() => handleClosePong(snackbarId)}
+        color="inherit"
+        size="small"
+      >
+        <CloseIcon />
+      </Button>
+    </>
+  );
+
+  const action = (snackbarId: any) => (
+    <Button
+      onClick={() => handleClose(snackbarId)}
+      color="inherit"
+      size="small"
+    >
+      <CloseIcon />
+    </Button>
+  );
 
   useEffect(() => {
     function process(value: chatResponseArgs) {
@@ -143,28 +172,35 @@ export default function ChatProcess() {
           })
         );
       } else if (value.action === actionTypes.roomAlreadyExist) {
-        setSnackbar("This room already exists: " + value.target, 'error');
+        enqueueSnackbar("This room already exists: " + value.target, {
+          variant: "error",
+          action,
+        });
       } else if (value.action === actionTypes.kick) {
         dispatch(removeRoom(value.target));
-        setSnackbar(
+        enqueueSnackbar(
           "You've been kicked from this channel: " + value.target,
-          "error"
+          { variant: "error", action,
+        }
         );
       } else if (value.action === actionTypes.ban) {
         dispatch(removeRoom(value.target));
-        setSnackbar(
-          "You are banned from this channel: " + value.target,
-          "error"
-        );
+        enqueueSnackbar("You are banned from this channel: " + value.target, {
+          variant: "error", action,
+        });
       } else if (value.action === actionTypes.unban) {
-        setSnackbar('You are unbanned from this channel: ' + value.target, 'success')
+        enqueueSnackbar("You are unbanned from this channel: " + value.target, {
+          variant: "success", action,
+        });
       } else if (value.action === actionTypes.beenUnbanned) {
-        setSnackbar(value.target + ' has been unbanned from this channel', 'success')
+        enqueueSnackbar(value.target + " has been unbanned from this channel", {
+          variant: "success", action,
+        });
       } else if (value.action === actionTypes.private) {
         dispatch(removeRoom(value.target));
-        setSnackbar(
+        enqueueSnackbar(
           "You cannot join this private channel: " + value.target,
-          "error"
+          { variant: "error", action, }
         );
       } else if (value.action === actionTypes.admin) {
         dispatch(
@@ -175,7 +211,9 @@ export default function ChatProcess() {
             hasPassword: false,
           })
         );
-        setSnackbar("You are now admin in " + value.source, "success");
+        enqueueSnackbar("You are now admin in " + value.source, {
+          variant: "success", action,
+        });
       } else if (value.action === actionTypes.owner) {
         dispatch(
           changeRole({
@@ -185,62 +223,88 @@ export default function ChatProcess() {
             hasPassword: false,
           })
         );
-        setSnackbar("You are now the owner of " + value.source, "success");
+        enqueueSnackbar("You are now the owner of " + value.source, {
+          variant: "success", action,
+        });
       } else if (value.action === actionTypes.mute) {
         dispatch(mute(value.source));
-        setSnackbar("You are mute from this channel: " + value.source, "error");
+        enqueueSnackbar("You are mute from this channel: " + value.source, {
+          variant: "error", action,
+        });
       } else if (value.action === actionTypes.unmute) {
         dispatch(unmute(value.source));
-        setSnackbar(
+        enqueueSnackbar(
           "You've been unmuted from this channel: " + value.source,
-          "success"
+          { variant: "success", action, }
         );
       } else if (value.action === actionTypes.wrongpassword) {
         dispatch(removeRoom(value.target));
-        setSnackbar("Wrong password", "error");
+        enqueueSnackbar("Wrong password", { variant: "error", action, });
       } else if (value.action === actionTypes.invited) {
-        setInviteSnackbar(
-          "You've been invited in this channel: " + value.source,
-          "info"
-        );
         if (value.hasPassword) setHasPassword(true);
-        setRoom(value.source);
+        enqueueSnackbar(
+          "You've been invited in this channel: " + value.source,
+          {
+            action: actionInvite,
+            variant: "info",
+            key:
+              value.source +
+              "-" +
+              (Math.random() + 1).toString(36).substring(7),
+          }
+        );
       } else if (value.action === actionTypes.blockedMsg) {
-        setSnackbar("This user blocked you", "error");
+        enqueueSnackbar("This user blocked you", { variant: "error", action, });
       } else if (value.action === actionTypes.askBeingFriend) {
-        setFriendSnackbar(value.source + " wants to be your friend!", "info");
-        setTarget(value.source);
+        enqueueSnackbar(value.source + " wants to be your friend!", {
+          action: actionFriend,
+          variant: "info",
+          key:
+            value.source + "-" + (Math.random() + 1).toString(36).substring(7),
+        });
       } else if (value.action === actionTypes.newUsername) {
-        setSnackbar(
+        enqueueSnackbar(
           "Your username has been changed to " + value.newUsername,
-          "success"
+          { variant: "success", action, }
         );
         dispatch(setUsername(value.newUsername));
       } else if (value.action === actionTypes.newBackground) {
-        setSnackbar("Background successfully changed", "success");
+        enqueueSnackbar("Background successfully changed", {
+          variant: "success", action,
+        });
       } else if (value.action === actionTypes.usernameAlreadyTaken)
-        setSnackbar("Username is already taken " + value.newUsername, "error");
+        enqueueSnackbar("Username is already taken " + value.newUsername, {
+          variant: "error", action,
+        });
       else if (value.action === actionTypes.acceptBeingFriend) {
-        setSnackbar(value.source + " is now your friend!", "success");
+        enqueueSnackbar(value.source + " is now your friend!", {
+          variant: "success", action,
+        });
       } else if (value.action === actionTypes.cantPlay) {
         if (value.data === userStatus.offline)
-          setSnackbar(
+          enqueueSnackbar(
             "You can't play with " + value.target + " because he is offline",
-            "error"
+            { variant: "error", action, }
           );
         else if (value.data === userStatus.playing)
-          setSnackbar(
+          enqueueSnackbar(
             "You can't play with " +
-            value.target +
-            " because he is already playing",
-            "error"
+              value.target +
+              " because he is already playing",
+            { variant: "error", action, }
           );
       } else if (value.action === actionTypes.askPlay) {
-        setPongSnackbar(value.source + " wants to play with you!", "info");
-        setTarget(value.source);
+        enqueueSnackbar(value.source + " wants to play with you!", {
+          action: actionPong,
+          variant: "info",
+          key:
+            value.source + "-" + (Math.random() + 1).toString(36).substring(7),
+        });
       } else if (value.action === actionTypes.acceptPlay) {
         if (value.source !== user.username)
-          setSnackbar(value.source + " accepted to play with you!", "success");
+          enqueueSnackbar(value.source + " accepted to play with you!", {
+            variant: "success", action,
+          });
         navigate("/game/play", {
           state: {
             players: {
@@ -255,7 +319,7 @@ export default function ChatProcess() {
     }
 
     function handleWsException(value: any) {
-      setSnackbar(value?.message, "error");
+      enqueueSnackbar(value?.message, { variant: "error", action, });
     }
 
     webSocketManager.getSocket().on("exception", handleWsException);
@@ -264,129 +328,11 @@ export default function ChatProcess() {
       webSocketManager
         .getSocket()
         .off(webSocketManager.getSocket().id, process);
-      webSocketManager
-        .getSocket()
-        .off("exception", handleWsException);
+      webSocketManager.getSocket().off("exception", handleWsException);
     };
   }, [user.username, dispatch, rooms]);
 
   return (
-    <div>
-      <Snackbar // Default snackbar
-        open={open}
-        autoHideDuration={5000}
-        anchorOrigin={{vertical: "top", horizontal: "right"}}
-        onClose={handleClose}
-      >
-        <Alert onClose={handleClose} severity={type} sx={{width: "100%"}}>
-          {message}
-        </Alert>
-      </Snackbar>
-      <Snackbar // Invite snackbar
-        open={openInvite}
-        autoHideDuration={10000}
-        anchorOrigin={{vertical: "top", horizontal: "right"}}
-        onClose={handleCloseInvite}
-      >
-        <Box
-          sx={{
-            backgroundColor: "#fff",
-            color: "#000",
-            borderRadius: "10px",
-            width: "100%",
-            display: "flex",
-            alignItems: "center",
-            flexWrap: "wrap",
-          }}
-        >
-          <PeopleAltIcon sx={{color: "#000"}}/>
-          {message}
-          <IconButton
-            size="small"
-            sx={{color: "#000"}}
-            onClick={acceptInvite}
-          >
-            <CheckIcon/>
-          </IconButton>
-          <IconButton
-            size="small"
-            sx={{color: "#000"}}
-            onClick={handleCloseInvite}
-          >
-            <CloseIcon/>
-          </IconButton>
-        </Box>
-      </Snackbar>
-      <Snackbar // Friend snackbar
-        open={openFriend}
-        autoHideDuration={10000}
-        anchorOrigin={{vertical: "top", horizontal: "right"}}
-        onClose={handleCloseInvite}
-      >
-        <Box
-          sx={{
-            backgroundColor: "#fff",
-            color: "#000",
-            borderRadius: "10px",
-            width: "100%",
-            display: "flex",
-            alignItems: "center",
-            flexWrap: "wrap",
-          }}
-        >
-          <PeopleAltIcon sx={{color: "#000"}}/>
-          {message}
-          <IconButton
-            size="small"
-            sx={{color: "#000"}}
-            onClick={acceptBeingFriend}
-          >
-            <CheckIcon/>
-          </IconButton>
-          <IconButton
-            size="small"
-            sx={{color: "#000"}}
-            onClick={handleCloseInvite}
-          >
-            <CloseIcon/>
-          </IconButton>
-        </Box>
-      </Snackbar>
-      <Snackbar // Pong snackbar
-        open={openPong}
-        autoHideDuration={10000}
-        anchorOrigin={{vertical: "top", horizontal: "right"}}
-        onClose={handleClosePong}
-      >
-        <Box
-          sx={{
-            backgroundColor: "#fff",
-            color: "#000",
-            borderRadius: "10px",
-            width: "100%",
-            display: "flex",
-            alignItems: "center",
-            flexWrap: "wrap",
-          }}
-        >
-          <PeopleAltIcon sx={{color: "#000"}}/>
-          {message}
-          <IconButton
-            size="small"
-            sx={{color: "#000"}}
-            onClick={acceptPlayPong}
-          >
-            <CheckIcon/>
-          </IconButton>
-          <IconButton
-            size="small"
-            sx={{color: "#000"}}
-            onClick={handleClosePong}
-          >
-            <CloseIcon/>
-          </IconButton>
-        </Box>
-      </Snackbar>
-    </div>
+    null
   );
 }
