@@ -15,7 +15,23 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import PrivateRoute from "./components/Global/PrivateRoute";
 import TwoFactorLogin from "./components/Login/TwoFactorLogin";
-import { Snackbar } from "@mui/material";
+import { MaterialDesignContent } from 'notistack'
+import { styled } from "@mui/system";
+
+const StyledMaterialDesignContent = styled(MaterialDesignContent)(({ theme }) => ({
+  '&.notistack-MuiContent-error': {
+    backgroundColor: '#FFC2C2',
+    color: '#8F0000',
+  },
+  '&.notistack-MuiContent-success': {
+    backgroundColor: '#B7E4C7',
+    color: '#2D6A4F',
+  },
+  '&.notistack-MuiContent-info': {
+    backgroundColor: '#9CBFE8',
+    color: '#133153',
+  },
+}));
 
 const theme = createTheme({
   palette: {
@@ -44,7 +60,11 @@ function App() {
 
   return (
     <div className="App">
-      <SnackbarProvider maxSnack={5} anchorOrigin={{horizontal: 'right', vertical: 'top'}}>
+      <SnackbarProvider maxSnack={5} anchorOrigin={{horizontal: 'right', vertical: 'top'}} autoHideDuration={10000} Components={{
+    error: StyledMaterialDesignContent,
+    success: StyledMaterialDesignContent,
+    info: StyledMaterialDesignContent,
+  }}>
         <ThemeProvider theme={theme}>
           <CssBaseline />
           <BrowserRouter>

@@ -14,7 +14,7 @@ import { chatResponseArgs } from "./args.interface";
 import webSocketManager from "../../webSocket";
 
 import {
-  Button,
+  Button, IconButton,
 } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
@@ -91,69 +91,69 @@ export default function ChatProcess() {
 
   const actionInvite = (snackbarId: any) => (
     <>
-      <Button
+      <IconButton
         onClick={() => acceptInvite(snackbarId)}
         color="inherit"
         size="small"
       >
         <CheckIcon />
-      </Button>
-      <Button
+      </IconButton>
+      <IconButton
         onClick={() => handleCloseInvite(snackbarId)}
         color="inherit"
         size="small"
       >
         <CloseIcon />
-      </Button>
+      </IconButton>
     </>
   );
 
   const actionFriend = (snackbarId: any) => (
     <>
-      <Button
+      <IconButton
         onClick={() => acceptBeingFriend(snackbarId)}
         color="inherit"
         size="small"
       >
         <CheckIcon />
-      </Button>
-      <Button
+      </IconButton>
+      <IconButton
         onClick={() => handleCloseFriend(snackbarId)}
         color="inherit"
         size="small"
       >
         <CloseIcon />
-      </Button>
+      </IconButton>
     </>
   );
 
   const actionPong = (snackbarId: any) => (
     <>
-      <Button
+      <IconButton
         onClick={() => acceptPlayPong(snackbarId)}
         color="inherit"
         size="small"
       >
         <CheckIcon />
-      </Button>
-      <Button
+      </IconButton>
+      <IconButton
         onClick={() => handleClosePong(snackbarId)}
         color="inherit"
         size="small"
       >
         <CloseIcon />
-      </Button>
+      </IconButton>
     </>
   );
 
   const action = (snackbarId: any) => (
-    <Button
+    <IconButton
       onClick={() => handleClose(snackbarId)}
       color="inherit"
       size="small"
     >
       <CloseIcon />
-    </Button>
+    </IconButton>
   );
 
   useEffect(() => {

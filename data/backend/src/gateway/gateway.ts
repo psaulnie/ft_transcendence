@@ -410,6 +410,7 @@ export class Gateway
     const targetStatus = await this.usersStatusService.getUserStatus(
       payload.target,
     );
+    if (!targetStatus) return;
     this.server.emit(targetStatus.clientId, {
       source: payload.source,
       target: payload.room,
@@ -454,6 +455,7 @@ export class Gateway
     const targetStatus = await this.usersStatusService.getUserStatus(
       payload.target,
     );
+    if (!targetStatus) return;
     this.server.emit(targetStatus.clientId, {
       source: payload.source,
       target: payload.room,
@@ -557,6 +559,7 @@ export class Gateway
     const targetStatus = await this.usersStatusService.getUserStatus(
       payload.target,
     );
+    if (!targetStatus) return;
     this.server.emit(targetStatus.clientId, {
       source: payload.room,
       target: payload.target,
@@ -592,6 +595,7 @@ export class Gateway
     const targetStatus = await this.usersStatusService.getUserStatus(
       payload.target,
     );
+    if (!targetStatus) return;
     this.server.emit(targetStatus.clientId, {
       source: payload.room,
       target: payload.target,
@@ -628,6 +632,7 @@ export class Gateway
     const targetStatus = await this.usersStatusService.getUserStatus(
       payload.target,
     );
+    if (!targetStatus) return;
     this.server.emit(targetStatus.clientId, {
       source: payload.room,
       target: payload.target,
