@@ -5,6 +5,7 @@ import {addMsg, addRoom, setRead, updateRoomName} from "../../store/rooms";
 import webSocketManager from "../../webSocket";
 import {actionTypes} from "./args.types";
 import {userRole} from "./chatEnums";
+import { updateBlockedUsers } from "../../store/user";
 
 export default function DirectMessageProvider() {
   const user = useSelector((state: any) => state.user);
@@ -35,6 +36,7 @@ export default function DirectMessageProvider() {
       dispatch(
         updateRoomName({oldName: value.source, newName: value.target})
       );
+      dispatch(updateBlockedUsers({oldName: value.source, newName: value.target}));
     }
 
     function joinRoom(value: { listener: string, name: string}) {
