@@ -28,6 +28,23 @@ export default function SelectUserDialog({open, setOpen, roomName}: arg) {
   const user = useSelector((state: any) => state.user);
   const [selectedUser, setSelectedUser] = useState("");
 
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.repeat) return;
+      const {key} = event;
+
+      if (key === "Enter") {
+        confirmButton(event);
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  });
+
   function updateUser(e: any, value: any) {
     if (!value || value.label === null) setSelectedUser("");
     else setSelectedUser(value.label);

@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import webSocketManager from "../../webSocket";
 import {Button, Dialog, DialogActions, DialogTitle, TextField, Zoom,} from "@mui/material";
 import {TransitionProps} from "@mui/material/transitions";
@@ -33,6 +33,23 @@ export default function PasswordDialog({
                                        }: arg) {
   const user = useSelector((state: any) => state.user);
   const [password, setPassword] = useState("");
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.repeat) return;
+      const {key} = event;
+
+      if (key === "Enter") {
+        confirmButton(event);
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  });
 
   function updatePassword(e: any) {
     setPassword(e.target.value);

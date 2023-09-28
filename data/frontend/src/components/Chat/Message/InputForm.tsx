@@ -120,12 +120,15 @@ export default function InputForm({
 
               bgcolor: "#D9D9D9",
               color: "black",
+              "&:hover": {
+                backgroundColor: "grey",
+              },
             }}
             onKeyDown={keyPress}
             endIcon={isWideScreen ? null : <Publish />}
             centerRipple
           >
-            send
+            Send
           </Button>
         </Grid>
       </Grid>
