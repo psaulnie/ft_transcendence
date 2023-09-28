@@ -46,6 +46,24 @@ function TwoFactorLogin() {
     
     checkTwoFactorAuthState();
   }, []);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.repeat) return;
+      const {key} = event;
+
+      if (key === "Enter") {
+        if (twoFactorAuthCode) validateTwoFactorAuthCode();
+        if (twoFactorTurnOnCode) validateTwoFactorTurnOnCode();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  });
   
 
   function onChangeAuthCode(e: string) {
@@ -116,12 +134,15 @@ function TwoFactorLogin() {
       const data = await response.json();
       if (response.ok && data.status !== "codeError") {
         setError(false);
+        setTwoFactorTurnOnCode("");
         navigate("/settings");
       } else {
         setError(true);
+        setTwoFactorTurnOnCode("");
       }
     } catch (error) {
       enqueueSnackbar("Error: " + error, { variant: 'error' });
+      setTwoFactorTurnOnCode("");
       navigate("/login");
     }
   }
@@ -142,12 +163,15 @@ function TwoFactorLogin() {
       const data = await response.json();
       if (response.ok && data.status !== "codeError") {
         setError(false);
+        setTwoFactorAuthCode("");
         navigate("/home");
       } else {
         setError(true);
+        setTwoFactorAuthCode("");
       }
     } catch (error) {
       enqueueSnackbar("Error: " + error, { variant: 'error' });
+      setTwoFactorAuthCode("");
       navigate("/login");
     }
   }

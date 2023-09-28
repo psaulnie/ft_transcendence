@@ -78,6 +78,23 @@ function Settings() {
     checkTwoFactorState();
   }, []);
 
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.repeat) return;
+      const {key} = event;
+
+      if (key === "Enter") {
+        if (twoFactorAuthCode) validateTwoFactorAuthCode();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  });
+
   function onChangeAuthCode(e: string) {
     if (e.length <= 6) {
       setTwoFactorAuthCode(e);

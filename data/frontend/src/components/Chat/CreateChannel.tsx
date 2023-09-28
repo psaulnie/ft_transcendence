@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 
 import webSocketManager from "../../webSocket";
 import {accessStatus, userRole} from "./chatEnums";
@@ -24,6 +24,23 @@ function CreateChannel() {
   const [newRoomName, setNewRoomName] = useState("");
   const [access, setAccess] = useState(accessStatus.public);
   const [showDialog, setShowDialog] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.repeat) return;
+      const {key} = event;
+
+      if (key === "Enter") {
+        createRoom(event);
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  });
 
   function updateNewRoomName(e: any) {
     e.preventDefault();
