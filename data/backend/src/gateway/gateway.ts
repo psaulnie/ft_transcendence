@@ -114,6 +114,8 @@ export class Gateway
       user.uid > targetUser.uid
         ? user.uid + '' + targetUser.uid
         : targetUser.uid + '' + user.uid;
+    client.join(listener + '⌲');
+    targetStatus.client.join(listener + '⌲');
     this.server.emit(payload.target + '⌲', {
       source: payload.source,
       target: payload.target,
@@ -287,14 +289,14 @@ export class Gateway
         return;
       }
     }
-
+    client.join(payload.room);
     this.server.emit(client.id, {
       action: actionTypes.joinRoom,
       target: payload.room,
       hasPassword: hasPassword,
       role: role,
     });
-    this.server.emit(payload.room, {
+    this.server.to(payload.room).emit(payload.room, {
       source: payload.source,
       target: payload.room,
       action: actionTypes.join,
@@ -341,7 +343,8 @@ export class Gateway
         action: actionTypes.owner,
       });
     }
-    this.server.emit(payload.room, {
+    client.leave(payload.room);
+    this.server.to(payload.room).emit(payload.room, {
       source: payload.source,
       target: payload.room,
       action: actionTypes.left,
@@ -402,7 +405,7 @@ export class Gateway
       throw new WsException("You're not an admin of this room");
     if (room.owner.username === payload.target) throw new WsException('You cannot kick the owner');
     await this.roomService.removeUser(room, user.uid);
-    this.server.emit(payload.room, {
+    this.server.to(payload.room).emit(payload.room, {
       source: payload.target,
       target: payload.room,
       action: actionTypes.left,
@@ -410,7 +413,7 @@ export class Gateway
     const targetStatus = await this.usersStatusService.getUserStatus(
       payload.target,
     );
-    this.server.emit(targetStatus.clientId, {
+    this.server.to(targetStatus.clientId).emit(targetStatus.clientId, {
       source: payload.source,
       target: payload.room,
       action: actionTypes.kick,
@@ -1264,6 +1267,8 @@ export class Gateway
     if (!user) throw new WsException(userStatus + ' not found');
     await this.userService.changeUsername(user, payload);
     await this.usersStatusService.changeUsername(userStatus.username, payload);
+    client.leave(oldUsername + '⌲');
+    client.join(payload + '⌲');
     this.server.emit('newUsername', {
       source: oldUsername,
       target: payload,
@@ -1309,8 +1314,11 @@ export class Gateway
     const userStatusTmp = await this.usersStatusService.getUserStatusByClientId(
       client.id,
       );
-      if (!userStatusTmp) return;
-      console.log('client disconnected: ', client.id, userStatusTmp.username);
+    if (!userStatusTmp) return;
+    console.log('client disconnected: ', client.id, userStatusTmp.username);
+    client.leave(client.id);
+    client.leave(client.id + "GETUID");
+    client.leave(userStatusTmp.username + '⌲');
     const user = await this.userService.findOne(userStatusTmp.username);
     if (userStatusTmp.status === userStatus.playing) {
       const gameRoom = this.gameService.getGameRoom(userStatusTmp.gameRoomId);
@@ -1396,6 +1404,9 @@ export class Gateway
       user.username,
       userStatus.online,
     );
+    client.join(client.id);
+    client.join(client.id + "GETUID");
+    client.join(user.username + '⌲');
     console.log('client connected: ', client.id, user.username);
   }
 }
