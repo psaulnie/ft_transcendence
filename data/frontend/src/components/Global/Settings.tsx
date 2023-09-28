@@ -21,6 +21,7 @@ import spongebob from "../Game/img/spongebob.jpg";
 import windows from "../Game/img/windows.jpg";
 
 import webSocketManager from "../../webSocket";
+import { enqueueSnackbar } from "notistack";
 
 function Settings() {
   const [twoFactorAuthState, setTwoFactorAuthState] = useState<boolean>(false);
@@ -70,12 +71,18 @@ function Settings() {
           console.error("Unexpected response:", data);
         }
       } catch (error) {
-        console.error("Error: ", error);
+        enqueueSnackbar("Error: " + error, { variant: 'error' });
       }
     }
 
     checkTwoFactorState();
   }, []);
+
+  function onChangeAuthCode(e: string) {
+    if (e.length <= 6) {
+      setTwoFactorAuthCode(e);
+    }
+  }
 
   async function askForChangeTwoFactorAuthState() {
     const newState = !twoFactorAuthState;
@@ -107,7 +114,7 @@ function Settings() {
         navigate("/2fa");
       }
     } catch (error) {
-      console.error("Error: ", error);
+      enqueueSnackbar("Error: " + error, { variant: 'error' });
     }
   }
 
@@ -143,7 +150,7 @@ function Settings() {
         setError(true);
       }
     } catch (error) {
-      console.error("Error: ", error);
+      enqueueSnackbar("Error: " + error, { variant: 'error' });
       navigate("/login");
     }
   }
@@ -300,7 +307,7 @@ function Settings() {
               id="code"
               value={twoFactorAuthCode}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                setTwoFactorAuthCode(event.target.value);
+                onChangeAuthCode(event.target.value);
               }}
               variant="outlined"
             />

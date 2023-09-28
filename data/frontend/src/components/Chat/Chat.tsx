@@ -18,6 +18,7 @@ import RoomTabs from "./RoomTabs";
 import {addRoom, setRoomIndex} from "../../store/rooms";
 import ErrorSnackbar from "../Global/ErrorSnackbar";
 import Loading from "../Global/Loading";
+import webSocketManager from "../../webSocket";
 
 function Chat() {
   const user = useSelector((state: any) => state.user);
