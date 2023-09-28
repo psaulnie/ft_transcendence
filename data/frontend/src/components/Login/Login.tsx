@@ -2,6 +2,7 @@ import {Navigate, useLocation} from "react-router";
 import {SyntheticEvent, useEffect, useState} from "react";
 import {Button, Grid} from "@mui/material";
 import Loading from "../Global/Loading";
+import { enqueueSnackbar } from "notistack";
 
 function Login() {
   const location = useLocation();
@@ -16,7 +17,8 @@ function Login() {
     try {
       window.location.href = `http://${import.meta.env.VITE_IP}:5000/auth/login`;
     } catch (e) {
-      console.log("Error from apiIntraLogIn(): ", e);
+      
+      enqueueSnackbar("Error: " + e, { variant: 'error' });
       setClickButton(false);
     }
   }

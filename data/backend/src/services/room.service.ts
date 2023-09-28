@@ -28,7 +28,7 @@ export class RoomService {
     });
   }
 
-  async findAllRoomUser(username: string): Promise<number> {
+  async findAllRoomUserNumber(username: string): Promise<number> {
     return await this.roomsRepository
       .createQueryBuilder('room')
       .leftJoinAndSelect('room.usersList', 'usersList')
@@ -36,6 +36,16 @@ export class RoomService {
       .where('user.username = :username', { username: username })
       .andWhere('usersList.isBanned = false')
       .getCount();
+  }
+
+  async findAllRoomUser(username: string): Promise<Room[]> {
+    return await this.roomsRepository
+      .createQueryBuilder('room')
+      .leftJoinAndSelect('room.usersList', 'usersList')
+      .leftJoinAndSelect('usersList.user', 'user')
+      .where('user.username = :username', { username: username })
+      .andWhere('usersList.isBanned = false')
+      .getMany();
   }
 
   async createRoom(

@@ -116,7 +116,7 @@ export class Gateway
         : targetUser.uid + '' + user.uid;
     client.join(listener + '⌲');
     targetStatus.client.join(listener + '⌲');
-    this.server.emit(payload.target + '⌲', {
+    this.server.to(payload.target + '⌲').emit(payload.target + '⌲', {
       source: payload.source,
       target: payload.target,
       listener: listener + '⌲',
@@ -155,7 +155,7 @@ export class Gateway
     else if (cUser.isMuted) throw new WsException("You're muted in that room");
     let role = await this.roomService.getRole(room, user.uid);
     if (!role) role = userRole.none;
-    this.server.emit(payload.target, {
+    this.server.to(payload.target).emit(payload.target, {
       source: payload.source,
       target: payload.target,
       action: actionTypes.msg,
@@ -187,7 +187,7 @@ export class Gateway
     if (!user) throw new WsException(payload.source + ' not found');
     if (await this.roomService.isUserInRoom(payload.room, user.uid))
       throw new WsException("You're already in that room");
-    const roomsJoined = await this.roomService.findAllRoomUser(payload.source);
+    const roomsJoined = await this.roomService.findAllRoomUserNumber(payload.source);
     if (roomsJoined >= 15)
       throw new WsException(
         'You joined too many channels, leave some before creating a new one',
@@ -228,7 +228,7 @@ export class Gateway
       throw new WsException("You're banned from that room");
     if (await this.roomService.isUserInRoom(payload.room, user.uid))
       throw new WsException("You're already in that room");
-    const roomsJoined = await this.roomService.findAllRoomUser(payload.source);
+    const roomsJoined = await this.roomService.findAllRoomUserNumber(payload.source);
     if (roomsJoined >= 15)
       throw new WsException(
         'You joined too many channels, leave some before joining a new one',
@@ -329,6 +329,8 @@ export class Gateway
     const room = await this.roomService.findOne(payload.room);
     if (!room) return;
     const previousOwner = room.owner.uid;
+    if (await this.roomService.isUserInRoom(payload.room, user.uid) === false)
+      throw new WsException("You're not in that room");
     const owner = await this.roomService.removeUser(room, user.uid);
     const ownerStatus = await this.usersStatusService.getUserStatus(
       owner?.username,
@@ -414,6 +416,7 @@ export class Gateway
       payload.target,
     );
     if (!targetStatus) return;
+    targetStatus.client.leave(payload.room);
     this.server.to(targetStatus.clientId).emit(targetStatus.clientId, {
       source: payload.source,
       target: payload.room,
@@ -459,6 +462,7 @@ export class Gateway
       payload.target,
     );
     if (!targetStatus) return;
+    targetStatus.client.leave(payload.room);
     this.server.emit(targetStatus.clientId, {
       source: payload.source,
       target: payload.room,
@@ -755,9 +759,10 @@ export class Gateway
       )
     )
       throw new WsException('Forbidden');
-    this.invitedChat = this.invitedChat.filter(
-      (obj) => obj.id !== client.id && obj.value !== payload.roomName,
+    const index = this.invitedChat.findIndex(
+      (obj) => obj.id === client.id && obj.value === payload.roomName,
     );
+    this.invitedChat.slice(index, 1);
     const user = await this.userService.findOne(payload.username);
     if (!user) throw new WsException(payload.username + ' not found');
     const userStatus = await this.usersStatusService.getUserStatus(
@@ -765,7 +770,10 @@ export class Gateway
     );
     if (!userStatus || userStatus.clientId !== client.id)
       throw new WsException('Forbidden');
+    if (await this.roomService.isUserInRoom(payload.roomName, user.uid))
+      throw new WsException('You\'re already in that room');
     await this.roomService.addUser(payload.roomName, user, true);
+    userStatus.client.join(payload.roomName);
     this.server.emit(payload.roomName, {
       source: payload.username,
       target: payload.roomName,
@@ -835,10 +843,11 @@ export class Gateway
         (obj) => obj.id === client.id && obj.value === payload.target,
       )
     )
-      throw new WsException('Forbidden');
-    this.askFriend = this.askFriend.filter(
-      (obj) => obj.id !== client.id && obj.value !== payload.target,
+      throw new WsException(payload.target + ' didn\'t ask you to be friend');
+    const index = this.askFriend.findIndex(
+      (obj) => obj.id === client.id && obj.value === payload.target,
     );
+    this.askFriend.slice(index, 1);
     const sourceUser = await this.userService.findOne(payload.source);
     if (!sourceUser) throw new WsException(payload.source + ' not found');
     const targetUser = await this.userService.findOne(payload.target);
@@ -939,16 +948,17 @@ export class Gateway
     const cUserStatus = await this.usersStatusService.getUserStatusByClientId(
       client.id,
     );
+    if (!cUserStatus) throw new WsException('Forbidden');
     if (
       !this.invitedPong.find(
         (obj) => obj.id === client.id && obj.value === payload,
       )
-    )
-      throw new WsException('Forbidden');
+    ) {
+        throw  new WsException(payload + ' is already playing');
+    }
     this.invitedPong = this.invitedPong.filter(
       (obj) => obj.id !== client.id && obj.value !== payload,
     );
-    if (!cUserStatus) throw new WsException('Forbidden');
     const user = await this.userService.findOne(cUserStatus.username);
     if (!user) throw new WsException(cUserStatus.username + ' not found');
     const opponentStatus = await this.usersStatusService.getUserStatus(payload);
@@ -1409,6 +1419,10 @@ export class Gateway
       user.username,
       userStatus.online,
     );
+    const rooms = await this.roomService.findAllRoomUser(user.username);
+    rooms.forEach(element => {
+      client.join(element.roomName);
+    });
     client.join(client.id);
     client.join(client.id + "GETUID");
     client.join(user.username + '⌲');

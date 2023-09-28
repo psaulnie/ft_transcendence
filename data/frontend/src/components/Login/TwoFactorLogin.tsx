@@ -3,6 +3,7 @@ import React, {useEffect, useState} from "react";
 import {useNavigate} from "react-router";
 import DoneIcon from "@mui/icons-material/Done";
 import Loading from "../Global/Loading";
+import { enqueueSnackbar } from "notistack";
 
 function TwoFactorLogin() {
   const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
@@ -27,7 +28,7 @@ function TwoFactorLogin() {
               "Content-Type": "application/json",
             },
           }
-        );
+          );
         const data = await response.json();
         if (response.ok && data === true) {
           await checkTwoFactorStatus();
@@ -38,12 +39,26 @@ function TwoFactorLogin() {
         }
         setIsLoading(false);
       } catch (error) {
+        enqueueSnackbar("Error: " + error, { variant: 'error' });
         navigate("/login");
       }
     }
-
+    
     checkTwoFactorAuthState();
   }, []);
+  
+
+  function onChangeAuthCode(e: string) {
+    if (e.length <= 6) {
+      setTwoFactorAuthCode(e);
+    }
+  }
+
+  function onChangeTurnOnCode(e: string) {
+    if (e.length <= 6) {
+      setTwoFactorTurnOnCode(e);
+    }
+  }
 
   async function checkTwoFactorStatus() {
     try {
@@ -59,7 +74,7 @@ function TwoFactorLogin() {
         await fetchQrCode();
       }
     } catch (error) {
-      console.error("Error: ", error);
+      enqueueSnackbar("Error: " + error, { variant: 'error' });
       navigate("/login");
     }
   }
@@ -80,7 +95,7 @@ function TwoFactorLogin() {
       const url = URL.createObjectURL(data);
       setQrCodeUrl(url);
     } catch (error) {
-      console.error("Error: ", error);
+      enqueueSnackbar("Error: " + error, { variant: 'error' });
       navigate("/login");
     }
   }
@@ -106,7 +121,7 @@ function TwoFactorLogin() {
         setError(true);
       }
     } catch (error) {
-      console.error("Error: ", error);
+      enqueueSnackbar("Error: " + error, { variant: 'error' });
       navigate("/login");
     }
   }
@@ -132,7 +147,7 @@ function TwoFactorLogin() {
         setError(true);
       }
     } catch (error) {
-      console.error("Error: ", error);
+      enqueueSnackbar("Error: " + error, { variant: 'error' });
       navigate("/login");
     }
   }
@@ -187,7 +202,7 @@ function TwoFactorLogin() {
                   },
                 }}
                 value={twoFactorAuthCode}
-                onChange={(e) => setTwoFactorAuthCode(e.target.value)}
+                onChange={(e) => onChangeAuthCode(e.target.value)}
                 placeholder="Enter validation code"
               />
               <Button
@@ -241,7 +256,7 @@ function TwoFactorLogin() {
                   },
                 }}
                 value={twoFactorTurnOnCode}
-                onChange={(e) => setTwoFactorTurnOnCode(e.target.value)}
+                onChange={(e) => onChangeTurnOnCode(e.target.value)}
                 placeholder="Enter validation code"
               />
               <Button
@@ -262,7 +277,7 @@ function TwoFactorLogin() {
         )}
 
         {error && (
-          <p style={{color: "black"}}>Incorrect code, please try again.</p>
+          <p style={{color: "red"}}>Incorrect code, please try again.</p>
         )}
       </Box>
     </Grid>
