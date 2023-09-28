@@ -18,7 +18,6 @@ export class WebSocketManager {
         transports: ["websocket"],
       });
       this.socket.on("connect_error", (err: any) => {
-        console.log(err.message);
         window.location.href = `http://${import.meta.env.VITE_IP}:5000/auth/logout`;
       });
       this.socket.on("disconnect", function (err: any) {
