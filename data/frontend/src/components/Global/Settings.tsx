@@ -328,7 +328,7 @@ function Settings() {
           <DialogTitle>Two Factor Authentication</DialogTitle>
           <DialogContent>
             <DialogContentText>
-              Are you sure you want to enable two factor authentication ? No turning back.
+              Are you sure you want to enable two factor authentication?
             </DialogContentText>
           </DialogContent>
           <DialogActions>
