@@ -25,7 +25,8 @@ import { enqueueSnackbar } from "notistack";
 
 function Settings() {
   const [twoFactorAuthState, setTwoFactorAuthState] = useState<boolean>(false);
-  const [open, setOpen] = React.useState(false);
+  const [openToDisable, setOpenToDisable2Fa] = React.useState(false);
+  const [openToEnable, setOpenToEnable2Fa] = React.useState(false);
   const [twoFactorAuthCode, setTwoFactorAuthCode] = useState("");
   const [error, setError] = useState<boolean>(false);
   const navigate = useNavigate();
@@ -84,6 +85,7 @@ function Settings() {
       const {key} = event;
 
       if (key === "Enter") {
+        if (openToEnable) changeTwoFactorAuthState(true);
         if (twoFactorAuthCode) validateTwoFactorAuthCode();
       }
     };
@@ -105,9 +107,10 @@ function Settings() {
     const newState = !twoFactorAuthState;
     setTwoFactorAuthState(newState);
     if (!newState) {
-      handleClickOpen();
+      handleClickOpenToDisable2Fa();
     } else {
-      await changeTwoFactorAuthState(newState);
+      handleClickOpenToEnable2Fa()
+      // await changeTwoFactorAuthState(newState);
     }
   }
 
@@ -135,12 +138,22 @@ function Settings() {
     }
   }
 
-  const handleClickOpen = () => {
-    setOpen(true);
+  const handleClickOpenToEnable2Fa = () => {
+    setOpenToEnable2Fa(true);
   };
 
-  const handleClose = () => {
-    setOpen(false);
+  const handleCloseToEnable2Fa = () => {
+    setOpenToEnable2Fa(false);
+    setTwoFactorAuthState(false);
+    setError(false);
+  };
+
+  const handleClickOpenToDisable2Fa = () => {
+    setOpenToDisable2Fa(true);
+  };
+
+  const handleCloseToDisable2Fa = () => {
+    setOpenToDisable2Fa(false);
     setTwoFactorAuthState(true);
     setError(false);
   };
@@ -162,7 +175,7 @@ function Settings() {
       if (response.ok && data.status !== "codeError") {
         await changeTwoFactorAuthState(false);
         setError(false);
-        setOpen(false);
+        setOpenToDisable2Fa(false);
       } else {
         setError(true);
       }
@@ -311,7 +324,22 @@ function Settings() {
       </Grid>
 
       <div>
-        <Dialog open={open} onClose={handleClose}>
+        <Dialog open={openToEnable} onClose={handleCloseToEnable2Fa}>
+          <DialogTitle>Two Factor Authentication</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Are you sure you want to enable two factor authentication?
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseToEnable2Fa}>Cancel</Button>
+            <Button onClick={() => changeTwoFactorAuthState(true)}>Enable</Button>
+          </DialogActions>
+        </Dialog>
+      </div>
+
+      <div>
+        <Dialog open={openToDisable} onClose={handleCloseToDisable2Fa}>
           <DialogTitle>Two Factor Authentication</DialogTitle>
           <DialogContent>
             <DialogContentText>
@@ -333,7 +361,7 @@ function Settings() {
             )}
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleClose}>Cancel</Button>
+            <Button onClick={handleCloseToDisable2Fa}>Cancel</Button>
             <Button onClick={validateTwoFactorAuthCode}>Validate</Button>
           </DialogActions>
         </Dialog>
