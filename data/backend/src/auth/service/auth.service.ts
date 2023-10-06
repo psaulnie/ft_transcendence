@@ -53,22 +53,23 @@ export class AuthService implements AuthProvider {
   }
 
   async createUser(details: UserDetails) {
-    const url: any = await firstValueFrom(
-      this.httpService
-        .get('https://api.intra.42.fr/v2/me', {
-          headers: {
-            Authorization: `Bearer ${details.accessToken}`,
-          },
-        })
-        .pipe(
-          catchError(() => {
-            throw new UnauthorizedException();
-          }),
-        ),
-    );
-    details.urlAvatar = url?.data?.image?.link;
-    if (!details.urlAvatar) details.urlAvatar = '';
-
+    if (details.username !== 'userTest') {
+      const url: any = await firstValueFrom(
+        this.httpService
+          .get('https://api.intra.42.fr/v2/me', {
+            headers: {
+              Authorization: `Bearer ${details.accessToken}`,
+            },
+          })
+          .pipe(
+            catchError(() => {
+              throw new UnauthorizedException();
+            }),
+          ),
+      );
+      details.urlAvatar = url?.data?.image?.link;
+      if (!details.urlAvatar) details.urlAvatar = '';
+    }
     const achievements = new Achievements();
     const statistics = new Statistics();
 
